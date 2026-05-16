@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Start backend stack
-        run: docker compose up -d --build db backend
+        run: docker compose -f .\Waste-Recycling-Platform\docker-compose.yml up -d --build db backend
 
       - name: Wait for API health
         run: |
@@ -45,8 +45,8 @@ jobs:
 
       - name: Run Postman collection
         run: >
-          newman run .\postman\WastePlatform.postman_collection.json
-          -e .\postman\WastePlatform.local.postman_environment.json
+          newman run .\Waste-Recycling-Platform\postman\WastePlatform.postman_collection.json
+          -e .\Waste-Recycling-Platform\postman\WastePlatform.local.postman_environment.json
           --env-var baseUrl=http://localhost:8080
           --reporters cli,junit
           --reporter-junit-export .\TestResults\postman-junit.xml

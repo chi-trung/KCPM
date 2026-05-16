@@ -7,6 +7,7 @@ on:
       - develop
       - 'feature/**'
   pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
@@ -25,11 +26,11 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Restore test project
-        run: dotnet restore .\backend\tests\WastePlatform.Tests\WastePlatform.Tests.csproj
+        run: dotnet restore .\Waste-Recycling-Platform\backend\tests\WastePlatform.Tests\WastePlatform.Tests.csproj
 
       - name: Run backend tests
         run: >
-          dotnet test .\backend\tests\WastePlatform.Tests\WastePlatform.Tests.csproj
+          dotnet test .\Waste-Recycling-Platform\backend\tests\WastePlatform.Tests\WastePlatform.Tests.csproj
           --configuration Release
           --logger "trx;LogFileName=backend-tests.trx"
           --collect:"XPlat Code Coverage"
