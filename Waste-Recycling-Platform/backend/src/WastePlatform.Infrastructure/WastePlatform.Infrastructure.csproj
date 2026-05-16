@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- EF Core v9 (latest stable, compatible with net10.0) -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0" />
+    <!-- Pomelo MySQL driver (stable, EF Core 9 compatible) -->
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
+    <!-- Password hashing -->
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <!-- JWT token generation -->
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.14.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WastePlatform.Domain\WastePlatform.Domain.csproj" />
+    <ProjectReference Include="..\WastePlatform.Application\WastePlatform.Application.csproj" />
+  </ItemGroup>
+</Project>
