@@ -152,7 +152,7 @@ jobs:
           } catch {
             Write-Host "$realKey is not a direct Issue ID. Searching by summary..."
             $jql = [uri]::EscapeDataString("summary ~ `"$realKey`"")
-            $searchResp = Invoke-RestMethod -Method GET -Uri "$base/rest/api/3/search?jql=$jql&fields=key" -Headers $headers
+            $searchResp = Invoke-RestMethod -Method GET -Uri "$base/rest/api/3/search/jql?jql=$jql&fields=key" -Headers $headers
             if ($searchResp.issues.Count -gt 0) {
                $realKey = $searchResp.issues[0].key
                Write-Host "Resolved $env:EXTRACTED_KEY to real issue key $realKey via JQL search"
