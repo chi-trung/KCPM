@@ -1,0 +1,571 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="WastePlatform API - Professional QA Suite" tests="74" time="1.139">
+  <testsuite name="00 - Smoke &amp; Public / GET Health" id="40f656b2-3773-422b-ab61-0c6d07ef2b36" timestamp="2026-05-16T15:29:02.894Z" tests="2" failures="0" errors="0" time="0.040">
+    <testcase name="status code is 200" time="0.040" classname="00SmokeAmpPublicGetHealth"/>
+    <testcase name="response status is ok" time="0.040" classname="00SmokeAmpPublicGetHealth"/>
+  </testsuite>
+  <testsuite name="00 - Smoke &amp; Public / GET Public Analytics Reports" id="21e961d8-5c4a-412b-a998-804185c5d2e5" timestamp="2026-05-16T15:29:02.894Z" tests="2" failures="0" errors="0" time="0.026">
+    <testcase name="status code is 200" time="0.026" classname="00SmokeAmpPublicGetPublicAnalyticsReports"/>
+    <testcase name="payload has data" time="0.026" classname="00SmokeAmpPublicGetPublicAnalyticsReports"/>
+  </testsuite>
+  <testsuite name="01 - Auth / GET Roles" id="db92941f-630d-4333-83b4-97f7a005fe8c" timestamp="2026-05-16T15:29:02.894Z" tests="2" failures="0" errors="0" time="0.011">
+    <testcase name="status code is 200" time="0.011" classname="01AuthGetRoles"/>
+    <testcase name="roles array exists" time="0.011" classname="01AuthGetRoles"/>
+  </testsuite>
+  <testsuite name="01 - Auth / POST Register Citizen" id="e89507c4-da9b-40fc-8129-4cd8b5318018" timestamp="2026-05-16T15:29:02.894Z" tests="2" failures="0" errors="0" time="0.217">
+    <testcase name="status code is 200 or 201 or conflict on duplicate" time="0.217" classname="01AuthPostRegisterCitizen"/>
+    <testcase name="response has a message or data object" time="0.217" classname="01AuthPostRegisterCitizen"/>
+  </testsuite>
+  <testsuite name="01 - Auth / POST Register Enterprise" id="5a476cc5-a96f-477a-ae13-f42ef3312166" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.146">
+    <testcase name="status code is 200 or 201 or conflict on duplicate" time="0.146" classname="01AuthPostRegisterEnterprise"/>
+  </testsuite>
+  <testsuite name="01 - Auth / POST Login Citizen" id="b70f1831-02f0-40b9-8ed3-315f2bd9079e" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.013">
+    <testcase name="status code is success or auth failure" time="0.013" classname="01AuthPostLoginCitizen"/>
+  </testsuite>
+  <testsuite name="01 - Auth / POST Login Enterprise" id="db4ff7cb-4e64-472f-a4d6-712095387291" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.011">
+    <testcase name="status code is acceptable" time="0.011" classname="01AuthPostLoginEnterprise"/>
+  </testsuite>
+  <testsuite name="01 - Auth / POST Login Collector" id="232db38f-e89d-4131-a5ce-3ae8652e3ae1" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.011">
+    <testcase name="status code is acceptable" time="0.011" classname="01AuthPostLoginCollector"/>
+  </testsuite>
+  <testsuite name="01 - Auth / POST Login Admin" id="8f117005-0faa-4327-a601-c706793d59a7" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.011">
+    <testcase name="status code is acceptable" time="0.011" classname="01AuthPostLoginAdmin"/>
+  </testsuite>
+  <testsuite name="02 - Waste Categories / GET All Categories" id="2e28034a-8818-44b0-aea9-754e660d3025" timestamp="2026-05-16T15:29:02.894Z" tests="2" failures="0" errors="0" time="0.011">
+    <testcase name="status code is 200" time="0.011" classname="02WasteCategoriesGetAllCategories"/>
+    <testcase name="payload contains data" time="0.011" classname="02WasteCategoriesGetAllCategories"/>
+  </testsuite>
+  <testsuite name="02 - Waste Categories / GET Category By ID" id="13ab510c-6114-467f-9812-fd198688dc45" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.012">
+    <testcase name="status code is 200 or 404" time="0.012" classname="02WasteCategoriesGetCategoryById"/>
+  </testsuite>
+  <testsuite name="03 - Reports / Citizen Reports / POST Create Report" id="ce5474f3-b86f-4b35-b1fb-424d56d27d7b" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.011">
+    <testcase name="status code is success" time="0.011" classname="03ReportsCitizenReportsPostCreateReport"/>
+  </testsuite>
+  <testsuite name="03 - Reports / Citizen Reports / GET My Reports" id="c4bf45d5-4cf7-4573-b21a-50524af5595e" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.011">
+    <testcase name="status code is 200" time="0.011" classname="03ReportsCitizenReportsGetMyReports">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 03 - Reports / Citizen Reports / GET My Reports.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:13).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="03 - Reports / Citizen Reports / GET Report By ID" id="c67d6533-3978-45f8-8945-4c883873a875" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="status code is 200 or 404" time="0.008" classname="03ReportsCitizenReportsGetReportById"/>
+  </testsuite>
+  <testsuite name="03 - Reports / Management Reports / GET All Reports" id="73acc98a-f207-49f0-bc18-687881ea80ce" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.008">
+    <testcase name="status code is 200" time="0.008" classname="03ReportsManagementReportsGetAllReports">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 03 - Reports / Management Reports / GET All Reports.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:15).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="03 - Reports / Management Reports / POST Accept Report" id="c0017d99-c7ac-4ac6-a5c9-0c7793b5689e" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="status code is success" time="0.008" classname="03ReportsManagementReportsPostAcceptReport"/>
+  </testsuite>
+  <testsuite name="03 - Reports / Management Reports / POST Reject Report" id="5d108100-d92d-445c-8ee0-245c9a54c0a0" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.007">
+    <testcase name="status code is success" time="0.007" classname="03ReportsManagementReportsPostRejectReport"/>
+  </testsuite>
+  <testsuite name="03 - Reports / Management Reports / GET Enterprise Available Reports" id="d03ebea4-26e8-4ec9-b701-9a3efdc2be9e" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.016">
+    <testcase name="status code is 200" time="0.016" classname="03ReportsManagementReportsGetEnterpriseAvailableReports">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 03 - Reports / Management Reports / GET Enterprise Available Reports.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:18).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="04 - Complaints / Citizen Complaints / POST Create Complaint" id="cbdcf0cf-17be-490e-8ba5-bf644239d00c" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.010">
+    <testcase name="status code is success" time="0.010" classname="04ComplaintsCitizenComplaintsPostCreateComplaint"/>
+  </testsuite>
+  <testsuite name="04 - Complaints / Citizen Complaints / GET My Complaints" id="d3bf57ef-6611-45c5-8c8f-9dee52726b91" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.011">
+    <testcase name="status code is 200" time="0.011" classname="04ComplaintsCitizenComplaintsGetMyComplaints">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 04 - Complaints / Citizen Complaints / GET My Complaints.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:20).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="04 - Complaints / Citizen Complaints / GET Complaint Detail" id="7a5b34a1-d7fb-498b-b5f5-f2c73373ab0f" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.018">
+    <testcase name="status code is 200 or 404" time="0.018" classname="04ComplaintsCitizenComplaintsGetComplaintDetail">
+      <failure type="AssertionFailure" message="expected [ 200, 404 ] to include 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 04 - Complaints / Citizen Complaints / GET Complaint Detail.]]>
+        <![CDATA[Test description: status code is 200 or 404.]]>
+        <![CDATA[Error message: expected [ 200, 404 ] to include 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected [ 200, 404 ] to include 401
+   at Object.eval sandbox-script.js:1:21).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="04 - Complaints / Citizen Complaints / POST Escalate Complaint" id="c4ddaeed-06ea-46ad-8be6-4a6d3b5a4963" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.009">
+    <testcase name="status code is success" time="0.009" classname="04ComplaintsCitizenComplaintsPostEscalateComplaint"/>
+  </testsuite>
+  <testsuite name="04 - Complaints / Admin Complaints / GET All Complaints" id="53273536-8886-4b30-b78e-9ba71013b3a8" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.015">
+    <testcase name="status code is 200" time="0.015" classname="04ComplaintsAdminComplaintsGetAllComplaints">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 04 - Complaints / Admin Complaints / GET All Complaints.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:23).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="04 - Complaints / Admin Complaints / GET Complaint Detail" id="59d81a97-d6f3-48e2-8cf8-0f7cb0214c6f" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.009">
+    <testcase name="status code is 200 or 404" time="0.009" classname="04ComplaintsAdminComplaintsGetComplaintDetail">
+      <failure type="AssertionFailure" message="expected [ 200, 404 ] to include 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 04 - Complaints / Admin Complaints / GET Complaint Detail.]]>
+        <![CDATA[Test description: status code is 200 or 404.]]>
+        <![CDATA[Error message: expected [ 200, 404 ] to include 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected [ 200, 404 ] to include 401
+   at Object.eval sandbox-script.js:1:24).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="04 - Complaints / Admin Complaints / POST Resolve Complaint" id="270af620-1bae-43a2-be29-cee8b91fc272" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.009">
+    <testcase name="status code is success" time="0.009" classname="04ComplaintsAdminComplaintsPostResolveComplaint"/>
+  </testsuite>
+  <testsuite name="04 - Complaints / Admin Complaints / POST Reject Complaint" id="db4fbb6f-6c8f-4e1f-94ba-77e2e20b9807" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.011">
+    <testcase name="status code is success" time="0.011" classname="04ComplaintsAdminComplaintsPostRejectComplaint"/>
+  </testsuite>
+  <testsuite name="05 - Notifications / GET Notifications" id="a5c5842e-4e3d-466b-888f-b6cc50cd31c1" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.009">
+    <testcase name="status code is 200" time="0.009" classname="05NotificationsGetNotifications">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 05 - Notifications / GET Notifications.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:27).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="05 - Notifications / GET Unread Count" id="40e2fa18-7016-4e04-b2d0-8cc2ce9f5648" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.011">
+    <testcase name="status code is 200" time="0.011" classname="05NotificationsGetUnreadCount">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 05 - Notifications / GET Unread Count.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:28).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="05 - Notifications / PUT Mark Notification Read" id="0a71dc58-bd40-44a3-bead-5c425f024d29" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.011">
+    <testcase name="status code is success" time="0.011" classname="05NotificationsPutMarkNotificationRead"/>
+  </testsuite>
+  <testsuite name="05 - Notifications / PUT Mark All Notifications Read" id="bb3c84a0-13e1-4d9f-b2f0-3dbf99f96cb6" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.010">
+    <testcase name="status code is success" time="0.010" classname="05NotificationsPutMarkAllNotificationsRead"/>
+  </testsuite>
+  <testsuite name="06 - Citizen API / GET Rewards Total" id="87db0c34-6bed-4e07-b8d2-a4fe5d79abb3" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.010">
+    <testcase name="status code is 200" time="0.010" classname="06CitizenApiGetRewardsTotal">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 06 - Citizen API / GET Rewards Total.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:31).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="06 - Citizen API / GET Rewards History" id="968d363e-79a1-4b36-aac1-8408b1fef5a0" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.010">
+    <testcase name="status code is 200" time="0.010" classname="06CitizenApiGetRewardsHistory">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 06 - Citizen API / GET Rewards History.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:32).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="06 - Citizen API / GET Leaderboard" id="6454017f-5f6f-46d7-95ea-db5c4fede31a" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.019">
+    <testcase name="status code is 200" time="0.019" classname="06CitizenApiGetLeaderboard"/>
+  </testsuite>
+  <testsuite name="06 - Citizen API / GET Leaderboard by Area" id="f63a1430-82f0-4a7a-b46b-8fb54263b2ac" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.016">
+    <testcase name="status code is 200" time="0.016" classname="06CitizenApiGetLeaderboardByArea"/>
+  </testsuite>
+  <testsuite name="06 - Citizen API / GET Profile" id="b02fc71f-fdee-4cc9-ad1e-183a38e4cee5" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.009">
+    <testcase name="status code is 200" time="0.009" classname="06CitizenApiGetProfile">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 06 - Citizen API / GET Profile.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:35).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="06 - Citizen API / PUT Profile" id="c3dea494-7857-4765-a058-10ffcf8cb226" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.007">
+    <testcase name="status code is success" time="0.007" classname="06CitizenApiPutProfile"/>
+  </testsuite>
+  <testsuite name="07 - Collector API / GET Collector Profile" id="76565c23-96ec-4c3b-8ff3-815f872c2326" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.010">
+    <testcase name="status code is 200" time="0.010" classname="07CollectorApiGetCollectorProfile">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 07 - Collector API / GET Collector Profile.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:37).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="07 - Collector API / PATCH Toggle Availability" id="8a0f1eda-1dd9-4cb8-8a79-39466f46bfdd" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="status code is success" time="0.008" classname="07CollectorApiPatchToggleAvailability"/>
+  </testsuite>
+  <testsuite name="08 - Collector Tasks / GET My Tasks" id="1ac1ee0e-9035-4685-bd64-66755bee3e5e" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.007">
+    <testcase name="status code is 200" time="0.007" classname="08CollectorTasksGetMyTasks">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 08 - Collector Tasks / GET My Tasks.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:39).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="08 - Collector Tasks / GET Task By ID" id="9511b540-92f9-4523-98bc-0bced4926271" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.007">
+    <testcase name="status code is 200 or 404" time="0.007" classname="08CollectorTasksGetTaskById">
+      <failure type="AssertionFailure" message="expected [ 200, 404 ] to include 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 08 - Collector Tasks / GET Task By ID.]]>
+        <![CDATA[Test description: status code is 200 or 404.]]>
+        <![CDATA[Error message: expected [ 200, 404 ] to include 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected [ 200, 404 ] to include 401
+   at Object.eval sandbox-script.js:1:40).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="08 - Collector Tasks / PUT Set On The Way" id="de940a5f-3cf5-4824-b279-9700017c4b33" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.007">
+    <testcase name="status code is success" time="0.007" classname="08CollectorTasksPutSetOnTheWay"/>
+  </testsuite>
+  <testsuite name="08 - Collector Tasks / PUT Complete Task" id="fd14f281-4a7a-4c1b-9896-11c1b96e6cd0" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="status code is success" time="0.008" classname="08CollectorTasksPutCompleteTask"/>
+  </testsuite>
+  <testsuite name="08 - Collector Tasks / GET Task Stats" id="4e69735b-b447-4057-b25b-69ce8a3dc753" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.008">
+    <testcase name="status code is 200" time="0.008" classname="08CollectorTasksGetTaskStats">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 08 - Collector Tasks / GET Task Stats.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:43).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="09 - Enterprise API / GET Enterprise Profile" id="2bd25de8-04cf-4f1f-be9d-bdbb80eda7fd" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.007">
+    <testcase name="status code is 200 or 400 for admin-only limitation" time="0.007" classname="09EnterpriseApiGetEnterpriseProfile"/>
+  </testsuite>
+  <testsuite name="09 - Enterprise API / PUT Enterprise Profile" id="80b93778-df10-4b15-ac97-d21e679272a6" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.007">
+    <testcase name="status code is success" time="0.007" classname="09EnterpriseApiPutEnterpriseProfile"/>
+  </testsuite>
+  <testsuite name="09 - Enterprise API / GET Waste Types" id="3587a923-0af3-4a7c-9151-5e15149d081d" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.007">
+    <testcase name="status code is 200 or 400 for admin-only limitation" time="0.007" classname="09EnterpriseApiGetWasteTypes"/>
+  </testsuite>
+  <testsuite name="09 - Enterprise API / PUT Waste Types" id="b830fdbf-c9c5-4283-85c3-25beb47526f2" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.007">
+    <testcase name="status code is success" time="0.007" classname="09EnterpriseApiPutWasteTypes"/>
+  </testsuite>
+  <testsuite name="09 - Enterprise API / GET Collectors" id="59dd3808-1bfa-4347-aaf9-0650f2424e24" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.026">
+    <testcase name="status code is 200" time="0.026" classname="09EnterpriseApiGetCollectors">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 09 - Enterprise API / GET Collectors.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:48).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="09 - Enterprise API / POST Create Collector" id="67647edd-1dfb-44ee-86a1-bef208a1aade" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.007">
+    <testcase name="status code is success" time="0.007" classname="09EnterpriseApiPostCreateCollector"/>
+  </testsuite>
+  <testsuite name="09 - Enterprise API / PUT Update Collector" id="20805033-47ff-4a56-90a8-9910377c1d7f" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.008">
+    <testcase name="status code is success" time="0.008" classname="09EnterpriseApiPutUpdateCollector">
+      <failure type="AssertionFailure" message="expected [ 200, 400, 401, 403, 404 ] to include 405">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 09 - Enterprise API / PUT Update Collector.]]>
+        <![CDATA[Test description: status code is success.]]>
+        <![CDATA[Error message: expected [ 200, 400, 401, 403, 404 ] to include 405.]]>
+        <![CDATA[Stacktrace: AssertionError: expected [ 200, 400, 401, 403, 404 ] to include 405
+   at Object.eval sandbox-script.js:1:50).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="09 - Enterprise API / DELETE Collector" id="945a2f26-1ac3-4606-a762-9b6dfa89b940" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.008">
+    <testcase name="status code is success" time="0.008" classname="09EnterpriseApiDeleteCollector">
+      <failure type="AssertionFailure" message="expected [ 200, 400, 401, 403, 404 ] to include 405">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 09 - Enterprise API / DELETE Collector.]]>
+        <![CDATA[Test description: status code is success.]]>
+        <![CDATA[Error message: expected [ 200, 400, 401, 403, 404 ] to include 405.]]>
+        <![CDATA[Stacktrace: AssertionError: expected [ 200, 400, 401, 403, 404 ] to include 405
+   at Object.eval sandbox-script.js:1:51).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="09 - Enterprise API / GET Reward Rules" id="88e90885-417b-4bd4-9f42-52517e6fd567" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.008">
+    <testcase name="status code is 200" time="0.008" classname="09EnterpriseApiGetRewardRules">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 09 - Enterprise API / GET Reward Rules.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:52).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="09 - Enterprise API / PUT Reward Rules" id="83f7dacf-0f4a-426f-ba33-6036cab3f058" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.009">
+    <testcase name="status code is success" time="0.009" classname="09EnterpriseApiPutRewardRules"/>
+  </testsuite>
+  <testsuite name="09 - Enterprise API / GET Task Stats" id="190367de-3550-4daf-8f4e-6993ad397009" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.007">
+    <testcase name="status code is 200 or 400 for admin-only limitation" time="0.007" classname="09EnterpriseApiGetTaskStats"/>
+  </testsuite>
+  <testsuite name="09 - Enterprise API / GET Task Progress" id="2f87a61d-1685-400d-842f-698d1ff8a7fb" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.007">
+    <testcase name="status code is success" time="0.007" classname="09EnterpriseApiGetTaskProgress"/>
+  </testsuite>
+  <testsuite name="09 - Enterprise API / GET Available Collectors" id="1ad2618c-63a3-4db9-a704-0c2a0773acd9" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.010">
+    <testcase name="status code is 200" time="0.010" classname="09EnterpriseApiGetAvailableCollectors">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 09 - Enterprise API / GET Available Collectors.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:56).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="09 - Enterprise API / PUT Assign Collector" id="da0fbb06-3e67-463d-af7c-865332161962" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.010">
+    <testcase name="status code is success" time="0.010" classname="09EnterpriseApiPutAssignCollector"/>
+  </testsuite>
+  <testsuite name="09 - Enterprise API / GET Enterprise Complaints" id="58535196-8784-43e5-a45e-85fcf860bf21" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="status code is 200 or 400 for admin-only limitation" time="0.008" classname="09EnterpriseApiGetEnterpriseComplaints"/>
+  </testsuite>
+  <testsuite name="09 - Enterprise API / POST Respond Complaint" id="e8cff353-aec3-418b-9702-1c37b77ad215" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.011">
+    <testcase name="status code is success" time="0.011" classname="09EnterpriseApiPostRespondComplaint"/>
+  </testsuite>
+  <testsuite name="09 - Enterprise API / GET Enterprise Report Analytics" id="bcdb9417-8264-465d-b3b4-94a1237cb1cf" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.008">
+    <testcase name="status code is 200" time="0.008" classname="09EnterpriseApiGetEnterpriseReportAnalytics">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 09 - Enterprise API / GET Enterprise Report Analytics.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:60).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="10 - Admin API / GET Users" id="096390ed-4ff3-488a-8ebe-896757e31ab5" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.013">
+    <testcase name="status code is 200" time="0.013" classname="10AdminApiGetUsers"/>
+  </testsuite>
+  <testsuite name="10 - Admin API / GET User Stats" id="0e45d64c-d0de-423d-8ca2-81f18862494a" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.014">
+    <testcase name="status code is 200" time="0.014" classname="10AdminApiGetUserStats">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 500">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 10 - Admin API / GET User Stats.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 500.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 500
+   at Object.eval sandbox-script.js:1:62).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="10 - Admin API / POST Create User" id="7bca0912-2ce7-420e-ac5e-dd8b0771125a" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.021">
+    <testcase name="status code is success" time="0.021" classname="10AdminApiPostCreateUser">
+      <failure type="AssertionFailure" message="expected [ 200, 400, 401, 403, 409 ] to include 500">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 10 - Admin API / POST Create User.]]>
+        <![CDATA[Test description: status code is success.]]>
+        <![CDATA[Error message: expected [ 200, 400, 401, 403, 409 ] to include 500.]]>
+        <![CDATA[Stacktrace: AssertionError: expected [ 200, 400, 401, 403, 409 ] to include 500
+   at Object.eval sandbox-script.js:1:63).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="10 - Admin API / PATCH Toggle User Status" id="c5a31a64-0c37-40c1-a010-3f350ae4c511" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.010">
+    <testcase name="status code is success" time="0.010" classname="10AdminApiPatchToggleUserStatus"/>
+  </testsuite>
+  <testsuite name="10 - Admin API / PATCH Update User Role" id="c97fda90-9ace-4bb6-8540-45a642c9105a" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.012">
+    <testcase name="status code is success" time="0.012" classname="10AdminApiPatchUpdateUserRole"/>
+  </testsuite>
+  <testsuite name="10 - Admin API / GET Enterprises" id="511b737b-d345-4153-9fa8-cc5b127e0a35" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.010">
+    <testcase name="status code is 200" time="0.010" classname="10AdminApiGetEnterprises">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 10 - Admin API / GET Enterprises.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:66).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="10 - Admin API / GET Enterprise Detail" id="0f5bae3f-f808-4bdc-89d8-c2d135d89c8f" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.010">
+    <testcase name="status code is 200 or 404" time="0.010" classname="10AdminApiGetEnterpriseDetail">
+      <failure type="AssertionFailure" message="expected [ 200, 404 ] to include 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 10 - Admin API / GET Enterprise Detail.]]>
+        <![CDATA[Test description: status code is 200 or 404.]]>
+        <![CDATA[Error message: expected [ 200, 404 ] to include 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected [ 200, 404 ] to include 401
+   at Object.eval sandbox-script.js:1:67).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="10 - Admin API / POST Verify Enterprise" id="1e615ee4-71ed-4f0d-b3a3-99b523cd58e1" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.007">
+    <testcase name="status code is success" time="0.007" classname="10AdminApiPostVerifyEnterprise"/>
+  </testsuite>
+  <testsuite name="10 - Admin API / POST Reject Enterprise" id="0868ab73-9b45-4d32-80fc-c3a43e2cbd84" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="0" errors="0" time="0.008">
+    <testcase name="status code is success" time="0.008" classname="10AdminApiPostRejectEnterprise"/>
+  </testsuite>
+  <testsuite name="10 - Admin API / GET Analytics Overview" id="3881df31-8ac9-4630-8565-d66d2fcfc869" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.008">
+    <testcase name="status code is 200" time="0.008" classname="10AdminApiGetAnalyticsOverview">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 10 - Admin API / GET Analytics Overview.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:70).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="10 - Admin API / GET Analytics Reports" id="3c97c9d7-7d56-4d1e-8300-c5a08d92aed3" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.008">
+    <testcase name="status code is 200" time="0.008" classname="10AdminApiGetAnalyticsReports">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 10 - Admin API / GET Analytics Reports.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:71).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="10 - Admin API / GET Analytics Users" id="c42eeae4-2561-40d6-9b72-779c0813e556" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.008">
+    <testcase name="status code is 200" time="0.008" classname="10AdminApiGetAnalyticsUsers">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 10 - Admin API / GET Analytics Users.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:72).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="10 - Admin API / GET Analytics Waste" id="754408f9-2d76-4dae-8661-304f9e322c39" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.010">
+    <testcase name="status code is 200" time="0.010" classname="10AdminApiGetAnalyticsWaste">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 10 - Admin API / GET Analytics Waste.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:73).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="10 - Admin API / GET Analytics Summary" id="cafaf947-3c72-4ac1-98c9-9bcbf7f67d93" timestamp="2026-05-16T15:29:02.894Z" tests="1" failures="1" errors="0" time="0.008">
+    <testcase name="status code is 200" time="0.008" classname="10AdminApiGetAnalyticsSummary">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 401">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: c6a9b0d8-8d0a-4c1d-9ebf-5a7f2d5d51a1.]]>
+        <![CDATA[Collection name: WastePlatform API - Professional QA Suite.]]>
+        <![CDATA[Request name: 10 - Admin API / GET Analytics Summary.]]>
+        <![CDATA[Test description: status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 401.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 401
+   at Object.eval sandbox-script.js:1:74).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+</testsuites>
