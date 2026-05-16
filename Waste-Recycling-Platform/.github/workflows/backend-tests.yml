@@ -1,0 +1,45 @@
+name: Backend Tests
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+  pull_request:
+
+jobs:
+  test:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore test project
+        run: dotnet restore .\backend\tests\WastePlatform.Tests\WastePlatform.Tests.csproj
+
+      - name: Run backend tests
+        run: >
+          dotnet test .\backend\tests\WastePlatform.Tests\WastePlatform.Tests.csproj
+          --configuration Release
+          --logger "trx;LogFileName=backend-tests.trx"
+          --collect:"XPlat Code Coverage"
+          --results-directory .\TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-results
+          path: |
+            TestResults
+            **\*.trx

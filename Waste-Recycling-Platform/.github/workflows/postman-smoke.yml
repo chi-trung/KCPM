@@ -1,0 +1,61 @@
+name: Postman Smoke Tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+
+jobs:
+  smoke:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Start backend stack
+        run: docker compose up -d --build db backend
+
+      - name: Wait for API health
+        run: |
+          $maxAttempts = 30
+          for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
+            try {
+              $response = Invoke-WebRequest -Uri 'http://localhost:8080/api/health' -UseBasicParsing -TimeoutSec 5
+              if ($response.StatusCode -eq 200) {
+                Write-Host 'API is healthy.'
+                break
+              }
+            } catch {
+              if ($attempt -eq $maxAttempts) {
+                throw
+              }
+              Start-Sleep -Seconds 5
+            }
+          }
+
+      - name: Install Newman
+        run: npm install -g newman newman-reporter-junitfull
+
+      - name: Run Postman collection
+        run: >
+          newman run .\postman\WastePlatform.postman_collection.json
+          -e .\postman\WastePlatform.local.postman_environment.json
+          --env-var baseUrl=http://localhost:8080
+          --reporters cli,junit
+          --reporter-junit-export .\TestResults\postman-junit.xml
+
+      - name: Upload Postman results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: postman-smoke-results
+          path: |
+            TestResults
+            **\postman-junit.xml
