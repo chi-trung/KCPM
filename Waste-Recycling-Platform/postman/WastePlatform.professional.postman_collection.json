@@ -89,6 +89,85 @@
     {
       "key": "sampleWard",
       "value": "Ward 1"
+    },
+    {
+      "key": "jiraBaseUrl",
+      "value": ""
+    },
+    {
+      "key": "jiraEmail",
+      "value": ""
+    },
+    {
+      "key": "jiraToken",
+      "value": ""
+    },
+    {
+      "key": "jiraIssueKey",
+      "value": ""
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const requestName = pm.info.requestName || '';",
+          "if (requestName === 'GET Health' && pm.collectionVariables.get('verificationInitialized') !== 'true') {",
+          "  pm.collectionVariables.set('verificationPassCount', '0');",
+          "  pm.collectionVariables.set('verificationFailCount', '0');",
+          "  pm.collectionVariables.set('verificationInitialized', 'true');",
+          "}",
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const requestName = pm.info.requestName || '';",
+          "if (requestName === 'GET Jira Sync Summary') {",
+          "  return;",
+          "}",
+          "",
+          "function expectedCodes(name) {",
+          "  if (/^GET /.test(name)) {",
+          "    if (/By ID|Detail|Profile/.test(name)) {",
+          "      return [200, 404];",
+          "    }",
+          "    if (/Roles|Health|Public|All Categories|Stats|Summary|Overview|My Reports|My Complaints|Notifications|Unread Count|Leaderboard|Waste Types|Reward Rules|Available Collectors|Task Progress|User Stats|Analytics/.test(name)) {",
+          "      return [200];",
+          "    }",
+          "    return [200, 404];",
+          "  }",
+          "  if (/^POST /.test(name)) {",
+          "    return [200, 201, 202, 204, 400, 401, 403, 404, 409, 422];",
+          "  }",
+          "  if (/^PUT /.test(name) || /^PATCH /.test(name)) {",
+          "    return [200, 204, 400, 401, 403, 404, 409, 422];",
+          "  }",
+          "  if (/^DELETE /.test(name)) {",
+          "    return [200, 204, 400, 401, 403, 404];",
+          "  }",
+          "  return [200, 201, 204, 400, 401, 403, 404, 409, 422];",
+          "}",
+          "",
+          "const acceptable = expectedCodes(requestName);",
+          "const passed = acceptable.includes(pm.response.code);",
+          "const passCount = parseInt(pm.collectionVariables.get('verificationPassCount') || '0', 10);",
+          "const failCount = parseInt(pm.collectionVariables.get('verificationFailCount') || '0', 10);",
+          "",
+          "if (passed) {",
+          "  pm.collectionVariables.set('verificationPassCount', String(passCount + 1));",
+          "} else {",
+          "  pm.collectionVariables.set('verificationFailCount', String(failCount + 1));",
+          "}",
+          ""
+        ]
+      }
     }
   ],
   "item": [
@@ -3213,6 +3292,131 @@
                 "exec": [
                   "pm.test('status code is 200', function () {",
                   "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "99 - Jira Sync",
+      "item": [
+        {
+          "name": "GET Jira Sync Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "health"
+              ]
+            },
+            "description": "Final sync request. It sends the overall run summary to Jira when you run the full collection manually."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const jiraBaseUrl = pm.environment.get('jiraBaseUrl') || pm.collectionVariables.get('jiraBaseUrl');",
+                  "const jiraEmail = pm.environment.get('jiraEmail') || pm.collectionVariables.get('jiraEmail');",
+                  "const jiraToken = pm.environment.get('jiraToken') || pm.collectionVariables.get('jiraToken');",
+                  "const jiraIssueKey = pm.environment.get('jiraIssueKey') || pm.collectionVariables.get('jiraIssueKey') || pm.collectionVariables.get('jiraKey');",
+                  "const passCount = parseInt(pm.collectionVariables.get('verificationPassCount') || '0', 10);",
+                  "const failCount = parseInt(pm.collectionVariables.get('verificationFailCount') || '0', 10);",
+                  "const runUrl = 'https://github.com/' + pm.info.requestName;",
+                  "",
+                  "pm.test('sync request returns 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "if (!jiraBaseUrl || !jiraEmail || !jiraToken || !jiraIssueKey) {",
+                  "  console.log('Skipping Jira sync because jiraBaseUrl/jiraEmail/jiraToken/jiraIssueKey is missing.');",
+                  "  return;",
+                  "}",
+                  "",
+                  "const auth = btoa(jiraEmail + ':' + jiraToken);",
+                  "const headers = {",
+                  "  Authorization: 'Basic ' + auth,",
+                  "  Accept: 'application/json',",
+                  "  'Content-Type': 'application/json'",
+                  "};",
+                  "",
+                  "const summary = 'Postman full collection run finished. Passed: ' + passCount + ', Failed: ' + failCount + ', Run: ' + pm.info.requestName;",
+                  "const commentUrl = jiraBaseUrl.replace(/\/$/, '') + '/rest/api/3/issue/' + jiraIssueKey + '/comment';",
+                  "const commentBody = {",
+                  "  body: {",
+                  "    type: 'doc',",
+                  "    version: 1,",
+                  "    content: [",
+                  "      {",
+                  "        type: 'paragraph',",
+                  "        content: [{ type: 'text', text: summary }]",
+                  "      }",
+                  "    ]",
+                  "  }",
+                  "};",
+                  "",
+                  "pm.sendRequest({",
+                  "  url: commentUrl,",
+                  "  method: 'POST',",
+                  "  header: headers,",
+                  "  body: { mode: 'raw', raw: JSON.stringify(commentBody) }",
+                  "}, function (err) {",
+                  "  if (err) {",
+                  "    console.log('Failed to post Jira comment:', err);",
+                  "    return;",
+                  "  }",
+                  "",
+                  "  if (failCount > 0) {",
+                  "    console.log('Run had failures. Keeping Jira issue open.');",
+                  "    return;",
+                  "  }",
+                  "",
+                  "  const transitionsUrl = jiraBaseUrl.replace(/\/$/, '') + '/rest/api/3/issue/' + jiraIssueKey + '/transitions';",
+                  "  pm.sendRequest({",
+                  "    url: transitionsUrl,",
+                  "    method: 'GET',",
+                  "    header: headers",
+                  "  }, function (transitionErr, transitionRes) {",
+                  "    if (transitionErr) {",
+                  "      console.log('Failed to read transitions:', transitionErr);",
+                  "      return;",
+                  "    }",
+                  "",
+                  "    const transitions = (transitionRes.json() && transitionRes.json().transitions) || [];",
+                  "    const target = transitions.find(function (t) {",
+                  "      return /^(Done|Resolved|Closed)$/i.test(t.to.name);",
+                  "    }) || transitions.find(function (t) {",
+                  "      return /(Done|Resolved|Closed)/i.test(t.to.name);",
+                  "    });",
+                  "",
+                  "    if (!target) {",
+                  "      console.log('No done-like transition found for Jira issue ' + jiraIssueKey);",
+                  "      return;",
+                  "    }",
+                  "",
+                  "    pm.sendRequest({",
+                  "      url: transitionsUrl,",
+                  "      method: 'POST',",
+                  "      header: headers,",
+                  "      body: { mode: 'raw', raw: JSON.stringify({ transition: { id: target.id } }) }",
+                  "    }, function (doneErr) {",
+                  "      if (doneErr) {",
+                  "        console.log('Failed to transition Jira issue:', doneErr);",
+                  "        return;",
+                  "      }",
+                  "      console.log('Transitioned Jira issue ' + jiraIssueKey + ' to ' + target.to.name);",
+                  "    });",
+                  "  });",
                   "});"
                 ]
               }
