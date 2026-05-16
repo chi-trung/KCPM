@@ -133,13 +133,14 @@ jobs:
             **\postman-junit.xml
 
       - name: Comment PASS result to Jira
-        if: always() && steps.run_postman.outcome == 'success' && steps.extract_jira.outputs.jira_key != '' && secrets.JIRA_BASE_URL != '' && secrets.JIRA_API_EMAIL != '' && secrets.JIRA_API_TOKEN != ''
+        if: always() && steps.run_postman.outcome == 'success' && steps.extract_jira.outputs.jira_key != ''
         env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
           JIRA_KEY: ${{ steps.extract_jira.outputs.jira_key }}
         run: |
+          if (-not $env:JIRA_BASE_URL -or -not $env:JIRA_API_EMAIL -or -not $env:JIRA_API_TOKEN) { Write-Host "Missing Jira credentials. Skipping."; exit 0 }
           $runUrl = "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           $commentText = "Postman Smoke Tests PASSED for commit ${{ github.sha }}. Run: $runUrl"
 
@@ -169,13 +170,14 @@ jobs:
           Write-Host "Posted PASS result to Jira issue $($env:JIRA_KEY)"
 
       - name: Transition Jira issue to Done-like status on PASS
-        if: always() && steps.run_postman.outcome == 'success' && steps.extract_jira.outputs.jira_key != '' && secrets.JIRA_BASE_URL != '' && secrets.JIRA_API_EMAIL != '' && secrets.JIRA_API_TOKEN != ''
+        if: always() && steps.run_postman.outcome == 'success' && steps.extract_jira.outputs.jira_key != ''
         env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
           JIRA_KEY: ${{ steps.extract_jira.outputs.jira_key }}
         run: |
+          if (-not $env:JIRA_BASE_URL -or -not $env:JIRA_API_EMAIL -or -not $env:JIRA_API_TOKEN) { Write-Host "Missing Jira credentials. Skipping."; exit 0 }
           $auth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("$($env:JIRA_API_EMAIL):$($env:JIRA_API_TOKEN)"))
           $headers = @{ Authorization = "Basic $auth"; Accept = "application/json"; "Content-Type" = "application/json" }
 
@@ -204,13 +206,14 @@ jobs:
           Write-Host "Transitioned Jira issue $($env:JIRA_KEY) to '$($target.to.name)'"
 
       - name: Comment FAIL result to Jira
-        if: always() && steps.run_postman.outcome == 'failure' && steps.extract_jira.outputs.jira_key != '' && secrets.JIRA_BASE_URL != '' && secrets.JIRA_API_EMAIL != '' && secrets.JIRA_API_TOKEN != ''
+        if: always() && steps.run_postman.outcome == 'failure' && steps.extract_jira.outputs.jira_key != ''
         env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
           JIRA_KEY: ${{ steps.extract_jira.outputs.jira_key }}
         run: |
+          if (-not $env:JIRA_BASE_URL -or -not $env:JIRA_API_EMAIL -or -not $env:JIRA_API_TOKEN) { Write-Host "Missing Jira credentials. Skipping."; exit 0 }
           $runUrl = "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           $commentText = "Postman Smoke Tests FAILED for commit ${{ github.sha }}. Fix required and re-run. Run: $runUrl"
 
