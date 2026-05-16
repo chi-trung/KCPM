@@ -2,6 +2,19 @@ name: Postman Smoke Tests
 
 on:
   workflow_dispatch:
+    inputs:
+      run_scope:
+        description: Select whether to run the smoke folder or the full collection
+        required: true
+        default: all
+        type: choice
+        options:
+          - smoke
+          - all
+      jira_key:
+        description: Optional Jira issue key to comment/transition when running manually
+        required: false
+        default: ""
   push:
     branches:
       - main
@@ -33,7 +46,8 @@ jobs:
             '${{ github.event.pull_request.title }}',
             '${{ github.head_ref }}',
             '${{ github.ref_name }}',
-            '${{ github.event.head_commit.message }}'
+            '${{ github.event.head_commit.message }}',
+            '${{ github.event.inputs.jira_key }}'
           )
           $source = ($parts -join ' ')
 
@@ -73,15 +87,41 @@ jobs:
       - name: Install Newman
         run: npm install -g newman newman-reporter-junitfull
 
+      - name: Decide Postman run scope
+        id: postman_scope
+        run: |
+          $scope = '${{ github.event.inputs.run_scope }}'
+
+          if ([string]::IsNullOrWhiteSpace($scope)) {
+            $scope = 'smoke'
+          }
+
+          if ('${{ github.event_name }}' -ne 'workflow_dispatch') {
+            $scope = 'smoke'
+          }
+
+          "scope=$scope" >> $env:GITHUB_OUTPUT
+          Write-Host "Postman run scope: $scope"
+
       - name: Run Postman collection
         id: run_postman
-        run: >
-          newman run ./Waste-Recycling-Platform/postman/WastePlatform.professional.postman_collection.json
-          -e ./Waste-Recycling-Platform/postman/WastePlatform.professional.postman_environment.json
-          --folder "00 - Smoke & Public"
-          --env-var baseUrl=http://localhost:8080
-          --reporters cli,junit
-          --reporter-junit-export ./TestResults/postman-junit.xml
+        run: |
+          $scope = '${{ steps.postman_scope.outputs.scope }}'
+          $args = @(
+            'run',
+            './Waste-Recycling-Platform/postman/WastePlatform.professional.postman_collection.json',
+            '-e', './Waste-Recycling-Platform/postman/WastePlatform.professional.postman_environment.json',
+            '--env-var', 'baseUrl=http://localhost:8080',
+            '--reporters', 'cli,junit',
+            '--reporter-junit-export', './TestResults/postman-junit.xml'
+          )
+
+          if ($scope -eq 'smoke') {
+            $args += @('--folder', '00 - Smoke & Public')
+          }
+
+          Write-Host "Running Newman scope: $scope"
+          & newman @args
 
       - name: Upload Postman results
         if: always()
