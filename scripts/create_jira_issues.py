@@ -105,15 +105,36 @@ def jira_request(base_url, email, token, method, path, payload=None):
 
 
 def create_issue(base_url, email, token, project_key, summary, description, issuetype="Task"):
+    # Convert description to Atlassian Document Format (ADF)
+    adf_description = {
+        "version": 1,
+        "type": "doc",
+        "content": [
+            {
+                "type": "paragraph",
+                "content": [
+                    {
+                        "type": "text",
+                        "text": description or "No description"
+                    }
+                ]
+            }
+        ]
+    } if description else None
+    
     payload = {
         "fields": {
             "project": {"key": project_key},
             "summary": summary,
-            "description": description or "",
             "issuetype": {"name": issuetype},
             "labels": ["auto-jira"]
         }
     }
+    
+    # Add description only if it exists (as ADF)
+    if adf_description:
+        payload["fields"]["description"] = adf_description
+    
     return jira_request(base_url, email, token, "POST", "/rest/api/3/issue", payload)
 
 
@@ -161,13 +182,30 @@ def main():
     else:
         # Try create an Epic issue. If it fails due to missing epic name field, fallback to Task labeled EPIC
         try:
+            # Atlassian Document Format for description
+            adf_description = {
+                "version": 1,
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Automated Epic created from jira.md"
+                            }
+                        ]
+                    }
+                ]
+            }
+            
             # many Jira instances require a customfield for Epic Name; try common id customfield_10011
             payload = {
                 "fields": {
                     "project": {"key": project_key},
                     "summary": epic_title,
                     "issuetype": {"name": "Epic"},
-                    "description": "Automated Epic created from jira.md",
+                    "description": adf_description,
                     "labels": ["auto-jira"],
                     "customfield_10011": epic_title
                 }
