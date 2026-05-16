@@ -132,13 +132,44 @@ jobs:
             TestResults
             **\postman-junit.xml
 
-      - name: Comment PASS result to Jira
-        if: always() && steps.run_postman.outcome == 'success' && steps.extract_jira.outputs.jira_key != ''
+      - name: Resolve Jira Issue Key
+        id: resolve_jira
+        if: always() && steps.extract_jira.outputs.jira_key != ''
         env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-          JIRA_KEY: ${{ steps.extract_jira.outputs.jira_key }}
+          EXTRACTED_KEY: ${{ steps.extract_jira.outputs.jira_key }}
+        run: |
+          if (-not $env:JIRA_BASE_URL -or -not $env:JIRA_API_EMAIL -or -not $env:JIRA_API_TOKEN) { Write-Host "Missing Jira credentials. Skipping."; exit 0 }
+          $auth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("$($env:JIRA_API_EMAIL):$($env:JIRA_API_TOKEN)"))
+          $headers = @{ Authorization = "Basic $auth"; Accept = "application/json"; "Content-Type" = "application/json" }
+          $base = $env:JIRA_BASE_URL.TrimEnd('/')
+          $realKey = $env:EXTRACTED_KEY
+          
+          try {
+            $resp = Invoke-RestMethod -Method GET -Uri "$base/rest/api/3/issue/$realKey?fields=key" -Headers $headers -ErrorAction Stop
+          } catch {
+            Write-Host "$realKey is not a direct Issue ID. Searching by summary..."
+            $jql = [uri]::EscapeDataString("summary ~ `"$realKey`"")
+            $searchResp = Invoke-RestMethod -Method GET -Uri "$base/rest/api/3/search?jql=$jql&fields=key" -Headers $headers
+            if ($searchResp.issues.Count -gt 0) {
+               $realKey = $searchResp.issues[0].key
+               Write-Host "Resolved $env:EXTRACTED_KEY to real issue key $realKey via JQL search"
+            } else {
+               Write-Host "Could not find any Jira issue matching $env:EXTRACTED_KEY"
+               exit 0
+            }
+          }
+          "real_jira_key=$realKey" >> $env:GITHUB_OUTPUT
+
+      - name: Comment PASS result to Jira
+        if: always() && steps.run_postman.outcome == 'success' && steps.resolve_jira.outputs.real_jira_key != ''
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_KEY: ${{ steps.resolve_jira.outputs.real_jira_key }}
         run: |
           if (-not $env:JIRA_BASE_URL -or -not $env:JIRA_API_EMAIL -or -not $env:JIRA_API_TOKEN) { Write-Host "Missing Jira credentials. Skipping."; exit 0 }
           $runUrl = "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
@@ -170,12 +201,12 @@ jobs:
           Write-Host "Posted PASS result to Jira issue $($env:JIRA_KEY)"
 
       - name: Transition Jira issue to Done-like status on PASS
-        if: always() && steps.run_postman.outcome == 'success' && steps.extract_jira.outputs.jira_key != ''
+        if: always() && steps.run_postman.outcome == 'success' && steps.resolve_jira.outputs.real_jira_key != ''
         env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-          JIRA_KEY: ${{ steps.extract_jira.outputs.jira_key }}
+          JIRA_KEY: ${{ steps.resolve_jira.outputs.real_jira_key }}
         run: |
           if (-not $env:JIRA_BASE_URL -or -not $env:JIRA_API_EMAIL -or -not $env:JIRA_API_TOKEN) { Write-Host "Missing Jira credentials. Skipping."; exit 0 }
           $auth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("$($env:JIRA_API_EMAIL):$($env:JIRA_API_TOKEN)"))
@@ -206,12 +237,12 @@ jobs:
           Write-Host "Transitioned Jira issue $($env:JIRA_KEY) to '$($target.to.name)'"
 
       - name: Comment FAIL result to Jira
-        if: always() && steps.run_postman.outcome == 'failure' && steps.extract_jira.outputs.jira_key != ''
+        if: always() && steps.run_postman.outcome == 'failure' && steps.resolve_jira.outputs.real_jira_key != ''
         env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-          JIRA_KEY: ${{ steps.extract_jira.outputs.jira_key }}
+          JIRA_KEY: ${{ steps.resolve_jira.outputs.real_jira_key }}
         run: |
           if (-not $env:JIRA_BASE_URL -or -not $env:JIRA_API_EMAIL -or -not $env:JIRA_API_TOKEN) { Write-Host "Missing Jira credentials. Skipping."; exit 0 }
           $runUrl = "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
