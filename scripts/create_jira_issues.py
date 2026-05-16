@@ -91,6 +91,14 @@ def jira_request(base_url, email, token, method, path, payload=None):
         print(f"[ERROR] {error_msg}")
         print(f"[DEBUG] URL: {method} {url}")
         print(f"[DEBUG] Response: {data}")
+        
+        # Special handling for project validation errors
+        if r.status_code == 400 and "project" in str(data):
+            print("\n[HINT] 'valid project is required' error means:")
+            print(f"  1. Check JIRA_PROJECT_KEY secret value (currently: '{project_key if 'project_key' in dir() else 'UNKNOWN'}')")
+            print("  2. Verify project exists and key is correct (e.g., 'KIEM', 'WRP')")
+            print("  3. Verify the Jira API user has access to the project")
+        
         raise SystemExit(error_msg)
     
     return data
@@ -129,10 +137,16 @@ def main():
         print("Missing required env vars. Please set JIRA_BASE_URL, JIRA_API_EMAIL, JIRA_API_TOKEN, JIRA_PROJECT_KEY")
         sys.exit(1)
 
-    print(f"[DEBUG] Jira Base URL: {base_url}")
-    print(f"[DEBUG] Project Key: {project_key}")
+    print(f"[DEBUG] Jira Base URL: {base_url.split('//')[1].split('.')[0] if base_url else 'NOT SET'}")  # show domain only, mask URL
+    print(f"[DEBUG] Project Key: '{project_key}'")  # show actual key
+    print(f"[DEBUG] API Email: {email[:email.find('@')] if email else 'NOT SET'}***{email[email.find('@'):] if email else ''}")  # mask email
     print(f"[DEBUG] Current directory: {os.getcwd()}")
-    print(f"[DEBUG] jira.md path: {os.path.abspath('jira.md')}")
+    print(f"[DEBUG] jira.md exists: {os.path.exists('jira.md')}")
+    
+    if not project_key or len(project_key.strip()) == 0:
+        print("\n[FATAL] JIRA_PROJECT_KEY is empty or whitespace!")
+        print("ERROR: Set JIRA_PROJECT_KEY in GitHub Secrets to your Jira project key (e.g., 'KIEM', 'WRP')")
+        sys.exit(1)
 
     if not os.path.exists("jira.md"):
         print("ERROR: jira.md not found in current directory")
