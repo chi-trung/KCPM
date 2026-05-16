@@ -10,7 +10,7 @@ on:
 
 jobs:
   smoke:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: pwsh
@@ -21,6 +21,9 @@ jobs:
 
       - name: Start backend stack
         run: docker compose -f .\Waste-Recycling-Platform\docker-compose.yml up -d --build db backend
+
+      - name: Show container status
+        run: docker compose -f .\Waste-Recycling-Platform\docker-compose.yml ps
 
       - name: Wait for API health
         run: |
@@ -59,3 +62,11 @@ jobs:
           path: |
             TestResults
             **\postman-junit.xml
+
+      - name: Dump backend logs on failure
+        if: failure()
+        run: docker compose -f .\Waste-Recycling-Platform\docker-compose.yml logs backend
+
+      - name: Stop backend stack
+        if: always()
+        run: docker compose -f .\Waste-Recycling-Platform\docker-compose.yml down -v
