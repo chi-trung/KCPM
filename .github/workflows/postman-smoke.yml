@@ -128,6 +128,41 @@ jobs:
           Invoke-RestMethod -Method POST -Uri $url -Headers $headers -Body $body | Out-Null
           Write-Host "Posted PASS result to Jira issue $($env:JIRA_KEY)"
 
+      - name: Transition Jira issue to Done-like status on PASS
+        if: always() && steps.run_postman.outcome == 'success' && steps.extract_jira.outputs.jira_key != '' && secrets.JIRA_BASE_URL != '' && secrets.JIRA_API_EMAIL != '' && secrets.JIRA_API_TOKEN != ''
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_KEY: ${{ steps.extract_jira.outputs.jira_key }}
+        run: |
+          $auth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("$($env:JIRA_API_EMAIL):$($env:JIRA_API_TOKEN)"))
+          $headers = @{ Authorization = "Basic $auth"; Accept = "application/json"; "Content-Type" = "application/json" }
+
+          $base = $env:JIRA_BASE_URL.TrimEnd('/')
+          $transitionsUrl = "$base/rest/api/3/issue/$($env:JIRA_KEY)/transitions"
+
+          $transitionsResp = Invoke-RestMethod -Method GET -Uri $transitionsUrl -Headers $headers
+          $target = $transitionsResp.transitions |
+            Where-Object { $_.to.name -match '^(Done|Resolved|Closed)$' } |
+            Select-Object -First 1
+
+          if (-not $target) {
+            $target = $transitionsResp.transitions |
+              Where-Object { $_.to.name -match '(Done|Resolved|Closed)' } |
+              Select-Object -First 1
+          }
+
+          if (-not $target) {
+            Write-Host "No Done-like transition available for $($env:JIRA_KEY). Skipping status transition."
+            exit 0
+          }
+
+          $transitionBody = @{ transition = @{ id = $target.id } } | ConvertTo-Json -Depth 5
+          Invoke-RestMethod -Method POST -Uri $transitionsUrl -Headers $headers -Body $transitionBody | Out-Null
+
+          Write-Host "Transitioned Jira issue $($env:JIRA_KEY) to '$($target.to.name)'"
+
       - name: Comment FAIL result to Jira
         if: always() && steps.run_postman.outcome == 'failure' && steps.extract_jira.outputs.jira_key != '' && secrets.JIRA_BASE_URL != '' && secrets.JIRA_API_EMAIL != '' && secrets.JIRA_API_TOKEN != ''
         env:
