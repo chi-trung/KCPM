@@ -48,8 +48,9 @@ jobs:
 
       - name: Run Postman collection
         run: >
-          newman run .\Waste-Recycling-Platform\postman\WastePlatform.postman_collection.json
-          -e .\Waste-Recycling-Platform\postman\WastePlatform.local.postman_environment.json
+          newman run .\Waste-Recycling-Platform\postman\WastePlatform.professional.postman_collection.json
+          -e .\Waste-Recycling-Platform\postman\WastePlatform.professional.postman_environment.json
+          --folder "00 - Smoke & Public"
           --env-var baseUrl=http://localhost:8080
           --reporters cli,junit
           --reporter-junit-export .\TestResults\postman-junit.xml
