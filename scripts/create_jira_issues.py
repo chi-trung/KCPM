@@ -72,16 +72,27 @@ def jira_request(base_url, email, token, method, path, payload=None):
     url = base_url.rstrip("/") + path
     auth = (email, token)
     headers = {"Accept": "application/json", "Content-Type": "application/json"}
-    if payload is not None:
-        r = requests.request(method, url, auth=auth, headers=headers, data=json.dumps(payload))
-    else:
-        r = requests.request(method, url, auth=auth, headers=headers)
+    try:
+        if payload is not None:
+            r = requests.request(method, url, auth=auth, headers=headers, data=json.dumps(payload), timeout=10)
+        else:
+            r = requests.request(method, url, auth=auth, headers=headers, timeout=10)
+    except requests.exceptions.RequestException as e:
+        print(f"[ERROR] Network error: {e}")
+        raise SystemExit(f"Network error connecting to {url}: {e}")
+    
     try:
         data = r.json()
     except Exception:
         data = r.text
+    
     if not (200 <= r.status_code < 300):
-        raise SystemExit(f"Jira API error {r.status_code} {r.text}")
+        error_msg = f"Jira API error {r.status_code}: {data}"
+        print(f"[ERROR] {error_msg}")
+        print(f"[DEBUG] URL: {method} {url}")
+        print(f"[DEBUG] Response: {data}")
+        raise SystemExit(error_msg)
+    
     return data
 
 
@@ -118,6 +129,15 @@ def main():
         print("Missing required env vars. Please set JIRA_BASE_URL, JIRA_API_EMAIL, JIRA_API_TOKEN, JIRA_PROJECT_KEY")
         sys.exit(1)
 
+    print(f"[DEBUG] Jira Base URL: {base_url}")
+    print(f"[DEBUG] Project Key: {project_key}")
+    print(f"[DEBUG] Current directory: {os.getcwd()}")
+    print(f"[DEBUG] jira.md path: {os.path.abspath('jira.md')}")
+
+    if not os.path.exists("jira.md"):
+        print("ERROR: jira.md not found in current directory")
+        sys.exit(1)
+
     text = read_jira_md()
     epic_title = parse_epic_title(text) or f"{project_key} - Automated Epic"
     print(f"Epic title parsed: {epic_title}")
@@ -142,10 +162,14 @@ def main():
             epic_issue_key = data.get("key")
             print(f"Created Epic: {epic_issue_key}")
         except SystemExit as e:
-            print(f"Epic creation with Epic type failed, falling back to Task: {e}")
+            print(f"[WARNING] Epic creation with Epic type failed, falling back to Task")
+            print(f"[DEBUG] Error was: {e}")
             data = create_issue(base_url, email, token, project_key, f"EPIC: {epic_title}", "Fallback Epic (Task)", issuetype="Task")
             epic_issue_key = data.get("key")
             print(f"Created fallback Epic-task: {epic_issue_key}")
+        except Exception as e:
+            print(f"[ERROR] Unexpected error during Epic creation: {e}")
+            sys.exit(1)
 
     tasks = parse_tasks(text)
     print(f"Found {len(tasks)} tasks to create")
@@ -154,19 +178,27 @@ def main():
         summary = f"{t['code']} - {t['title']}"
         desc = t.get("description") or "Imported from jira.md"
         print(f"Creating issue: {summary}")
-        data = create_issue(base_url, email, token, project_key, summary, desc, issuetype="Task")
-        key = data.get("key")
-        created.append((t['code'], key))
-        print(f"Created {key}")
         try:
-            create_issue_link(base_url, email, token, epic_issue_key, key)
-            print(f"Linked {key} to epic {epic_issue_key}")
-        except SystemExit as e:
-            print(f"Failed to link {key} to epic: {e}")
+            data = create_issue(base_url, email, token, project_key, summary, desc, issuetype="Task")
+            key = data.get("key")
+            if not key:
+                print(f"[WARNING] No key returned from create_issue: {data}")
+                continue
+            created.append((t['code'], key))
+            print(f"Created {key}")
+            try:
+                create_issue_link(base_url, email, token, epic_issue_key, key)
+                print(f"Linked {key} to epic {epic_issue_key}")
+            except SystemExit as e:
+                print(f"[WARNING] Failed to link {key} to epic")
+        except Exception as e:
+            print(f"[ERROR] Failed to create task {t['code']}: {e}")
+            continue
 
     print("Done. Created issues:")
     for code, key in created:
         print(f"  {code} -> {key}")
+    print(f"Total created: {len(created)}")
 
 
 if __name__ == "__main__":
