@@ -1,0 +1,124 @@
+name: CI CD Deploy Server
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      deploy_ref:
+        description: Git ref to deploy
+        required: false
+        default: main
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore backend tests
+        run: dotnet restore ./Waste-Recycling-Platform/backend/tests/WastePlatform.Tests/WastePlatform.Tests.csproj
+
+      - name: Run backend tests
+        run: >
+          dotnet test ./Waste-Recycling-Platform/backend/tests/WastePlatform.Tests/WastePlatform.Tests.csproj
+          --configuration Release
+          --logger "trx;LogFileName=backend-tests.trx"
+          --results-directory ./TestResults
+
+      - name: Upload quality-gate test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-quality-gate-results
+          path: |
+            TestResults
+            **/*.trx
+
+  deploy:
+    name: Deploy To Server
+    needs: quality-gate
+    runs-on: ubuntu-latest
+    if: ${{ secrets.DEPLOY_HOST != '' && secrets.DEPLOY_USER != '' && secrets.DEPLOY_SSH_KEY != '' }}
+    env:
+      DEPLOY_REF: ${{ github.event.inputs.deploy_ref || 'main' }}
+      DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH || '/opt/kcpm' }}
+      DEPLOY_REPO_TOKEN: ${{ secrets.DEPLOY_REPO_TOKEN }}
+      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+      MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+      MYSQL_USER: ${{ secrets.MYSQL_USER }}
+      MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
+      JWT_AUDIENCE: ${{ secrets.JWT_AUDIENCE }}
+      ASPNETCORE_ENVIRONMENT: ${{ secrets.ASPNETCORE_ENVIRONMENT }}
+      NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ env.DEPLOY_PORT }}
+          script_stop: true
+          envs: DEPLOY_REF,DEPLOY_PATH,DEPLOY_REPO_TOKEN,MYSQL_ROOT_PASSWORD,MYSQL_DATABASE,MYSQL_USER,MYSQL_PASSWORD,JWT_SECRET,JWT_ISSUER,JWT_AUDIENCE,ASPNETCORE_ENVIRONMENT,NEXT_PUBLIC_API_URL
+          script: |
+            set -e
+            mkdir -p "$DEPLOY_PATH"
+            cd "$DEPLOY_PATH"
+
+            if [ ! -d .git ]; then
+              git clone "https://x-access-token:${DEPLOY_REPO_TOKEN}@github.com/${{ github.repository }}.git" .
+            fi
+
+            git fetch origin
+            git checkout "$DEPLOY_REF"
+            git reset --hard "origin/$DEPLOY_REF"
+
+            cd Waste-Recycling-Platform
+
+            cat > .env <<EOF
+            MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE=${MYSQL_DATABASE}
+            MYSQL_USER=${MYSQL_USER}
+            MYSQL_PASSWORD=${MYSQL_PASSWORD}
+            JWT_SECRET=${JWT_SECRET}
+            JWT_ISSUER=${JWT_ISSUER}
+            JWT_AUDIENCE=${JWT_AUDIENCE}
+            ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+            NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+            EOF
+
+            docker compose -f docker-compose.yml up -d --build db backend frontend
+            docker compose -f docker-compose.yml ps
+
+      - name: Deployment summary
+        run: |
+          echo "Deployment completed for ref: $DEPLOY_REF"
+          echo "Server path: $DEPLOY_PATH"
+
+  deploy-skipped:
+    name: Deploy Skipped (Missing Secrets)
+    needs: quality-gate
+    runs-on: ubuntu-latest
+    if: ${{ !(secrets.DEPLOY_HOST != '' && secrets.DEPLOY_USER != '' && secrets.DEPLOY_SSH_KEY != '') }}
+    steps:
+      - name: Explain skip reason
+        run: |
+          echo "Deployment was skipped because one or more required secrets are missing:"
+          echo "DEPLOY_HOST, DEPLOY_USER, DEPLOY_SSH_KEY"
+          echo "Set these in GitHub Repository Settings > Secrets and variables > Actions"

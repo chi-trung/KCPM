@@ -15,6 +15,51 @@
 
 ---
 
+## 🔁 CI/CD Deploy Server (For Verification Evidence)
+
+This repository now supports an automated deploy workflow using GitHub Actions:
+
+- Workflow file: `.github/workflows/deploy-server.yml`
+- Trigger:
+    - Push to `main` (automatic)
+    - Manual run via `workflow_dispatch`
+- Flow:
+    - Run backend test quality gate first
+    - If tests pass, deploy to server via SSH and Docker Compose
+
+### Required GitHub Secrets
+
+Set these in **Settings → Secrets and variables → Actions**:
+
+| Secret | Purpose |
+|---|---|
+| `DEPLOY_HOST` | Server IP or domain |
+| `DEPLOY_USER` | SSH user on server |
+| `DEPLOY_SSH_KEY` | Private SSH key used by GitHub Actions |
+| `DEPLOY_PORT` | SSH port (optional, default `22`) |
+| `DEPLOY_PATH` | Path on server to deploy repo (optional, default `/opt/kcpm`) |
+| `DEPLOY_REPO_TOKEN` | GitHub token with repo read access for server-side git pull |
+| `MYSQL_ROOT_PASSWORD` | MySQL root password |
+| `MYSQL_DATABASE` | MySQL database name |
+| `MYSQL_USER` | MySQL app user |
+| `MYSQL_PASSWORD` | MySQL app password |
+| `JWT_SECRET` | JWT secret key |
+| `JWT_ISSUER` | JWT issuer |
+| `JWT_AUDIENCE` | JWT audience |
+| `ASPNETCORE_ENVIRONMENT` | Backend runtime environment (e.g., `Production`) |
+| `NEXT_PUBLIC_API_URL` | Frontend API base URL |
+
+### Why this matters for Software Verification class
+
+This setup creates auditable evidence per Jira task/member contribution:
+
+- Jira issue key in branch/commit/PR
+- CI quality gate result (test artifacts)
+- Deploy execution logs and timestamps
+- End-to-end trace from task to production deployment
+
+---
+
 ## 🛠️ Tech Stack
 
 | Layer | Technology |
