@@ -175,8 +175,8 @@ Content-Type: multipart/form-data
 ## 🧪 Postman Test Script
 
 ```javascript
-pm.test("Status code is 200 or 201", () => {
-    pm.expect([200, 201]).to.include(pm.response.code);
+pm.test("Status code is 201", () => {
+    pm.expect(pm.response.code).to.eql(201);
 });
 
 pm.test("Response has success message", () => {
