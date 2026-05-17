@@ -147,7 +147,7 @@ jobs:
           }
           $email = $env:JIRA_API_EMAIL.Trim()
           $token = $env:JIRA_API_TOKEN.Trim()
-          $auth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("$email:$token"))
+          $auth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("$($email):$($token)"))
           $headers = @{ Authorization = "Basic $auth"; Accept = "application/json"; "Content-Type" = "application/json" }
           $base = $env:JIRA_BASE_URL.Trim().TrimEnd('/')
           $realKey = $env:EXTRACTED_KEY.Trim()
