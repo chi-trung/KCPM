@@ -111,7 +111,7 @@ Content-Type: multipart/form-data
 - Status = "Pending"
 - Image record in `report_images` table
 - `created_at` timestamp populated
-- `created_by` = citizen user ID
+- `citizen_id` = citizen user ID
 
 ### Postman Variables Updated
 - `reportId` = newly created report ID
