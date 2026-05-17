@@ -150,6 +150,13 @@ jobs:
           $base = $env:JIRA_BASE_URL.TrimEnd('/')
           $realKey = $env:EXTRACTED_KEY
           
+          Write-Host "::group::Debug Info"
+          Write-Host "Using Jira Base URL: $base"
+          $emailParts = $env:JIRA_API_EMAIL -split "@"
+          Write-Host "Using Email: $($emailParts[0].Substring(0, [math]::Min(3, $emailParts[0].Length)))***@$($emailParts[1])"
+          Write-Host "Looking for Key: '$realKey'"
+          Write-Host "::endgroup::"
+          
           try {
             $resp = Invoke-RestMethod -Method GET -Uri "$base/rest/api/3/issue/$realKey?fields=key" -Headers $headers -ErrorAction Stop
           } catch {
