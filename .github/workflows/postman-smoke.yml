@@ -277,6 +277,16 @@ jobs:
         if: failure()
         run: docker compose -f ./Waste-Recycling-Platform/docker-compose.yml logs backend
 
+      - name: Debug Workflow State
+        if: always()
+        run: |
+          Write-Host "extracted_jira_key: '${{ steps.extract_jira.outputs.jira_key }}'"
+          Write-Host "resolved_real_jira_key: '${{ steps.resolve_jira.outputs.real_jira_key }}'"
+          Write-Host "run_postman outcome: '${{ steps.run_postman.outcome }}'"
+          Write-Host "JIRA_BASE_URL is set: '${{ secrets.JIRA_BASE_URL != '' }}'"
+          Write-Host "JIRA_API_EMAIL is set: '${{ secrets.JIRA_API_EMAIL != '' }}'"
+          Write-Host "JIRA_API_TOKEN is set: '${{ secrets.JIRA_API_TOKEN != '' }}'"
+
       - name: Stop backend stack
         if: always()
         run: docker compose -f ./Waste-Recycling-Platform/docker-compose.yml down -v
