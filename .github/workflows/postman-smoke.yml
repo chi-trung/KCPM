@@ -145,21 +145,26 @@ jobs:
             Write-Host "::error::Missing Jira credentials in GitHub Secrets. Cannot comment or transition Jira issue!"
             exit 1 
           }
-          $auth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("$($env:JIRA_API_EMAIL):$($env:JIRA_API_TOKEN)"))
+          $email = $env:JIRA_API_EMAIL.Trim()
+          $token = $env:JIRA_API_TOKEN.Trim()
+          $auth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("$email:$token"))
           $headers = @{ Authorization = "Basic $auth"; Accept = "application/json"; "Content-Type" = "application/json" }
-          $base = $env:JIRA_BASE_URL.TrimEnd('/')
-          $realKey = $env:EXTRACTED_KEY
+          $base = $env:JIRA_BASE_URL.Trim().TrimEnd('/')
+          $realKey = $env:EXTRACTED_KEY.Trim()
           
           Write-Host "::notice::Using Jira Base URL: $base"
-          $emailParts = $env:JIRA_API_EMAIL -split "@"
+          $emailParts = $email -split "@"
           Write-Host "::notice::Using Email: $($emailParts[0].Substring(0, [math]::Min(3, $emailParts[0].Length)))***@$($emailParts[1])"
           Write-Host "::notice::Looking for Key: '$realKey'"
           
           try {
             $resp = Invoke-RestMethod -Method GET -Uri "$base/rest/api/3/issue/$realKey?fields=key" -Headers $headers -ErrorAction Stop
           } catch {
+            Write-Host "::warning::First API call failed: $($_.Exception.Message)"
             Write-Host "$realKey is not a direct Issue ID or cannot be accessed. Searching by summary..."
-            $jql = [uri]::EscapeDataString("summary ~ `"$realKey`"")
+            
+            # The search query should search by key if we are looking for a key! But wait, JQL for key is 'key = KIEM-19' or 'text ~ KIEM-19'
+            $jql = [uri]::EscapeDataString("key = `"$realKey`" OR summary ~ `"$realKey`"")
             try {
               $searchResp = Invoke-RestMethod -Method GET -Uri "$base/rest/api/3/search/jql?jql=$jql&fields=key" -Headers $headers -ErrorAction Stop
               if ($searchResp.issues.Count -gt 0) {
