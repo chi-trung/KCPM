@@ -143,7 +143,7 @@ jobs:
         run: |
           if (-not $env:JIRA_BASE_URL -or -not $env:JIRA_API_EMAIL -or -not $env:JIRA_API_TOKEN) { 
             Write-Host "::error::Missing Jira credentials in GitHub Secrets. Cannot comment or transition Jira issue!"
-            exit 0 
+            exit 1 
           }
           $auth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("$($env:JIRA_API_EMAIL):$($env:JIRA_API_TOKEN)"))
           $headers = @{ Authorization = "Basic $auth"; Accept = "application/json"; "Content-Type" = "application/json" }
@@ -161,12 +161,13 @@ jobs:
                  $realKey = $searchResp.issues[0].key
                  Write-Host "Resolved $env:EXTRACTED_KEY to real issue key $realKey via JQL search"
               } else {
-                 Write-Host "::warning::Could not find any Jira issue matching $env:EXTRACTED_KEY"
-                 exit 0
+                 Write-Host "::error::Could not find any Jira issue matching $env:EXTRACTED_KEY"
+                 exit 1
               }
             } catch {
-              Write-Host "::warning::Jira API search failed. The token may be invalid or the issue doesn't exist."
-              exit 0
+              Write-Host "::error::Jira API search failed. The token may be invalid or the issue doesn't exist."
+              Write-Host $_.Exception.Message
+              exit 1
             }
           }
           Write-Host "Successfully resolved Jira Key: $realKey"
