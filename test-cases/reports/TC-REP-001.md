@@ -11,7 +11,7 @@
 | **Test Type** | Positive |
 | **API Endpoint** | `POST /api/reports/create` |
 | **Created Date** | 2025-05-17 |
-| **Created By** | [Your Name] |
+| **Created By** | <replace with the exact tester name already recorded later in this document> |
 
 ## 🎯 Objective
 
