@@ -166,7 +166,7 @@ Content-Type: multipart/form-data
 
 ## 📝 Notes
 
-- Image formats supported: JPG, PNG, WEBP
+- Image formats supported: JPG, JPEG, PNG, GIF
 - Max file size: Check API documentation (usually 5-10MB)
 - Multiple images: Test with 1-3 images if supported
 - GPS coordinates: Vietnam range (lat: 8-23, lng: 102-110)
