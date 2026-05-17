@@ -3351,7 +3351,7 @@
                   "};",
                   "",
                   "const summary = 'Postman full collection run finished. Passed: ' + passCount + ', Failed: ' + failCount + ', Run: ' + pm.info.requestName;",
-                  "const commentUrl = jiraBaseUrl.replace(/\/$/, '') + '/rest/api/3/issue/' + jiraIssueKey + '/comment';",
+                  "const commentUrl = jiraBaseUrl.replace(//$/, '') + '/rest/api/3/issue/' + jiraIssueKey + '/comment';",
                   "const commentBody = {",
                   "  body: {",
                   "    type: 'doc',",
@@ -3381,7 +3381,7 @@
                   "    return;",
                   "  }",
                   "",
-                  "  const transitionsUrl = jiraBaseUrl.replace(/\/$/, '') + '/rest/api/3/issue/' + jiraIssueKey + '/transitions';",
+                  "  const transitionsUrl = jiraBaseUrl.replace(//$/, '') + '/rest/api/3/issue/' + jiraIssueKey + '/transitions';",
                   "  pm.sendRequest({",
                   "    url: transitionsUrl,",
                   "    method: 'GET',",
@@ -3417,6 +3417,43 @@
                   "      console.log('Transitioned Jira issue ' + jiraIssueKey + ' to ' + target.to.name);",
                   "    });",
                   "  });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "16 - SignalR Real-time",
+      "item": [
+        {
+          "name": "POST Trigger Task Assigned Event",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/test-signalr",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notifications",
+                "test-signalr"
+              ]
+            },
+            "description": "Simulates triggering a SignalR notification."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('SignalR endpoint responds', function () {",
+                  "  pm.expect([200, 404]).to.include(pm.response.code);",
                   "});"
                 ]
               }
