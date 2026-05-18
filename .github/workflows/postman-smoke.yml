@@ -68,18 +68,23 @@ jobs:
 
       - name: Wait for API health
         run: |
-          $maxAttempts = 30
-          for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
+          $maxAttempts = 60
+          $attempt = 0
+          while ($attempt -lt $maxAttempts) {
+            $attempt++
             try {
+              Write-Host "Health check attempt $attempt/$maxAttempts..."
               $response = Invoke-WebRequest -Uri 'http://localhost:5000/api/health' -UseBasicParsing -TimeoutSec 5
               if ($response.StatusCode -eq 200) {
-                Write-Host 'API is healthy.'
-                break
+                Write-Host 'API is healthy ✓'
+                exit 0
               }
             } catch {
               if ($attempt -eq $maxAttempts) {
+                Write-Host "Health check failed after $maxAttempts attempts"
                 throw
               }
+              Write-Host "Waiting... (next attempt in 5s)"
               Start-Sleep -Seconds 5
             }
           }
