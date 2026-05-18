@@ -1,12 +1,12 @@
-name: Backend Tests - KIEM Testing
+﻿name: Backend Tests - KIEM Testing
 
 on:
   push:
     branches:
       - main
       - develop
-      - 'KIEM-*'
       - 'feature/**'
+      - 'KIEM-*'
   pull_request:
     branches:
       - main
@@ -22,20 +22,20 @@ jobs:
         shell: pwsh
 
     steps:
-      - name: ✅ Checkout repository
+      - name: Γ£à Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: ✅ Setup .NET 9.0
+      - name: Γ£à Setup .NET 9.0
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
 
-      - name: ✅ Restore dependencies
+      - name: Γ£à Restore dependencies
         run: dotnet restore ".\Waste-Recycling-Platform\backend\tests\WastePlatform.Tests\WastePlatform.Tests.csproj"
 
-      - name: 🧪 Run unit tests with coverage
+      - name: ≡ƒº¬ Run unit tests with coverage
         run: >
           dotnet test ".\Waste-Recycling-Platform\backend\tests\WastePlatform.Tests\WastePlatform.Tests.csproj"
           --configuration Release
@@ -45,17 +45,17 @@ jobs:
           --results-directory ".\TestResults"
           --no-restore
 
-      - name: 📊 Generate coverage report
+      - name: ≡ƒôè Generate coverage report
         run: |
           $coverageFiles = Get-ChildItem -Path ".\TestResults" -Filter "coverage.cobertura.xml" -Recurse
           if ($coverageFiles) {
-            Write-Host "✅ Coverage files found: $($coverageFiles.Count)"
-            $coverageFiles | ForEach-Object { Write-Host "📈 File: $($_.FullName)" }
+            Write-Host "Γ£à Coverage files found: $($coverageFiles.Count)"
+            $coverageFiles | ForEach-Object { Write-Host "≡ƒôê File: $($_.FullName)" }
           } else {
-            Write-Host "⚠️ No coverage files generated"
+            Write-Host "ΓÜá∩╕Å No coverage files generated"
           }
 
-      - name: 💾 Upload test artifacts
+      - name: ≡ƒÆ╛ Upload test artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -65,20 +65,71 @@ jobs:
             **/*.trx
           retention-days: 30
 
-      - name: 📋 Test Summary
+      - name: ≡ƒôï Test Summary
         if: always()
         run: |
           $trxFile = Get-ChildItem -Path ".\TestResults" -Filter "*.trx" -Recurse | Select-Object -First 1
           if ($trxFile) {
-            Write-Host "✅ Test results file found: $($trxFile.Name)"
+            Write-Host "Γ£à Test results file found: $($trxFile.Name)"
             [xml]$trx = Get-Content $trxFile.FullName
             $testCount = ($trx.TestRun.Results.UnitTestResult).Count
             $passedCount = ($trx.TestRun.Results.UnitTestResult | Where-Object { $_.outcome -eq "Passed" }).Count
-            Write-Host "📊 Tests: $testCount | Passed: $passedCount | Failed: $($testCount - $passedCount)"
+            Write-Host "≡ƒôè Tests: $testCount | Passed: $passedCount | Failed: $($testCount - $passedCount)"
           }
 
-      - name: ❌ Fail on test failure
+      - name: Γ¥î Fail on test failure
         if: failure()
         run: |
-          Write-Host "❌ Backend tests failed!"
+          Write-Host "Γ¥î Backend tests failed!"
           exit 1
+
+  postman-smoke-tests:
+    name: Postman Smoke Tests
+    runs-on: ubuntu-latest
+    needs: backend-unit-tests
+    if: success()
+    
+    steps:
+      - name: Γ£à Checkout repository
+        uses: actions/checkout@v4
+
+      - name: ≡ƒöº Setup Node.js for Newman
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: ≡ƒôª Install Newman
+        run: npm install -g newman newman-reporter-html newman-reporter-json
+
+      - name: ≡ƒº¬ Run Postman smoke tests
+        run: |
+          mkdir -p ./postman-results
+          newman run ./postman/WastePlatform.professional.postman_collection.json \
+            -e ./postman/WastePlatform.professional.postman_environment.json \
+            --reporters cli,json,html \
+            --reporter-json-export ./postman-results/results.json \
+            --reporter-html-export ./postman-results/results.html \
+            --timeout 10000 \
+            --bail || true
+        continue-on-error: true
+
+      - name: ≡ƒÆ╛ Upload Postman results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: postman-test-results-${{ github.run_number }}
+          path: ./postman-results/
+          retention-days: 30
+
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [backend-unit-tests, postman-smoke-tests]
+    if: always()
+    
+    steps:
+      - name: ≡ƒôè Summary
+        run: |
+          echo "## Γ£à Test Pipeline Summary"
+          echo "- Backend Unit Tests: ${{ needs.backend-unit-tests.result }}"
+          echo "- Postman Smoke Tests: ${{ needs.postman-smoke-tests.result }}"
