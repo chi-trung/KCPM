@@ -50,17 +50,10 @@ jobs:
           $coverageFiles = Get-ChildItem -Path ".\TestResults" -Filter "coverage.cobertura.xml" -Recurse
           if ($coverageFiles) {
             Write-Host "✅ Coverage files found: $($coverageFiles.Count)"
+            $coverageFiles | ForEach-Object { Write-Host "📈 File: $($_.FullName)" }
           } else {
             Write-Host "⚠️ No coverage files generated"
           }
-
-      - name: 📈 Publish test results
-        if: always()
-        uses: EnricoMi/publish-unit-test-result-action/windows@v2
-        with:
-          files: TestResults/**/*.trx
-          check_name: "Backend Unit Tests"
-          comment_mode: always
 
       - name: 💾 Upload test artifacts
         if: always()
@@ -71,6 +64,18 @@ jobs:
             TestResults/
             **/*.trx
           retention-days: 30
+
+      - name: 📋 Test Summary
+        if: always()
+        run: |
+          $trxFile = Get-ChildItem -Path ".\TestResults" -Filter "*.trx" -Recurse | Select-Object -First 1
+          if ($trxFile) {
+            Write-Host "✅ Test results file found: $($trxFile.Name)"
+            [xml]$trx = Get-Content $trxFile.FullName
+            $testCount = ($trx.TestRun.Results.UnitTestResult).Count
+            $passedCount = ($trx.TestRun.Results.UnitTestResult | Where-Object { $_.outcome -eq "Passed" }).Count
+            Write-Host "📊 Tests: $testCount | Passed: $passedCount | Failed: $($testCount - $passedCount)"
+          }
 
       - name: ❌ Fail on test failure
         if: failure()
