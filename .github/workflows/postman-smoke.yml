@@ -71,7 +71,7 @@ jobs:
           $maxAttempts = 30
           for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
             try {
-              $response = Invoke-WebRequest -Uri 'http://localhost:8080/api/health' -UseBasicParsing -TimeoutSec 5
+              $response = Invoke-WebRequest -Uri 'http://localhost:5000/api/health' -UseBasicParsing -TimeoutSec 5
               if ($response.StatusCode -eq 200) {
                 Write-Host 'API is healthy.'
                 break
@@ -111,7 +111,7 @@ jobs:
             'run',
             './Waste-Recycling-Platform/postman/WastePlatform.professional.postman_collection.json',
             '-e', './Waste-Recycling-Platform/postman/WastePlatform.professional.postman_environment.json',
-            '--env-var', 'baseUrl=http://localhost:8080',
+            '--env-var', 'baseUrl=http://localhost:5000',
             '--reporters', 'cli,junit',
             '--reporter-junit-export', './TestResults/postman-junit.xml'
           )
