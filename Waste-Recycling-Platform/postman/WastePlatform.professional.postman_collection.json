@@ -180,7 +180,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}{{healthPath}}",
+              "raw": "{{baseUrl}}/api/health",
               "host": [
                 "{{baseUrl}}"
               ],
