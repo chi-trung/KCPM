@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <!-- EF Core v9 (latest stable, compatible with net10.0) -->
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0" />
-    <!-- Pomelo MySQL driver (stable, EF Core 9 compatible) -->
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
+    <!-- EF Core v8 (stable, compatible with net8.0) -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0" />
+    <!-- Pomelo MySQL driver (stable, EF Core 8 compatible) -->
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.0" />
     <!-- Password hashing -->
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <!-- JWT token generation -->
