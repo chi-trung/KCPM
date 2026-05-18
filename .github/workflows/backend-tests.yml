@@ -1,46 +1,84 @@
-name: Backend Tests
+name: Backend Tests - KIEM Testing
 
 on:
   push:
     branches:
       - main
       - develop
+      - 'KIEM-*'
       - 'feature/**'
   pull_request:
+    branches:
+      - main
+      - develop
   workflow_dispatch:
 
 jobs:
-  test:
+  backend-unit-tests:
+    name: Unit Tests (.NET xUnit)
     runs-on: windows-latest
     defaults:
       run:
         shell: pwsh
 
     steps:
-      - name: Checkout repository
+      - name: ✅ Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Setup .NET
+      - name: ✅ Setup .NET 9.0
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
 
-      - name: Restore test project
-        run: dotnet restore .\Waste-Recycling-Platform\backend\tests\WastePlatform.Tests\WastePlatform.Tests.csproj
+      - name: ✅ Restore dependencies
+        run: dotnet restore ".\Waste-Recycling-Platform\backend\tests\WastePlatform.Tests\WastePlatform.Tests.csproj"
 
-      - name: Run backend tests
+      - name: 🧪 Run unit tests with coverage
         run: >
-          dotnet test .\Waste-Recycling-Platform\backend\tests\WastePlatform.Tests\WastePlatform.Tests.csproj
+          dotnet test ".\Waste-Recycling-Platform\backend\tests\WastePlatform.Tests\WastePlatform.Tests.csproj"
           --configuration Release
           --logger "trx;LogFileName=backend-tests.trx"
+          --logger "console;verbosity=normal"
           --collect:"XPlat Code Coverage"
-          --results-directory .\TestResults
+          --results-directory ".\TestResults"
+          --no-restore
 
-      - name: Upload test results
+      - name: 📊 Generate coverage report
+        run: |
+          $coverageFiles = Get-ChildItem -Path ".\TestResults" -Filter "coverage.cobertura.xml" -Recurse
+          if ($coverageFiles) {
+            Write-Host "✅ Coverage files found: $($coverageFiles.Count)"
+            $coverageFiles | ForEach-Object { Write-Host "📈 File: $($_.FullName)" }
+          } else {
+            Write-Host "⚠️ No coverage files generated"
+          }
+
+      - name: 💾 Upload test artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: backend-test-results
+          name: backend-test-results-${{ github.run_number }}
           path: |
-            TestResults
-            **\*.trx
+            TestResults/
+            **/*.trx
+          retention-days: 30
+
+      - name: 📋 Test Summary
+        if: always()
+        run: |
+          $trxFile = Get-ChildItem -Path ".\TestResults" -Filter "*.trx" -Recurse | Select-Object -First 1
+          if ($trxFile) {
+            Write-Host "✅ Test results file found: $($trxFile.Name)"
+            [xml]$trx = Get-Content $trxFile.FullName
+            $testCount = ($trx.TestRun.Results.UnitTestResult).Count
+            $passedCount = ($trx.TestRun.Results.UnitTestResult | Where-Object { $_.outcome -eq "Passed" }).Count
+            Write-Host "📊 Tests: $testCount | Passed: $passedCount | Failed: $($testCount - $passedCount)"
+          }
+
+      - name: ❌ Fail on test failure
+        if: failure()
+        run: |
+          Write-Host "❌ Backend tests failed!"
+          exit 1
