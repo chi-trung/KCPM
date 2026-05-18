@@ -17,7 +17,7 @@ on:
         default: ""
   push:
     branches:
-      - main
+      - '**'
       - develop
       - 'feature/**'
   pull_request:
@@ -141,27 +141,47 @@ jobs:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
           EXTRACTED_KEY: ${{ steps.extract_jira.outputs.jira_key }}
         run: |
-          if (-not $env:JIRA_BASE_URL -or -not $env:JIRA_API_EMAIL -or -not $env:JIRA_API_TOKEN) { Write-Host "Missing Jira credentials. Skipping."; exit 0 }
-          $auth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("$($env:JIRA_API_EMAIL):$($env:JIRA_API_TOKEN)"))
+          if (-not $env:JIRA_BASE_URL -or -not $env:JIRA_API_EMAIL -or -not $env:JIRA_API_TOKEN) { 
+            Write-Host "::error::Missing Jira credentials in GitHub Secrets. Cannot comment or transition Jira issue!"
+            exit 1 
+          }
+          $email = $env:JIRA_API_EMAIL.Trim()
+          $token = $env:JIRA_API_TOKEN.Trim()
+          $auth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("$($email):$($token)"))
           $headers = @{ Authorization = "Basic $auth"; Accept = "application/json"; "Content-Type" = "application/json" }
-          $base = $env:JIRA_BASE_URL.TrimEnd('/')
-          $realKey = $env:EXTRACTED_KEY
+          $base = $env:JIRA_BASE_URL.Trim().TrimEnd('/')
+          $realKey = $env:EXTRACTED_KEY.Trim()
+          
+          Write-Host "::notice::Using Jira Base URL: $base"
+          $emailParts = $email -split "@"
+          Write-Host "::notice::Using Email: $($emailParts[0].Substring(0, [math]::Min(3, $emailParts[0].Length)))***@$($emailParts[1])"
+          Write-Host "::notice::Looking for Key: '$realKey'"
           
           try {
             $resp = Invoke-RestMethod -Method GET -Uri "$base/rest/api/3/issue/$realKey?fields=key" -Headers $headers -ErrorAction Stop
           } catch {
-            Write-Host "$realKey is not a direct Issue ID. Searching by summary..."
-            $jql = [uri]::EscapeDataString("summary ~ `"$realKey`"")
-            $searchResp = Invoke-RestMethod -Method GET -Uri "$base/rest/api/3/search/jql?jql=$jql&fields=key" -Headers $headers
-            if ($searchResp.issues.Count -gt 0) {
-               $realKey = $searchResp.issues[0].key
-               Write-Host "Resolved $env:EXTRACTED_KEY to real issue key $realKey via JQL search"
-            } else {
-               Write-Host "Could not find any Jira issue matching $env:EXTRACTED_KEY"
-               exit 0
+            Write-Host "::warning::First API call failed: $($_.Exception.Message)"
+            Write-Host "$realKey is not a direct Issue ID or cannot be accessed. Searching by summary..."
+            
+            # The search query should search by key if we are looking for a key! But wait, JQL for key is 'key = KIEM-19' or 'text ~ KIEM-19'
+            $jql = [uri]::EscapeDataString("key = `"$realKey`" OR summary ~ `"$realKey`"")
+            try {
+              $searchResp = Invoke-RestMethod -Method GET -Uri "$base/rest/api/3/search/jql?jql=$jql&fields=key" -Headers $headers -ErrorAction Stop
+              if ($searchResp.issues.Count -gt 0) {
+                 $realKey = $searchResp.issues[0].key
+                 Write-Host "Resolved $env:EXTRACTED_KEY to real issue key $realKey via JQL search"
+              } else {
+                 Write-Host "::error::Could not find any Jira issue matching $env:EXTRACTED_KEY"
+                 exit 1
+              }
+            } catch {
+              Write-Host "::error::Jira API search failed. The token may be invalid or the issue doesn't exist."
+              Write-Host $_.Exception.Message
+              exit 1
             }
           }
-          "real_jira_key=$realKey" >> $env:GITHUB_OUTPUT
+          Write-Host "Successfully resolved Jira Key: $realKey"
+          "real_jira_key=$realKey" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
 
       - name: Comment PASS result to Jira
         if: always() && steps.run_postman.outcome == 'success' && steps.resolve_jira.outputs.real_jira_key != ''
@@ -200,7 +220,7 @@ jobs:
           Invoke-RestMethod -Method POST -Uri $url -Headers $headers -Body $body | Out-Null
           Write-Host "Posted PASS result to Jira issue $($env:JIRA_KEY)"
 
-      - name: Transition Jira issue to Done-like status on PASS
+      - name: Transition Jira issue status on PASS
         if: always() && steps.run_postman.outcome == 'success' && steps.resolve_jira.outputs.real_jira_key != ''
         env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
@@ -215,26 +235,41 @@ jobs:
           $base = $env:JIRA_BASE_URL.TrimEnd('/')
           $transitionsUrl = "$base/rest/api/3/issue/$($env:JIRA_KEY)/transitions"
 
-          $transitionsResp = Invoke-RestMethod -Method GET -Uri $transitionsUrl -Headers $headers
-          $target = $transitionsResp.transitions |
-            Where-Object { $_.to.name -match '^(Done|Resolved|Closed)$' } |
-            Select-Object -First 1
-
-          if (-not $target) {
-            $target = $transitionsResp.transitions |
-              Where-Object { $_.to.name -match '(Done|Resolved|Closed)' } |
-              Select-Object -First 1
+          function Transition-To ($Pattern) {
+            $transResp = Invoke-RestMethod -Method GET -Uri $transitionsUrl -Headers $headers
+            $target = $transResp.transitions | Where-Object { $_.to.name -match $Pattern } | Select-Object -First 1
+            if ($target) {
+              $body = @{ transition = @{ id = $target.id } } | ConvertTo-Json -Depth 5
+              Invoke-RestMethod -Method POST -Uri $transitionsUrl -Headers $headers -Body $body | Out-Null
+              Write-Host "Transitioned $env:JIRA_KEY to '$($target.to.name)'"
+              return $true
+            }
+            return $false
           }
 
-          if (-not $target) {
-            Write-Host "No Done-like transition available for $($env:JIRA_KEY). Skipping status transition."
-            exit 0
+          $eventName = "${{ github.event_name }}"
+          $donePattern = '^(Done|Resolved|Closed|Hoàn thành)$'
+          $inProgressPattern = '(?i)(In Progress|Đang làm|Processing)'
+
+          if ($eventName -eq 'pull_request') {
+            Write-Host "Event is pull_request. Attempting to transition $env:JIRA_KEY to Done..."
+            if (-not (Transition-To $donePattern)) {
+              Write-Host "Could not transition directly to Done. Trying to go to In Progress first..."
+              if (Transition-To $inProgressPattern) {
+                Write-Host "Successfully transitioned to In Progress. Now moving to Done..."
+                if (-not (Transition-To $donePattern)) {
+                   Write-Host "::warning::Still could not find a 'Done' transition after moving to 'In Progress'."
+                }
+              } else {
+                 Write-Host "::warning::Could not find 'In Progress' or 'Done' transitions."
+              }
+            }
+          } else {
+            Write-Host "Event is push. Attempting to transition $env:JIRA_KEY to In Progress..."
+            if (-not (Transition-To $inProgressPattern)) {
+               Write-Host "Could not find an 'In Progress' transition, or issue is already in Progress/Done."
+            }
           }
-
-          $transitionBody = @{ transition = @{ id = $target.id } } | ConvertTo-Json -Depth 5
-          Invoke-RestMethod -Method POST -Uri $transitionsUrl -Headers $headers -Body $transitionBody | Out-Null
-
-          Write-Host "Transitioned Jira issue $($env:JIRA_KEY) to '$($target.to.name)'"
 
       - name: Comment FAIL result to Jira
         if: always() && steps.run_postman.outcome == 'failure' && steps.resolve_jira.outputs.real_jira_key != ''
@@ -276,6 +311,16 @@ jobs:
       - name: Dump backend logs on failure
         if: failure()
         run: docker compose -f ./Waste-Recycling-Platform/docker-compose.yml logs backend
+
+      - name: Debug Workflow State
+        if: always()
+        run: |
+          Write-Host "extracted_jira_key: '${{ steps.extract_jira.outputs.jira_key }}'"
+          Write-Host "resolved_real_jira_key: '${{ steps.resolve_jira.outputs.real_jira_key }}'"
+          Write-Host "run_postman outcome: '${{ steps.run_postman.outcome }}'"
+          Write-Host "JIRA_BASE_URL is set: '${{ secrets.JIRA_BASE_URL != '' }}'"
+          Write-Host "JIRA_API_EMAIL is set: '${{ secrets.JIRA_API_EMAIL != '' }}'"
+          Write-Host "JIRA_API_TOKEN is set: '${{ secrets.JIRA_API_TOKEN != '' }}'"
 
       - name: Stop backend stack
         if: always()

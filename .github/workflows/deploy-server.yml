@@ -51,7 +51,6 @@ jobs:
     name: Deploy To Server
     needs: quality-gate
     runs-on: ubuntu-latest
-    if: ${{ secrets.DEPLOY_HOST != '' && secrets.DEPLOY_USER != '' && secrets.DEPLOY_SSH_KEY != '' }}
     env:
       DEPLOY_REF: ${{ github.event.inputs.deploy_ref || 'main' }}
       DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
@@ -67,7 +66,22 @@ jobs:
       ASPNETCORE_ENVIRONMENT: ${{ secrets.ASPNETCORE_ENVIRONMENT }}
       NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
     steps:
+      - name: Check Deployment Secrets
+        id: check_secrets
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          if [ -z "$DEPLOY_HOST" ] || [ -z "$DEPLOY_USER" ] || [ -z "$DEPLOY_SSH_KEY" ]; then
+            echo "Deployment skipped: Missing one or more required secrets (DEPLOY_HOST, DEPLOY_USER, DEPLOY_SSH_KEY)."
+            echo "has_secrets=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_secrets=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Deploy via SSH
+        if: steps.check_secrets.outputs.has_secrets == 'true'
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.DEPLOY_HOST }}
@@ -107,18 +121,8 @@ jobs:
             docker compose -f docker-compose.yml ps
 
       - name: Deployment summary
+        if: steps.check_secrets.outputs.has_secrets == 'true'
         run: |
           echo "Deployment completed for ref: $DEPLOY_REF"
           echo "Server path: $DEPLOY_PATH"
 
-  deploy-skipped:
-    name: Deploy Skipped (Missing Secrets)
-    needs: quality-gate
-    runs-on: ubuntu-latest
-    if: ${{ !(secrets.DEPLOY_HOST != '' && secrets.DEPLOY_USER != '' && secrets.DEPLOY_SSH_KEY != '') }}
-    steps:
-      - name: Explain skip reason
-        run: |
-          echo "Deployment was skipped because one or more required secrets are missing:"
-          echo "DEPLOY_HOST, DEPLOY_USER, DEPLOY_SSH_KEY"
-          echo "Set these in GitHub Repository Settings > Secrets and variables > Actions"
