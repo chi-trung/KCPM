@@ -33,8 +33,9 @@ git push
 
 ### BƯỚC 4: Chờ Hệ Thống Tự Động Duyệt & Nhóm Trưởng Merge
 Ngay khi bạn Push code lên nhánh cá nhân, hệ thống Automation (GitHub Actions) sẽ tự động chạy test để "chấm điểm":
-- 🟢 **Nếu PASS:** Hệ thống tự động báo Pass và kéo thẻ Jira của bạn sang cột **Done**. Bạn chỉ việc chờ Nhóm Trưởng review và Merge code của bạn vào `main`.
-- 🔴 **Nếu FAIL:** Hệ thống sẽ để lại comment cảnh báo "FAIL" trên thẻ Jira của bạn. Nhóm Trưởng sẽ KHÔNG merge. Bạn phải quay lại màn hình code, sửa lỗi, rồi lại `git commit` và `git push` cho đến khi nào hệ thống báo Pass thì thôi!
+- 🟡 **Khi bạn Push code:** Hệ thống sẽ chạy Test, báo kết quả trên Jira và tự động kéo thẻ sang cột **In Progress** (Đang làm).
+- 🟢 **Khi bạn tạo Pull Request (PR):** Hệ thống sẽ chạy Test lần cuối. Nếu PASS, hệ thống sẽ kéo thẻ Jira sang cột **Done**. Bạn chỉ việc chờ Nhóm Trưởng review và Merge code vào `main`.
+- 🔴 **Nếu FAIL:** Hệ thống sẽ để lại comment cảnh báo "FAIL" trên thẻ Jira. Nhóm Trưởng sẽ KHÔNG merge. Bạn phải sửa lỗi rồi `git push` lại cho đến khi Pass!
 
 ---
 *Chúc cả nhóm làm việc hiệu quả và đạt điểm A+!*

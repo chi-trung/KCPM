@@ -220,7 +220,7 @@ jobs:
           Invoke-RestMethod -Method POST -Uri $url -Headers $headers -Body $body | Out-Null
           Write-Host "Posted PASS result to Jira issue $($env:JIRA_KEY)"
 
-      - name: Transition Jira issue to Done-like status on PASS
+      - name: Transition Jira issue status on PASS
         if: always() && steps.run_postman.outcome == 'success' && steps.resolve_jira.outputs.real_jira_key != ''
         env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
@@ -247,18 +247,27 @@ jobs:
             return $false
           }
 
-          Write-Host "Attempting to transition $env:JIRA_KEY to Done..."
-          
-          # First try to go directly to Done
-          if (-not (Transition-To '^(Done|Resolved|Closed|Hoàn thành)$')) {
-            Write-Host "Could not transition directly to Done. Trying to go to In Progress first..."
-            if (Transition-To '(?i)(In Progress|Đang làm|Processing)') {
-              Write-Host "Successfully transitioned to In Progress. Now moving to Done..."
-              if (-not (Transition-To '^(Done|Resolved|Closed|Hoàn thành)$')) {
-                 Write-Host "::warning::Still could not find a 'Done' transition after moving to 'In Progress'."
+          $eventName = "${{ github.event_name }}"
+          $donePattern = '^(Done|Resolved|Closed|Hoàn thành)$'
+          $inProgressPattern = '(?i)(In Progress|Đang làm|Processing)'
+
+          if ($eventName -eq 'pull_request') {
+            Write-Host "Event is pull_request. Attempting to transition $env:JIRA_KEY to Done..."
+            if (-not (Transition-To $donePattern)) {
+              Write-Host "Could not transition directly to Done. Trying to go to In Progress first..."
+              if (Transition-To $inProgressPattern) {
+                Write-Host "Successfully transitioned to In Progress. Now moving to Done..."
+                if (-not (Transition-To $donePattern)) {
+                   Write-Host "::warning::Still could not find a 'Done' transition after moving to 'In Progress'."
+                }
+              } else {
+                 Write-Host "::warning::Could not find 'In Progress' or 'Done' transitions."
               }
-            } else {
-               Write-Host "::warning::Could not find 'In Progress' or 'Done' transitions."
+            }
+          } else {
+            Write-Host "Event is push. Attempting to transition $env:JIRA_KEY to In Progress..."
+            if (-not (Transition-To $inProgressPattern)) {
+               Write-Host "Could not find an 'In Progress' transition, or issue is already in Progress/Done."
             }
           }
 
