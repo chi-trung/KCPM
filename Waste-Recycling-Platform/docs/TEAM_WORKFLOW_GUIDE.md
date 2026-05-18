@@ -32,10 +32,18 @@ git push
 *(Lưu ý: Luôn nhớ bắt đầu lời nhắn commit bằng mã Jira ID như KIEM-4, KIEM-5...)*
 
 ### BƯỚC 4: Chờ Hệ Thống Tự Động Duyệt & Nhóm Trưởng Merge
-Ngay khi bạn Push code lên nhánh cá nhân, hệ thống Automation (GitHub Actions) sẽ tự động chạy test để "chấm điểm":
-- 🟡 **Khi bạn Push code:** Hệ thống sẽ chạy Test, báo kết quả trên Jira và tự động kéo thẻ sang cột **In Progress** (Đang làm).
-- 🟢 **Khi bạn tạo Pull Request (PR):** Hệ thống sẽ chạy Test lần cuối. Nếu PASS, hệ thống sẽ kéo thẻ Jira sang cột **Done**. Bạn chỉ việc chờ Nhóm Trưởng review và Merge code vào `main`.
-- 🔴 **Nếu FAIL:** Hệ thống sẽ để lại comment cảnh báo "FAIL" trên thẻ Jira. Nhóm Trưởng sẽ KHÔNG merge. Bạn phải sửa lỗi rồi `git push` lại cho đến khi Pass!
+Ngay khi bạn Push code lên nhánh cá nhân, hệ thống Automation (GitHub Actions) sẽ chạy kiểm tra và cập nhật Jira theo đúng luồng sau:
+
+| Sự kiện | Workflow chính | Jira sẽ được làm gì |
+|---------|----------------|---------------------|
+| Push code lên nhánh cá nhân | `postman-smoke.yml` | Tự động comment kết quả và thử chuyển thẻ sang **In Progress** nếu Jira có transition phù hợp |
+| Tạo Pull Request (PR) và workflow PASS | `postman-smoke.yml` | Tự động comment kết quả và thử chuyển thẻ sang **Done** nếu Jira có transition phù hợp |
+| Workflow FAIL | `postman-smoke.yml` | Tự động comment cảnh báo **FAIL** để bạn sửa rồi `git push` lại |
+
+Lưu ý:
+- `backend-tests.yml` chỉ chạy test .NET, không phải workflow chuyển trạng thái Jira.
+- Nếu Jira của nhóm dùng tên transition khác, hệ thống sẽ tự chọn transition gần đúng nhất khi có thể.
+- Nhóm Trưởng vẫn là người review và merge PR vào `main` sau khi mọi thứ pass.
 
 ---
 *Chúc cả nhóm làm việc hiệu quả và đạt điểm A+!*

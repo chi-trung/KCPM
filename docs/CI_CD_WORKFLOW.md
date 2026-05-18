@@ -13,12 +13,23 @@ This repository uses a simple evidence-driven workflow for software verification
 5. The PR title must include the Jira key.
    - Example: `KIEM-24 - Fix login validation`
 6. GitHub Actions runs tests and Postman automatically.
-7. If Postman passes:
+7. If a member pushes code:
+   - The Jira issue is transitioned to an In Progress-like status when the workflow finds a matching transition.
+   - A Jira comment is added automatically when the workflow can resolve the issue key.
+8. If the Pull Request passes the Postman smoke workflow:
    - A Jira comment is added automatically.
    - The Jira issue is transitioned to a Done-like status when possible.
-8. If Postman fails:
+9. If the workflow fails:
    - A Jira comment is added automatically.
    - The Jira issue stays open for the member to fix and push again.
+
+## Workflow Notes
+
+- `backend-tests.yml` runs the .NET test suite only.
+- `postman-smoke.yml` handles Jira comments and status transitions.
+- Push events attempt to move the Jira issue to an In Progress-like status.
+- Successful Pull Request runs attempt to move the Jira issue to a Done-like status.
+- If Jira has different transition names, the workflow selects the closest matching transition automatically.
 
 ## What Each System Does
 
@@ -53,3 +64,7 @@ A task is not considered finished until:
 - tests pass,
 - Jira has the latest comment/status,
 - and the PR is merged or ready to merge.
+
+## Test Case Report Guide
+
+Use the report format in [test-cases/reports/README.md](../test-cases/reports/README.md) when creating a new `.md` test report.
