@@ -1,8 +1,8 @@
 # 🔐 KIEM-4: WRP-BE-TESTS-001 - Auth Module Testing
 
 **Status:** 🟦 IN PROGRESS  
-**Branch:** `feature/KIEM-4-WRP-BE-TESTS-001-auth`  
-**Jira Link:** [KIEM-4](https://jira.example.com/browse/KIEM-4)  
+**Branch:** `KIEM-4-WRP-BE-TESTS-001-Auth-Module`  
+**Jira Link:** KIEM-4  
 **Module:** Authentication (Register / Login / Profile)
 
 ---
@@ -408,7 +408,7 @@
 - **API Documentation:** [Backend README](../../Waste-Recycling-Platform/backend/README.md)
 - **Test Strategy:** [Testing Playbook](../../Waste-Recycling-Platform/docs/testing-playbook.md)
 - **CI/CD Guide:** [CI/CD Workflow](../../docs/CI_CD_WORKFLOW.md)
-- **Jira Ticket:** https://jira.example.com/browse/KIEM-4
+- **Jira Ticket:** KIEM-4
 - **PR Link:** TBD
 
 ---

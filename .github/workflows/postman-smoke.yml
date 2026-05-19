@@ -33,8 +33,13 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: postman-smoke-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   smoke:
+    if: github.event_name != 'pull_request' || github.event.action != 'closed' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -258,9 +263,6 @@ jobs:
           }
 
           $eventName = "${{ github.event_name }}"
-          $donePattern = '^(Done|Resolved|Closed|Hoàn thành)$'
-          $inProgressPattern = '(?i)(In Progress|Đang làm|Processing)'
-          # Broaden patterns to match more possible transition names (English + Vietnamese + variants)
           $donePattern = '(?i)^(Done|Resolved|Closed|Hoàn thành|Hoàn tất|Completed|Finished|Đã\s?xong)$'
           $inProgressPattern = '(?i)(In Progress|Đang làm|Processing|In Development|Doing|In Progressed)'
 
@@ -274,16 +276,15 @@ jobs:
 
             Write-Host "Event is merged pull_request. Attempting to transition $env:JIRA_KEY to Done..."
 
-        # Debug: when diagnosing missing transitions, list available transitions (id + name)
-        try {
-          $debugResp = Invoke-RestMethod -Method GET -Uri $transitionsUrl -Headers $headers
-          Write-Host "Available Jira transitions for $($env:JIRA_KEY):"
-          foreach ($t in $debugResp.transitions) {
-            Write-Host (" - id={0} name='{1}'" -f $t.id, $t.to.name)
-          }
-        } catch {
-          Write-Host "Could not fetch transitions for debug: $($_.Exception.Message)"
-        }
+            try {
+              $debugResp = Invoke-RestMethod -Method GET -Uri $transitionsUrl -Headers $headers
+              Write-Host "Available Jira transitions for $($env:JIRA_KEY):"
+              foreach ($t in $debugResp.transitions) {
+                Write-Host (" - id={0} name='{1}'" -f $t.id, $t.to.name)
+              }
+            } catch {
+              Write-Host "Could not fetch transitions for debug: $($_.Exception.Message)"
+            }
             if (-not (Transition-To $donePattern)) {
               Write-Host "Could not transition directly to Done. Trying to go to In Progress first..."
               if (Transition-To $inProgressPattern) {
