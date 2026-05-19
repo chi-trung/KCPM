@@ -15,6 +15,10 @@ on:
         description: Optional Jira issue key to comment/transition when running manually
         required: false
         default: ""
+      force_transition:
+        description: Optional. When set to 'done', force transitioning the resolved Jira issue to Done.
+        required: false
+        default: ""
   push:
     branches:
       - '**'
@@ -251,8 +255,20 @@ jobs:
           $donePattern = '^(Done|Resolved|Closed|Hoàn thành)$'
           $inProgressPattern = '(?i)(In Progress|Đang làm|Processing)'
 
-          if ($eventName -eq 'pull_request') {
-            Write-Host "Event is pull_request. Attempting to transition $env:JIRA_KEY to Done..."
+          # Allow manual force via workflow_dispatch input
+          $forceFlag = "${{ github.event.inputs.force_transition }}"
+          if (-not $forceFlag) { $forceFlag = '' }
+
+          # Try to detect merged PRs robustly:
+          try { $prMerged = "${{ github.event.pull_request.merged }}" } catch { $prMerged = '' }
+          try { $headCommitMsg = "${{ github.event.head_commit.message }}" } catch { $headCommitMsg = '' }
+          $isMergePush = $false
+          if ($prMerged -eq 'true') { $isMergePush = $true }
+          elseif ($headCommitMsg -and $headCommitMsg -match 'Merge pull request') { $isMergePush = $true }
+          elseif ($forceFlag -eq 'done') { $isMergePush = $true }
+
+          if (($eventName -eq 'pull_request' -and $prMerged -eq 'true') -or $isMergePush) {
+            Write-Host "Detected merged PR (or forced). Attempting to transition $env:JIRA_KEY to Done..."
             if (-not (Transition-To $donePattern)) {
               Write-Host "Could not transition directly to Done. Trying to go to In Progress first..."
               if (Transition-To $inProgressPattern) {
@@ -265,7 +281,7 @@ jobs:
               }
             }
           } else {
-            Write-Host "Event is push. Attempting to transition $env:JIRA_KEY to In Progress..."
+            Write-Host "Event is push (non-merge). Attempting to transition $env:JIRA_KEY to In Progress..."
             if (-not (Transition-To $inProgressPattern)) {
                Write-Host "Could not find an 'In Progress' transition, or issue is already in Progress/Done."
             }
