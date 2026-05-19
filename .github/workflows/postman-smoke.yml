@@ -16,14 +16,19 @@ on:
         required: false
         default: ""
   push:
-    branches:
-      - '**'
+    branches-ignore:
+      - main
       - develop
-      - 'feature/**'
   pull_request:
     branches:
       - main
       - develop
+    types:
+      - opened
+      - edited
+      - synchronize
+      - reopened
+      - closed
 
 permissions:
   contents: read
@@ -260,7 +265,14 @@ jobs:
           $inProgressPattern = '(?i)(In Progress|Đang làm|Processing|In Development|Doing|In Progressed)'
 
           if ($eventName -eq 'pull_request') {
-            Write-Host "Event is pull_request. Attempting to transition $env:JIRA_KEY to Done..."
+            $isMerged = '${{ github.event.pull_request.merged }}' -eq 'true'
+
+            if (-not $isMerged) {
+              Write-Host "Event is pull_request, but the PR is not merged yet. Skipping Done transition."
+              return
+            }
+
+            Write-Host "Event is merged pull_request. Attempting to transition $env:JIRA_KEY to Done..."
 
         # Debug: when diagnosing missing transitions, list available transitions (id + name)
         try {

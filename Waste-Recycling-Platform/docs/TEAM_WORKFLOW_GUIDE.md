@@ -20,7 +20,8 @@ Chào các bạn, hệ thống chấm điểm và kiểm chứng tự động (C
    git fetch
    git checkout <tên-nhánh-vừa-tạo>
    ```
-2. Mở source code hoặc Postman lên, bắt đầu làm bài (viết code Backend để fix lỗi, hoặc viết thêm các kịch bản Test theo yêu cầu của Task).
+2. Mở source code hoặc Postman lên, bắt đầu làm bài.
+3. Với môn kiểm chứng phần mềm, ưu tiên tạo hoặc cập nhật test case đúng task được giao trên nhánh cá nhân đó, sau đó mới commit và push.
 
 ### BƯỚC 3: Nộp Bài
 Làm xong, bạn lưu file lại và đẩy code lên mạng (Commit & Push lên nhánh RIÊNG của bạn):
@@ -37,13 +38,24 @@ Ngay khi bạn Push code lên nhánh cá nhân, hệ thống Automation (GitHub 
 | Sự kiện | Workflow chính | Jira sẽ được làm gì |
 |---------|----------------|---------------------|
 | Push code lên nhánh cá nhân | `postman-smoke.yml` | Tự động comment kết quả và thử chuyển thẻ sang **In Progress** nếu Jira có transition phù hợp |
-| Tạo Pull Request (PR) và workflow PASS | `postman-smoke.yml` | Tự động comment kết quả và thử chuyển thẻ sang **Done** nếu Jira có transition phù hợp |
+| PR đã được merge và workflow PASS | `postman-smoke.yml` | Tự động comment kết quả và thử chuyển thẻ sang **Done** nếu Jira có transition phù hợp |
 | Workflow FAIL | `postman-smoke.yml` | Tự động comment cảnh báo **FAIL** để bạn sửa rồi `git push` lại |
 
 Lưu ý:
 - `backend-tests.yml` chỉ chạy test .NET, không phải workflow chuyển trạng thái Jira.
+- `postman-smoke.yml` là workflow đang chịu trách nhiệm comment và chuyển trạng thái Jira khi push hoặc khi PR pass.
 - Nếu Jira của nhóm dùng tên transition khác, hệ thống sẽ tự chọn transition gần đúng nhất khi có thể.
 - Nhóm Trưởng vẫn là người review và merge PR vào `main` sau khi mọi thứ pass.
+- Workflow hiện tại chỉ chuyển sang **Done** khi PR đã merge xong; PR mở hoặc PR chưa merge sẽ không kéo thẻ sang Done.
+
+### Luồng Chuẩn Mong Muốn Của Nhóm
+1. Member nhận task trên Jira và tạo branch mới từ Jira key.
+2. Member viết code hoặc test case trên branch đó, commit có Jira key và push lên GitHub.
+3. GitHub Actions chạy `postman-smoke.yml` để kiểm tra và comment lên Jira.
+4. Nếu push pass, Jira chuyển sang **In Progress**.
+5. Member tạo PR để trưởng nhóm review.
+6. Nếu PR pass, Jira chuyển sang **Done**.
+7. Trưởng nhóm merge PR sau khi đã review xong và mọi kiểm tra đều đạt.
 
 ---
 *Chúc cả nhóm làm việc hiệu quả và đạt điểm A+!*

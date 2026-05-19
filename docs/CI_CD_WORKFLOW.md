@@ -16,7 +16,7 @@ This repository uses a simple evidence-driven workflow for software verification
 7. If a member pushes code:
    - The Jira issue is transitioned to an In Progress-like status when the workflow finds a matching transition.
    - A Jira comment is added automatically when the workflow can resolve the issue key.
-8. If the Pull Request passes the Postman smoke workflow:
+8. If the Pull Request is merged and the Postman smoke workflow passes:
    - A Jira comment is added automatically.
    - The Jira issue is transitioned to a Done-like status when possible.
 9. If the workflow fails:
@@ -28,7 +28,7 @@ This repository uses a simple evidence-driven workflow for software verification
 - `backend-tests.yml` runs the .NET test suite only.
 - `postman-smoke.yml` handles Jira comments and status transitions.
 - Push events attempt to move the Jira issue to an In Progress-like status.
-- Successful Pull Request runs attempt to move the Jira issue to a Done-like status.
+- Successful merged Pull Request runs attempt to move the Jira issue to a Done-like status.
 - If Jira has different transition names, the workflow selects the closest matching transition automatically.
 
 ## What Each System Does
