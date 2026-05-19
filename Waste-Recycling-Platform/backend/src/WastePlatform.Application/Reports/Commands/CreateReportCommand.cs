@@ -42,6 +42,10 @@ public class CreateReportCommandHandler : IRequestHandler<CreateReportCommand, G
         if (request.Latitude < -90 || request.Latitude > 90 || request.Longitude < -180 || request.Longitude > 180)
             throw new ArgumentException("Invalid latitude or longitude coordinates");
 
+        // SRS: Bắt buộc ít nhất 1 hình ảnh đính kèm
+        if (request.Images == null || request.Images.Count == 0)
+            throw new ArgumentException("At least one image is required");
+
         var report = WasteReport.Create(
             citizenId: request.CitizenId,
             wasteCategoryId: request.WasteCategoryId,
