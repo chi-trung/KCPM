@@ -88,7 +88,7 @@ jobs:
             $attempt++
             try {
               Write-Host "Health check attempt $attempt/$maxAttempts..."
-              $response = Invoke-WebRequest -Uri 'http://localhost:5000/api/health' -UseBasicParsing -TimeoutSec 5
+              $response = Invoke-WebRequest -Uri 'http://localhost:8080/api/health' -UseBasicParsing -TimeoutSec 5
               if ($response.StatusCode -eq 200) {
                 Write-Host 'API is healthy ✓'
                 exit 0
@@ -130,7 +130,7 @@ jobs:
             'run',
             './Waste-Recycling-Platform/postman/WastePlatform.professional.postman_collection.json',
             '-e', './Waste-Recycling-Platform/postman/WastePlatform.professional.postman_environment.json',
-            '--env-var', 'baseUrl=http://localhost:5000',
+            '--env-var', 'baseUrl=http://localhost:8080',
             '--reporters', 'cli,junit',
             '--reporter-junit-export', './TestResults/postman-junit.xml'
           )
