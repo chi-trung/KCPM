@@ -38,7 +38,7 @@ services:
       JwtSettings__Issuer: ${JWT_ISSUER:-WastePlatform}
       JwtSettings__Audience: ${JWT_AUDIENCE:-WastePlatformClient}
     ports:
-      - "5000:8080"
+      - "8080:8080"
     depends_on:
       db:
         condition: service_healthy
@@ -51,11 +51,11 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:5000/api}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080/api}
     container_name: waste_frontend
     restart: unless-stopped
     environment:
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:5000/api}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8080/api}
     ports:
       - "3000:3000"
     depends_on:
