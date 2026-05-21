@@ -9,7 +9,7 @@ public interface INotificationRepository
     Task<Notification?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<(IEnumerable<Notification> Notifications, int Total)> GetByCitizenIdAsync(Guid citizenId, int page, int pageSize, NotificationStatus? status, CancellationToken cancellationToken = default);
     Task<int> GetUnreadCountAsync(Guid citizenId, CancellationToken cancellationToken = default);
-    Task MarkAsReadAsync(Guid notificationId, CancellationToken cancellationToken = default);
+    Task<bool> MarkAsReadAsync(Guid notificationId, Guid citizenId, CancellationToken cancellationToken = default);
     Task MarkAllAsReadAsync(Guid citizenId, CancellationToken cancellationToken = default);
     Task SaveChangesAsync(CancellationToken cancellationToken = default);
 }

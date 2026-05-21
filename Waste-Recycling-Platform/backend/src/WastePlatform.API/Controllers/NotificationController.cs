@@ -128,7 +128,12 @@ public class NotificationController : ControllerBase
             if (citizenId == Guid.Empty)
                 return Unauthorized(new { message = "Invalid or missing user ID" });
 
-            await _notificationRepository.MarkAsReadAsync(id);
+            var marked = await _notificationRepository.MarkAsReadAsync(id, citizenId);
+            if (!marked)
+            {
+                return NotFound(new { message = "Notification not found" });
+            }
+
             await _notificationRepository.SaveChangesAsync();
 
             return Ok(new

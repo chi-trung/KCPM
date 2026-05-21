@@ -15,6 +15,10 @@ on:
         description: Optional Jira issue key to comment/transition when running manually
         required: false
         default: ""
+      force_transition:
+        description: Optional. When set to 'done', force transitioning the resolved Jira issue to Done.
+        required: false
+        default: ""
   push:
     branches-ignore:
       - main
@@ -84,7 +88,7 @@ jobs:
             $attempt++
             try {
               Write-Host "Health check attempt $attempt/$maxAttempts..."
-              $response = Invoke-WebRequest -Uri 'http://localhost:5000/api/health' -UseBasicParsing -TimeoutSec 5
+              $response = Invoke-WebRequest -Uri 'http://localhost:8080/api/health' -UseBasicParsing -TimeoutSec 5
               if ($response.StatusCode -eq 200) {
                 Write-Host 'API is healthy ✓'
                 exit 0
@@ -126,7 +130,7 @@ jobs:
             'run',
             './Waste-Recycling-Platform/postman/WastePlatform.professional.postman_collection.json',
             '-e', './Waste-Recycling-Platform/postman/WastePlatform.professional.postman_environment.json',
-            '--env-var', 'baseUrl=http://localhost:5000',
+            '--env-var', 'baseUrl=http://localhost:8080',
             '--reporters', 'cli,junit',
             '--reporter-junit-export', './TestResults/postman-junit.xml'
           )
@@ -266,25 +270,20 @@ jobs:
           $donePattern = '(?i)^(Done|Resolved|Closed|Hoàn thành|Hoàn tất|Completed|Finished|Đã\s?xong)$'
           $inProgressPattern = '(?i)(In Progress|Đang làm|Processing|In Development|Doing|In Progressed)'
 
-          if ($eventName -eq 'pull_request') {
-            $isMerged = '${{ github.event.pull_request.merged }}' -eq 'true'
+          # Allow manual force via workflow_dispatch input
+          $forceFlag = "${{ github.event.inputs.force_transition }}"
+          if (-not $forceFlag) { $forceFlag = '' }
 
-            if (-not $isMerged) {
-              Write-Host "Event is pull_request, but the PR is not merged yet. Skipping Done transition."
-              return
-            }
+          # Try to detect merged PRs robustly:
+          try { $prMerged = "${{ github.event.pull_request.merged }}" } catch { $prMerged = '' }
+          try { $headCommitMsg = "${{ github.event.head_commit.message }}" } catch { $headCommitMsg = '' }
+          $isMergePush = $false
+          if ($prMerged -eq 'true') { $isMergePush = $true }
+          elseif ($headCommitMsg -and $headCommitMsg -match 'Merge pull request') { $isMergePush = $true }
+          elseif ($forceFlag -eq 'done') { $isMergePush = $true }
 
-            Write-Host "Event is merged pull_request. Attempting to transition $env:JIRA_KEY to Done..."
-
-            try {
-              $debugResp = Invoke-RestMethod -Method GET -Uri $transitionsUrl -Headers $headers
-              Write-Host "Available Jira transitions for $($env:JIRA_KEY):"
-              foreach ($t in $debugResp.transitions) {
-                Write-Host (" - id={0} name='{1}'" -f $t.id, $t.to.name)
-              }
-            } catch {
-              Write-Host "Could not fetch transitions for debug: $($_.Exception.Message)"
-            }
+          if (($eventName -eq 'pull_request' -and $prMerged -eq 'true') -or $isMergePush) {
+            Write-Host "Detected merged PR (or forced). Attempting to transition $env:JIRA_KEY to Done..."
             if (-not (Transition-To $donePattern)) {
               Write-Host "Could not transition directly to Done. Trying to go to In Progress first..."
               if (Transition-To $inProgressPattern) {
@@ -297,7 +296,7 @@ jobs:
               }
             }
           } else {
-            Write-Host "Event is push. Attempting to transition $env:JIRA_KEY to In Progress..."
+            Write-Host "Event is push (non-merge). Attempting to transition $env:JIRA_KEY to In Progress..."
             if (-not (Transition-To $inProgressPattern)) {
                Write-Host "Could not find an 'In Progress' transition, or issue is already in Progress/Done."
             }

@@ -1,0 +1,12 @@
+ALTER TABLE notifications ADD COLUMN channel VARCHAR(20) NOT NULL DEFAULT 'InApp' AFTER `type`;
+ALTER TABLE notifications ADD COLUMN status VARCHAR(20) NOT NULL DEFAULT 'Unread' AFTER `channel`;
+ALTER TABLE notifications ADD COLUMN action_url VARCHAR(500) NULL AFTER `message`;
+ALTER TABLE notifications ADD COLUMN related_entity_type VARCHAR(50) NULL AFTER `related_entity_id`;
+ALTER TABLE notifications ADD COLUMN read_at DATETIME(6) NULL AFTER `created_at`;
+UPDATE notifications SET status = CASE WHEN is_read=1 THEN 'Read' ELSE 'Unread' END;
+UPDATE notifications SET read_at = created_at WHERE is_read=1 AND read_at IS NULL;
+ALTER TABLE notifications DROP COLUMN is_read;
+ALTER TABLE notifications ADD CONSTRAINT fk_notifications_citizen FOREIGN KEY (citizen_id) REFERENCES users(id) ON DELETE SET NULL;
+CREATE INDEX idx_notifications_citizen_id ON notifications(citizen_id);
+CREATE INDEX idx_notifications_citizen_status ON notifications(citizen_id,status);
+CREATE INDEX idx_notifications_created_at ON notifications(created_at);
