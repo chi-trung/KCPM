@@ -3,7 +3,26 @@
 **Status:** 🟦 IN PROGRESS  
 **Branch:** `KIEM-4-WRP-BE-TESTS-001-Auth-Module`  
 **Jira Link:** KIEM-4  
-**Module:** Authentication (Register / Login / Profile)
+**Module:** Authentication (Register / Login / Profile)  
+**Report Style:** Allure HTML + raw test artifacts
+
+## 📎 Allure Evidence
+
+Use the generated HTML report as the main submission artifact:
+
+- Raw results folder: `TestResults/backend-allure-report` or `Waste-Recycling-Platform/backend/tests/WastePlatform.Tests/bin/Release/net8.0/allure-results`
+- Generated HTML report: `TestResults/backend-allure-report/index.html`
+- CI artifact: GitHub Actions backend test run artifact
+
+## 🎯 Week-1 Scope
+
+For week 1, run the auth flow in this order:
+
+1. `TC-AUTH-001` Register valid user
+2. `TC-AUTH-004` Login valid credentials
+3. `TC-AUTH-007` Get profile (`/me`) valid token
+
+If any step fails, create a Jira subtask for the fixing member and keep the raw failure evidence in Allure.
 
 ---
 
@@ -31,6 +50,33 @@
 - ✅ Validate JWT token generation and validation
 - ✅ Validate user profile retrieval with authentication
 - ✅ Validate authorization enforcement on protected endpoints
+
+## 📊 Week-1 Execution Summary
+
+| Test Case ID | Result | Evidence |
+|:---:|:---:|:---|
+| TC-AUTH-001 | ✅ Pass | Live API run + Allure report |
+| TC-AUTH-004 | ✅ Pass | Live API run + Allure report |
+| TC-AUTH-007 | ✅ Pass | Live API run + Allure report |
+
+## 🧪 Actual Execution
+
+| Item | Value |
+|------|-------|
+| Execution Date | 2026-05-23 |
+| Live Base URL | `http://localhost:8080` |
+| Generated Test User | `citizen+20260523221024@example.com` |
+| Register Result | 200 OK |
+| Login Result | 200 OK |
+| Profile Result | 200 OK |
+| Overall Status | Week 1 auth flow passed |
+
+## 🐛 Defect Handling Rule
+
+- If `TC-AUTH-001`, `TC-AUTH-004`, or `TC-AUTH-007` fails, do not fix the test case in the same loop.
+- Create a Jira subtask from `KIEM-4` for Member 2.
+- Re-run the same Allure-backed test after the fix and keep both failure and retest evidence.
+- This week's live run passed, so no defect subtask was needed.
 
 ---
 
