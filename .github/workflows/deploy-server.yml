@@ -1,0 +1,166 @@
+name: CI CD Deploy Server
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      deploy_ref:
+        description: Git ref to deploy
+        required: false
+        default: main
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install Allure CLI
+        run: npm install -g allure-commandline
+
+      - name: Restore backend tests
+        run: dotnet restore ./Waste-Recycling-Platform/backend/tests/WastePlatform.Tests/WastePlatform.Tests.csproj
+
+      - name: Run backend tests
+        run: >
+          dotnet test ./Waste-Recycling-Platform/backend/tests/WastePlatform.Tests/WastePlatform.Tests.csproj
+          --configuration Release
+          --settings ./Waste-Recycling-Platform/backend/tests/WastePlatform.Tests/WastePlatform.Tests.runsettings
+          --logger "trx;LogFileName=backend-tests.trx"
+          --results-directory ./TestResults
+
+      - name: Generate backend Allure report
+        if: always()
+        run: |
+          $resultsPath = ".\Waste-Recycling-Platform\backend\tests\WastePlatform.Tests\bin\Release\net8.0\allure-results"
+          $reportPath = ".\TestResults\deploy-backend-allure-report"
+
+          if (Test-Path $resultsPath) {
+            allure generate $resultsPath --clean -o $reportPath
+          } else {
+            Write-Host "::warning::Allure results folder not found at $resultsPath"
+          }
+
+      - name: Upload quality-gate test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-quality-gate-results
+          path: |
+            TestResults
+            **/*.trx
+
+      - name: Upload backend Allure report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-backend-allure-report
+          path: |
+            Waste-Recycling-Platform/backend/tests/WastePlatform.Tests/bin/Release/net8.0/allure-results
+            TestResults/deploy-backend-allure-report
+
+  deploy:
+    name: Deploy To Server
+    needs: quality-gate
+    runs-on: ubuntu-latest
+    env:
+      DEPLOY_REF: ${{ github.event.inputs.deploy_ref || 'main' }}
+      DEPLOY_PORT: ${{ secrets.DEPLOY_PORT || '22' }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH || '/opt/kcpm' }}
+      DEPLOY_REPO_TOKEN: ${{ secrets.DEPLOY_REPO_TOKEN }}
+      MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+      MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+      MYSQL_USER: ${{ secrets.MYSQL_USER }}
+      MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_ISSUER: ${{ secrets.JWT_ISSUER }}
+      JWT_AUDIENCE: ${{ secrets.JWT_AUDIENCE }}
+      ASPNETCORE_ENVIRONMENT: ${{ secrets.ASPNETCORE_ENVIRONMENT }}
+      NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+    steps:
+      - name: Check Deployment Secrets
+        id: check_secrets
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          if [ -z "$DEPLOY_HOST" ] || [ -z "$DEPLOY_USER" ] || [ -z "$DEPLOY_SSH_KEY" ]; then
+            echo "Deployment skipped: Missing one or more required secrets (DEPLOY_HOST, DEPLOY_USER, DEPLOY_SSH_KEY)."
+            echo "has_secrets=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_secrets=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy via SSH
+        if: steps.check_secrets.outputs.has_secrets == 'true'
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ env.DEPLOY_PORT }}
+          script_stop: true
+          envs: DEPLOY_REF,DEPLOY_PATH,DEPLOY_REPO_TOKEN,MYSQL_ROOT_PASSWORD,MYSQL_DATABASE,MYSQL_USER,MYSQL_PASSWORD,JWT_SECRET,JWT_ISSUER,JWT_AUDIENCE,ASPNETCORE_ENVIRONMENT,NEXT_PUBLIC_API_URL
+          script: |
+            set -e
+            mkdir -p "$DEPLOY_PATH"
+            cd "$DEPLOY_PATH"
+
+            if [ ! -d .git ]; then
+              git clone "https://x-access-token:${DEPLOY_REPO_TOKEN}@github.com/${{ github.repository }}.git" .
+            fi
+
+            git fetch origin
+            git checkout "$DEPLOY_REF"
+            git reset --hard "origin/$DEPLOY_REF"
+
+            cd Waste-Recycling-Platform
+
+            cat > .env <<EOF
+            MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE=${MYSQL_DATABASE}
+            MYSQL_USER=${MYSQL_USER}
+            MYSQL_PASSWORD=${MYSQL_PASSWORD}
+            JWT_SECRET=${JWT_SECRET}
+            JWT_ISSUER=${JWT_ISSUER}
+            JWT_AUDIENCE=${JWT_AUDIENCE}
+            ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+            NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+            EOF
+
+            docker compose -f docker-compose.yml up -d --build db backend frontend
+            docker compose -f docker-compose.yml ps
+
+      - name: Deployment summary
+        if: steps.check_secrets.outputs.has_secrets == 'true'
+        run: |
+          echo "Deployment completed for ref: $DEPLOY_REF"
+          echo "Server path: $DEPLOY_PATH"
+

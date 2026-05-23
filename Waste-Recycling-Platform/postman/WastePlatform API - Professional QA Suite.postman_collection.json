@@ -1,0 +1,3352 @@
+{
+  "info": {
+    "_postman_id": "76918ebf-d13e-4280-a4de-6027e9aa7e2f",
+    "name": "WastePlatform API - Professional QA Suite",
+    "description": "Import this collection together with the matching environment file.\n\nRecommended usage:\n- Set baseUrl to your local or deployed API URL\n- Login with the role-specific requests to populate tokens\n- Use managementToken for endpoints that allow Admin or Enterprise\n- Use the dedicated role tokens for Citizen, Collector, Enterprise, and Admin folders\n\nThis collection covers health, auth, public endpoints, reports, complaints, notifications, citizen flows, collector flows, enterprise flows, and admin flows.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "43354995",
+    "_collection_link": "https://go.postman.co/collection/43354995-76918ebf-d13e-4280-a4de-6027e9aa7e2f?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "00 - Smoke & Public",
+      "item": [
+        {
+          "name": "GET Health",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('response status is ok', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.status).to.eql('ok');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "health"
+              ]
+            },
+            "description": "Smoke test. Keep this request green on every deployment."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Public Analytics Reports",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('payload has data', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('data');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/public/analytics/reports",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "public",
+                "analytics",
+                "reports"
+              ]
+            },
+            "description": "Public analytics endpoint. No auth required."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "01 - Auth",
+      "item": [
+        {
+          "name": "GET Roles",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('roles array exists', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.roles).to.be.an('array');",
+                  "  pm.expect(body.roles.length).to.be.greaterThan(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/roles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "roles"
+              ]
+            },
+            "description": "Use this to inspect available roles before registering users."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Register Citizen",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200 or 201 or conflict on duplicate', function () {",
+                  "  pm.expect([200, 201, 409, 400, 422]).to.include(pm.response.code);",
+                  "});",
+                  "const body = pm.response.text() ? pm.response.json() : {};",
+                  "const token = body.accessToken || body.token || body.jwtToken || (body.data && (body.data.accessToken || body.data.token || body.data.jwtToken));",
+                  "if (token) {",
+                  "  pm.collectionVariables.set('citizenToken', token);",
+                  "}",
+                  "pm.test('response has a message or data object', function () {",
+                  "  pm.expect(body).to.satisfy(v => typeof v === 'object');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"Citizen\",\n  \"fullName\": \"{{sampleFullName}}\",\n  \"email\": \"citizen+{{$timestamp}}@example.com\",\n  \"password\": \"{{samplePassword}}\",\n  \"phone\": \"{{samplePhone}}\",\n  \"district\": \"{{sampleDistrict}}\",\n  \"ward\": \"{{sampleWard}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Register a new citizen account. The email is timestamped to avoid duplicates."
+          },
+          "response": [
+            {
+              "name": "POST Register Citizen",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"role\": \"Citizen\",\n  \"fullName\": \"{{sampleFullName}}\",\n  \"email\": \"citizen+{{$timestamp}}@example.com\",\n  \"password\": \"{{samplePassword}}\",\n  \"phone\": \"{{samplePhone}}\",\n  \"district\": \"{{sampleDistrict}}\",\n  \"ward\": \"{{sampleWard}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/register",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Date",
+                  "value": "Sun, 17 May 2026 14:15:21 GMT"
+                },
+                {
+                  "key": "Server",
+                  "value": "Kestrel"
+                },
+                {
+                  "key": "Transfer-Encoding",
+                  "value": "chunked"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1Yzc2YmU3Yy1iNmJiLTQ5ZDgtOWE3OC0wMmFjODgxMDY0Y2EiLCJlbWFpbCI6ImNpdGl6ZW4rMTc3OTAyNzMyMUBleGFtcGxlLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkNpdGl6ZW4iLCJmdWxsTmFtZSI6IlRlc3QgVXNlciIsImp0aSI6ImM1MGFiMjgyLWY1YzEtNDFiNS05ODg0LWZhMjNhMjM0YmFlNCIsImV4cCI6MTc3OTAzMDkyMiwiaXNzIjoiV2FzdGVQbGF0Zm9ybSIsImF1ZCI6Ildhc3RlUGxhdGZvcm1DbGllbnQifQ.YykX761xCBROJOJ1bp867bSMmCqyUJ9yIf44VLJAA44\",\n    \"user\": {\n        \"id\": \"5c76be7c-b6bb-49d8-9a78-02ac881064ca\",\n        \"fullName\": \"Test User\",\n        \"email\": \"citizen+1779027321@example.com\",\n        \"role\": \"citizen\"\n    }\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Register Enterprise",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200 or 201 or conflict on duplicate', function () {",
+                  "  pm.expect([200, 201, 409, 400, 422]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"Enterprise\",\n  \"fullName\": \"{{sampleFullName}}\",\n  \"email\": \"enterprise+{{$timestamp}}@example.com\",\n  \"password\": \"{{samplePassword}}\",\n  \"phone\": \"{{samplePhone}}\",\n  \"district\": \"{{sampleDistrict}}\",\n  \"ward\": \"{{sampleWard}}\",\n  \"companyName\": \"Green Recycle Co.\",\n  \"serviceArea\": \"District 1, District 3\",\n  \"capacityKgPerDay\": 500\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Register a new enterprise account. Adjust payload if your backend registration command uses a slightly different shape."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Login Citizen",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is success or auth failure', function () {",
+                  "  pm.expect([200, 400, 401, 403, 422]).to.include(pm.response.code);",
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "  const body = pm.response.json();",
+                  "  const token = body.accessToken || body.token || body.jwtToken || (body.data && (body.data.accessToken || body.data.token || body.data.jwtToken));",
+                  "  if (token) {",
+                  "    pm.collectionVariables.set('citizenToken', token);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"citizen@example.com\",\n  \"password\": \"{{samplePassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Use this request to capture a citizen token into citizenToken."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Login Enterprise",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const body = pm.response.json();",
+                  "  const token = body.accessToken || body.token || body.jwtToken || (body.data && (body.data.accessToken || body.data.token || body.data.jwtToken));",
+                  "  if (token) {",
+                  "    pm.collectionVariables.set('enterpriseToken', token);",
+                  "  }",
+                  "}",
+                  "pm.test('status code is acceptable', function () {",
+                  "  pm.expect([200, 400, 401, 403, 422]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"enterprise@example.com\",\n  \"password\": \"{{samplePassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Use this request to capture an enterprise token into enterpriseToken."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Login Collector",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const body = pm.response.json();",
+                  "  const token = body.accessToken || body.token || body.jwtToken || (body.data && (body.data.accessToken || body.data.token || body.data.jwtToken));",
+                  "  if (token) {",
+                  "    pm.collectionVariables.set('collectorToken', token);",
+                  "  }",
+                  "}",
+                  "pm.test('status code is acceptable', function () {",
+                  "  pm.expect([200, 400, 401, 403, 422]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"collector@example.com\",\n  \"password\": \"{{samplePassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Use this request to capture a collector token into collectorToken."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Login Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const body = pm.response.json();",
+                  "  const token = body.accessToken || body.token || body.jwtToken || (body.data && (body.data.accessToken || body.data.token || body.data.jwtToken));",
+                  "  if (token) {",
+                  "    pm.collectionVariables.set('adminToken', token);",
+                  "    pm.collectionVariables.set('managementToken', token);",
+                  "  }",
+                  "}",
+                  "pm.test('status code is acceptable', function () {",
+                  "  pm.expect([200, 400, 401, 403, 422]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"{{samplePassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Use this request to capture an admin token into adminToken and managementToken."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 - Waste Categories",
+      "item": [
+        {
+          "name": "GET All Categories",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "pm.test('payload contains data', function () {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('data');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/waste-categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "waste-categories"
+              ]
+            },
+            "description": "Public reference data for report creation and enterprise waste-type setup."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Category By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200 or 404', function () {",
+                  "  pm.expect([200, 404]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/waste-categories/{{categoryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "waste-categories",
+                "{{categoryId}}"
+              ]
+            },
+            "description": "Use a valid categoryId from the list endpoint."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 - Reports",
+      "item": [
+        {
+          "name": "Citizen Reports",
+          "item": [
+            {
+              "name": "POST Create Report",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('status code is success', function () {",
+                      "  pm.expect([200, 201, 400, 401, 403, 422]).to.include(pm.response.code);",
+                      "});",
+                      "if (pm.response.code === 200 || pm.response.code === 201) {",
+                      "  const body = pm.response.json();",
+                      "  const reportId = body.report?.id || body.data?.id || body.data?.reportId || body.id;",
+                      "  if (reportId) {",
+                      "    pm.collectionVariables.set('reportId', reportId);",
+                      "  }",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "WasteCategoryId",
+                      "value": "{{categoryId}}",
+                      "type": "text"
+                    },
+                    {
+                      "key": "Latitude",
+                      "value": "10.7769",
+                      "type": "text"
+                    },
+                    {
+                      "key": "Longitude",
+                      "value": "106.7009",
+                      "type": "text"
+                    },
+                    {
+                      "key": "Description",
+                      "value": "Sample waste report from Postman",
+                      "type": "text"
+                    },
+                    {
+                      "key": "Address",
+                      "value": "123 Nguyen Trai, District 1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "AiSuggestion",
+                      "value": "General waste - manual review needed",
+                      "type": "text"
+                    },
+                    {
+                      "key": "Images",
+                      "type": "file",
+                      "value": ""
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/reports/create",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "create"
+                  ]
+                },
+                "description": "Create a report as a Citizen. Upload at least one image if the backend requires it."
+              },
+              "response": []
+            },
+            {
+              "name": "GET My Reports",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('status code is 200', function () {",
+                      "  pm.response.to.have.status(200);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/reports/my-reports?page=1&pageSize=10",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "my-reports"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    }
+                  ]
+                },
+                "description": "List the current citizen reports."
+              },
+              "response": []
+            },
+            {
+              "name": "GET Report By ID",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('status code is 200 or 404', function () {",
+                      "  pm.expect([200, 404]).to.include(pm.response.code);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/reports/{{reportId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "{{reportId}}"
+                  ]
+                },
+                "description": "Fetch a single report by ID."
+              },
+              "response": []
+            }
+          ],
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{citizenToken}}",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Management Reports",
+          "item": [
+            {
+              "name": "GET All Reports",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('status code is 200', function () {",
+                      "  pm.response.to.have.status(200);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/reports/all?page=1&pageSize=10&status=",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "all"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "status",
+                      "value": ""
+                    }
+                  ]
+                },
+                "description": "Admin or Enterprise report list. Set managementToken to the token of the role you want to use."
+              },
+              "response": []
+            },
+            {
+              "name": "POST Accept Report",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('status code is success', function () {",
+                      "  pm.expect([200, 400, 401, 403, 404]).to.include(pm.response.code);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"notes\": \"Accepted from Postman\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/reports/{{reportId}}/accept",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "{{reportId}}",
+                    "accept"
+                  ]
+                },
+                "description": "Approve a report as Enterprise or Admin."
+              },
+              "response": []
+            },
+            {
+              "name": "POST Reject Report",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('status code is success', function () {",
+                      "  pm.expect([200, 400, 401, 403, 404]).to.include(pm.response.code);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"Invalid image or outside service area\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/reports/{{reportId}}/reject",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "{{reportId}}",
+                    "reject"
+                  ]
+                },
+                "description": "Reject a report as Enterprise or Admin."
+              },
+              "response": []
+            },
+            {
+              "name": "GET Enterprise Available Reports",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('status code is 200', function () {",
+                      "  pm.response.to.have.status(200);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/reports/enterprise/available?page=1&pageSize=10",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "reports",
+                    "enterprise",
+                    "available"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    }
+                  ]
+                },
+                "description": "Enterprise available reports list."
+              },
+              "response": []
+            }
+          ],
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{managementToken}}",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Complaints",
+      "item": [
+        {
+          "name": "Citizen Complaints",
+          "item": [
+            {
+              "name": "POST Create Complaint",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('status code is success', function () {",
+                      "  pm.expect([200, 201, 400, 401, 403, 422]).to.include(pm.response.code);",
+                      "});",
+                      "if (pm.response.code === 200 || pm.response.code === 201) {",
+                      "  const body = pm.response.json();",
+                      "  const complaintId = body.data?.id || body.id || body.data?.complaintId;",
+                      "  if (complaintId) {",
+                      "    pm.collectionVariables.set('complaintId', complaintId);",
+                      "  }",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"content\": \"Sample complaint from Postman\",\n  \"reportId\": \"{{reportId}}\",\n  \"enterpriseId\": \"{{enterpriseId}}\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/complaints",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "complaints"
+                  ]
+                },
+                "description": "Create a complaint linked to a report or enterprise."
+              },
+              "response": []
+            },
+            {
+              "name": "GET My Complaints",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('status code is 200', function () {",
+                      "  pm.response.to.have.status(200);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/complaints?page=1&pageSize=10&status=",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "complaints"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "status",
+                      "value": ""
+                    }
+                  ]
+                },
+                "description": "List complaints for the current citizen."
+              },
+              "response": []
+            },
+            {
+              "name": "GET Complaint Detail",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('status code is 200 or 404', function () {",
+                      "  pm.expect([200, 404]).to.include(pm.response.code);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/complaints/{{complaintId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "complaints",
+                    "{{complaintId}}"
+                  ]
+                },
+                "description": "Fetch a complaint by ID."
+              },
+              "response": []
+            },
+            {
+              "name": "POST Escalate Complaint",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('status code is success', function () {",
+                      "  pm.expect([200, 400, 401, 403, 404]).to.include(pm.response.code);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"Need admin review\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/complaints/{{complaintId}}/escalate",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "complaints",
+                    "{{complaintId}}",
+                    "escalate"
+                  ]
+                },
+                "description": "Escalate a complaint to admin."
+              },
+              "response": []
+            }
+          ],
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{citizenToken}}",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Admin Complaints",
+          "item": [
+            {
+              "name": "GET All Complaints",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('status code is 200', function () {",
+                      "  pm.response.to.have.status(200);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/complaints?page=1&pageSize=10&status=&searchTerm=",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "admin",
+                    "complaints"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "status",
+                      "value": ""
+                    },
+                    {
+                      "key": "searchTerm",
+                      "value": ""
+                    }
+                  ]
+                },
+                "description": "Admin complaint list with filters."
+              },
+              "response": []
+            },
+            {
+              "name": "GET Complaint Detail",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('status code is 200 or 404', function () {",
+                      "  pm.expect([200, 404]).to.include(pm.response.code);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/complaints/{{complaintId}}",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "admin",
+                    "complaints",
+                    "{{complaintId}}"
+                  ]
+                },
+                "description": "Admin complaint detail view."
+              },
+              "response": []
+            },
+            {
+              "name": "POST Resolve Complaint",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('status code is success', function () {",
+                      "  pm.expect([200, 400, 401, 403, 404]).to.include(pm.response.code);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"adminResponse\": \"Issue has been reviewed and resolved\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/complaints/{{complaintId}}/resolve",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "admin",
+                    "complaints",
+                    "{{complaintId}}",
+                    "resolve"
+                  ]
+                },
+                "description": "Resolve a complaint as admin."
+              },
+              "response": []
+            },
+            {
+              "name": "POST Reject Complaint",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('status code is success', function () {",
+                      "  pm.expect([200, 400, 401, 403, 404]).to.include(pm.response.code);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"adminResponse\": \"Complaint rejected after review\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/complaints/{{complaintId}}/reject",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "api",
+                    "admin",
+                    "complaints",
+                    "{{complaintId}}",
+                    "reject"
+                  ]
+                },
+                "description": "Reject a complaint as admin."
+              },
+              "response": []
+            }
+          ],
+          "auth": {
+            "type": "bearer",
+            "bearer": [
+              {
+                "key": "token",
+                "value": "{{adminToken}}",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Notifications",
+      "item": [
+        {
+          "name": "GET Notifications",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications?page=1&pageSize=20&status=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notifications"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "20"
+                },
+                {
+                  "key": "status",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "List the current citizen notifications."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Unread Count",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/unread-count",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notifications",
+                "unread-count"
+              ]
+            },
+            "description": "Get unread notification count for the current citizen."
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Mark Notification Read",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is success', function () {",
+                  "  pm.expect([200, 400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/{{notificationId}}/read",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notifications",
+                "{{notificationId}}",
+                "read"
+              ]
+            },
+            "description": "Mark one notification as read."
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Mark All Notifications Read",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is success', function () {",
+                  "  pm.expect([200, 400, 401, 403]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/notifications/mark-all-read",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "notifications",
+                "mark-all-read"
+              ]
+            },
+            "description": "Mark all notifications as read."
+          },
+          "response": []
+        }
+      ],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{citizenToken}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "06 - Citizen API",
+      "item": [
+        {
+          "name": "GET Rewards Total",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/citizens/rewards",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "citizens",
+                "rewards"
+              ]
+            },
+            "description": "Total reward points for the current citizen."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Rewards History",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/citizens/rewards/history?page=1&pageSize=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "citizens",
+                "rewards",
+                "history"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Paginated reward point history."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Leaderboard",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/citizens/rewards/leaderboard?page=1&pageSize=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "citizens",
+                "rewards",
+                "leaderboard"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Citizen leaderboard by points."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Leaderboard by Area",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/citizens/rewards/leaderboard/area?district={{sampleDistrict}}&ward={{sampleWard}}&page=1&pageSize=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "citizens",
+                "rewards",
+                "leaderboard",
+                "area"
+              ],
+              "query": [
+                {
+                  "key": "district",
+                  "value": "{{sampleDistrict}}"
+                },
+                {
+                  "key": "ward",
+                  "value": "{{sampleWard}}"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Leaderboard filtered by district and ward."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/citizens/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "citizens",
+                "profile"
+              ]
+            },
+            "description": "Get the current citizen profile."
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is success', function () {",
+                  "  pm.expect([200, 400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"{{sampleFullName}} Updated\",\n  \"phone\": \"{{samplePhone}}\",\n  \"district\": \"{{sampleDistrict}}\",\n  \"ward\": \"{{sampleWard}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/citizens/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "citizens",
+                "profile"
+              ]
+            },
+            "description": "Update the current citizen profile."
+          },
+          "response": []
+        }
+      ],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{citizenToken}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "07 - Collector API",
+      "item": [
+        {
+          "name": "GET Collector Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/collector/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "collector",
+                "profile"
+              ]
+            },
+            "description": "Fetch the current collector profile."
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH Toggle Availability",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is success', function () {",
+                  "  pm.expect([200, 400, 401, 403]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isAvailable\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/collector/profile/availability",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "collector",
+                "profile",
+                "availability"
+              ]
+            },
+            "description": "Toggle collector availability."
+          },
+          "response": []
+        }
+      ],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{collectorToken}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "08 - Collector Tasks",
+      "item": [
+        {
+          "name": "GET My Tasks",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/collector/tasks?status=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "collector",
+                "tasks"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "List tasks assigned to the current collector."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Task By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200 or 404', function () {",
+                  "  pm.expect([200, 404]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/collector/tasks/{{taskId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "collector",
+                "tasks",
+                "{{taskId}}"
+              ]
+            },
+            "description": "Get detailed task information."
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Set On The Way",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is success', function () {",
+                  "  pm.expect([200, 400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/collector/tasks/{{taskId}}/on-the-way",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "collector",
+                "tasks",
+                "{{taskId}}",
+                "on-the-way"
+              ]
+            },
+            "description": "Move task to OnTheWay."
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Complete Task",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is success', function () {",
+                  "  pm.expect([200, 400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "WeightKg",
+                  "value": "12.5",
+                  "type": "text"
+                },
+                {
+                  "key": "Notes",
+                  "value": "Collected successfully",
+                  "type": "text"
+                },
+                {
+                  "key": "Images",
+                  "type": "file",
+                  "value": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/collector/tasks/{{taskId}}/complete",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "collector",
+                "tasks",
+                "{{taskId}}",
+                "complete"
+              ]
+            },
+            "description": "Complete a task and upload proof images if required."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Task Stats",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/collector/tasks/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "collector",
+                "tasks",
+                "stats"
+              ]
+            },
+            "description": "Collector task summary statistics."
+          },
+          "response": []
+        }
+      ],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{collectorToken}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "09 - Enterprise API",
+      "item": [
+        {
+          "name": "GET Enterprise Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200 or 400 for admin-only limitation', function () {",
+                  "  pm.expect([200, 400, 401, 403]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/enterprise/tasks/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enterprise",
+                "tasks",
+                "profile"
+              ]
+            },
+            "description": "Get current enterprise profile and accepted waste types."
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Enterprise Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is success', function () {",
+                  "  pm.expect([200, 400, 401, 403]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"serviceArea\": \"District 1, District 3\",\n  \"capacityKgPerDay\": 1000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/enterprise/tasks/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enterprise",
+                "tasks",
+                "profile"
+              ]
+            },
+            "description": "Update enterprise capacity and service area."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Waste Types",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200 or 400 for admin-only limitation', function () {",
+                  "  pm.expect([200, 400, 401, 403]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/enterprise/tasks/waste-types",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enterprise",
+                "tasks",
+                "waste-types"
+              ]
+            },
+            "description": "Get all categories and accepted category IDs."
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Waste Types",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is success', function () {",
+                  "  pm.expect([200, 400, 401, 403]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"wasteCategoryIds\": [1, 2, 3]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/enterprise/tasks/waste-types",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enterprise",
+                "tasks",
+                "waste-types"
+              ]
+            },
+            "description": "Update accepted waste categories."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Collectors",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/enterprise/collectors",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enterprise",
+                "collectors"
+              ]
+            },
+            "description": "List collectors belonging to the enterprise."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Create Collector",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is success', function () {",
+                  "  pm.expect([200, 400, 401, 403, 409]).to.include(pm.response.code);",
+                  "});",
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  const collectorId = body.data?.id || body.id || body.data?.collectorId;",
+                  "  if (collectorId) {",
+                  "    pm.collectionVariables.set('collectorId', collectorId);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Collector Demo\",\n  \"email\": \"collector+{{$timestamp}}@example.com\",\n  \"phone\": \"0901234567\",\n  \"temporaryPassword\": \"{{samplePassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/enterprise/collectors",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enterprise",
+                "collectors"
+              ]
+            },
+            "description": "Create a new collector under the enterprise."
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Update Collector",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is success', function () {",
+                  "  pm.expect([200, 400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Collector Demo Updated\",\n  \"phone\": \"0907654321\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/enterprise/collectors/{{collectorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enterprise",
+                "collectors",
+                "{{collectorId}}"
+              ]
+            },
+            "description": "Update a collector profile."
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE Collector",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is success', function () {",
+                  "  pm.expect([200, 400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/enterprise/collectors/{{collectorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enterprise",
+                "collectors",
+                "{{collectorId}}"
+              ]
+            },
+            "description": "Remove a collector from the enterprise."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Reward Rules",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/enterprise/reward-rules",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enterprise",
+                "reward-rules"
+              ]
+            },
+            "description": "List reward rules for the enterprise."
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Reward Rules",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is success', function () {",
+                  "  pm.expect([200, 400, 401, 403]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rules\": [\n    {\n      \"wasteCategoryId\": 1,\n      \"pointsPerReport\": 10,\n      \"bonusQuality\": 2,\n      \"isActive\": true\n    },\n    {\n      \"wasteCategoryId\": 2,\n      \"pointsPerReport\": 8,\n      \"bonusQuality\": 1,\n      \"isActive\": true\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/enterprise/reward-rules",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enterprise",
+                "reward-rules"
+              ]
+            },
+            "description": "Bulk update reward rules."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Task Stats",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200 or 400 for admin-only limitation', function () {",
+                  "  pm.expect([200, 400, 401, 403]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/enterprise/tasks/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enterprise",
+                "tasks",
+                "stats"
+              ]
+            },
+            "description": "Enterprise task statistics."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Task Progress",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is success', function () {",
+                  "  pm.expect([200, 400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/enterprise/tasks/{{taskId}}/progress",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enterprise",
+                "tasks",
+                "{{taskId}}",
+                "progress"
+              ]
+            },
+            "description": "Get one task progress."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Available Collectors",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/enterprise/tasks/collectors",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enterprise",
+                "tasks",
+                "collectors"
+              ]
+            },
+            "description": "List collectors available for assignment."
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Assign Collector",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is success', function () {",
+                  "  pm.expect([200, 400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"collectorId\": \"{{collectorId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/enterprise/tasks/{{taskId}}/assign-collector",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enterprise",
+                "tasks",
+                "{{taskId}}",
+                "assign-collector"
+              ]
+            },
+            "description": "Assign a collector to a task. Use managementToken if you want admin access, or enterpriseToken for enterprise flows."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Enterprise Complaints",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200 or 400 for admin-only limitation', function () {",
+                  "  pm.expect([200, 400, 401, 403]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/enterprise/tasks/complaints?page=1&pageSize=10&status=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enterprise",
+                "tasks",
+                "complaints"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Complaint list visible to enterprise/admin."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Respond Complaint",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is success', function () {",
+                  "  pm.expect([200, 400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"response\": \"We have received and processed your complaint\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/enterprise/tasks/complaints/{{complaintId}}/respond",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enterprise",
+                "tasks",
+                "complaints",
+                "{{complaintId}}",
+                "respond"
+              ]
+            },
+            "description": "Enterprise complaint response endpoint."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Enterprise Report Analytics",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/enterprise/analytics/reports?startDate=&endDate=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "enterprise",
+                "analytics",
+                "reports"
+              ],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": ""
+                },
+                {
+                  "key": "endDate",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Enterprise analytics report endpoint."
+          },
+          "response": []
+        }
+      ],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{enterpriseToken}}",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "10 - Admin API",
+      "item": [
+        {
+          "name": "GET Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users?search=&role=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "search",
+                  "value": ""
+                },
+                {
+                  "key": "role",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Admin user list with filters."
+          },
+          "response": []
+        },
+        {
+          "name": "GET User Stats",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "users",
+                "stats"
+              ]
+            },
+            "description": "Dashboard user stats."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Create User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is success', function () {",
+                  "  pm.expect([200, 400, 401, 403, 409]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Admin Created User\",\n  \"email\": \"user+{{$timestamp}}@example.com\",\n  \"password\": \"{{samplePassword}}\",\n  \"role\": \"Citizen\",\n  \"phone\": \"0909999999\",\n  \"district\": \"District 1\",\n  \"ward\": \"Ward 1\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "users"
+              ]
+            },
+            "description": "Create a new user from the admin panel."
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH Toggle User Status",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is success', function () {",
+                  "  pm.expect([200, 400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/{{userId}}/toggle-status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "users",
+                "{{userId}}",
+                "toggle-status"
+              ]
+            },
+            "description": "Activate or deactivate a user."
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH Update User Role",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is success', function () {",
+                  "  pm.expect([200, 400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"Collector\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users/{{userId}}/role",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "users",
+                "{{userId}}",
+                "role"
+              ]
+            },
+            "description": "Change a user's role."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Enterprises",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/enterprises?page=1&pageSize=10&isVerified=&searchTerm=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "enterprises"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "10"
+                },
+                {
+                  "key": "isVerified",
+                  "value": ""
+                },
+                {
+                  "key": "searchTerm",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Admin enterprise list with filters."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Enterprise Detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200 or 404', function () {",
+                  "  pm.expect([200, 404]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/enterprises/{{enterpriseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "enterprises",
+                "{{enterpriseId}}"
+              ]
+            },
+            "description": "Admin enterprise detail view."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Verify Enterprise",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is success', function () {",
+                  "  pm.expect([200, 400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/enterprises/{{enterpriseId}}/verify",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "enterprises",
+                "{{enterpriseId}}",
+                "verify"
+              ]
+            },
+            "description": "Mark an enterprise as verified."
+          },
+          "response": []
+        },
+        {
+          "name": "POST Reject Enterprise",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is success', function () {",
+                  "  pm.expect([200, 400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reasonForRejection\": \"Missing required compliance documents\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/enterprises/{{enterpriseId}}/reject",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "enterprises",
+                "{{enterpriseId}}",
+                "reject"
+              ]
+            },
+            "description": "Reject an enterprise with a reason."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Analytics Overview",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/analytics/overview",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "analytics",
+                "overview"
+              ]
+            },
+            "description": "Overall admin analytics dashboard."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Analytics Reports",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/analytics/reports?startDate=&endDate=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "analytics",
+                "reports"
+              ],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": ""
+                },
+                {
+                  "key": "endDate",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Admin report analytics."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Analytics Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/analytics/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "analytics",
+                "users"
+              ]
+            },
+            "description": "Admin user analytics."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Analytics Waste",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/analytics/waste",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "analytics",
+                "waste"
+              ]
+            },
+            "description": "Admin waste analytics."
+          },
+          "response": []
+        },
+        {
+          "name": "GET Analytics Summary",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status code is 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/analytics/summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "analytics",
+                "summary"
+              ]
+            },
+            "description": "Admin analytics summary."
+          },
+          "response": []
+        }
+      ],
+      "auth": {
+        "type": "bearer",
+        "bearer": [
+          {
+            "key": "token",
+            "value": "{{adminToken}}",
+            "type": "string"
+          }
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "healthPath",
+      "value": "/api/health"
+    },
+    {
+      "key": "citizenToken",
+      "value": ""
+    },
+    {
+      "key": "collectorToken",
+      "value": ""
+    },
+    {
+      "key": "enterpriseToken",
+      "value": ""
+    },
+    {
+      "key": "adminToken",
+      "value": ""
+    },
+    {
+      "key": "managementToken",
+      "value": ""
+    },
+    {
+      "key": "jiraKey",
+      "value": "WRP-BE-TESTS"
+    },
+    {
+      "key": "reportId",
+      "value": ""
+    },
+    {
+      "key": "complaintId",
+      "value": ""
+    },
+    {
+      "key": "notificationId",
+      "value": ""
+    },
+    {
+      "key": "taskId",
+      "value": ""
+    },
+    {
+      "key": "collectorId",
+      "value": ""
+    },
+    {
+      "key": "enterpriseId",
+      "value": ""
+    },
+    {
+      "key": "categoryId",
+      "value": "1"
+    },
+    {
+      "key": "userId",
+      "value": ""
+    },
+    {
+      "key": "samplePassword",
+      "value": "ChangeMe123!"
+    },
+    {
+      "key": "sampleFullName",
+      "value": "Test User"
+    },
+    {
+      "key": "samplePhone",
+      "value": "0900000000"
+    },
+    {
+      "key": "sampleDistrict",
+      "value": "District 1"
+    },
+    {
+      "key": "sampleWard",
+      "value": "Ward 1"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+# Normalize line endings for text files
+* text=auto
+
+# Keep GitHub workflows and docs LF to reduce merge noise
+*.yml text eol=lf
+*.yaml text eol=lf
+*.md text eol=lf
+
+# Keep Windows scripts CRLF
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf

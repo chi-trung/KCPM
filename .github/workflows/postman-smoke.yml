@@ -1,0 +1,360 @@
+name: Postman Smoke Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_scope:
+        description: Select whether to run the smoke folder or the full collection
+        required: true
+        default: all
+        type: choice
+        options:
+          - smoke
+          - all
+      jira_key:
+        description: Optional Jira issue key to comment/transition when running manually
+        required: false
+        default: ""
+      force_transition:
+        description: Optional. When set to 'done', force transitioning the resolved Jira issue to Done.
+        required: false
+        default: ""
+  push:
+    branches-ignore:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+    types:
+      - opened
+      - edited
+      - synchronize
+      - reopened
+      - closed
+
+permissions:
+  contents: read
+
+concurrency:
+  group: postman-smoke-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    if: github.event_name != 'pull_request' || github.event.action != 'closed' || github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract Jira key from branch/PR/commit
+        id: extract_jira
+        run: |
+          $parts = @(
+            "${{ github.event.pull_request.title }}",
+            "${{ github.head_ref }}",
+            "${{ github.ref_name }}",
+            "${{ github.event.head_commit.message }}",
+            "${{ github.event.inputs.jira_key }}"
+          )
+          $source = ($parts -join ' ')
+
+          if ($source -match '([A-Z][A-Z0-9]+-\d+)') {
+            $jiraKey = $Matches[1]
+            "jira_key=$jiraKey" >> $env:GITHUB_OUTPUT
+            Write-Host "Detected Jira key: $jiraKey"
+          } else {
+            "jira_key=" >> $env:GITHUB_OUTPUT
+            Write-Host "No Jira key detected from branch/PR/commit context."
+          }
+
+      - name: Start backend stack
+        run: docker compose -f ./Waste-Recycling-Platform/docker-compose.yml up -d --build db backend
+
+      - name: Show container status
+        run: docker compose -f ./Waste-Recycling-Platform/docker-compose.yml ps
+
+      - name: Wait for API health
+        run: |
+          $maxAttempts = 60
+          $attempt = 0
+          while ($attempt -lt $maxAttempts) {
+            $attempt++
+            try {
+              Write-Host "Health check attempt $attempt/$maxAttempts..."
+              $response = Invoke-WebRequest -Uri 'http://localhost:8080/api/health' -UseBasicParsing -TimeoutSec 5
+              if ($response.StatusCode -eq 200) {
+                Write-Host 'API is healthy ✓'
+                exit 0
+              }
+            } catch {
+              if ($attempt -eq $maxAttempts) {
+                Write-Host "Health check failed after $maxAttempts attempts"
+                throw
+              }
+              Write-Host "Waiting... (next attempt in 5s)"
+              Start-Sleep -Seconds 5
+            }
+          }
+
+      - name: Install Newman
+        run: npm install -g newman newman-reporter-junitfull
+
+      - name: Decide Postman run scope
+        id: postman_scope
+        run: |
+          $scope = '${{ github.event.inputs.run_scope }}'
+
+          if ([string]::IsNullOrWhiteSpace($scope)) {
+            $scope = 'smoke'
+          }
+
+          if ('${{ github.event_name }}' -ne 'workflow_dispatch') {
+            $scope = 'smoke'
+          }
+
+          "scope=$scope" >> $env:GITHUB_OUTPUT
+          Write-Host "Postman run scope: $scope"
+
+      - name: Run Postman collection
+        id: run_postman
+        run: |
+          $scope = '${{ steps.postman_scope.outputs.scope }}'
+          $args = @(
+            'run',
+            './Waste-Recycling-Platform/postman/WastePlatform.professional.postman_collection.json',
+            '-e', './Waste-Recycling-Platform/postman/WastePlatform.professional.postman_environment.json',
+            '--env-var', 'baseUrl=http://localhost:8080',
+            '--reporters', 'cli,junit,json',
+            '--reporter-junit-export', './TestResults/postman-junit.xml',
+            '--reporter-json-export', './TestResults/postman-report.json'
+          )
+
+          if ($scope -eq 'smoke') {
+            $args += @('--folder', '00 - Smoke & Public')
+          }
+
+          Write-Host "Running Newman scope: $scope"
+          & newman @args
+
+      - name: Upload Postman results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: postman-smoke-results
+          path: |
+            TestResults
+            **\postman-junit.xml
+            **\postman-report.json
+
+      - name: Resolve Jira Issue Key
+        id: resolve_jira
+        if: always() && steps.extract_jira.outputs.jira_key != ''
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          EXTRACTED_KEY: ${{ steps.extract_jira.outputs.jira_key }}
+        run: |
+          if (-not $env:JIRA_BASE_URL -or -not $env:JIRA_API_EMAIL -or -not $env:JIRA_API_TOKEN) { 
+            Write-Host "::error::Missing Jira credentials in GitHub Secrets. Cannot comment or transition Jira issue!"
+            exit 1 
+          }
+          $email = $env:JIRA_API_EMAIL.Trim()
+          $token = $env:JIRA_API_TOKEN.Trim()
+          $auth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("$($email):$($token)"))
+          $headers = @{ Authorization = "Basic $auth"; Accept = "application/json"; "Content-Type" = "application/json" }
+          $base = $env:JIRA_BASE_URL.Trim().TrimEnd('/')
+          $realKey = $env:EXTRACTED_KEY.Trim()
+          
+          Write-Host "::notice::Using Jira Base URL: $base"
+          $emailParts = $email -split "@"
+          Write-Host "::notice::Using Email: $($emailParts[0].Substring(0, [math]::Min(3, $emailParts[0].Length)))***@$($emailParts[1])"
+          Write-Host "::notice::Looking for Key: '$realKey'"
+          
+          try {
+            $resp = Invoke-RestMethod -Method GET -Uri "$base/rest/api/3/issue/$realKey?fields=key" -Headers $headers -ErrorAction Stop
+          } catch {
+            Write-Host "::warning::First API call failed: $($_.Exception.Message)"
+            Write-Host "$realKey is not a direct Issue ID or cannot be accessed. Searching by summary..."
+            
+            # The search query should search by key if we are looking for a key! But wait, JQL for key is 'key = KIEM-19' or 'text ~ KIEM-19'
+            $jql = [uri]::EscapeDataString("key = `"$realKey`" OR summary ~ `"$realKey`"")
+            try {
+              $searchResp = Invoke-RestMethod -Method GET -Uri "$base/rest/api/3/search/jql?jql=$jql&fields=key" -Headers $headers -ErrorAction Stop
+              if ($searchResp.issues.Count -gt 0) {
+                 $realKey = $searchResp.issues[0].key
+                 Write-Host "Resolved $env:EXTRACTED_KEY to real issue key $realKey via JQL search"
+              } else {
+                 Write-Host "::error::Could not find any Jira issue matching $env:EXTRACTED_KEY"
+                 exit 1
+              }
+            } catch {
+              Write-Host "::error::Jira API search failed. The token may be invalid or the issue doesn't exist."
+              Write-Host $_.Exception.Message
+              exit 1
+            }
+          }
+          Write-Host "Successfully resolved Jira Key: $realKey"
+          "real_jira_key=$realKey" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+
+      - name: Comment PASS result to Jira
+        if: always() && steps.run_postman.outcome == 'success' && steps.resolve_jira.outputs.real_jira_key != ''
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_KEY: ${{ steps.resolve_jira.outputs.real_jira_key }}
+        run: |
+          if (-not $env:JIRA_BASE_URL -or -not $env:JIRA_API_EMAIL -or -not $env:JIRA_API_TOKEN) { Write-Host "Missing Jira credentials. Skipping."; exit 0 }
+          $runUrl = "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          $commentText = "Postman Smoke Tests PASSED for commit ${{ github.sha }}. Run: $runUrl"
+
+          $body = @{
+            body = @{
+              type = "doc"
+              version = 1
+              content = @(
+                @{
+                  type = "paragraph"
+                  content = @(
+                    @{
+                      type = "text"
+                      text = $commentText
+                    }
+                  )
+                }
+              )
+            }
+          } | ConvertTo-Json -Depth 10
+
+          $auth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("$($env:JIRA_API_EMAIL):$($env:JIRA_API_TOKEN)"))
+          $headers = @{ Authorization = "Basic $auth"; Accept = "application/json"; "Content-Type" = "application/json" }
+          $url = "$($env:JIRA_BASE_URL.TrimEnd('/'))/rest/api/3/issue/$($env:JIRA_KEY)/comment"
+
+          Invoke-RestMethod -Method POST -Uri $url -Headers $headers -Body $body | Out-Null
+          Write-Host "Posted PASS result to Jira issue $($env:JIRA_KEY)"
+
+      - name: Transition Jira issue status on PASS
+        if: always() && steps.run_postman.outcome == 'success' && steps.resolve_jira.outputs.real_jira_key != ''
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_KEY: ${{ steps.resolve_jira.outputs.real_jira_key }}
+        run: |
+          if (-not $env:JIRA_BASE_URL -or -not $env:JIRA_API_EMAIL -or -not $env:JIRA_API_TOKEN) { Write-Host "Missing Jira credentials. Skipping."; exit 0 }
+          $auth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("$($env:JIRA_API_EMAIL):$($env:JIRA_API_TOKEN)"))
+          $headers = @{ Authorization = "Basic $auth"; Accept = "application/json"; "Content-Type" = "application/json" }
+
+          $base = $env:JIRA_BASE_URL.TrimEnd('/')
+          $transitionsUrl = "$base/rest/api/3/issue/$($env:JIRA_KEY)/transitions"
+
+          function Transition-To ($Pattern) {
+            $transResp = Invoke-RestMethod -Method GET -Uri $transitionsUrl -Headers $headers
+            $target = $transResp.transitions | Where-Object { $_.to.name -match $Pattern } | Select-Object -First 1
+            if ($target) {
+              $body = @{ transition = @{ id = $target.id } } | ConvertTo-Json -Depth 5
+              Invoke-RestMethod -Method POST -Uri $transitionsUrl -Headers $headers -Body $body | Out-Null
+              Write-Host "Transitioned $env:JIRA_KEY to '$($target.to.name)'"
+              return $true
+            }
+            return $false
+          }
+
+          $eventName = "${{ github.event_name }}"
+          $donePattern = '(?i)^(Done|Resolved|Closed|Hoàn thành|Hoàn tất|Completed|Finished|Đã\s?xong)$'
+          $inProgressPattern = '(?i)(In Progress|Đang làm|Processing|In Development|Doing|In Progressed)'
+
+          # Allow manual force via workflow_dispatch input
+          $forceFlag = "${{ github.event.inputs.force_transition }}"
+          if (-not $forceFlag) { $forceFlag = '' }
+
+          # Try to detect merged PRs robustly:
+          try { $prMerged = "${{ github.event.pull_request.merged }}" } catch { $prMerged = '' }
+          try { $headCommitMsg = "${{ github.event.head_commit.message }}" } catch { $headCommitMsg = '' }
+          $isMergePush = $false
+          if ($prMerged -eq 'true') { $isMergePush = $true }
+          elseif ($headCommitMsg -and $headCommitMsg -match 'Merge pull request') { $isMergePush = $true }
+          elseif ($forceFlag -eq 'done') { $isMergePush = $true }
+
+          if (($eventName -eq 'pull_request' -and $prMerged -eq 'true') -or $isMergePush) {
+            Write-Host "Detected merged PR (or forced). Attempting to transition $env:JIRA_KEY to Done..."
+            if (-not (Transition-To $donePattern)) {
+              Write-Host "Could not transition directly to Done. Trying to go to In Progress first..."
+              if (Transition-To $inProgressPattern) {
+                Write-Host "Successfully transitioned to In Progress. Now moving to Done..."
+                if (-not (Transition-To $donePattern)) {
+                   Write-Host "::warning::Still could not find a 'Done' transition after moving to 'In Progress'."
+                }
+              } else {
+                 Write-Host "::warning::Could not find 'In Progress' or 'Done' transitions."
+              }
+            }
+          } else {
+            Write-Host "Event is push (non-merge). Attempting to transition $env:JIRA_KEY to In Progress..."
+            if (-not (Transition-To $inProgressPattern)) {
+               Write-Host "Could not find an 'In Progress' transition, or issue is already in Progress/Done."
+            }
+          }
+
+      - name: Comment FAIL result to Jira
+        if: always() && steps.run_postman.outcome == 'failure' && steps.resolve_jira.outputs.real_jira_key != ''
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_KEY: ${{ steps.resolve_jira.outputs.real_jira_key }}
+        run: |
+          if (-not $env:JIRA_BASE_URL -or -not $env:JIRA_API_EMAIL -or -not $env:JIRA_API_TOKEN) { Write-Host "Missing Jira credentials. Skipping."; exit 0 }
+          $runUrl = "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          $commentText = "Postman Smoke Tests FAILED for commit ${{ github.sha }}. Fix required and re-run. Run: $runUrl"
+
+          $body = @{
+            body = @{
+              type = "doc"
+              version = 1
+              content = @(
+                @{
+                  type = "paragraph"
+                  content = @(
+                    @{
+                      type = "text"
+                      text = $commentText
+                    }
+                  )
+                }
+              )
+            }
+          } | ConvertTo-Json -Depth 10
+
+          $auth = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("$($env:JIRA_API_EMAIL):$($env:JIRA_API_TOKEN)"))
+          $headers = @{ Authorization = "Basic $auth"; Accept = "application/json"; "Content-Type" = "application/json" }
+          $url = "$($env:JIRA_BASE_URL.TrimEnd('/'))/rest/api/3/issue/$($env:JIRA_KEY)/comment"
+
+          Invoke-RestMethod -Method POST -Uri $url -Headers $headers -Body $body | Out-Null
+          Write-Host "Posted FAIL result to Jira issue $($env:JIRA_KEY)"
+
+      - name: Dump backend logs on failure
+        if: failure()
+        run: docker compose -f ./Waste-Recycling-Platform/docker-compose.yml logs backend
+
+      - name: Debug Workflow State
+        if: always()
+        run: |
+          Write-Host "extracted_jira_key: '${{ steps.extract_jira.outputs.jira_key }}'"
+          Write-Host "resolved_real_jira_key: '${{ steps.resolve_jira.outputs.real_jira_key }}'"
+          Write-Host "run_postman outcome: '${{ steps.run_postman.outcome }}'"
+          Write-Host "JIRA_BASE_URL is set: '${{ secrets.JIRA_BASE_URL != '' }}'"
+          Write-Host "JIRA_API_EMAIL is set: '${{ secrets.JIRA_API_EMAIL != '' }}'"
+          Write-Host "JIRA_API_TOKEN is set: '${{ secrets.JIRA_API_TOKEN != '' }}'"
+
+      - name: Stop backend stack
+        if: always()
+        run: docker compose -f ./Waste-Recycling-Platform/docker-compose.yml down -v
