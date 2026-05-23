@@ -59,12 +59,26 @@ Tài liệu này là quy trình chuẩn cho thành viên trong nhóm khi làm b�
 3. Đính kèm link branch, commit, PR, artifact nếu có.
 4. Nếu phát hiện lỗi, tạo subtask hoặc linked issue từ task cha để theo dõi vòng fix tiếp theo.
 
+### Bước 3.1: Quy Tắc Khi Test Fail
+
+1. Member 1 chỉ ghi nhận lỗi và evidence, không tự sửa logic trong cùng một vòng.
+2. Tạo subtask hoặc linked issue nhỏ cho defect vừa phát hiện.
+3. Giao subtask đó cho Member 2 để sửa đúng phần code nghiệp vụ.
+4. Sau khi Member 2 fix xong thì quay lại vòng test để xác nhận lại.
+
 ### Bước 4: Push Code / Test Artifacts
 
 1. Commit phải có Jira key.
 2. Push lên branch cá nhân.
 3. GitHub Actions sẽ chạy backend test và Postman smoke test.
 4. Jira có thể tự chuyển sang In Progress khi push thành công.
+
+### Bước 4.1: Báo Cáo Hàng Tuần
+
+1. Mỗi tuần tạo 1 report riêng cho bài kiểm chứng, tổng cộng 8 report cho 8 tuần.
+2. Report phải dựa trên kết quả test thật, log thật, hoặc artifact thật từ CI.
+3. Nếu dùng Allure thì chỉ dùng như lớp trình bày kết quả test tự động, không thay cho evidence gốc.
+4. Mỗi report nên chốt rõ: đã test gì, pass/fail ra sao, defect nào đã sinh subtask, và tuần sau xử lý gì.
 
 ### Bước 5: PR Và Review
 

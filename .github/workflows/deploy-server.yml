@@ -23,6 +23,9 @@ jobs:
   quality-gate:
     name: Quality Gate
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: pwsh
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -32,6 +35,15 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install Allure CLI
+        run: npm install -g allure-commandline
+
       - name: Restore backend tests
         run: dotnet restore ./Waste-Recycling-Platform/backend/tests/WastePlatform.Tests/WastePlatform.Tests.csproj
 
@@ -39,8 +51,21 @@ jobs:
         run: >
           dotnet test ./Waste-Recycling-Platform/backend/tests/WastePlatform.Tests/WastePlatform.Tests.csproj
           --configuration Release
+          --settings ./Waste-Recycling-Platform/backend/tests/WastePlatform.Tests/WastePlatform.Tests.runsettings
           --logger "trx;LogFileName=backend-tests.trx"
           --results-directory ./TestResults
+
+      - name: Generate backend Allure report
+        if: always()
+        run: |
+          $resultsPath = ".\Waste-Recycling-Platform\backend\tests\WastePlatform.Tests\bin\Release\net8.0\allure-results"
+          $reportPath = ".\TestResults\deploy-backend-allure-report"
+
+          if (Test-Path $resultsPath) {
+            allure generate $resultsPath --clean -o $reportPath
+          } else {
+            Write-Host "::warning::Allure results folder not found at $resultsPath"
+          }
 
       - name: Upload quality-gate test results
         if: always()
@@ -50,6 +75,15 @@ jobs:
           path: |
             TestResults
             **/*.trx
+
+      - name: Upload backend Allure report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-backend-allure-report
+          path: |
+            Waste-Recycling-Platform/backend/tests/WastePlatform.Tests/bin/Release/net8.0/allure-results
+            TestResults/deploy-backend-allure-report
 
   deploy:
     name: Deploy To Server
