@@ -1,9 +1,0 @@
-# Use this workspace to collaborate
-workspace:
-  id: dfa656ca-82f9-454a-8992-f35e8b4350c2
-
-localResources:
-  collections:
-    - ..\WastePlatform.postman_collection.json
-  environments:
-    - ..\WastePlatform.local.postman_environment.json

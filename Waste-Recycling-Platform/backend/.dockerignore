@@ -1,8 +1,0 @@
-bin/
-obj/
-.git
-.gitignore
-README.md
-*.log
-.env*
-Dockerfile
