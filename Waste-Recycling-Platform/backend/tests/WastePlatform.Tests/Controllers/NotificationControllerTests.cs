@@ -8,9 +8,13 @@ using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
 using Xunit;
+using Allure.Xunit.Attributes;
+using Allure.Net.Commons;
 
 namespace WastePlatform.Tests.Controllers;
 
+[AllureEpic("Support Modules")]
+[AllureFeature("Notifications")]
 public class NotificationControllerTests
 {
     private readonly Mock<INotificationRepository> _mockNotificationRepository;
@@ -22,6 +26,9 @@ public class NotificationControllerTests
         _controller = new NotificationController(_mockNotificationRepository.Object);
     }
 
+    [AllureStory("List notifications for citizen")]
+    [AllureSeverity(SeverityLevel.normal)]
+    [AllureOwner("chi-trung")]
     [Fact]
     public async Task GetNotifications_WithValidCitizen_ShouldReturnPagedNotificationsAndUnreadCount()
     {
