@@ -131,8 +131,9 @@ jobs:
             './Waste-Recycling-Platform/postman/WastePlatform.professional.postman_collection.json',
             '-e', './Waste-Recycling-Platform/postman/WastePlatform.professional.postman_environment.json',
             '--env-var', 'baseUrl=http://localhost:8080',
-            '--reporters', 'cli,junit',
-            '--reporter-junit-export', './TestResults/postman-junit.xml'
+            '--reporters', 'cli,junit,json',
+            '--reporter-junit-export', './TestResults/postman-junit.xml',
+            '--reporter-json-export', './TestResults/postman-report.json'
           )
 
           if ($scope -eq 'smoke') {
@@ -150,6 +151,7 @@ jobs:
           path: |
             TestResults
             **\postman-junit.xml
+            **\postman-report.json
 
       - name: Resolve Jira Issue Key
         id: resolve_jira

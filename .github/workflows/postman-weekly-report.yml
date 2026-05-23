@@ -1,0 +1,98 @@
+name: Postman Weekly Report
+
+on:
+  schedule:
+    - cron: '0 2 * * 1'
+  workflow_dispatch:
+    inputs:
+      run_scope:
+        description: Select smoke or full collection
+        required: true
+        default: all
+        type: choice
+        options:
+          - smoke
+          - all
+
+permissions:
+  contents: read
+
+concurrency:
+  group: postman-weekly-report-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Start backend stack
+        run: docker compose -f ./Waste-Recycling-Platform/docker-compose.yml up -d --build db backend
+
+      - name: Wait for API health
+        run: |
+          $maxAttempts = 60
+          $attempt = 0
+          while ($attempt -lt $maxAttempts) {
+            $attempt++
+            try {
+              $response = Invoke-WebRequest -Uri 'http://localhost:5000/api/health' -UseBasicParsing -TimeoutSec 5
+              if ($response.StatusCode -eq 200) {
+                Write-Host 'API is healthy'
+                exit 0
+              }
+            } catch {
+              if ($attempt -eq $maxAttempts) { throw }
+              Start-Sleep -Seconds 5
+            }
+          }
+
+      - name: Install Newman
+        run: npm install -g newman newman-reporter-junitfull
+
+      - name: Decide run scope
+        id: report_scope
+        run: |
+          $scope = '${{ github.event.inputs.run_scope }}'
+          if ([string]::IsNullOrWhiteSpace($scope)) { $scope = 'all' }
+          if ('${{ github.event_name }}' -ne 'workflow_dispatch') { $scope = 'all' }
+          "scope=$scope" >> $env:GITHUB_OUTPUT
+          Write-Host "Weekly report scope: $scope"
+
+      - name: Run Postman collection
+        run: |
+          $scope = '${{ steps.report_scope.outputs.scope }}'
+          $args = @(
+            'run',
+            './Waste-Recycling-Platform/postman/WastePlatform API - Professional QA Suite.postman_collection.json',
+            '-e', './Waste-Recycling-Platform/postman/WastePlatform.professional.postman_environment.json',
+            '--env-var', 'baseUrl=http://localhost:8080',
+            '--reporters', 'cli,junit,json',
+            '--reporter-junit-export', './TestResults/postman-weekly-junit.xml',
+            '--reporter-json-export', './TestResults/postman-weekly-report.json'
+          )
+
+          if ($scope -eq 'smoke') {
+            $args += @('--folder', '00 - Smoke & Public')
+          }
+
+          & newman @args
+
+      - name: Upload weekly evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-postman-report-${{ github.run_number }}
+          path: |
+            TestResults/postman-weekly-junit.xml
+            TestResults/postman-weekly-report.json
+
+      - name: Stop backend stack
+        if: always()
+        run: docker compose -f ./Waste-Recycling-Platform/docker-compose.yml down -v
