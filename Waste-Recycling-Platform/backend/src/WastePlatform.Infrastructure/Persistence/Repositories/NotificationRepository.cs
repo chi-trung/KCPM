@@ -55,15 +55,24 @@ public class NotificationRepository : INotificationRepository
             .CountAsync(n => n.CitizenId == citizenId && n.Status == NotificationStatus.Unread, cancellationToken);
     }
 
-    public async Task MarkAsReadAsync(Guid notificationId, CancellationToken cancellationToken = default)
+    public async Task<bool> MarkAsReadAsync(Guid notificationId, Guid citizenId, CancellationToken cancellationToken = default)
     {
-        var notification = await _context.Notifications.FindAsync(new object[] { notificationId }, cancellationToken);
-        if (notification != null && notification.Status == NotificationStatus.Unread)
+        var notification = await _context.Notifications
+            .FirstOrDefaultAsync(n => n.Id == notificationId && n.CitizenId == citizenId, cancellationToken);
+
+        if (notification == null)
+        {
+            return false;
+        }
+
+        if (notification.Status == NotificationStatus.Unread)
         {
             notification.Status = NotificationStatus.Read;
             notification.ReadAt = DateTime.UtcNow;
             _context.Notifications.Update(notification);
         }
+
+        return true;
     }
 
     public async Task MarkAllAsReadAsync(Guid citizenId, CancellationToken cancellationToken = default)
