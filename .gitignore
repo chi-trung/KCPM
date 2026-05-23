@@ -108,3 +108,6 @@ Thumbs.db
 Desktop.ini
 .VS
 
+# Ignore CI/CD pipeline guide if you don't want it tracked
+docs/CI_CD_PIPELINE_GUIDE.md
+
