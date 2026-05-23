@@ -60,6 +60,21 @@ This setup creates auditable evidence per Jira task/member contribution:
 
 ---
 
+## 📊 Automated API Test Reporting (Allure + GitHub Pages)
+
+This repository includes a fully automated workflow to run Postman API tests and publish an interactive **Allure Report** to GitHub Pages. This makes it extremely easy to submit weekly testing evidence for Software Verification class without requiring the teacher to download or run any code.
+
+- **Workflow file**: `.github/workflows/allure-gh-pages.yml`
+- **Trigger**: Push to `main` or Manual run via `workflow_dispatch`
+- **What it does**:
+  1. Starts the local backend environment using `docker-compose`.
+  2. Runs the Postman collection `WastePlatform API - Professional QA Suite.postman_collection.json` via Newman.
+  3. Generates a visual Allure test report, including historical trends.
+  4. Deploys the report to the `gh-pages` branch.
+- **View the Report**: The latest report is always available at `https://<your-username>.github.io/<repo-name>/` (Please make sure GitHub Pages is enabled in Settings -> Pages -> Source: `gh-pages` branch).
+
+---
+
 ## 🛠️ Tech Stack
 
 | Layer | Technology |

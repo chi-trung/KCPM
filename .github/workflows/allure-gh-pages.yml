@@ -1,0 +1,66 @@
+name: CI - API Tests with Allure Report
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  run-api-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Start Backend with Docker Compose
+        run: |
+          cd Waste-Recycling-Platform
+          docker compose up -d backend
+          echo "Waiting for backend and DB to initialize..."
+          sleep 30 # Đợi 30s để đảm bảo db và backend khởi động xong
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Newman and Allure Reporter
+        run: |
+          npm install -g newman newman-reporter-allure
+
+      - name: Run Postman Tests via Newman
+        continue-on-error: true # Cho phép job tiếp tục ngay cả khi có test case bị fail
+        run: |
+          cd Waste-Recycling-Platform
+          newman run "postman/WastePlatform API - Professional QA Suite.postman_collection.json" \
+            -e "postman/WastePlatform.professional.postman_environment.json" \
+            -r allure \
+            --reporter-allure-export allure-results
+
+      - name: Generate Allure Report
+        uses: simple-elf/allure-report-action@master
+        if: always()
+        id: allure-report
+        with:
+          allure_results: Waste-Recycling-Platform/allure-results
+          gh_pages: gh-pages
+          allure_report: allure-report
+          allure_history: allure-history
+          keep_reports: 20
+
+      - name: Deploy to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
