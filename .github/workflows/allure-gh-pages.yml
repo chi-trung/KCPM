@@ -14,12 +14,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: allure-gh-pages
-  cancel-in-progress: false
-
-concurrency:
   group: allure-gh-pages-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   run-api-tests:
