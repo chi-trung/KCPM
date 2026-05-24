@@ -17,6 +17,7 @@ namespace WastePlatform.Tests.Controllers;
 [Allure.Net.Commons.Attributes.AllureLabel("story", "Collector Task Management")]
 [Allure.Net.Commons.Attributes.AllureTag("auto-jira")]
 [Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-14")]
+[Allure.Net.Commons.Attributes.AllureOwner("chi-trung")]
 public class CollectorTaskControllerTests
 {
     [Fact]

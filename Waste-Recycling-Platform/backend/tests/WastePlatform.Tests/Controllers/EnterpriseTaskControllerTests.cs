@@ -17,6 +17,7 @@ namespace WastePlatform.Tests.Controllers;
 [Allure.Net.Commons.Attributes.AllureLabel("story", "Enterprise Task Assignment")]
 [Allure.Net.Commons.Attributes.AllureTag("auto-jira")]
 [Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-16")]
+[Allure.Net.Commons.Attributes.AllureOwner("chi-trung")]
 public class EnterpriseTaskControllerTests
 {
     [Fact]

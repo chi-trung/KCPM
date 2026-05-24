@@ -13,6 +13,7 @@ namespace WastePlatform.Tests.Controllers;
 [Allure.Net.Commons.Attributes.AllureLabel("story", "Enterprise Reward Rules")]
 [Allure.Net.Commons.Attributes.AllureTag("auto-jira")]
 [Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-17")]
+[Allure.Net.Commons.Attributes.AllureOwner("chi-trung")]
 public class EnterpriseRewardRuleControllerTests
 {
     [Fact]
