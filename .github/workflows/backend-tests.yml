@@ -78,12 +78,18 @@ jobs:
 
           # Write executor.json for Executors panel
           $executorFile = Join-Path $resultsPath "executor.json"
+          # Write richer executor.json so Allure Executors panel shows full metadata
           $executor = [ordered]@{
             name = "GitHub Actions"
             type = "github"
-            url = "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            url = "https://github.com/${{ github.repository }}"
+            buildName = "${{ github.workflow }} #${{ github.run_number }}"
+            buildUrl = "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            buildOrder = [int]("${{ github.run_number }}")
+            reportName = "Allure Report"
+            reportUrl = "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           }
-          $executor | ConvertTo-Json | Out-File -FilePath $executorFile -Encoding utf8
+          $executor | ConvertTo-Json -Depth 5 | Out-File -FilePath $executorFile -Encoding utf8
 
       - name: Generate Allure report
         if: always()
