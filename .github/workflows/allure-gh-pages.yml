@@ -46,6 +46,15 @@ jobs:
             -r allure \
             --reporter-allure-export allure-results
 
+      - name: Restore Allure History
+        if: always()
+        run: |
+          mkdir -p allure-history
+          git fetch origin gh-pages:gh-pages || true
+          if [ -d gh-pages/history ]; then
+            cp -R gh-pages/history/. allure-history/
+          fi
+
       - name: Generate Allure Report
         uses: simple-elf/allure-report-action@master
         if: always()
