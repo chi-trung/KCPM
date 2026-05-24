@@ -15,6 +15,10 @@ permissions:
   contents: write
 
 concurrency:
+  group: allure-gh-pages
+  cancel-in-progress: false
+
+concurrency:
   group: allure-gh-pages-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
@@ -216,5 +220,21 @@ jobs:
             echo "No history changes to commit"
           else
             git commit -m "Update last-history from run ${{ github.run_id }}"
+            echo "Attempting push to gh-pages (with fetch+rebase strategy)"
+            set +e
+            git fetch origin gh-pages
+            git pull --rebase origin gh-pages || true
             git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:gh-pages
+            status=$?
+            if [ $status -ne 0 ]; then
+              echo "Push failed (status=$status). Retrying once with rebase and push..."
+              git pull --rebase origin gh-pages || true
+              git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:gh-pages
+              status2=$?
+              if [ $status2 -ne 0 ]; then
+                echo "Second push attempt failed (status=$status2). Exiting with non-zero to surface failure."
+                exit $status2
+              fi
+            fi
+            set -e
           fi
