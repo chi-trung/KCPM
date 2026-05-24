@@ -1,0 +1,9 @@
+{
+  "role": "Citizen",
+  "fullName": "Test User",
+  "email": "citizen+1779637153@example.com",
+  "password": "ChangeMe123!",
+  "phone": "0900000000",
+  "district": "District 1",
+  "ward": "Ward 1"
+}
