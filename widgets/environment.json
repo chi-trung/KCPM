@@ -1,1 +1,38 @@
-[]
+[
+  {
+    "values": [
+      "main"
+    ],
+    "name": "Branch"
+  },
+  {
+    "values": [
+      "CI"
+    ],
+    "name": "ENV"
+  },
+  {
+    "values": [
+      "10.0.300"
+    ],
+    "name": "DOTNET"
+  },
+  {
+    "values": [
+      "8c60a82771dce64f7950d89bb647973ff0724076"
+    ],
+    "name": "GIT_SHA"
+  },
+  {
+    "values": [
+      "26358328780"
+    ],
+    "name": "GITHUB_RUN_ID"
+  },
+  {
+    "values": [
+      "Windows"
+    ],
+    "name": "RUNNER"
+  }
+]
