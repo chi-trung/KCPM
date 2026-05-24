@@ -1,14 +1,21 @@
 using FluentAssertions;
+using Allure.Xunit.Attributes;
+using Allure.Net.Commons;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using WastePlatform.Application.Reports.Commands;
 using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
+using WastePlatform.Tests.TestSupport;
 using Xunit;
 
 namespace WastePlatform.Tests.Application.Reports;
 
+[AllureEpic("KIEM-18 Reports")]
+[AllureFeature("Create Report Command Handler")]
+[AllureOwner("chi-trung")]
+[AllureSeverity(SeverityLevel.critical)]
 public class CreateReportCommandHandlerTests
 {
     private readonly Mock<IReportRepository> _mockReportRepository;
@@ -30,6 +37,7 @@ public class CreateReportCommandHandlerTests
     #region TC-REP-001: Happy Path - Valid Data
 
     [Fact]
+    [AllureDescription("Creates a report successfully when the command has valid category, coordinates, and at least one image.")]
     public async Task Handle_WithValidCommand_ShouldCreateReportSuccessfully()
     {
         // Arrange
@@ -67,6 +75,7 @@ public class CreateReportCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachJson("create-report-command", command);
         result.Should().NotBe(Guid.Empty, "Handler should return a valid report ID");
         
         // Vấn đề 4: Verify entity properties
@@ -92,6 +101,7 @@ public class CreateReportCommandHandlerTests
     #region TC-REP-002: Missing/Invalid Required Fields
 
     [Fact]
+    [AllureDescription("Rejects report creation when no images are supplied.")]
     public async Task Handle_WithoutImages_ShouldThrowArgumentException()
     {
         // Arrange - Vấn đề 2: SRS yêu cầu ít nhất 1 ảnh
@@ -115,6 +125,8 @@ public class CreateReportCommandHandlerTests
         var exception = await Assert.ThrowsAsync<ArgumentException>(
             () => _handler.Handle(command, CancellationToken.None));
 
+        AllureAttachmentHelper.AttachJson("create-report-without-images", command);
+        AllureAttachmentHelper.AttachText("create-report-without-images-error", exception.Message);
         exception.Message.Should().Be("At least one image is required");
         _mockReportRepository.Verify(
             x => x.AddAsync(It.IsAny<WasteReport>(), It.IsAny<CancellationToken>()),
@@ -122,6 +134,7 @@ public class CreateReportCommandHandlerTests
     }
 
     [Fact]
+    [AllureDescription("Rejects report creation when the image collection is empty.")]
     public async Task Handle_WithEmptyImages_ShouldThrowArgumentException()
     {
         // Arrange - Empty image collection
@@ -145,10 +158,13 @@ public class CreateReportCommandHandlerTests
         var exception = await Assert.ThrowsAsync<ArgumentException>(
             () => _handler.Handle(command, CancellationToken.None));
 
+        AllureAttachmentHelper.AttachJson("create-report-empty-images", command);
+        AllureAttachmentHelper.AttachText("create-report-empty-images-error", exception.Message);
         exception.Message.Should().Be("At least one image is required");
     }
 
     [Fact]
+    [AllureDescription("Rejects report creation when the waste category id does not exist.")]
     public async Task Handle_WithInvalidCategoryId_ShouldThrowArgumentException()
     {
         // Arrange - TC-REP-002 Scenario 1: Invalid/Missing WasteCategoryId
@@ -170,6 +186,8 @@ public class CreateReportCommandHandlerTests
         var exception = await Assert.ThrowsAsync<ArgumentException>(
             () => _handler.Handle(command, CancellationToken.None));
 
+        AllureAttachmentHelper.AttachJson("create-report-invalid-category", command);
+        AllureAttachmentHelper.AttachText("create-report-invalid-category-error", exception.Message);
         exception.Message.Should().Be("Invalid waste category");
         _mockReportRepository.Verify(
             x => x.AddAsync(It.IsAny<WasteReport>(), It.IsAny<CancellationToken>()),
@@ -181,6 +199,7 @@ public class CreateReportCommandHandlerTests
     [InlineData(91, 106.7009)]  // Latitude > 90
     [InlineData(10.7769, -181)] // Longitude < -180
     [InlineData(10.7769, 181)]  // Longitude > 180
+    [AllureDescription("Rejects coordinates outside the valid latitude and longitude range.")]
     public async Task Handle_WithInvalidCoordinates_ShouldThrowArgumentException(decimal lat, decimal lng)
     {
         // Arrange - TC-REP-002 Scenario 2: Invalid Location
@@ -204,10 +223,13 @@ public class CreateReportCommandHandlerTests
         var exception = await Assert.ThrowsAsync<ArgumentException>(
             () => _handler.Handle(command, CancellationToken.None));
 
+        AllureAttachmentHelper.AttachJson("create-report-invalid-coordinates", command);
+        AllureAttachmentHelper.AttachText("create-report-invalid-coordinates-error", exception.Message);
         exception.Message.Should().Be("Invalid latitude or longitude coordinates");
     }
 
     [Fact]
+    [AllureDescription("Creates a report successfully when coordinates sit exactly on the allowed boundary.")]
     public async Task Handle_WithBoundaryCoordinates_ShouldCreateReportSuccessfully()
     {
         // Arrange - Valid boundary values
@@ -243,6 +265,7 @@ public class CreateReportCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachJson("create-report-boundary-command", command);
         result.Should().NotBe(Guid.Empty);
         
         // Vấn đề 4: Verify entity properties

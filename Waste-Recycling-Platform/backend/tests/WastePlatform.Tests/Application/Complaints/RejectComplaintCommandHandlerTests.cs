@@ -1,14 +1,21 @@
 using FluentAssertions;
+using Allure.Xunit.Attributes;
+using Allure.Net.Commons;
 using Moq;
 using WastePlatform.Application.Admin.Complaints.Commands;
 using WastePlatform.Application.Admin.Complaints.Commands.Handlers;
 using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
+using WastePlatform.Tests.TestSupport;
 using Xunit;
 
 namespace WastePlatform.Tests.Application.Complaints;
 
+[AllureEpic("KIEM-18 Complaints")]
+[AllureFeature("Reject Complaint Command Handler")]
+[AllureOwner("chi-trung")]
+[AllureSeverity(SeverityLevel.critical)]
 public class RejectComplaintCommandHandlerTests
 {
     private readonly Mock<IComplaintRepository> _mockComplaintRepository;
@@ -23,6 +30,7 @@ public class RejectComplaintCommandHandlerTests
     #region Happy Path Tests
 
     [Fact]
+    [AllureDescription("Rejects a complaint successfully and returns a success response.")]
     public async Task Handle_WithValidComplaintId_ShouldRejectComplaintSuccessfully()
     {
         // Arrange
@@ -53,6 +61,7 @@ public class RejectComplaintCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachJson("reject-complaint-command", command);
         result.Should().NotBeNull();
         result.Success.Should().BeTrue("Admin should successfully reject the complaint");
         result.Message.Should().Be("Complaint rejected successfully");
@@ -68,6 +77,7 @@ public class RejectComplaintCommandHandlerTests
     }
 
     [Fact]
+    [AllureDescription("Updates the complaint status to rejected and stores the admin response.")]
     public async Task Handle_WithValidComplaintId_ShouldUpdateComplaintStatusToRejected()
     {
         // Arrange
@@ -104,6 +114,7 @@ public class RejectComplaintCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachJson("reject-complaint-status-command", command);
         result.Success.Should().BeTrue();
         
         // Verify complaint status has been changed to Rejected
@@ -124,6 +135,7 @@ public class RejectComplaintCommandHandlerTests
     }
 
     [Fact]
+    [AllureDescription("Returns the complaint id in the rejection result.")]
     public async Task Handle_WithValidData_ShouldReturnCorrectComplaintIdInResult()
     {
         // Arrange
@@ -161,6 +173,7 @@ public class RejectComplaintCommandHandlerTests
     #region Sad Path Tests - Complaint Not Found
 
     [Fact]
+    [AllureDescription("Returns a failure result when the complaint cannot be found.")]
     public async Task Handle_WithNonExistentComplaintId_ShouldReturnFailureResult()
     {
         // Arrange
@@ -180,6 +193,7 @@ public class RejectComplaintCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachJson("reject-missing-complaint-command", command);
         result.Should().NotBeNull();
         result.Success.Should().BeFalse("Should return failure when complaint is not found");
         result.Message.Should().Be("Complaint not found");
@@ -195,6 +209,7 @@ public class RejectComplaintCommandHandlerTests
     }
 
     [Fact]
+    [AllureDescription("Returns a not-found style failure when the complaint id is empty.")]
     public async Task Handle_WithEmptyComplaintId_ShouldReturnNotFoundResult()
     {
         // Arrange
@@ -230,6 +245,7 @@ public class RejectComplaintCommandHandlerTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
+    [AllureDescription("Processes the rejection even when the admin response is empty or whitespace.")]
     public async Task Handle_WithNullOrEmptyAdminResponse_ShouldStillProcessRejection(string? adminResponse)
     {
         // Arrange
