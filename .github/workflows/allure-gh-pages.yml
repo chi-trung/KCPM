@@ -57,7 +57,9 @@ jobs:
         if: always()
         run: |
           mkdir -p allure-history
-          if [ -d gh-pages/history ]; then
+          if [ -d gh-pages/last-history ]; then
+            cp -R gh-pages/last-history/. allure-history/
+          elif [ -d gh-pages/history ]; then
             cp -R gh-pages/history/. allure-history/
           fi
 
