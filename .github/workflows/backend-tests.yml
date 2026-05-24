@@ -60,18 +60,6 @@ jobs:
           --results-directory ".\TestResults"
           --no-restore
 
-      - name: Generate Allure report
-        if: always()
-        run: |
-          $resultsPath = ".\Waste-Recycling-Platform\backend\tests\WastePlatform.Tests\bin\Release\net8.0\allure-results"
-          $reportPath = ".\TestResults\backend-allure-report"
-
-          if (Test-Path $resultsPath) {
-            allure generate $resultsPath --clean -o $reportPath
-          } else {
-            Write-Host "::warning::Allure results folder not found at $resultsPath"
-          }
-
       - name: Write Allure environment and executor metadata
         if: always()
         shell: pwsh
@@ -97,6 +85,18 @@ jobs:
 }
 "@
           $executor | Out-File -FilePath $executorFile -Encoding utf8
+
+      - name: Generate Allure report
+        if: always()
+        run: |
+          $resultsPath = ".\Waste-Recycling-Platform\backend\tests\WastePlatform.Tests\bin\Release\net8.0\allure-results"
+          $reportPath = ".\TestResults\backend-allure-report"
+
+          if (Test-Path $resultsPath) {
+            allure generate $resultsPath --clean -o $reportPath
+          } else {
+            Write-Host "::warning::Allure results folder not found at $resultsPath"
+          }
 
       - name: Upload test results
         if: always()
