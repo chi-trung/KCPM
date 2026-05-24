@@ -47,6 +47,16 @@ public class NotificationServiceTests
         // Act
         await _service.NotifyReportCreatedAsync(citizenId, reportId, CancellationToken.None);
 
+        // Attach payload snapshot for Allure
+        try
+        {
+            var json = System.Text.Json.JsonSerializer.Serialize(capturedNotification, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+            var path = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "allure-results", $"notification-{capturedNotification.Id}.json");
+            System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path)!);
+            System.IO.File.WriteAllText(path, json);
+        }
+        catch { /* best-effort: don't fail test if attachment write fails */ }
+
         // Assert
         capturedNotification.Should().NotBeNull();
         capturedNotification!.CitizenId.Should().Be(citizenId);

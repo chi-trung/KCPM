@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using Allure.Xunit.Attributes;
+using Allure.Net.Commons;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +13,10 @@ using Xunit;
 
 namespace WastePlatform.Tests.Controllers;
 
+[AllureEpic("KIEM-19 Notifications")]
+[AllureFeature("Notifications Controller")]
+[AllureOwner("chi-trung")]
+[AllureSeverity(SeverityLevel.normal)]
 public class NotificationControllerTests
 {
     private readonly Mock<INotificationRepository> _mockNotificationRepository;

@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using Allure.Xunit.Attributes;
+using Allure.Net.Commons;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +16,10 @@ using WastePlatform.Application.Common.DTOs;
 
 namespace WastePlatform.Tests.Controllers;
 
+[AllureEpic("KIEM-4 Auth Module")]
+[AllureFeature("Authentication")]
+[AllureOwner("chi-trung")]
+[AllureSeverity(SeverityLevel.critical)]
 public class AuthControllerTests
 {
     [Fact]

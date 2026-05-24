@@ -96,6 +96,28 @@ jobs:
             Write-Host "::warning::Allure results folder not found at $resultsPath"
           }
 
+      - name: Write Allure report environment widget
+        if: always()
+        shell: pwsh
+        run: |
+          $widgetsPath = ".\TestResults\backend-allure-report\widgets"
+          if (-not (Test-Path $widgetsPath)) {
+            Write-Host "::warning::Allure widgets folder not found at $widgetsPath"
+            exit 0
+          }
+
+          $environment = @(
+            @{ name = "Branch"; values = @("${{ github.ref_name }}") }
+            @{ name = "ENV"; values = @("CI") }
+            @{ name = "DOTNET"; values = @((& dotnet --version).Trim()) }
+            @{ name = "GIT_SHA"; values = @("${{ github.sha }}") }
+            @{ name = "GITHUB_RUN_ID"; values = @("${{ github.run_id }}") }
+            @{ name = "RUNNER"; values = @("${{ runner.os }}") }
+          )
+
+          $environmentFile = Join-Path $widgetsPath "environment.json"
+          $environment | ConvertTo-Json -Depth 5 | Out-File -FilePath $environmentFile -Encoding utf8
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
