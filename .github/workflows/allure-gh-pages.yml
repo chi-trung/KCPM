@@ -14,12 +14,18 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: allure-gh-pages-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   run-api-tests:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Start Backend with Docker Compose
         run: |
@@ -48,6 +54,7 @@ jobs:
 
       - name: Checkout gh-pages history
         if: always()
+        continue-on-error: true
         uses: actions/checkout@v4
         with:
           ref: gh-pages
@@ -56,11 +63,11 @@ jobs:
       - name: Restore Allure History
         if: always()
         run: |
-          mkdir -p allure-history
+          mkdir -p Waste-Recycling-Platform/allure-results/history
           if [ -d gh-pages/last-history ]; then
-            cp -R gh-pages/last-history/. allure-history/
+            cp -R gh-pages/last-history/. Waste-Recycling-Platform/allure-results/history/
           elif [ -d gh-pages/history ]; then
-            cp -R gh-pages/history/. allure-history/
+            cp -R gh-pages/history/. Waste-Recycling-Platform/allure-results/history/
           fi
 
       - name: Write Allure Environment
@@ -77,6 +84,22 @@ jobs:
           WORKFLOW=${{ github.workflow }}
           EOF
 
+      - name: Write executor metadata
+        if: always()
+        run: |
+          mkdir -p Waste-Recycling-Platform/allure-results
+          cat > Waste-Recycling-Platform/allure-results/executor.json <<'EOF'
+          {
+            "name": "GitHub Actions",
+            "type": "github",
+            "url": "https://github.com/${{ github.repository }}",
+            "buildName": "${{ github.workflow }} #${{ github.run_number }}",
+            "buildUrl": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+            "reportName": "Allure Report",
+            "reportUrl": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }
+          EOF
+
       - name: Generate Allure Report
         uses: simple-elf/allure-report-action@master
         if: always()
@@ -85,14 +108,34 @@ jobs:
           allure_results: Waste-Recycling-Platform/allure-results
           gh_pages: gh-pages
           allure_report: allure-report
-          allure_history: allure-history
+          allure_history: Waste-Recycling-Platform/allure-results/history
           keep_reports: 20
 
       - name: Deploy to GitHub Pages
-        if: always()
+        if: always() && github.event_name != 'pull_request'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: allure-history
+          publish_dir: allure-report
           keep_files: true
+
+      - name: Persist last-history to gh-pages
+        if: always() && github.event_name != 'pull_request'
+        run: |
+          set -e
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          rm -rf gh-pages/last-history || true
+          mkdir -p gh-pages/last-history
+          if [ -d allure-report/history ]; then
+            cp -R allure-report/history/. gh-pages/last-history/ || true
+          fi
+          cd gh-pages
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No history changes to commit"
+          else
+            git commit -m "Update last-history from run ${{ github.run_id }}"
+            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:gh-pages
+          fi
