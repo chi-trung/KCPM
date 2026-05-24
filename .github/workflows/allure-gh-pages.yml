@@ -57,6 +57,20 @@ jobs:
           allure_history: allure-history
           keep_reports: 20
 
+      - name: Write Allure Environment
+        if: always()
+        run: |
+          mkdir -p allure-report
+          cat > allure-report/environment.properties <<EOF
+GIT_BRANCH=${{ github.ref }}
+GIT_COMMIT=${{ github.sha }}
+RUN_ID=${{ github.run_id }}
+RUN_URL=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+BUILD_NUMBER=${{ github.run_number }}
+RUNNER_OS=${{ runner.os }}
+WORKFLOW=${{ github.workflow }}
+EOF
+
       - name: Deploy to GitHub Pages
         if: always()
         uses: peaceiris/actions-gh-pages@v3
