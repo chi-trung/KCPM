@@ -5,6 +5,9 @@ using WastePlatform.Infrastructure.Persistence.Repositories;
 
 namespace WastePlatform.Tests.Infrastructure;
 
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Reward Points Calculation")]
+[Allure.Net.Commons.Attributes.AllureTag("auto-jira")]
+[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-17")]
 public class RewardPointsRepositoryTests
 {
     [Fact]

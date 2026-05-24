@@ -10,6 +10,9 @@ using WastePlatform.Infrastructure.Persistence;
 
 namespace WastePlatform.Tests.Controllers;
 
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Enterprise Reward Rules")]
+[Allure.Net.Commons.Attributes.AllureTag("auto-jira")]
+[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-17")]
 public class EnterpriseRewardRuleControllerTests
 {
     [Fact]

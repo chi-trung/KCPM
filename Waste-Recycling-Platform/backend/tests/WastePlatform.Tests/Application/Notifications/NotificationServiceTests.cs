@@ -9,6 +9,9 @@ using Xunit;
 
 namespace WastePlatform.Tests.Application.Notifications;
 
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Notification Service")]
+[Allure.Net.Commons.Attributes.AllureTag("auto-jira")]
+[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-19")]
 public class NotificationServiceTests
 {
     private readonly Mock<INotificationRepository> _mockNotificationRepository;

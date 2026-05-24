@@ -16,8 +16,11 @@ namespace WastePlatform.Tests.Controllers;
 
 [AllureEpic("KIEM-19 Notifications")]
 [AllureFeature("Notifications Controller")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Notifications")]
 [AllureOwner("chi-trung")]
 [AllureSeverity(SeverityLevel.normal)]
+[Allure.Net.Commons.Attributes.AllureTag("auto-jira")]
+[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-19")]
 public class NotificationControllerTests
 {
     private readonly Mock<INotificationRepository> _mockNotificationRepository;

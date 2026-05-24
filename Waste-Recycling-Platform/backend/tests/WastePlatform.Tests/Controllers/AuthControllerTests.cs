@@ -19,8 +19,11 @@ namespace WastePlatform.Tests.Controllers;
 
 [AllureEpic("KIEM-4 Auth Module")]
 [AllureFeature("Authentication")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Register / Login / Profile")]
 [AllureOwner("chi-trung")]
 [AllureSeverity(SeverityLevel.critical)]
+[Allure.Net.Commons.Attributes.AllureTag("auto-jira")]
+[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-4")]
 public class AuthControllerTests
 {
     [Fact]
