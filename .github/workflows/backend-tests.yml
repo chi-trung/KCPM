@@ -145,16 +145,8 @@ jobs:
             Waste-Recycling-Platform/allure-history
           retention-days: 30
 
-      - name: Deploy Allure HTML to GitHub Pages
-        if: always()
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: TestResults/backend-allure-report
-          user_name: github-actions[bot]
-          user_email: github-actions[bot]@users.noreply.github.com
-          keep_files: true
+      # Note: Allure HTML publishing is handled centrally by `allure-gh-pages.yml`.
+      # This workflow uploads artifacts only; avoid pushing to gh-pages to prevent races.
 
       - name: Fetch and prepare gh-pages
         if: always()
