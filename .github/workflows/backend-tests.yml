@@ -77,14 +77,12 @@ jobs:
 
           # Write executor.json for Executors panel
           $executorFile = Join-Path $resultsPath "executor.json"
-          $executor = @"
-{
-  "name": "GitHub Actions",
-  "type": "github",
-  "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-}
-"@
-          $executor | Out-File -FilePath $executorFile -Encoding utf8
+          $executor = [ordered]@{
+            name = "GitHub Actions"
+            type = "github"
+            url = "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }
+          $executor | ConvertTo-Json | Out-File -FilePath $executorFile -Encoding utf8
 
       - name: Generate Allure report
         if: always()
