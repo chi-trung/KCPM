@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: backend-tests-${{ github.workflow }}-${{ github.ref }}
@@ -30,6 +30,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -70,6 +72,32 @@ jobs:
             Write-Host "::warning::Allure results folder not found at $resultsPath"
           }
 
+      - name: Write Allure environment and executor metadata
+        if: always()
+        shell: pwsh
+        run: |
+          $resultsPath = ".\Waste-Recycling-Platform\backend\tests\WastePlatform.Tests\bin\Release\net8.0\allure-results"
+          New-Item -ItemType Directory -Force -Path $resultsPath | Out-Null
+
+          # Write environment.properties (key=value per line)
+          $envFile = Join-Path $resultsPath "environment.properties"
+          "ENV=CI" | Out-File -FilePath $envFile -Encoding utf8
+          "DOTNET=$((dotnet --version).Trim())" | Out-File -FilePath $envFile -Append -Encoding utf8
+          "GIT_SHA=${{ github.sha }}" | Out-File -FilePath $envFile -Append -Encoding utf8
+          "GITHUB_RUN_ID=${{ github.run_id }}" | Out-File -FilePath $envFile -Append -Encoding utf8
+          "RUNNER=${{ runner.os }}" | Out-File -FilePath $envFile -Append -Encoding utf8
+
+          # Write executor.json for Executors panel
+          $executorFile = Join-Path $resultsPath "executor.json"
+          $executor = @"
+{
+  "name": "GitHub Actions",
+  "type": "github",
+  "url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+}
+"@
+          $executor | Out-File -FilePath $executorFile -Encoding utf8
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
@@ -86,4 +114,17 @@ jobs:
           path: |
             Waste-Recycling-Platform/backend/tests/WastePlatform.Tests/bin/Release/net8.0/allure-results
             TestResults/backend-allure-report
+            TestResults/allure-history
+            Waste-Recycling-Platform/allure-history
           retention-days: 30
+
+      - name: Deploy Allure HTML to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: TestResults/backend-allure-report
+          user_name: github-actions[bot]
+          user_email: github-actions[bot]@users.noreply.github.com
+          keep_files: true
