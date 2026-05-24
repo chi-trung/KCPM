@@ -1,0 +1,15 @@
+{
+  "Id": "a8b1a987-b1c6-4fac-a867-c0ada0a04414",
+  "CitizenId": "d820919a-be54-4544-ac58-38377c0b8eea",
+  "Type": 5,
+  "Channel": 0,
+  "Status": 0,
+  "Title": "B\u00E1o c\u00E1o b\u1ECB t\u1EEB ch\u1ED1i",
+  "Message": "B\u00E1o c\u00E1o #f0175acd kh\u00F4ng \u0111\u01B0\u1EE3c ch\u1EA5p nh\u1EADn.",
+  "ActionUrl": "/citizen/reports/f0175acd-dc1e-4b2a-8538-cb8c2d539d0b",
+  "RelatedEntityId": "f0175acd-dc1e-4b2a-8538-cb8c2d539d0b",
+  "RelatedEntityType": "Report",
+  "CreatedAt": "2026-05-24T16:03:26.6130805Z",
+  "ReadAt": null,
+  "Citizen": null
+}
