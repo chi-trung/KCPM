@@ -60,6 +60,61 @@ jobs:
           ref: gh-pages
           path: gh-pages
 
+      - name: Fetch backend-tests Allure artifact
+        if: always()
+        run: |
+          set -e
+          echo "Looking for latest successful backend-tests workflow run on main..."
+          OWNER_REPO=${{ github.repository }}
+          WORKFLOW_FILE=backend-tests.yml
+          # Query workflow runs for backend-tests
+          runs_url="https://api.github.com/repos/${OWNER_REPO}/actions/workflows/${WORKFLOW_FILE}/runs?branch=main&status=success"
+          echo "Runs URL: $runs_url"
+          runs_resp=$(curl -sS -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json" "$runs_url")
+          run_id=$(echo "$runs_resp" | jq -r '.workflow_runs[0].id')
+          if [ -z "$run_id" ] || [ "$run_id" = "null" ]; then
+            echo "No successful backend-tests run found; skipping artifact fetch"
+            exit 0
+          fi
+          echo "Found backend-tests run: $run_id"
+          arts_url="https://api.github.com/repos/${OWNER_REPO}/actions/runs/${run_id}/artifacts"
+          arts_resp=$(curl -sS -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json" "$arts_url")
+          art_id=$(echo "$arts_resp" | jq -r '.artifacts[] | select(.name | test("allure-results")) | .id' | head -n1)
+          if [ -z "$art_id" ] || [ "$art_id" = "null" ]; then
+            echo "No allure-results artifact found in run $run_id; skipping"
+            exit 0
+          fi
+          echo "Found artifact id: $art_id -- downloading..."
+          download_url="https://api.github.com/repos/${OWNER_REPO}/actions/artifacts/${art_id}/zip"
+          curl -sSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json" "$download_url" -o artifact.zip
+          unzip -o artifact.zip -d backend_artifact || true
+          # Find the allure-results directory inside the artifact (it may be nested)
+          found=0
+          for d in backend_artifact/*; do
+            if [ -d "$d" ]; then
+              if [ -d "$d/Waste-Recycling-Platform/backend/tests/WastePlatform.Tests/bin/Release/net8.0/allure-results" ]; then
+                src="$d/Waste-Recycling-Platform/backend/tests/WastePlatform.Tests/bin/Release/net8.0/allure-results"
+              elif [ -d "$d/allure-results" ]; then
+                src="$d/allure-results"
+              elif [ -d "$d/TestResults/allure-history" ]; then
+                src="$d/TestResults/allure-history"
+              else
+                src=""
+              fi
+              if [ -n "$src" ] && [ -d "$src" ]; then
+                echo "Copying backend results from $src"
+                mkdir -p Waste-Recycling-Platform/allure-results/backend
+                cp -R "$src"/* Waste-Recycling-Platform/allure-results/backend/ || true
+                found=1
+                break
+              fi
+            fi
+          done
+          if [ $found -eq 0 ]; then
+            echo "No known results folder found inside artifact"
+          fi
+          rm -rf artifact.zip backend_artifact || true
+
       - name: Restore Allure History
         if: always()
         run: |
