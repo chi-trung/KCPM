@@ -111,6 +111,16 @@ jobs:
           allure_history: Waste-Recycling-Platform/allure-results/history
           keep_reports: 20
 
+      - name: Install Allure CLI for per-owner reports
+        if: always()
+        run: |
+          npm install -g allure-commandline@2.13.0 || true
+
+      - name: Generate per-owner Allure reports
+        if: always()
+        run: |
+          python3 Waste-Recycling-Platform/scripts/generate_per_owner_reports.py || true
+
       - name: Deploy to GitHub Pages
         if: always() && github.event_name != 'pull_request'
         uses: peaceiris/actions-gh-pages@v3
