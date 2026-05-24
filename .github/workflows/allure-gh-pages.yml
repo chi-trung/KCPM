@@ -148,6 +148,21 @@ jobs:
           }
           EOF
 
+      - name: Debug merged allure results
+        if: always()
+        run: |
+          echo "===== ALLURE RESULTS TREE ====="
+          find Waste-Recycling-Platform/allure-results -type f | sort | head -200 || true
+
+          echo "===== JSON COUNT ====="
+          find Waste-Recycling-Platform/allure-results -name "*.json" | wc -l || true
+
+          echo "===== SAMPLE FILES ====="
+          ls -lah Waste-Recycling-Platform/allure-results | head -50 || true
+
+          echo "===== HISTORY ====="
+          find Waste-Recycling-Platform/allure-results/history -maxdepth 2 -type f || true
+
       - name: Generate Allure Report
         uses: simple-elf/allure-report-action@master
         if: always()
@@ -158,6 +173,12 @@ jobs:
           allure_report: allure-report
           allure_history: Waste-Recycling-Platform/allure-results/history
           keep_reports: 20
+
+      - name: Debug generated report
+        if: always()
+        run: |
+          echo "===== GENERATED REPORT ====="
+          find allure-report -type f | head -100 || true
 
       - name: Install Allure CLI for per-owner reports
         if: always()
