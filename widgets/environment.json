@@ -1,1 +1,38 @@
-[{"values":["refs/heads/main"],"name":"GIT_BRANCH"},{"values":["b079cd4f2ab05e4a7403a9843583c7ec7768ccfa"],"name":"GIT_COMMIT"},{"values":["26359167006"],"name":"RUN_ID"},{"values":["https://github.com/chi-trung/KCPM/actions/runs/26359167006"],"name":"RUN_URL"},{"values":["24"],"name":"BUILD_NUMBER"},{"values":["Linux"],"name":"RUNNER_OS"},{"values":["CI - API Tests with Allure Report"],"name":"WORKFLOW"}]
+[
+  {
+    "name": "Branch",
+    "values": [
+      "main"
+    ]
+  },
+  {
+    "name": "ENV",
+    "values": [
+      "CI"
+    ]
+  },
+  {
+    "name": "DOTNET",
+    "values": [
+      "10.0.300"
+    ]
+  },
+  {
+    "name": "GIT_SHA",
+    "values": [
+      "b079cd4f2ab05e4a7403a9843583c7ec7768ccfa"
+    ]
+  },
+  {
+    "name": "GITHUB_RUN_ID",
+    "values": [
+      "26359167013"
+    ]
+  },
+  {
+    "name": "RUNNER",
+    "values": [
+      "Windows"
+    ]
+  }
+]

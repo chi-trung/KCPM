@@ -1,0 +1,16 @@
+{
+  "Rules": [
+    {
+      "WasteCategoryId": 1,
+      "PointsPerReport": 18,
+      "BonusQuality": 6,
+      "IsActive": false
+    },
+    {
+      "WasteCategoryId": 2,
+      "PointsPerReport": 8,
+      "BonusQuality": 1,
+      "IsActive": true
+    }
+  ]
+}
