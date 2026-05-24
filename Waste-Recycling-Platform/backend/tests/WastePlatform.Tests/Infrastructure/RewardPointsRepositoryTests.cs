@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using WastePlatform.Domain.Entities;
 using WastePlatform.Infrastructure.Persistence;
 using WastePlatform.Infrastructure.Persistence.Repositories;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Infrastructure;
 
@@ -46,6 +47,8 @@ public class RewardPointsRepositoryTests
         reward.Reason.Should().Be("Collected successfully");
         reward.IdempotencyKey.Should().Be($"task_{taskId}_{reportId}");
         (await context.RewardPoints.CountAsync()).Should().Be(1);
+        // Attach created reward for Allure
+        AllureAttachmentHelper.AttachJson("created-reward", new { reward.Id, reward.Points, reward.Reason, reward.IdempotencyKey });
     }
 
     [Fact]

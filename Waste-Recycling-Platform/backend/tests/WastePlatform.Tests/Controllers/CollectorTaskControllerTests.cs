@@ -11,6 +11,7 @@ using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
 using WastePlatform.Infrastructure.Persistence;
 using WastePlatform.Infrastructure.SignalR;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Controllers;
 
@@ -46,6 +47,9 @@ public class CollectorTaskControllerTests
         };
 
         var result = await controller.SetOnTheWay(scenario.Task.Id);
+
+        // Attach request context so Allure shows execution details
+        AllureAttachmentHelper.AttachJson("set-on-the-way-request", new { TaskId = scenario.Task.Id });
 
         result.Should().BeOfType<OkObjectResult>();
         scenario.Task.Status.Should().Be(CollectionTaskStatus.OnTheWay);
@@ -91,6 +95,9 @@ public class CollectorTaskControllerTests
             },
             new FormFileCollection());
 
+        // Attach submitted form for Allure
+        AllureAttachmentHelper.AttachJson("complete-task-form", new { TaskId = scenario.Task.Id, WeightKg = "12.5", Notes = "Collected at front gate" });
+
         var result = await controller.CompleteTask(scenario.Task.Id, form);
 
         result.Should().BeOfType<OkObjectResult>();
@@ -107,6 +114,8 @@ public class CollectorTaskControllerTests
         var rewardPoint = await context.RewardPoints.SingleAsync();
         rewardPoint.Points.Should().Be(15);
         rewardPoint.Reason.Should().Be($"Reward for collected waste report {scenario.Report.Id}");
+        // Attach reward information
+        AllureAttachmentHelper.AttachJson("reward-point", new { rewardPoint.Id, rewardPoint.Points, rewardPoint.Reason });
 
         allClient.Verify(
             x => x.SendCoreAsync("TaskStatusUpdated", It.Is<object?[]>(args => (Guid)args[0]! == scenario.Task.Id && (string)args[1]! == CollectionTaskStatus.Collected.ToString()), It.IsAny<CancellationToken>()),
@@ -138,10 +147,15 @@ public class CollectorTaskControllerTests
             },
             new FormFileCollection());
 
+        // Attach invalid form data for debugging
+        AllureAttachmentHelper.AttachJson("complete-task-invalid-form", new { TaskId = scenario.Task.Id, WeightKg = "not-a-number" });
+
         var result = await controller.CompleteTask(scenario.Task.Id, form);
 
         var badRequest = result.Should().BeOfType<BadRequestObjectResult>().Subject;
-        GetPropertyValue<string>(badRequest.Value!, "message").Should().Be("Invalid or missing WeightKg.");
+        var message = GetPropertyValue<string>(badRequest.Value!, "message");
+        AllureAttachmentHelper.AttachText("complete-task-invalid-message", message ?? string.Empty);
+        message.Should().Be("Invalid or missing WeightKg.");
     }
 
     private static async Task<CollectorScenario> SeedCollectorScenarioAsync(WastePlatformDbContext context, bool includeRewardRule = false)

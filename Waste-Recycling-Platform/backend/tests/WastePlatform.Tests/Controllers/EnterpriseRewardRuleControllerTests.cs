@@ -7,6 +7,7 @@ using WastePlatform.API.Controllers;
 using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
 using WastePlatform.Infrastructure.Persistence;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Controllers;
 
@@ -69,6 +70,15 @@ public class EnterpriseRewardRuleControllerTests
             ]
         });
 
+        // Attach the payload used to update reward rules
+        AllureAttachmentHelper.AttachJson("update-reward-rules-payload", new
+        {
+            Rules = new[] {
+                new { WasteCategoryId = scenario.Category.Id, PointsPerReport = 18, BonusQuality = 6, IsActive = false },
+                new { WasteCategoryId = scenario.SecondCategory.Id, PointsPerReport = 8, BonusQuality = 1, IsActive = true }
+            }
+        });
+
         result.Should().BeOfType<OkObjectResult>();
 
         var rule1 = await context.RewardRules.SingleAsync(rule => rule.WasteCategoryId == scenario.Category.Id);
@@ -80,6 +90,11 @@ public class EnterpriseRewardRuleControllerTests
         rule2.PointsPerReport.Should().Be(8);
         rule2.BonusQuality.Should().Be(1);
         rule2.IsActive.Should().BeTrue();
+        // Attach resulting rules for Allure
+        AllureAttachmentHelper.AttachJson("updated-reward-rules", new[] {
+            new { rule1.Id, rule1.WasteCategoryId, rule1.PointsPerReport, rule1.BonusQuality, rule1.IsActive },
+            new { rule2.Id, rule2.WasteCategoryId, rule2.PointsPerReport, rule2.BonusQuality, rule2.IsActive }
+        });
     }
 
     [Fact]

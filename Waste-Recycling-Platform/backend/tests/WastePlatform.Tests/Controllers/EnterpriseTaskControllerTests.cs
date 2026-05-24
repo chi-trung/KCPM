@@ -11,6 +11,7 @@ using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
 using WastePlatform.Infrastructure.Persistence;
 using WastePlatform.Infrastructure.SignalR;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Controllers;
 
@@ -45,15 +46,18 @@ public class EnterpriseTaskControllerTests
             ControllerContext = BuildControllerContext(scenario.EnterpriseUser.Id)
         };
 
+        // Attach assign-collector request for Allure
+        AllureAttachmentHelper.AttachJson("assign-collector-request", new { TaskId = scenario.Task.Id, CollectorId = scenario.Collector.Id });
+
         var result = await controller.AssignCollector(scenario.Task.Id, new AssignCollectorRequest
         {
             CollectorId = scenario.Collector.Id
         });
-
         result.Should().BeOfType<OkObjectResult>();
 
         var updatedTask = await context.CollectionTasks.SingleAsync(t => t.Id == scenario.Task.Id);
         updatedTask.CollectorId.Should().Be(scenario.Collector.Id);
+        AllureAttachmentHelper.AttachJson("assign-collector-result", new { updatedTask.Id, updatedTask.CollectorId });
 
         allClient.Verify(
             x => x.SendCoreAsync("TaskStatusUpdated", It.Is<object?[]>(args => (Guid)args[0]! == scenario.Task.Id && (string)args[1]! == CollectionTaskStatus.Assigned.ToString()), It.IsAny<CancellationToken>()),
