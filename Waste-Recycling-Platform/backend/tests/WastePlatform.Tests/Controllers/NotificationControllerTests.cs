@@ -9,6 +9,7 @@ using WastePlatform.API.Controllers;
 using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
+using WastePlatform.Tests.TestSupport;
 using Xunit;
 
 namespace WastePlatform.Tests.Controllers;
@@ -29,6 +30,7 @@ public class NotificationControllerTests
     }
 
     [Fact]
+    [AllureDescription("Returns paged citizen notifications together with unread count.")]
     public async Task GetNotifications_WithValidCitizen_ShouldReturnPagedNotificationsAndUnreadCount()
     {
         // Arrange
@@ -68,6 +70,26 @@ public class NotificationControllerTests
         var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
         var value = okResult.Value!;
 
+        AllureAttachmentHelper.AttachJson("notification-list-request", new
+        {
+            page = 2,
+            pageSize = 10,
+            status = "Unread",
+            citizenId
+        });
+        AllureAttachmentHelper.AttachJson("notification-list-response", new
+        {
+            message = GetPropertyValue<string>(value, "message"),
+            unreadCount = GetPropertyValue<int>(value, "unreadCount"),
+            pagination = new
+            {
+                page = GetPropertyValue<object>(value, "pagination") is null ? 0 : GetPropertyValue<int>(GetPropertyValue<object>(value, "pagination")!, "page"),
+                pageSize = GetPropertyValue<object>(value, "pagination") is null ? 0 : GetPropertyValue<int>(GetPropertyValue<object>(value, "pagination")!, "pageSize"),
+                total = GetPropertyValue<object>(value, "pagination") is null ? 0 : GetPropertyValue<int>(GetPropertyValue<object>(value, "pagination")!, "total"),
+                totalPages = GetPropertyValue<object>(value, "pagination") is null ? 0 : GetPropertyValue<int>(GetPropertyValue<object>(value, "pagination")!, "totalPages")
+            }
+        });
+
         GetPropertyValue<string>(value, "message").Should().Be("Notifications retrieved successfully");
         GetPropertyValue<int>(value, "unreadCount").Should().Be(3);
 
@@ -86,6 +108,7 @@ public class NotificationControllerTests
     }
 
     [Fact]
+    [AllureDescription("Rejects notification listing when the user id claim is missing.")]
     public async Task GetNotifications_WithMissingCitizenId_ShouldReturnUnauthorized()
     {
         // Arrange
@@ -99,10 +122,12 @@ public class NotificationControllerTests
 
         // Assert
         var unauthorized = result.Should().BeOfType<UnauthorizedObjectResult>().Subject;
+        AllureAttachmentHelper.AttachJson("missing-citizen-response", unauthorized.Value!);
         GetPropertyValue<string>(unauthorized.Value!, "message").Should().Be("Invalid or missing user ID");
     }
 
     [Fact]
+    [AllureDescription("Rejects invalid paging inputs before querying the repository.")]
     public async Task GetNotifications_WithInvalidPaging_ShouldReturnBadRequest()
     {
         // Arrange
@@ -114,6 +139,7 @@ public class NotificationControllerTests
 
         // Assert
         var badRequest = result.Should().BeOfType<BadRequestObjectResult>().Subject;
+        AllureAttachmentHelper.AttachJson("invalid-paging-response", badRequest.Value!);
         GetPropertyValue<string>(badRequest.Value!, "message").Should().Be("Page and PageSize must be greater than 0");
         _mockNotificationRepository.Verify(
             x => x.GetByCitizenIdAsync(It.IsAny<Guid>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<NotificationStatus?>(), It.IsAny<CancellationToken>()),
@@ -121,6 +147,7 @@ public class NotificationControllerTests
     }
 
     [Fact]
+    [AllureDescription("Marks a notification as read and persists the change when it exists.")]
     public async Task MarkAsRead_WhenNotificationExists_ShouldReturnOkAndSaveChanges()
     {
         // Arrange
@@ -141,6 +168,7 @@ public class NotificationControllerTests
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
+        AllureAttachmentHelper.AttachText("mark-as-read-context", $"notificationId={notificationId}\ncitizenId={citizenId}");
         _mockNotificationRepository.Verify(
             x => x.MarkAsReadAsync(notificationId, citizenId, It.IsAny<CancellationToken>()),
             Times.Once);
@@ -150,6 +178,7 @@ public class NotificationControllerTests
     }
 
     [Fact]
+    [AllureDescription("Returns not found when the notification does not belong to the citizen.")]
     public async Task MarkAsRead_WhenNotificationDoesNotExist_ShouldReturnNotFound()
     {
         // Arrange
@@ -166,12 +195,14 @@ public class NotificationControllerTests
 
         // Assert
         result.Should().BeOfType<NotFoundObjectResult>();
+        AllureAttachmentHelper.AttachText("mark-as-read-missing-context", $"notificationId={notificationId}\ncitizenId={citizenId}");
         _mockNotificationRepository.Verify(
             x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
             Times.Never);
     }
 
     [Fact]
+    [AllureDescription("Marks all notifications as read for the current citizen.")]
     public async Task MarkAllAsRead_ShouldReturnOkAndPersistChanges()
     {
         // Arrange
@@ -187,6 +218,7 @@ public class NotificationControllerTests
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
+        AllureAttachmentHelper.AttachText("mark-all-as-read-context", $"citizenId={citizenId}");
         _mockNotificationRepository.Verify(
             x => x.MarkAllAsReadAsync(citizenId, It.IsAny<CancellationToken>()),
             Times.Once);
@@ -196,6 +228,7 @@ public class NotificationControllerTests
     }
 
     [Fact]
+    [AllureDescription("Returns the unread notification count for the current citizen.")]
     public async Task GetUnreadCount_ShouldReturnUnreadCount()
     {
         // Arrange
@@ -211,6 +244,7 @@ public class NotificationControllerTests
 
         // Assert
         var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        AllureAttachmentHelper.AttachJson("unread-count-response", okResult.Value!);
         GetPropertyValue<string>(okResult.Value!, "message").Should().Be("Unread count retrieved successfully");
         GetPropertyValue<int>(okResult.Value!, "unreadCount").Should().Be(7);
     }

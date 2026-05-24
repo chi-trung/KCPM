@@ -4,6 +4,7 @@ using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Application.Services;
 using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
+using WastePlatform.Tests.TestSupport;
 using Xunit;
 
 namespace WastePlatform.Tests.Application.Notifications;
@@ -24,6 +25,7 @@ public class NotificationServiceTests
     }
 
     [Fact]
+    [Allure.Xunit.Attributes.AllureDescription("Creates an in-app notification and pushes a realtime message when a report is created.")]
     public async Task NotifyReportCreatedAsync_ShouldPersistNotificationAndPushRealtimeMessage()
     {
         // Arrange
@@ -47,15 +49,15 @@ public class NotificationServiceTests
         // Act
         await _service.NotifyReportCreatedAsync(citizenId, reportId, CancellationToken.None);
 
-        // Attach payload snapshot for Allure
-        try
+        AllureAttachmentHelper.AttachJson("notification-created", capturedNotification!);
+        AllureAttachmentHelper.AttachJson("notification-created-summary", new
         {
-            var json = System.Text.Json.JsonSerializer.Serialize(capturedNotification, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-            var path = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "allure-results", $"notification-{capturedNotification.Id}.json");
-            System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path)!);
-            System.IO.File.WriteAllText(path, json);
-        }
-        catch { /* best-effort: don't fail test if attachment write fails */ }
+            citizenId,
+            reportId,
+            channel = capturedNotification?.Channel.ToString(),
+            type = capturedNotification?.Type.ToString(),
+            title = capturedNotification?.Title
+        });
 
         // Assert
         capturedNotification.Should().NotBeNull();
@@ -83,6 +85,7 @@ public class NotificationServiceTests
     }
 
     [Fact]
+    [Allure.Xunit.Attributes.AllureDescription("Includes the rejection reason in the notification message when provided.")]
     public async Task NotifyReportRejectedAsync_WithReason_ShouldIncludeReasonInMessage()
     {
         // Arrange
@@ -109,6 +112,7 @@ public class NotificationServiceTests
 
         // Assert
         capturedNotification.Should().NotBeNull();
+        AllureAttachmentHelper.AttachJson("notification-rejected-with-reason", capturedNotification!);
         capturedNotification!.Type.Should().Be(NotificationType.ReportRejected);
         capturedNotification.Channel.Should().Be(NotificationChannel.InApp);
         capturedNotification.Message.Should().Contain(reason);
@@ -120,6 +124,7 @@ public class NotificationServiceTests
     }
 
     [Fact]
+    [Allure.Xunit.Attributes.AllureDescription("Falls back to the default rejection message when no reason is provided.")]
     public async Task NotifyReportRejectedAsync_WithoutReason_ShouldUseDefaultMessage()
     {
         // Arrange
@@ -145,10 +150,12 @@ public class NotificationServiceTests
 
         // Assert
         capturedNotification.Should().NotBeNull();
+        AllureAttachmentHelper.AttachJson("notification-rejected-default", capturedNotification!);
         capturedNotification!.Message.Should().Be($"Báo cáo #{reportId.ToString()[..8]} không được chấp nhận.");
     }
 
     [Fact]
+    [Allure.Xunit.Attributes.AllureDescription("Creates an admin escalation notification without realtime fan-out.")]
     public async Task NotifyComplaintEscalatedAsync_ShouldPersistAdminNotificationWithoutRealtimePush()
     {
         // Arrange
@@ -169,6 +176,7 @@ public class NotificationServiceTests
 
         // Assert
         capturedNotification.Should().NotBeNull();
+        AllureAttachmentHelper.AttachJson("notification-escalated", capturedNotification!);
         capturedNotification!.CitizenId.Should().BeNull();
         capturedNotification.Type.Should().Be(NotificationType.ComplaintEscalated);
         capturedNotification.Channel.Should().Be(NotificationChannel.InApp);
