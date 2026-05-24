@@ -1,38 +1,38 @@
 [
   {
-    "name": "Branch",
     "values": [
       "main"
-    ]
+    ],
+    "name": "Branch"
   },
   {
-    "name": "ENV",
     "values": [
       "CI"
-    ]
+    ],
+    "name": "ENV"
   },
   {
-    "name": "DOTNET",
     "values": [
       "10.0.300"
-    ]
+    ],
+    "name": "DOTNET"
   },
   {
-    "name": "GIT_SHA",
     "values": [
-      "9bcf5e6eff2e00a4caa4ef618d7a15855bafa0b9"
-    ]
+      "4041439d883766b0979bc0a6183799050663da92"
+    ],
+    "name": "GIT_SHA"
   },
   {
-    "name": "GITHUB_RUN_ID",
     "values": [
-      "26350378998"
-    ]
+      "26350452376"
+    ],
+    "name": "GITHUB_RUN_ID"
   },
   {
-    "name": "RUNNER",
     "values": [
       "Windows"
-    ]
+    ],
+    "name": "RUNNER"
   }
 ]
