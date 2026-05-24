@@ -12,6 +12,18 @@ namespace WastePlatform.Tests.Application.Admin
     /// WRP-BE-TESTS-005: Admin Module Testing
     /// Test suite for Admin functionality including Users, Enterprises, and Analytics management
     /// </summary>
+    [AllureEpic("Administration")]
+    [AllureFeature("Admin Modules")]
+    [Allure.Net.Commons.Attributes.AllureLabel("story", "Users, enterprises, and analytics service flows")]
+    [Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+    [Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
+    [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "AdminModuleTests")]
+    [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Admin")]
+    [AllureOwner("backend")]
+    [AllureSeverity(SeverityLevel.normal)]
+    [Allure.Net.Commons.Attributes.AllureTag("unit")]
+    [Allure.Net.Commons.Attributes.AllureTag("backend")]
+    [Allure.Net.Commons.Attributes.AllureTag("admin")]
     public class AdminModuleTests
     {
         #region User Management Tests

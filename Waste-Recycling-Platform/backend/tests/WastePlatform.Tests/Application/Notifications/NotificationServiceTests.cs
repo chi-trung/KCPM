@@ -9,8 +9,18 @@ using Xunit;
 
 namespace WastePlatform.Tests.Application.Notifications;
 
-[Allure.Net.Commons.Attributes.AllureLabel("story", "Notification Service")]
-[Allure.Net.Commons.Attributes.AllureTag("auto-jira")]
+[AllureEpic("Notifications")]
+[AllureFeature("Notification Service")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Realtime notification persistence and push")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "NotificationServiceTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Notifications")]
+[AllureOwner("backend")]
+[AllureSeverity(SeverityLevel.normal)]
+[Allure.Net.Commons.Attributes.AllureTag("unit")]
+[Allure.Net.Commons.Attributes.AllureTag("backend")]
+[Allure.Net.Commons.Attributes.AllureTag("notifications")]
 [Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-19")]
 public class NotificationServiceTests
 {

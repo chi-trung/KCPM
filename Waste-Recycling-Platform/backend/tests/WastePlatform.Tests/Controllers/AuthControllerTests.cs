@@ -17,12 +17,17 @@ using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Controllers;
 
-[AllureEpic("KIEM-4 Auth Module")]
-[AllureFeature("Authentication")]
-[Allure.Net.Commons.Attributes.AllureLabel("story", "Register / Login / Profile")]
-[AllureOwner("chi-trung")]
+[AllureEpic("Authentication")]
+[AllureFeature("Auth APIs")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Register, login, and current user profile")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Controllers")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "AuthControllerTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Controllers")]
+[AllureOwner("auth")]
 [AllureSeverity(SeverityLevel.critical)]
-[Allure.Net.Commons.Attributes.AllureTag("auto-jira")]
+[Allure.Net.Commons.Attributes.AllureTag("api")]
+[Allure.Net.Commons.Attributes.AllureTag("auth")]
 [Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-4")]
 public class AuthControllerTests
 {

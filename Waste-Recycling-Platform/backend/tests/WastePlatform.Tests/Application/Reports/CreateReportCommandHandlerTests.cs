@@ -12,10 +12,18 @@ using Xunit;
 
 namespace WastePlatform.Tests.Application.Reports;
 
-[AllureEpic("KIEM-18 Reports")]
-[AllureFeature("Create Report Command Handler")]
-[AllureOwner("chi-trung")]
+[AllureEpic("Reports")]
+[AllureFeature("Create Report Handler")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Valid report submission with media evidence")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "CreateReportCommandHandlerTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Reports")]
+[AllureOwner("backend")]
 [AllureSeverity(SeverityLevel.critical)]
+[Allure.Net.Commons.Attributes.AllureTag("unit")]
+[Allure.Net.Commons.Attributes.AllureTag("backend")]
+[Allure.Net.Commons.Attributes.AllureTag("reports")]
 public class CreateReportCommandHandlerTests
 {
     private readonly Mock<IReportRepository> _mockReportRepository;

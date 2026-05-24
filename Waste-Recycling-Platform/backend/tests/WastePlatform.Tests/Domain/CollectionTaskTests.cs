@@ -3,6 +3,17 @@ using WastePlatform.Domain.Enums;
 
 namespace WastePlatform.Tests.Domain;
 
+[AllureEpic("Domain Model")]
+[AllureFeature("Collection Task Entity")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Status transitions and assignment lifecycle")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Domain")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "CollectionTaskTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Domain")]
+[AllureOwner("backend")]
+[AllureSeverity(SeverityLevel.minor)]
+[Allure.Net.Commons.Attributes.AllureTag("unit")]
+[Allure.Net.Commons.Attributes.AllureTag("domain")]
 public class CollectionTaskTests
 {
     [Fact]

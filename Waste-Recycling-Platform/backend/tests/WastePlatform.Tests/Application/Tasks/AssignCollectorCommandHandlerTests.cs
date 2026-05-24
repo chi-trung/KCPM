@@ -2,6 +2,18 @@ using WastePlatform.Application.Tasks.Commands;
 
 namespace WastePlatform.Tests.Application.Tasks;
 
+[AllureEpic("Enterprise Operations")]
+[AllureFeature("Assign Collector Handler")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Assign a collector and stamp the assignment time")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "AssignCollectorCommandHandlerTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Tasks")]
+[AllureOwner("backend")]
+[AllureSeverity(SeverityLevel.minor)]
+[Allure.Net.Commons.Attributes.AllureTag("unit")]
+[Allure.Net.Commons.Attributes.AllureTag("backend")]
+[Allure.Net.Commons.Attributes.AllureTag("task")]
 public class AssignCollectorCommandHandlerTests
 {
     [Fact]

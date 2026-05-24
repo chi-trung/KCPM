@@ -15,10 +15,19 @@ using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Controllers;
 
-[Allure.Net.Commons.Attributes.AllureLabel("story", "Enterprise Task Assignment")]
-[Allure.Net.Commons.Attributes.AllureTag("auto-jira")]
+[AllureEpic("Enterprise Operations")]
+[AllureFeature("Task Assignment")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Assign collector to a waste collection task")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Controllers")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "EnterpriseTaskControllerTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Controllers")]
+[AllureOwner("backend")]
+[AllureSeverity(SeverityLevel.critical)]
+[Allure.Net.Commons.Attributes.AllureTag("api")]
+[Allure.Net.Commons.Attributes.AllureTag("enterprise")]
+[Allure.Net.Commons.Attributes.AllureTag("task")]
 [Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-16")]
-[Allure.Net.Commons.Attributes.AllureOwner("chi-trung")]
 public class EnterpriseTaskControllerTests
 {
     [Fact]

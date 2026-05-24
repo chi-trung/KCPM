@@ -3,7 +3,8 @@ param(
     [string]$RunSettingsPath = ".\Waste-Recycling-Platform\backend\tests\WastePlatform.Tests\WastePlatform.Tests.runsettings",
     [string]$ResultsDirectory = ".\TestResults",
     [string]$AllureResultsPath = ".\Waste-Recycling-Platform\backend\tests\WastePlatform.Tests\bin\Release\net8.0\allure-results",
-    [string]$AllureReportPath = ".\TestResults\backend-allure-report"
+    [string]$AllureReportPath = ".\TestResults\backend-allure-report",
+    [string]$CategoriesPath = ".\Waste-Recycling-Platform\allure-categories.json"
 )
 
 $ErrorActionPreference = "Stop"
@@ -70,6 +71,11 @@ if (Test-Path $historySrc) {
     Write-Host "Copying existing history from $historySrc to $historyDst"
     if (Test-Path $historyDst) { Remove-Item -Recurse -Force $historyDst }
     Copy-Item -Recurse -Force $historySrc $historyDst
+}
+
+if (Test-Path $CategoriesPath) {
+    Write-Host "Copying categories from $CategoriesPath to $AllureResultsPath\categories.json"
+    Copy-Item -Force $CategoriesPath (Join-Path $AllureResultsPath 'categories.json')
 }
 
 Write-Host "Generating HTML report..."

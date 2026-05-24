@@ -6,6 +6,17 @@ using WastePlatform.Infrastructure.Persistence.Repositories;
 
 namespace WastePlatform.Tests.Infrastructure;
 
+[AllureEpic("Infrastructure")]
+[AllureFeature("Notification Repository")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Citizen notification persistence and paging")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Infrastructure")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "NotificationRepositoryTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Infrastructure")]
+[AllureOwner("backend")]
+[AllureSeverity(SeverityLevel.normal)]
+[Allure.Net.Commons.Attributes.AllureTag("unit")]
+[Allure.Net.Commons.Attributes.AllureTag("repository")]
 public class NotificationRepositoryTests
 {
     [Fact]

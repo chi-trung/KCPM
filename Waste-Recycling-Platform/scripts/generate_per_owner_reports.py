@@ -45,6 +45,16 @@ for owner in owners:
     shutil.rmtree(dest_results, ignore_errors=True)
     os.makedirs(dest_results, exist_ok=True)
 
+    for metadata_name in ('categories.json', 'environment.properties', 'executor.json'):
+        metadata_src = os.path.join(RESULTS_DIR, metadata_name)
+        if os.path.exists(metadata_src):
+            shutil.copy2(metadata_src, os.path.join(dest_results, metadata_name))
+
+    history_src = os.path.join(RESULTS_DIR, 'history')
+    history_dst = os.path.join(dest_results, 'history')
+    if os.path.isdir(history_src):
+        shutil.copytree(history_src, history_dst, dirs_exist_ok=True)
+
     # copy all matching JSON result files (and attachments if present)
     for fname in os.listdir(RESULTS_DIR):
         src = os.path.join(RESULTS_DIR, fname)

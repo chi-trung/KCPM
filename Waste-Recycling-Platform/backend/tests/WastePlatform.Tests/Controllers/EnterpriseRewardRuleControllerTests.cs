@@ -11,10 +11,19 @@ using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Controllers;
 
-[Allure.Net.Commons.Attributes.AllureLabel("story", "Enterprise Reward Rules")]
-[Allure.Net.Commons.Attributes.AllureTag("auto-jira")]
+[AllureEpic("Enterprise Operations")]
+[AllureFeature("Reward Rules")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Manage reward rules for waste categories")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Controllers")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "EnterpriseRewardRuleControllerTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Controllers")]
+[AllureOwner("backend")]
+[AllureSeverity(SeverityLevel.normal)]
+[Allure.Net.Commons.Attributes.AllureTag("api")]
+[Allure.Net.Commons.Attributes.AllureTag("enterprise")]
+[Allure.Net.Commons.Attributes.AllureTag("rules")]
 [Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-17")]
-[Allure.Net.Commons.Attributes.AllureOwner("chi-trung")]
 public class EnterpriseRewardRuleControllerTests
 {
     [Fact]

@@ -11,10 +11,18 @@ using Xunit;
 
 namespace WastePlatform.Tests.Application.Complaints;
 
-[AllureEpic("KIEM-18 Complaints")]
-[AllureFeature("Create Complaint Command Handler")]
-[AllureOwner("chi-trung")]
+[AllureEpic("Complaints")]
+[AllureFeature("Create Complaint Handler")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Complaint creation and linkage to reports")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "CreateComplaintCommandHandlerTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Complaints")]
+[AllureOwner("backend")]
 [AllureSeverity(SeverityLevel.critical)]
+[Allure.Net.Commons.Attributes.AllureTag("unit")]
+[Allure.Net.Commons.Attributes.AllureTag("backend")]
+[Allure.Net.Commons.Attributes.AllureTag("complaints")]
 public class CreateComplaintCommandHandlerTests
 {
     private readonly Mock<IComplaintRepository> _mockComplaintRepository;

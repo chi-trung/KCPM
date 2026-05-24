@@ -6,10 +6,18 @@ using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Infrastructure;
 
-[Allure.Net.Commons.Attributes.AllureLabel("story", "Reward Points Calculation")]
-[Allure.Net.Commons.Attributes.AllureTag("auto-jira")]
+[AllureEpic("Infrastructure")]
+[AllureFeature("Reward Points Repository")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Reward calculation and idempotency")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Infrastructure")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "RewardPointsRepositoryTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Infrastructure")]
+[AllureOwner("backend")]
+[AllureSeverity(SeverityLevel.normal)]
+[Allure.Net.Commons.Attributes.AllureTag("unit")]
+[Allure.Net.Commons.Attributes.AllureTag("repository")]
 [Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-17")]
-[Allure.Net.Commons.Attributes.AllureOwner("chi-trung")]
 public class RewardPointsRepositoryTests
 {
     [Fact]

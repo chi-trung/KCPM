@@ -148,6 +148,14 @@ jobs:
           }
           EOF
 
+      - name: Write Allure categories
+        if: always()
+        run: |
+          mkdir -p Waste-Recycling-Platform/allure-results
+          if [ -f Waste-Recycling-Platform/allure-categories.json ]; then
+            cp Waste-Recycling-Platform/allure-categories.json Waste-Recycling-Platform/allure-results/categories.json
+          fi
+
       - name: Debug merged allure results
         if: always()
         run: |

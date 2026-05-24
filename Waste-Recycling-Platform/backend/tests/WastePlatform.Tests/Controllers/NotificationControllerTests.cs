@@ -14,12 +14,17 @@ using Xunit;
 
 namespace WastePlatform.Tests.Controllers;
 
-[AllureEpic("KIEM-19 Notifications")]
-[AllureFeature("Notifications Controller")]
-[Allure.Net.Commons.Attributes.AllureLabel("story", "Notifications")]
-[AllureOwner("chi-trung")]
+[AllureEpic("Notifications")]
+[AllureFeature("Citizen Notifications")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Inbox listing and mark-as-read flows")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Controllers")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "NotificationControllerTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Controllers")]
+[AllureOwner("qa")]
 [AllureSeverity(SeverityLevel.normal)]
-[Allure.Net.Commons.Attributes.AllureTag("auto-jira")]
+[Allure.Net.Commons.Attributes.AllureTag("api")]
+[Allure.Net.Commons.Attributes.AllureTag("notifications")]
 [Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-19")]
 public class NotificationControllerTests
 {
