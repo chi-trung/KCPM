@@ -78,17 +78,29 @@ def main():
         if not assigned:
             continue
 
+        resolved_owner = next((a for a in sorted(set(a.strip() for a in assigned if a and a.strip()))), None)
+        if not resolved_owner:
+            continue
+
         # ensure labels list
         labels = data.get('labels') or []
-        existing_owners = {l.get('value') for l in labels if isinstance(l, dict) and l.get('name') == 'owner'}
-        new_added = False
-        for a in assigned:
-            if a not in existing_owners:
-                labels.append({'name': 'owner', 'value': a})
-                owners.add(a)
-                new_added = True
+        changed = False
 
-        if new_added:
+        # Replace any pre-existing placeholder owner labels (auth/backend/qa)
+        # with the real Jira assignee so Allure shows the person, not the suite.
+        for label in labels:
+            if isinstance(label, dict) and label.get('name') == 'owner':
+                if label.get('value') != resolved_owner:
+                    label['value'] = resolved_owner
+                    changed = True
+
+        if not any(isinstance(l, dict) and l.get('name') == 'owner' for l in labels):
+            labels.append({'name': 'owner', 'value': resolved_owner})
+            changed = True
+
+        owners.add(resolved_owner)
+
+        if changed:
             data['labels'] = labels
             try:
                 with open(path, 'w', encoding='utf8') as f:
