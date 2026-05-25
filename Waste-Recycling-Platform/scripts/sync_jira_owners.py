@@ -25,14 +25,24 @@ def collect_issue_keys(results_dir):
     for fname in os.listdir(results_dir):
         if not fname.lower().endswith('.json'):
             continue
+        if fname in ('categories.json', 'executor.json', 'environment.properties'):
+            continue
         path = os.path.join(results_dir, fname)
         try:
             with open(path, 'r', encoding='utf8') as f:
                 data = json.load(f)
         except Exception:
             continue
+        if not isinstance(data, dict):
+            continue
+        if not (data.get('labels') or data.get('name') or data.get('fullName') or data.get('links')):
+            continue
+
+        labels = data.get('labels') or []
+        links = data.get('links') or []
+
         # labels like {name: 'issue', value: 'KIEM-4'}
-        for label in data.get('labels') or []:
+        for label in labels:
             if isinstance(label, dict) and label.get('name') in ('issue', 'Issue', 'ISSUE'):
                 val = label.get('value')
                 if val:
@@ -41,7 +51,7 @@ def collect_issue_keys(results_dir):
                     key = parts[-1] if parts else val.strip()
                     keys.add(key)
         # links with type issue
-        for link in data.get('links') or []:
+        for link in links:
             if isinstance(link, dict) and link.get('type') == 'issue':
                 name = link.get('name') or ''
                 if name:

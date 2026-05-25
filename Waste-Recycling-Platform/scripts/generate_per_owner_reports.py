@@ -13,6 +13,7 @@ import shutil
 import subprocess
 
 RESULTS_DIR = os.path.join('Waste-Recycling-Platform', 'allure-results')
+BASE_OUT = 'owner-report-temp'
 OUTPUT_BASE = os.path.join('allure-report', 'owners')
 
 # optional jira owner map produced by sync_jira_owners.py
@@ -59,6 +60,10 @@ def is_test_result(data):
     return True
 
 
+shutil.rmtree(BASE_OUT, ignore_errors=True)
+os.makedirs(BASE_OUT, exist_ok=True)
+
+
 # Collect owners from JSON result files (owner label OR via jira map -> issues)
 for fname in os.listdir(RESULTS_DIR):
     path = os.path.join(RESULTS_DIR, fname)
@@ -100,7 +105,7 @@ print('Discovered owners:', owners)
 for owner in owners:
     # safe folder name
     owner_safe = slugify(owner)
-    dest_results = os.path.join('tmp_owner_results', owner_safe)
+    dest_results = os.path.join(BASE_OUT, owner_safe)
     shutil.rmtree(dest_results, ignore_errors=True)
     os.makedirs(dest_results, exist_ok=True)
 
@@ -200,7 +205,7 @@ for owner in owners:
 
     # generate report if we have results
     if os.listdir(dest_results):
-        out_dir = os.path.join('allure-report', 'owners', owner_safe)
+        out_dir = os.path.join(BASE_OUT, owner_safe, 'report')
         shutil.rmtree(out_dir, ignore_errors=True)
         os.makedirs(out_dir, exist_ok=True)
         print(f'Generating report for owner {owner} -> {out_dir}')
@@ -215,10 +220,15 @@ print('Per-owner generation complete')
 
 # summary
 generated = []
-base_out = os.path.join('allure-report', 'owners')
-if os.path.isdir(base_out):
-    for d in os.listdir(base_out):
-        if os.path.isdir(os.path.join(base_out, d)):
+if os.path.isdir(BASE_OUT):
+    for d in os.listdir(BASE_OUT):
+        report_dir = os.path.join(BASE_OUT, d, 'report')
+        if os.path.isdir(report_dir):
             generated.append(d)
+
+shutil.rmtree(OUTPUT_BASE, ignore_errors=True)
+os.makedirs('allure-report', exist_ok=True)
+if os.path.isdir(BASE_OUT):
+    shutil.move(BASE_OUT, OUTPUT_BASE)
 
 print('Generated owner reports:', generated)
