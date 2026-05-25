@@ -40,6 +40,10 @@ for p in JIRA_MAP_PATHS:
         except Exception:
             jira_map = {}
 
+if not jira_map:
+    print('Skipping owner reports: jira-owner-map.json empty')
+    raise SystemExit(0)
+
 
 def slugify(name: str) -> str:
     if not name:
@@ -99,6 +103,10 @@ for fname in os.listdir(RESULTS_DIR):
         info = jira_map.get(k)
         if info and info.get('displayName'):
             owners.add(info.get('displayName'))
+
+if not owners:
+    print('Skipping owner reports: no owners discovered')
+    raise SystemExit(0)
 
 print('Discovered owners:', owners)
 
@@ -205,7 +213,7 @@ for owner in owners:
 
     # generate report if we have results
     if os.listdir(dest_results):
-        out_dir = os.path.join(BASE_OUT, owner_safe, 'report')
+        out_dir = os.path.join(BASE_OUT, owner_safe)
         shutil.rmtree(out_dir, ignore_errors=True)
         os.makedirs(out_dir, exist_ok=True)
         print(f'Generating report for owner {owner} -> {out_dir}')
@@ -230,5 +238,7 @@ shutil.rmtree(OUTPUT_BASE, ignore_errors=True)
 os.makedirs('allure-report', exist_ok=True)
 if os.path.isdir(BASE_OUT):
     shutil.move(BASE_OUT, OUTPUT_BASE)
+
+print('Generated owner reports:', generated)
 
 print('Generated owner reports:', generated)

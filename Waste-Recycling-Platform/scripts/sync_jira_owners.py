@@ -59,6 +59,16 @@ def collect_issue_keys(results_dir):
     return keys
 
 
+def write_owner_map(owner_map):
+    for out in OUT_PATHS:
+        try:
+            with open(out, 'w', encoding='utf8') as f:
+                json.dump(owner_map, f, ensure_ascii=False, indent=2)
+            print('Wrote', out)
+        except Exception as e:
+            print('Failed to write', out, e, file=sys.stderr)
+
+
 def get_env_var(name):
     v = os.environ.get(name)
     if not v:
@@ -90,9 +100,18 @@ def main():
     print('Found issue keys in results:', keys)
     if not keys:
         print('No Jira issue keys found. Writing empty map.')
-    base = get_env_var('JIRA_BASE_URL')
-    email = get_env_var('JIRA_EMAIL')
-    token = get_env_var('JIRA_API_TOKEN')
+        write_owner_map({})
+        print('Done')
+        return
+
+    base = os.environ.get('JIRA_BASE_URL')
+    email = os.environ.get('JIRA_EMAIL')
+    token = os.environ.get('JIRA_API_TOKEN')
+    if not base or not email or not token:
+        print('Warning: Jira secrets missing; skipping Jira sync and writing empty map.', file=sys.stderr)
+        write_owner_map({})
+        print('Done')
+        return
 
     basic = base64.b64encode(f"{email}:{token}".encode('utf8')).decode('ascii')
     auth_header = f'Basic {basic}'
@@ -121,14 +140,6 @@ def main():
     # show sample mapping
     for k in list(owner_map.keys())[:10]:
         print(k, '->', owner_map[k])
-
-    for out in OUT_PATHS:
-        try:
-            with open(out, 'w', encoding='utf8') as f:
-                json.dump(owner_map, f, ensure_ascii=False, indent=2)
-            print('Wrote', out)
-        except Exception as e:
-            print('Failed to write', out, e, file=sys.stderr)
 
     print('Done')
 
