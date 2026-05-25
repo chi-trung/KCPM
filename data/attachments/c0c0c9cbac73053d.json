@@ -1,0 +1,15 @@
+{
+  "Id": "b4975c59-9731-45eb-b0fc-dd722ec74fd4",
+  "CitizenId": "f3587d60-1f3a-4726-b8e3-e49d66cef72f",
+  "Type": 5,
+  "Channel": 0,
+  "Status": 0,
+  "Title": "B\u00E1o c\u00E1o b\u1ECB t\u1EEB ch\u1ED1i",
+  "Message": "B\u00E1o c\u00E1o #de0e6a43 kh\u00F4ng \u0111\u01B0\u1EE3c ch\u1EA5p nh\u1EADn. L\u00FD do: Thi\u1EBFu \u1EA3nh r\u00F5 r\u00E0ng",
+  "ActionUrl": "/citizen/reports/de0e6a43-2337-47ba-926b-0a1cf1cf2029",
+  "RelatedEntityId": "de0e6a43-2337-47ba-926b-0a1cf1cf2029",
+  "RelatedEntityType": "Report",
+  "CreatedAt": "2026-05-25T16:46:29.1979669Z",
+  "ReadAt": null,
+  "Citizen": null
+}

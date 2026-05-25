@@ -1,0 +1,52 @@
+{
+  "jira_resolved": 0,
+  "jira_total": 5,
+  "jira_sample": {
+    "KIEM-14": {
+      "displayName": null,
+      "accountId": null,
+      "unassigned": true
+    },
+    "KIEM-16": {
+      "displayName": null,
+      "accountId": null,
+      "unassigned": true
+    },
+    "KIEM-17": {
+      "displayName": null,
+      "accountId": null,
+      "unassigned": true
+    },
+    "KIEM-19": {
+      "displayName": null,
+      "accountId": null,
+      "unassigned": true
+    },
+    "KIEM-4": {
+      "displayName": null,
+      "accountId": null,
+      "unassigned": true
+    }
+  },
+  "injected_count": 91,
+  "owners": [
+    "auth",
+    "backend",
+    "qa"
+  ],
+  "owner_slugs": [
+    "auth",
+    "backend",
+    "qa"
+  ],
+  "owner_folders": [
+    "report-extra/owners/auth",
+    "report-extra/owners/backend",
+    "report-extra/owners/qa"
+  ],
+  "xunit_present": true,
+  "postman_present": true,
+  "history_exists": true,
+  "categories_exists": true,
+  "executor_exists": true
+}
