@@ -265,14 +265,19 @@ print('Per-owner generation complete')
 generated = []
 if os.path.isdir(BASE_OUT):
     for d in os.listdir(BASE_OUT):
-        report_dir = os.path.join(BASE_OUT, d, 'report')
+        report_dir = os.path.join(BASE_OUT, d)
         if os.path.isdir(report_dir):
             generated.append(d)
 
 shutil.rmtree(OUTPUT_BASE, ignore_errors=True)
-os.makedirs('allure-report', exist_ok=True)
+os.makedirs(OUTPUT_BASE, exist_ok=True)
 if os.path.isdir(BASE_OUT):
-    shutil.move(BASE_OUT, OUTPUT_BASE)
+    for d in os.listdir(BASE_OUT):
+        src_dir = os.path.join(BASE_OUT, d)
+        dst_dir = os.path.join(OUTPUT_BASE, d)
+        if os.path.isdir(src_dir):
+            shutil.copytree(src_dir, dst_dir, dirs_exist_ok=True)
+    shutil.rmtree(BASE_OUT, ignore_errors=True)
 
 print('Generated owner reports:', generated)
 
