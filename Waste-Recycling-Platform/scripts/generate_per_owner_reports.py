@@ -22,6 +22,36 @@ JIRA_MAP_PATHS = [
     'jira-owner-map.json',
 ]
 
+
+def collect_issue_keys(results_dir):
+    keys = set()
+    for fname in os.listdir(results_dir):
+        path = os.path.join(results_dir, fname)
+        if not fname.lower().endswith('.json'):
+            continue
+        try:
+            with open(path, 'r', encoding='utf8') as f:
+                data = json.load(f)
+        except Exception:
+            continue
+        if not isinstance(data, dict):
+            continue
+        if not (data.get('labels') or data.get('name') or data.get('fullName') or data.get('links')):
+            continue
+        for label in data.get('labels') or []:
+            if isinstance(label, dict) and label.get('name') in ('issue', 'Issue', 'ISSUE') and label.get('value'):
+                keys.add(str(label.get('value')).rstrip('/').split('/')[-1])
+        for link in data.get('links') or []:
+            if isinstance(link, dict) and link.get('type') == 'issue':
+                name = (link.get('name') or '').strip()
+                if name:
+                    keys.add(name)
+                else:
+                    url = link.get('url') or ''
+                    if isinstance(url, str):
+                        keys.add(url.rstrip('/').split('/')[-1])
+    return keys
+
 if not os.path.isdir(RESULTS_DIR):
     print('No results dir found at', RESULTS_DIR)
     raise SystemExit(0)
@@ -41,8 +71,13 @@ for p in JIRA_MAP_PATHS:
             jira_map = {}
 
 if not jira_map:
-    print('Skipping owner reports: jira-owner-map.json empty')
-    raise SystemExit(0)
+    discovered_keys = sorted(collect_issue_keys(RESULTS_DIR))
+    if discovered_keys:
+        print('Warning: jira-owner-map.json empty; using discovered Jira keys as unassigned fallback')
+        jira_map = {key: {'displayName': None, 'accountId': None, 'unassigned': True} for key in discovered_keys}
+    else:
+        print('Skipping owner reports: jira-owner-map.json empty')
+        raise SystemExit(0)
 
 
 def slugify(name: str) -> str:
