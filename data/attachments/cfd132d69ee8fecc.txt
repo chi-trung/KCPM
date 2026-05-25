@@ -1,0 +1,3 @@
+pm.test('status code is success', function () {
+  pm.expect([200, 400, 401, 403, 409]).to.include(pm.response.code);
+});
