@@ -124,8 +124,17 @@ def main():
     email = os.environ.get('JIRA_EMAIL')
     token = os.environ.get('JIRA_API_TOKEN')
     if not base or not email or not token:
-        print('Warning: Jira secrets missing; skipping Jira sync and writing empty map.', file=sys.stderr)
-        write_owner_map({})
+        # If we discovered issue keys but cannot call Jira, write a map with
+        # all keys marked unassigned so downstream validation sees a non-empty
+        # jira-owner-map.json (avoids failing 'jira-owner-map is empty').
+        print('Warning: Jira secrets missing; cannot query Jira.', file=sys.stderr)
+        if keys:
+            owner_map = {k: {'displayName': None, 'accountId': None, 'unassigned': True} for k in sorted(keys)}
+            write_owner_map(owner_map)
+            print(f'Wrote owner map with {len(owner_map)} keys (unassigned)')
+        else:
+            write_owner_map({})
+            print('No issue keys found; wrote empty map')
         print('Done')
         return
 
