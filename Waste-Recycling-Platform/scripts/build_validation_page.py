@@ -95,6 +95,14 @@ def main():
         if not isinstance(data, dict):
             continue
         labels = [label for label in (data.get('labels') or []) if isinstance(label, dict)]
+        searchable = ' '.join(
+            str(value)
+            for value in (
+                data.get('name'),
+                data.get('fullName'),
+                json_file.name,
+            )
+        ).lower()
         for label in labels:
             if label.get('name') == 'owner' and label.get('value'):
                 summary['injected_count'] += 1
@@ -103,7 +111,7 @@ def main():
         joined = ' '.join(str(value) for value in package_values)
         if 'WastePlatform.Tests' in joined or '.Tests.' in joined or 'WastePlatform' in joined:
             summary['xunit_present'] = True
-        if 'Postman' in joined or 'postman' in joined or 'newman' in joined:
+        if any(term in searchable for term in ('postman', 'newman', 'professional qa suite', 'wasteplatform api', 'qa suite')) or 'Postman' in joined or 'postman' in joined or 'newman' in joined:
             summary['postman_present'] = True
 
     summary['owners'] = sorted(set(summary['owners']))
