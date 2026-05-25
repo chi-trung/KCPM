@@ -42,6 +42,7 @@ def collect_issue_keys(results_dir):
 def main():
     results_dir = Path('Waste-Recycling-Platform/allure-results')
     validation_dir = Path(os.environ.get('VALIDATION_OUTPUT_DIR', 'validation-temp'))
+    report_base = Path(os.environ.get('ALLURE_PUBLISH_DIR', 'site-output'))
     validation_dir.mkdir(parents=True, exist_ok=True)
 
     summary = {
@@ -54,7 +55,7 @@ def main():
         'owner_folders': [],
         'xunit_present': False,
         'postman_present': False,
-        'history_exists': (Path('allure-report') / 'history').exists(),
+        'history_exists': (report_base / 'history').exists(),
         'categories_exists': (results_dir / 'categories.json').exists(),
         'executor_exists': (results_dir / 'executor.json').exists(),
     }
@@ -117,7 +118,7 @@ def main():
     summary['owners'] = sorted(set(summary['owners']))
     summary['owner_slugs'] = [re.sub(r'[^a-z0-9]+', '-', owner.lower()).strip('-') for owner in summary['owners']]
     for slug in summary['owner_slugs']:
-        folder = Path('allure-report') / 'owners' / slug
+        folder = report_base / 'owners' / slug
         if folder.exists():
             summary['owner_folders'].append(str(folder))
 

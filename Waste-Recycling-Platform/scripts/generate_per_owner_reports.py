@@ -14,7 +14,8 @@ import subprocess
 
 RESULTS_DIR = os.path.join('Waste-Recycling-Platform', 'allure-results')
 BASE_OUT = 'owner-report-temp'
-OUTPUT_BASE = os.path.join('allure-report', 'owners')
+REPORT_BASE = os.environ.get('ALLURE_PUBLISH_DIR', 'site-output')
+OUTPUT_BASE = os.path.join(REPORT_BASE, 'owners')
 
 # optional jira owner map produced by sync_jira_owners.py
 JIRA_MAP_PATHS = [
@@ -269,15 +270,9 @@ if os.path.isdir(BASE_OUT):
         if os.path.isdir(report_dir):
             generated.append(d)
 
-output_parent = os.path.dirname(OUTPUT_BASE)
-if output_parent:
-    os.makedirs(output_parent, exist_ok=True)
-    try:
-        os.chmod(output_parent, 0o755)
-    except Exception:
-        pass
+os.makedirs(REPORT_BASE, exist_ok=True)
 try:
-    os.chmod('allure-report', 0o755)
+    os.chmod(REPORT_BASE, 0o755)
 except Exception:
     pass
 
