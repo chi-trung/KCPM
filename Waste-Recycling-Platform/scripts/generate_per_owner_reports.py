@@ -14,7 +14,7 @@ import subprocess
 
 RESULTS_DIR = os.path.join('Waste-Recycling-Platform', 'allure-results')
 BASE_OUT = 'owner-report-temp'
-REPORT_BASE = os.environ.get('ALLURE_PUBLISH_DIR', 'site-output')
+REPORT_BASE = os.environ.get('ALLURE_PUBLISH_DIR', 'report-extra')
 OUTPUT_BASE = os.path.join(REPORT_BASE, 'owners')
 
 # optional jira owner map produced by sync_jira_owners.py

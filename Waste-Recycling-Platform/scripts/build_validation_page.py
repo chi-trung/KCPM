@@ -42,7 +42,8 @@ def collect_issue_keys(results_dir):
 def main():
     results_dir = Path('Waste-Recycling-Platform/allure-results')
     validation_dir = Path(os.environ.get('VALIDATION_OUTPUT_DIR', 'validation-temp'))
-    report_base = Path(os.environ.get('ALLURE_PUBLISH_DIR', 'site-output'))
+    report_base = Path(os.environ.get('ALLURE_PUBLISH_DIR', 'report-extra'))
+    main_report_dir = Path(os.environ.get('ALLURE_MAIN_REPORT_DIR', 'report-main'))
     validation_dir.mkdir(parents=True, exist_ok=True)
 
     summary = {
@@ -55,7 +56,7 @@ def main():
         'owner_folders': [],
         'xunit_present': False,
         'postman_present': False,
-        'history_exists': (report_base / 'history').exists(),
+        'history_exists': (main_report_dir / 'history').exists(),
         'categories_exists': (results_dir / 'categories.json').exists(),
         'executor_exists': (results_dir / 'executor.json').exists(),
     }

@@ -211,7 +211,7 @@ jobs:
         with:
           allure_results: Waste-Recycling-Platform/allure-results
           gh_pages: gh-pages
-          allure_report: site-output
+          allure_report: report-main
           allure_history: Waste-Recycling-Platform/allure-results/history
           keep_reports: 20
 
@@ -219,12 +219,12 @@ jobs:
         if: always()
         run: |
           echo "===== GENERATED REPORT ====="
-          find site-output -type f | head -100 || true
+          find report-main -type f | head -100 || true
 
       - name: Normalize report permissions
         if: always()
         run: |
-          chmod -R u+w site-output || true
+          chmod -R u+w report-main || true
 
       - name: Install Allure CLI for per-owner reports
         if: always()
@@ -234,7 +234,7 @@ jobs:
       - name: Generate per-owner Allure reports
         if: always()
         env:
-          ALLURE_PUBLISH_DIR: site-output
+          ALLURE_PUBLISH_DIR: report-extra
         run: |
           python3 Waste-Recycling-Platform/scripts/generate_per_owner_reports.py
 
@@ -249,11 +249,24 @@ jobs:
         env:
           GITHUB_RUN_ID: ${{ github.run_id }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          ALLURE_PUBLISH_DIR: site-output
-          VALIDATION_OUTPUT_DIR: site-output/validation
+          ALLURE_PUBLISH_DIR: report-extra
+          ALLURE_MAIN_REPORT_DIR: report-main
+          VALIDATION_OUTPUT_DIR: report-extra/validation
         run: |
           set -e
           python3 Waste-Recycling-Platform/scripts/build_validation_page.py
+
+      - name: Assemble published site
+        if: always()
+        run: |
+          rm -rf site-output || true
+          mkdir -p site-output
+          if [ -d report-main ]; then
+            cp -R report-main/. site-output/
+          fi
+          if [ -d report-extra ]; then
+            cp -R report-extra/. site-output/
+          fi
 
       - name: Deploy to GitHub Pages
         if: always() && github.event_name != 'pull_request'
