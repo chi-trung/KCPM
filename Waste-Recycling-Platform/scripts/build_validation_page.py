@@ -5,6 +5,40 @@ import sys
 from pathlib import Path
 
 
+def collect_issue_keys(results_dir):
+    keys = set()
+    for json_file in results_dir.glob('*.json'):
+        try:
+            data = json.loads(json_file.read_text(encoding='utf8'))
+        except Exception:
+            continue
+
+        entries = []
+        if isinstance(data, dict):
+            entries = [data]
+        elif isinstance(data, list):
+            entries = [item for item in data if isinstance(item, dict)]
+
+        for entry in entries:
+            labels = entry.get('labels') or []
+            links = entry.get('links') or []
+            for label in labels:
+                if isinstance(label, dict) and label.get('name') in ('issue', 'Issue', 'ISSUE'):
+                    value = label.get('value')
+                    if value:
+                        keys.add(value.rstrip('/').split('/')[-1])
+            for link in links:
+                if isinstance(link, dict) and link.get('type') == 'issue':
+                    name = (link.get('name') or '').strip()
+                    if name:
+                        keys.add(name)
+                        continue
+                    url = link.get('url') or ''
+                    if isinstance(url, str):
+                        keys.add(url.rstrip('/').split('/')[-1])
+    return keys
+
+
 def main():
     results_dir = Path('Waste-Recycling-Platform/allure-results')
     validation_dir = Path('validation-temp')
@@ -26,14 +60,21 @@ def main():
     }
 
     jira_map_path = results_dir / 'jira-owner-map.json'
-    if not jira_map_path.exists():
-        print('Fail: jira-owner-map is empty')
-        sys.exit(2)
+    jira_map = {}
+    if jira_map_path.exists():
+        try:
+            jira_map = json.loads(jira_map_path.read_text(encoding='utf8'))
+        except Exception:
+            jira_map = {}
 
-    try:
-        jira_map = json.loads(jira_map_path.read_text(encoding='utf8'))
-    except Exception:
-        jira_map = {}
+    if not jira_map:
+        discovered_keys = sorted(collect_issue_keys(results_dir))
+        if discovered_keys:
+            print('Warning: jira-owner-map is empty; using discovered Jira keys as unassigned fallback')
+            jira_map = {key: {'displayName': None, 'accountId': None, 'unassigned': True} for key in discovered_keys}
+        else:
+            print('Fail: jira-owner-map is empty')
+            sys.exit(2)
 
     summary['jira_total'] = len(jira_map)
     if summary['jira_total'] == 0:

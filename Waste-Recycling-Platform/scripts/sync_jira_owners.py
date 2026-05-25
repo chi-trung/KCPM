@@ -11,6 +11,7 @@ import base64
 import json
 import os
 import sys
+from urllib.parse import urlparse
 import urllib.request
 import urllib.error
 
@@ -100,6 +101,13 @@ def discover_all_keys():
     return keys
 
 
+def normalize_jira_base_url(base_url):
+    parsed = urlparse(base_url)
+    if parsed.scheme and parsed.netloc:
+        return f'{parsed.scheme}://{parsed.netloc}'
+    return base_url.rstrip('/')
+
+
 def write_owner_map(owner_map):
     for out in OUT_PATHS:
         try:
@@ -119,7 +127,9 @@ def get_env_var(name):
 
 
 def query_jira_issue(base_url, auth_header, issue_key):
-    url = base_url.rstrip('/') + f'/rest/api/3/issue/{issue_key}?fields=assignee'
+    normalized_base = normalize_jira_base_url(base_url)
+    url = normalized_base.rstrip('/') + f'/rest/api/3/issue/{issue_key}?fields=assignee'
+    print('Request URL:', url)
     req = urllib.request.Request(url, headers={'Authorization': auth_header, 'Accept': 'application/json'})
     try:
         with urllib.request.urlopen(req, timeout=30) as resp:
@@ -163,13 +173,17 @@ def main():
         print('Done')
         return
 
+    normalized_base = normalize_jira_base_url(base)
+    if normalized_base != base.rstrip('/'):
+        print('Normalized JIRA_BASE_URL to:', normalized_base)
+
     basic = base64.b64encode(f"{email}:{token}".encode('utf8')).decode('ascii')
     auth_header = f'Basic {basic}'
 
     owner_map = {}
     for key in sorted(keys):
         print('Querying', key)
-        data = query_jira_issue(base, auth_header, key)
+        data = query_jira_issue(normalized_base, auth_header, key)
         if not data:
             owner_map[key] = {'displayName': None, 'accountId': None, 'unassigned': True}
             continue
