@@ -231,12 +231,6 @@ jobs:
         run: |
           python3 Waste-Recycling-Platform/scripts/generate_per_owner_reports.py
 
-      - name: Prepare validation temp directory
-        if: always()
-        run: |
-          rm -rf validation-temp || true
-          mkdir -p validation-temp
-
       - name: Create validation artifacts for Pages
         if: always()
         run: |
@@ -248,13 +242,10 @@ jobs:
         env:
           GITHUB_RUN_ID: ${{ github.run_id }}
           GITHUB_REPOSITORY: ${{ github.repository }}
+          VALIDATION_OUTPUT_DIR: allure-report/validation
         run: |
           set -e
           python3 Waste-Recycling-Platform/scripts/build_validation_page.py
-          mkdir -p allure-report || true
-          rm -rf allure-report/validation || true
-          cp -r validation-temp allure-report/validation
-            PY
 
       - name: Deploy to GitHub Pages
         if: always() && github.event_name != 'pull_request'

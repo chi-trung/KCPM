@@ -41,7 +41,7 @@ def collect_issue_keys(results_dir):
 
 def main():
     results_dir = Path('Waste-Recycling-Platform/allure-results')
-    validation_dir = Path('validation-temp')
+    validation_dir = Path(os.environ.get('VALIDATION_OUTPUT_DIR', 'validation-temp'))
     validation_dir.mkdir(parents=True, exist_ok=True)
 
     summary = {
