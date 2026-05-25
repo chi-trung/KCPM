@@ -53,9 +53,25 @@ def collect_issue_keys(results_dir):
         # links with type issue
         for link in links:
             if isinstance(link, dict) and link.get('type') == 'issue':
-                name = link.get('name') or ''
+                name = (link.get('name') or '').strip()
                 if name:
-                    keys.add(name.strip())
+                    keys.add(name)
+                else:
+                    # try extracting key from url if name missing
+                    url = link.get('url') or ''
+                    if isinstance(url, str) and '/browse/' in url:
+                        parts = url.rstrip('/').split('/')
+                        candidate = parts[-1]
+                        if candidate:
+                            keys.add(candidate.strip())
+                    else:
+                        # fallback: last path segment
+                        try:
+                            parts = (link.get('url') or '').rstrip('/').split('/')
+                            if parts:
+                                keys.add(parts[-1].strip())
+                        except Exception:
+                            pass
     return keys
 
 
