@@ -41,6 +41,10 @@ def extract_issue_keys_from_json(data):
             name = link.get('name') or ''
             if name:
                 keys.add(name)
+            else:
+                url = link.get('url') or ''
+                if isinstance(url, str):
+                    keys.add(url.rstrip('/').split('/')[-1])
     # also try to pull from testCaseId or name fields
     test_case = data.get('testCaseId') or data.get('name')
     if test_case:
