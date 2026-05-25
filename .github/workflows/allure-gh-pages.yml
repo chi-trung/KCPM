@@ -221,6 +221,11 @@ jobs:
           echo "===== GENERATED REPORT ====="
           find allure-report -type f | head -100 || true
 
+      - name: Normalize report permissions
+        if: always()
+        run: |
+          chmod -R u+w allure-report || true
+
       - name: Install Allure CLI for per-owner reports
         if: always()
         run: |
