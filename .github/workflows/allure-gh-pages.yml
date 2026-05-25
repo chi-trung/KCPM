@@ -94,24 +94,30 @@ jobs:
           echo "===== BACKEND allure-results DIRS ====="
           find backend_artifact -type d -name "allure-results" | sort || true
 
-          src=$(find backend_artifact -type d -name "allure-results" | head -n1 || true)
-          echo "FOUND_BACKEND_RESULTS=$src"
-          if [ -n "$src" ] && [ -d "$src" ]; then
-            echo "Copying backend results from $src into Waste-Recycling-Platform/allure-results"
+          srcs=$(find backend_artifact -type d -name "allure-results" | sort || true)
+          if [ -n "$srcs" ]; then
             mkdir -p Waste-Recycling-Platform/allure-results
-            echo "Backend result json count:"
-            json_count=$(find "$src" -name "*.json" | wc -l | tr -d ' ')
-            echo "$json_count"
             echo "Merged result json count before:"
             merged_before=$(find Waste-Recycling-Platform/allure-results -name "*.json" | wc -l | tr -d ' ')
             echo "$merged_before"
-            echo "Sample backend result files:"
-            find "$src" -type f | sort | sed -n '1,20p' || true
-            cp -Rv "$src"/* Waste-Recycling-Platform/allure-results/
+
+            json_count_total=0
+            for src in $srcs; do
+              echo "FOUND_BACKEND_RESULTS=$src"
+              echo "Copying backend results from $src into Waste-Recycling-Platform/allure-results"
+              echo "Backend result json count:"
+              json_count=$(find "$src" -name "*.json" | wc -l | tr -d ' ')
+              echo "$json_count"
+              json_count_total=$((json_count_total + json_count))
+              echo "Sample backend result files:"
+              find "$src" -type f | sort | sed -n '1,20p' || true
+              cp -Rv "$src"/. Waste-Recycling-Platform/allure-results/
+            done
+
             echo "Merged result json count after:"
             merged_after=$(find Waste-Recycling-Platform/allure-results -name "*.json" | wc -l | tr -d ' ')
             echo "$merged_after"
-            if [ "$json_count" -eq 0 ]; then
+            if [ "$json_count_total" -eq 0 ]; then
               echo "Fail: backend result json count is zero after copy"
               exit 1
             fi
