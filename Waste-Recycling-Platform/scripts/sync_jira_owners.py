@@ -14,8 +14,16 @@ import sys
 import urllib.request
 import urllib.error
 
-RESULTS_DIR = os.path.join('Waste-Recycling-Platform', 'allure-results')
-OUT_PATHS = [os.path.join(RESULTS_DIR, 'jira-owner-map.json'), 'jira-owner-map.json']
+RESULTS_DIRS = [
+    os.path.join('Waste-Recycling-Platform', 'allure-results'),
+    os.path.join('allure-results'),
+]
+# Write owner map to whichever results folder exists and to repo root
+OUT_PATHS = [
+    os.path.join('Waste-Recycling-Platform', 'allure-results', 'jira-owner-map.json'),
+    os.path.join('allure-results', 'jira-owner-map.json'),
+    'jira-owner-map.json',
+]
 
 
 def collect_issue_keys(results_dir):
@@ -33,45 +41,62 @@ def collect_issue_keys(results_dir):
                 data = json.load(f)
         except Exception:
             continue
-        if not isinstance(data, dict):
-            continue
-        if not (data.get('labels') or data.get('name') or data.get('fullName') or data.get('links')):
+
+        # Support files where the root is a list of items (Allure sometimes
+        # emits arrays). Normalize to a list of dicts to scan uniformly.
+        entries = []
+        if isinstance(data, dict):
+            entries = [data]
+        elif isinstance(data, list):
+            entries = [e for e in data if isinstance(e, dict)]
+        else:
             continue
 
-        labels = data.get('labels') or []
-        links = data.get('links') or []
+        for data in entries:
+            if not (data.get('labels') or data.get('name') or data.get('fullName') or data.get('links')):
+                continue
 
-        # labels like {name: 'issue', value: 'KIEM-4'}
-        for label in labels:
-            if isinstance(label, dict) and label.get('name') in ('issue', 'Issue', 'ISSUE'):
-                val = label.get('value')
-                if val:
-                    # extract key like KIEM-123 from full url or value
-                    parts = val.strip().split('/')
-                    key = parts[-1] if parts else val.strip()
-                    keys.add(key)
-        # links with type issue
-        for link in links:
-            if isinstance(link, dict) and link.get('type') == 'issue':
-                name = (link.get('name') or '').strip()
-                if name:
-                    keys.add(name)
-                else:
-                    # try extracting key from url if name missing
-                    url = link.get('url') or ''
-                    if isinstance(url, str) and '/browse/' in url:
-                        parts = url.rstrip('/').split('/')
-                        candidate = parts[-1]
-                        if candidate:
-                            keys.add(candidate.strip())
+            labels = data.get('labels') or []
+            links = data.get('links') or []
+
+            # labels like {name: 'issue', value: 'KIEM-4'}
+            for label in labels:
+                if isinstance(label, dict) and label.get('name') in ('issue', 'Issue', 'ISSUE'):
+                    val = label.get('value')
+                    if val:
+                        # extract key like KIEM-123 from full url or value
+                        parts = val.strip().split('/')
+                        key = parts[-1] if parts else val.strip()
+                        keys.add(key)
+            # links with type issue
+            for link in links:
+                if isinstance(link, dict) and link.get('type') == 'issue':
+                    name = (link.get('name') or '').strip()
+                    if name:
+                        keys.add(name)
                     else:
-                        # fallback: last path segment
-                        try:
-                            parts = (link.get('url') or '').rstrip('/').split('/')
-                            if parts:
-                                keys.add(parts[-1].strip())
-                        except Exception:
-                            pass
+                        # try extracting key from url if name missing
+                        url = link.get('url') or ''
+                        if isinstance(url, str) and '/browse/' in url:
+                            parts = url.rstrip('/').split('/')
+                            candidate = parts[-1]
+                            if candidate:
+                                keys.add(candidate.strip())
+                        else:
+                            # fallback: last path segment
+                            try:
+                                parts = (link.get('url') or '').rstrip('/').split('/')
+                                if parts:
+                                    keys.add(parts[-1].strip())
+                            except Exception:
+                                pass
+    return keys
+
+
+def discover_all_keys():
+    keys = set()
+    for d in RESULTS_DIRS:
+        keys.update(collect_issue_keys(d))
     return keys
 
 
@@ -112,7 +137,7 @@ def query_jira_issue(base_url, auth_header, issue_key):
 
 
 def main():
-    keys = collect_issue_keys(RESULTS_DIR)
+    keys = discover_all_keys()
     print('Found issue keys in results:', keys)
     if not keys:
         print('No Jira issue keys found. Writing empty map.')
