@@ -163,7 +163,7 @@ jobs:
           JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
         run: |
-          python3 Waste-Recycling-Platform/scripts/sync_jira_owners.py || true
+          python3 Waste-Recycling-Platform/scripts/sync_jira_owners.py
 
       - name: Inject owners into raw Allure results
         if: always()
@@ -210,7 +210,48 @@ jobs:
       - name: Generate per-owner Allure reports
         if: always()
         run: |
-          python3 Waste-Recycling-Platform/scripts/generate_per_owner_reports.py || true
+          python3 Waste-Recycling-Platform/scripts/generate_per_owner_reports.py
+
+      - name: Create validation artifacts for Pages
+        if: always()
+        run: |
+          set -e
+          mkdir -p allure-report/validation
+          # copy jira-owner-map if present
+          if [ -f Waste-Recycling-Platform/allure-results/jira-owner-map.json ]; then
+            cp Waste-Recycling-Platform/allure-results/jira-owner-map.json allure-report/validation/jira-owner-map.json
+          fi
+          # create JSON summary with resolved counts and sample entries
+          python3 - <<'PY'
+import json, os
+out_dir='allure-report/validation'
+src='Waste-Recycling-Platform/allure-results/jira-owner-map.json'
+summary={'resolved':0,'total':0,'sample':{}}
+if os.path.exists(src):
+    with open(src,'r',encoding='utf8') as f:
+        m=json.load(f)
+    summary['total']=len(m)
+    for k,v in list(m.items())[:20]:
+        if v and not v.get('unassigned'):
+            summary['resolved']+=1
+        summary['sample'][k]=v
+with open(os.path.join(out_dir,'summary.json'),'w',encoding='utf8') as f:
+    json.dump(summary,f,ensure_ascii=False,indent=2)
+print('Wrote validation summary to',os.path.join(out_dir,'summary.json'))
+PY
+          # list generated owner slugs
+          if [ -d allure-report/owners ]; then
+            ls -1 allure-report/owners > allure-report/validation/owner-slugs.txt || true
+          else
+            echo "" > allure-report/validation/owner-slugs.txt
+          fi
+          # print Pages urls
+          OWNER_REPO=${{ github.repository }}
+          OWNER=$(echo "$OWNER_REPO" | cut -d'/' -f1)
+          REPO=$(echo "$OWNER_REPO" | cut -d'/' -f2)
+          echo "Main report: https://$OWNER.github.io/$REPO/" > allure-report/validation/urls.txt
+          echo "Owners base: https://$OWNER.github.io/$REPO/owners/" >> allure-report/validation/urls.txt
+          echo "Wrote Pages URLs to allure-report/validation/urls.txt"
 
       - name: Deploy to GitHub Pages
         if: always() && github.event_name != 'pull_request'
