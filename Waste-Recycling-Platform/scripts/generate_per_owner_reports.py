@@ -49,6 +49,16 @@ def slugify(name: str) -> str:
     return s or 'owner'
 
 
+def is_test_result(data):
+    if not isinstance(data, dict):
+        return False
+    if 'labels' not in data:
+        return False
+    if not (data.get('name') or data.get('fullName') or data.get('links')):
+        return False
+    return True
+
+
 # Collect owners from JSON result files (owner label OR via jira map -> issues)
 for fname in os.listdir(RESULTS_DIR):
     path = os.path.join(RESULTS_DIR, fname)
@@ -59,6 +69,9 @@ for fname in os.listdir(RESULTS_DIR):
             data = json.load(f)
     except Exception:
         continue
+    if not is_test_result(data):
+        continue
+
     # existing owner label
     labels = data.get('labels') or []
     for label in labels:
@@ -110,6 +123,9 @@ for owner in owners:
             with open(src, 'r', encoding='utf8') as f:
                 data = json.load(f)
         except Exception:
+            continue
+
+        if not is_test_result(data):
             continue
 
         matched = False

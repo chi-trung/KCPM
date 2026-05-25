@@ -212,11 +212,17 @@ jobs:
         run: |
           python3 Waste-Recycling-Platform/scripts/generate_per_owner_reports.py
 
+      - name: Prepare validation artifacts directory
+        if: always()
+        run: |
+          rm -rf allure-report/validation || true
+          mkdir -p allure-report/validation
+          chmod -R 777 allure-report || true
+
       - name: Create validation artifacts for Pages
         if: always()
         run: |
           set -e
-          mkdir -p allure-report/validation
           # copy jira-owner-map if present
           if [ -f Waste-Recycling-Platform/allure-results/jira-owner-map.json ]; then
             cp Waste-Recycling-Platform/allure-results/jira-owner-map.json allure-report/validation/jira-owner-map.json
