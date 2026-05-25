@@ -156,6 +156,20 @@ jobs:
             cp Waste-Recycling-Platform/allure-categories.json Waste-Recycling-Platform/allure-results/categories.json
           fi
 
+      - name: Sync Jira Owners
+        if: always()
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+        run: |
+          python3 Waste-Recycling-Platform/scripts/sync_jira_owners.py || true
+
+      - name: Inject owners into raw Allure results
+        if: always()
+        run: |
+          python3 Waste-Recycling-Platform/scripts/inject_owners_into_results.py || true
+
       - name: Debug merged allure results
         if: always()
         run: |

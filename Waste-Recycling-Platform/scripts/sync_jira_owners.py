@@ -1,0 +1,127 @@
+#!/usr/bin/env python3
+"""
+Query Jira for assignees of issues referenced in Allure result JSONs and emit jira-owner-map.json.
+
+Writes both to the results directory and to the repo root as `jira-owner-map.json`.
+
+Usage: run from repository root where `Waste-Recycling-Platform/allure-results` exists.
+Requires environment variables: JIRA_BASE_URL, JIRA_EMAIL, JIRA_API_TOKEN
+"""
+import base64
+import json
+import os
+import sys
+import urllib.request
+import urllib.error
+
+RESULTS_DIR = os.path.join('Waste-Recycling-Platform', 'allure-results')
+OUT_PATHS = [os.path.join(RESULTS_DIR, 'jira-owner-map.json'), 'jira-owner-map.json']
+
+
+def collect_issue_keys(results_dir):
+    keys = set()
+    if not os.path.isdir(results_dir):
+        return keys
+    for fname in os.listdir(results_dir):
+        if not fname.lower().endswith('.json'):
+            continue
+        path = os.path.join(results_dir, fname)
+        try:
+            with open(path, 'r', encoding='utf8') as f:
+                data = json.load(f)
+        except Exception:
+            continue
+        # labels like {name: 'issue', value: 'KIEM-4'}
+        for label in data.get('labels') or []:
+            if isinstance(label, dict) and label.get('name') in ('issue', 'Issue', 'ISSUE'):
+                val = label.get('value')
+                if val:
+                    # extract key like KIEM-123 from full url or value
+                    parts = val.strip().split('/')
+                    key = parts[-1] if parts else val.strip()
+                    keys.add(key)
+        # links with type issue
+        for link in data.get('links') or []:
+            if isinstance(link, dict) and link.get('type') == 'issue':
+                name = link.get('name') or ''
+                if name:
+                    keys.add(name.strip())
+    return keys
+
+
+def get_env_var(name):
+    v = os.environ.get(name)
+    if not v:
+        print(f'Environment variable {name} is required', file=sys.stderr)
+        sys.exit(2)
+    return v
+
+
+def query_jira_issue(base_url, auth_header, issue_key):
+    url = base_url.rstrip('/') + f'/rest/api/3/issue/{issue_key}?fields=assignee'
+    req = urllib.request.Request(url, headers={'Authorization': auth_header, 'Accept': 'application/json'})
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            body = resp.read().decode('utf8')
+            return json.loads(body)
+    except urllib.error.HTTPError as e:
+        print(f'Jira HTTP error for {issue_key}: {e.code} {e.reason}', file=sys.stderr)
+        if e.code in (401, 403):
+            print('Jira auth failed. Check JIRA_BASE_URL, JIRA_EMAIL and JIRA_API_TOKEN.', file=sys.stderr)
+            sys.exit(3)
+        return None
+    except Exception as e:
+        print(f'Error querying Jira for {issue_key}: {e}', file=sys.stderr)
+        return None
+
+
+def main():
+    keys = collect_issue_keys(RESULTS_DIR)
+    print('Found issue keys in results:', keys)
+    if not keys:
+        print('No Jira issue keys found. Writing empty map.')
+    base = get_env_var('JIRA_BASE_URL')
+    email = get_env_var('JIRA_EMAIL')
+    token = get_env_var('JIRA_API_TOKEN')
+
+    basic = base64.b64encode(f"{email}:{token}".encode('utf8')).decode('ascii')
+    auth_header = f'Basic {basic}'
+
+    owner_map = {}
+    for key in sorted(keys):
+        print('Querying', key)
+        data = query_jira_issue(base, auth_header, key)
+        if not data:
+            owner_map[key] = {'displayName': None, 'accountId': None, 'unassigned': True}
+            continue
+        fields = data.get('fields') or {}
+        assignee = fields.get('assignee')
+        if not assignee:
+            owner_map[key] = {'displayName': None, 'accountId': None, 'unassigned': True}
+        else:
+            owner_map[key] = {
+                'displayName': assignee.get('displayName'),
+                'accountId': assignee.get('accountId') or assignee.get('accountId'),
+                'email': assignee.get('emailAddress'),
+                'unassigned': False,
+            }
+
+    resolved = [k for k,v in owner_map.items() if not v.get('unassigned')]
+    print(f'Resolved {len(resolved)} / {len(owner_map)} issues with assignees')
+    # show sample mapping
+    for k in list(owner_map.keys())[:10]:
+        print(k, '->', owner_map[k])
+
+    for out in OUT_PATHS:
+        try:
+            with open(out, 'w', encoding='utf8') as f:
+                json.dump(owner_map, f, ensure_ascii=False, indent=2)
+            print('Wrote', out)
+        except Exception as e:
+            print('Failed to write', out, e, file=sys.stderr)
+
+    print('Done')
+
+
+if __name__ == '__main__':
+    main()
