@@ -88,23 +88,21 @@ jobs:
           download_url="https://api.github.com/repos/${OWNER_REPO}/actions/artifacts/${art_id}/zip"
           curl -sSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json" "$download_url" -o artifact.zip
           unzip -o artifact.zip -d backend_artifact || true
-          # Try to locate any folder named allure-results inside the artifact and copy its contents
-          found=0
-          for d in backend_artifact/*; do
-            if [ -d "$d" ]; then
-              # find any directory named allure-results under this path
-              src=$(find "$d" -type d -name allure-results | head -n1 || true)
-              if [ -n "$src" ] && [ -d "$src" ]; then
-                echo "Copying backend results from $src into Waste-Recycling-Platform/allure-results"
-                mkdir -p Waste-Recycling-Platform/allure-results
-                cp -R "$src"/* Waste-Recycling-Platform/allure-results/ || true
-                found=1
-                break
-              fi
-            fi
-          done
-          if [ $found -eq 0 ]; then
-            echo "No known results folder found inside artifact"
+          echo "===== BACKEND ARTIFACT TREE ====="
+          find backend_artifact -maxdepth 5 -print | sort || true
+
+          src=$(find backend_artifact -type d -name allure-results | head -n1 || true)
+          if [ -n "$src" ] && [ -d "$src" ]; then
+            echo "Copying backend results from $src into Waste-Recycling-Platform/allure-results"
+            mkdir -p Waste-Recycling-Platform/allure-results
+            find "$src" -type f -name "*.json" | sort | sed -n '1,20p' || true
+            json_count=$(find "$src" -type f -name "*.json" | wc -l | tr -d ' ')
+            echo "Backend xUnit JSON files found: $json_count"
+            cp -R "$src"/. Waste-Recycling-Platform/allure-results/
+            merged_count=$(find Waste-Recycling-Platform/allure-results -type f -name "*.json" | wc -l | tr -d ' ')
+            echo "Total merged JSON count after merge: $merged_count"
+          else
+            echo "No allure-results folder found inside artifact"
           fi
           rm -rf artifact.zip backend_artifact || true
 
