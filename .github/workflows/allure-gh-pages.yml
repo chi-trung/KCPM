@@ -396,6 +396,7 @@ jobs:
 
             print(f'Validation page URL: {main_url}validation/')
             PY
+            PY
           mkdir -p allure-report || true
           rm -rf allure-report/validation || true
           cp -r validation-temp allure-report/validation
