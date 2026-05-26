@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -11,14 +12,76 @@ using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
 using WastePlatform.Infrastructure.Persistence;
 using WastePlatform.Infrastructure.SignalR;
-using Allure.Xunit.Attributes;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Controllers;
 
-[AllureEpic("KIEM-16 Enterprise Task Module")]
-[AllureFeature("WRP-BE-TESTS-013 Enterprise Task Controller")]
+[AllureEpic("Enterprise Operations")]
+[AllureFeature("Task Assignment")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Assign collector to a waste collection task")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Controllers")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "EnterpriseTaskControllerTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Controllers")]
+[AllureOwner("backend")]
+[AllureSeverity(SeverityLevel.critical)]
+[Allure.Net.Commons.Attributes.AllureTag("api")]
+[Allure.Net.Commons.Attributes.AllureTag("enterprise")]
+[Allure.Net.Commons.Attributes.AllureTag("task")]
+[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-16")]
 public class EnterpriseTaskControllerTests
 {
+    [Fact]
+    public async Task GetTasks_WithValidEnterprise_ShouldReturnEnterpriseTasks()
+    {
+        await using var context = CreateContext();
+        var scenario = await SeedEnterpriseScenarioAsync(context);
+
+        var controller = new EnterpriseTaskController(
+            context,
+            CreateHubContextMock(out _).Object,
+            new Mock<INotificationService>().Object,
+            new Mock<IMediator>().Object)
+        {
+            ControllerContext = BuildControllerContext(scenario.EnterpriseUser.Id)
+        };
+
+        var result = await controller.GetTasks();
+
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        var json = JsonSerializer.Serialize(okResult.Value);
+
+        json.Should().Contain(scenario.Task.Id.ToString());
+        json.Should().Contain(scenario.Report.Id.ToString());
+        json.Should().Contain("Assigned");
+        json.Should().Contain("Test report");
+    }
+
+    [Fact]
+    public async Task GetAvailableCollectors_WithValidEnterprise_ShouldReturnCollectors()
+    {
+        await using var context = CreateContext();
+        var scenario = await SeedEnterpriseScenarioAsync(context);
+
+        var controller = new EnterpriseTaskController(
+            context,
+            CreateHubContextMock(out _).Object,
+            new Mock<INotificationService>().Object,
+            new Mock<IMediator>().Object)
+        {
+            ControllerContext = BuildControllerContext(scenario.EnterpriseUser.Id)
+        };
+
+        var result = await controller.GetAvailableCollectors();
+
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        var json = JsonSerializer.Serialize(okResult.Value);
+
+        json.Should().Contain(scenario.Collector.Id.ToString());
+        json.Should().Contain("Collector One");
+        json.Should().Contain("collector@example.com");
+    }
+
     [Fact]
     public async Task AssignCollector_WhenRequestIsValid_ShouldBroadcastAndNotifyCitizen()
     {
@@ -44,15 +107,18 @@ public class EnterpriseTaskControllerTests
             ControllerContext = BuildControllerContext(scenario.EnterpriseUser.Id)
         };
 
+        // Attach assign-collector request for Allure
+        AllureAttachmentHelper.AttachJson("assign-collector-request", new { TaskId = scenario.Task.Id, CollectorId = scenario.Collector.Id });
+
         var result = await controller.AssignCollector(scenario.Task.Id, new AssignCollectorRequest
         {
             CollectorId = scenario.Collector.Id
         });
-
         result.Should().BeOfType<OkObjectResult>();
 
         var updatedTask = await context.CollectionTasks.SingleAsync(t => t.Id == scenario.Task.Id);
         updatedTask.CollectorId.Should().Be(scenario.Collector.Id);
+        AllureAttachmentHelper.AttachJson("assign-collector-result", new { updatedTask.Id, updatedTask.CollectorId });
 
         allClient.Verify(
             x => x.SendCoreAsync("TaskStatusUpdated", It.Is<object?[]>(args => (Guid)args[0]! == scenario.Task.Id && (string)args[1]! == CollectionTaskStatus.Assigned.ToString()), It.IsAny<CancellationToken>()),

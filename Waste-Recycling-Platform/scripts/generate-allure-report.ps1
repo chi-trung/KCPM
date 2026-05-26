@@ -4,7 +4,7 @@ param(
     [string]$ResultsDirectory = ".\TestResults",
     [string]$AllureResultsPath = ".\Waste-Recycling-Platform\backend\tests\WastePlatform.Tests\bin\Release\net8.0\allure-results",
     [string]$AllureReportPath = ".\TestResults\backend-allure-report",
-    [string]$HistoryPath = ".\TestResults\backend-allure-history"
+    [string]$CategoriesPath = ".\Waste-Recycling-Platform\allure-categories.json"
 )
 
 $ErrorActionPreference = "Stop"
@@ -35,61 +35,6 @@ function Get-AllureCommand {
 $dotnet = Get-DotNetCommand
 $allure = Get-AllureCommand
 
-function Copy-DirectoryContent {
-    param(
-        [string]$Source,
-        [string]$Destination
-    )
-
-    if (-not (Test-Path $Source)) {
-        return
-    }
-
-    if (-not (Test-Path $Destination)) {
-        New-Item -ItemType Directory -Path $Destination -Force | Out-Null
-    }
-
-    Get-ChildItem -Path $Source -Force | ForEach-Object {
-        Copy-Item -Path $_.FullName -Destination $Destination -Recurse -Force
-    }
-}
-
-function Write-AllureMetadata {
-    param(
-        [string]$ResultsPath,
-        [string]$ProjectPath
-    )
-
-    if (-not (Test-Path $ResultsPath)) {
-        New-Item -ItemType Directory -Path $ResultsPath -Force | Out-Null
-    }
-
-    $metadata = @{
-        environmentProperties = @(
-            "Environment=Local Windows workspace"
-            "Branch=$(git branch --show-current)"
-            "OS=$([System.Environment]::OSVersion.VersionString)"
-            "DotNet=$(& $dotnet --version)"
-            "TestProject=WastePlatform.Tests"
-        )
-    }
-
-    $metadata.environmentProperties | Set-Content -Path (Join-Path $ResultsPath 'environment.properties') -Encoding utf8
-
-    $executor = @{
-        name = 'Local PowerShell runner'
-        type = 'local'
-        url = 'file:///C:/Users/gnurt/Desktop/KCPM'
-        buildOrder = 1
-        buildName = 'Local backend Allure run'
-        reportName = 'WastePlatform Backend Allure Report'
-        reportUrl = 'file:///C:/Users/gnurt/Desktop/KCPM/TestResults/backend-allure-report/index.html'
-        branch = (git branch --show-current)
-    } | ConvertTo-Json -Depth 5
-
-    Set-Content -Path (Join-Path $ResultsPath 'executor.json') -Value $executor -Encoding utf8
-}
-
 Write-Host "Running backend tests with Allure enabled..."
 & $dotnet test $ProjectPath `
     --configuration Release `
@@ -102,21 +47,46 @@ if (-not (Test-Path $AllureResultsPath)) {
     throw "Allure results were not found at $AllureResultsPath"
 }
 
-if (Test-Path $HistoryPath) {
-    Copy-DirectoryContent -Source $HistoryPath -Destination (Join-Path $AllureResultsPath 'history')
+# Add environment and executor metadata so Allure Overview shows details
+$envFile = Join-Path $AllureResultsPath "environment.properties"
+Write-Host "Writing environment metadata to $envFile"
+if ($env:GITHUB_REF_NAME) { $branch = $env:GITHUB_REF_NAME } else { $branch = "local" }
+"Branch=$branch" | Out-File -FilePath $envFile -Encoding utf8
+"OS=$(Get-CimInstance Win32_OperatingSystem | Select-Object -ExpandProperty Caption)" | Out-File -FilePath $envFile -Encoding utf8 -Append
+"DotNet=$(& $dotnet --version)" | Out-File -FilePath $envFile -Encoding utf8 -Append
+
+# executor.json for CI metadata (kept minimal)
+$executorFile = Join-Path $AllureResultsPath "executor.json"
+$executor = @{
+    name = "Local PowerShell runner"
+    type = "local"
+    url = ""
+}
+$executor | ConvertTo-Json | Out-File -FilePath $executorFile -Encoding utf8
+
+# Preserve history if present
+$historySrc = Join-Path $ResultsDirectory "allure-history"
+$historyDst = Join-Path $AllureResultsPath "history"
+if (Test-Path $historySrc) {
+    Write-Host "Copying existing history from $historySrc to $historyDst"
+    if (Test-Path $historyDst) { Remove-Item -Recurse -Force $historyDst }
+    Copy-Item -Recurse -Force $historySrc $historyDst
 }
 
-Write-AllureMetadata -ResultsPath $AllureResultsPath -ProjectPath $ProjectPath
+if (Test-Path $CategoriesPath) {
+    Write-Host "Copying categories from $CategoriesPath to $AllureResultsPath\categories.json"
+    Copy-Item -Force $CategoriesPath (Join-Path $AllureResultsPath 'categories.json')
+}
 
 Write-Host "Generating HTML report..."
 & $allure generate $AllureResultsPath --clean -o $AllureReportPath
 
-if (Test-Path (Join-Path $AllureReportPath 'history')) {
-    if (Test-Path $HistoryPath) {
-        Remove-Item -Path $HistoryPath -Recurse -Force
-    }
-
-    Copy-DirectoryContent -Source (Join-Path $AllureReportPath 'history') -Destination $HistoryPath
+# After generate, persist history back to ResultsDirectory for next runs
+$generatedHistory = Join-Path $AllureReportPath "history"
+if (Test-Path $generatedHistory) {
+    Write-Host "Persisting generated history to $historySrc"
+    if (Test-Path $historySrc) { Remove-Item -Recurse -Force $historySrc }
+    Copy-Item -Recurse -Force $generatedHistory $historySrc
 }
 
 Write-Host "Allure HTML report generated at: $AllureReportPath\index.html"

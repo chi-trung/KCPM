@@ -10,6 +10,18 @@ namespace WastePlatform.Tests.Application.Analytics
     /// Integration tests for Analytics endpoints across all levels
     /// Focus: API response validation, date query functionality, and role-based access
     /// </summary>
+    [AllureEpic("Analytics")]
+    [AllureFeature("Analytics APIs")]
+    [Allure.Net.Commons.Attributes.AllureLabel("story", "Date range analytics and summary endpoints")]
+    [Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+    [Allure.Net.Commons.Attributes.AllureLabel("suite", "Application Integration")]
+    [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "AnalyticsApiIntegrationTests")]
+    [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Analytics")]
+    [AllureOwner("qa")]
+    [AllureSeverity(SeverityLevel.normal)]
+    [Allure.Net.Commons.Attributes.AllureTag("api")]
+    [Allure.Net.Commons.Attributes.AllureTag("analytics")]
+    [Allure.Net.Commons.Attributes.AllureTag("integration")]
     public class AnalyticsApiIntegrationTests
     {
         #region Setup & Configuration

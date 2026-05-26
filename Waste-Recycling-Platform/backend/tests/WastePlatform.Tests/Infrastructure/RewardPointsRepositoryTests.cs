@@ -2,12 +2,22 @@ using Microsoft.EntityFrameworkCore;
 using WastePlatform.Domain.Entities;
 using WastePlatform.Infrastructure.Persistence;
 using WastePlatform.Infrastructure.Persistence.Repositories;
-using Allure.Xunit.Attributes;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Infrastructure;
 
-[AllureEpic("KIEM-17 Enterprise Reward Rules")]
-[AllureFeature("WRP-BE-TESTS-014 Reward Points Repository")]
+[AllureEpic("Infrastructure")]
+[AllureFeature("Reward Points Repository")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Reward calculation and idempotency")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Infrastructure")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "RewardPointsRepositoryTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Infrastructure")]
+[AllureOwner("backend")]
+[AllureSeverity(SeverityLevel.normal)]
+[Allure.Net.Commons.Attributes.AllureTag("unit")]
+[Allure.Net.Commons.Attributes.AllureTag("repository")]
+[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-17")]
 public class RewardPointsRepositoryTests
 {
     [Fact]
@@ -45,6 +55,8 @@ public class RewardPointsRepositoryTests
         reward.Reason.Should().Be("Collected successfully");
         reward.IdempotencyKey.Should().Be($"task_{taskId}_{reportId}");
         (await context.RewardPoints.CountAsync()).Should().Be(1);
+        // Attach created reward for Allure
+        AllureAttachmentHelper.AttachJson("created-reward", new { reward.Id, reward.Points, reward.Reason, reward.IdempotencyKey });
     }
 
     [Fact]

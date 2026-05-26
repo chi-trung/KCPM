@@ -13,6 +13,18 @@ namespace WastePlatform.Tests.Application.Analytics
     /// Unit tests for Analytics functionality across Admin, Enterprise, and Public levels
     /// Focus: Date range query handling and data filtering
     /// </summary>
+    [AllureEpic("Analytics")]
+    [AllureFeature("Analytics Modules")]
+    [Allure.Net.Commons.Attributes.AllureLabel("story", "Date filtering and metric aggregation")]
+    [Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+    [Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
+    [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "AnalyticsModuleTests")]
+    [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Analytics")]
+    [AllureOwner("backend")]
+    [AllureSeverity(SeverityLevel.normal)]
+    [Allure.Net.Commons.Attributes.AllureTag("unit")]
+    [Allure.Net.Commons.Attributes.AllureTag("backend")]
+    [Allure.Net.Commons.Attributes.AllureTag("analytics")]
     public class AnalyticsModuleTests
     {
         #region Admin Analytics - Overview

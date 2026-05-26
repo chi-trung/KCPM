@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Assertion Failure",
+    "matchedStatuses": ["failed"],
+    "messageRegex": "(?i)assert|expected|should be|fluentassertions|xunit.sdk.xunitexception"
+  },
+  {
+    "name": "Authorization Failure",
+    "matchedStatuses": ["failed"],
+    "messageRegex": "(?i)unauthorized|forbidden|authorization|access denied|invalid token"
+  },
+  {
+    "name": "Validation Failure",
+    "matchedStatuses": ["failed"],
+    "messageRegex": "(?i)validation|invalid|required|bad request|cannot be null"
+  },
+  {
+    "name": "Database Failure",
+    "matchedStatuses": ["failed"],
+    "messageRegex": "(?i)sql|entityframework|database|dbcontext|inmemory|efcore"
+  },
+  {
+    "name": "Timeout Failure",
+    "matchedStatuses": ["failed"],
+    "messageRegex": "(?i)timeout|timed out|deadline|deadlock"
+  },
+  {
+    "name": "Infrastructure Failure",
+    "matchedStatuses": ["failed"],
+    "messageRegex": "(?i)network|socket|connection refused|ioexception|file not found|not found"
+  }
+]

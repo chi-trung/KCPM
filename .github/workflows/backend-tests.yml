@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: backend-tests-${{ github.workflow }}-${{ github.ref }}
@@ -30,6 +30,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -57,6 +60,36 @@ jobs:
           --collect:"XPlat Code Coverage"
           --results-directory ".\TestResults"
           --no-restore
+
+      - name: Write Allure environment and executor metadata
+        if: always()
+        shell: pwsh
+        run: |
+          $resultsPath = ".\Waste-Recycling-Platform\backend\tests\WastePlatform.Tests\bin\Release\net8.0\allure-results"
+          New-Item -ItemType Directory -Force -Path $resultsPath | Out-Null
+
+          # Write environment.properties (key=value per line)
+          $envFile = Join-Path $resultsPath "environment.properties"
+          "ENV=CI" | Out-File -FilePath $envFile -Encoding utf8
+          "DOTNET=$((dotnet --version).Trim())" | Out-File -FilePath $envFile -Append -Encoding utf8
+          "GIT_SHA=${{ github.sha }}" | Out-File -FilePath $envFile -Append -Encoding utf8
+          "GITHUB_RUN_ID=${{ github.run_id }}" | Out-File -FilePath $envFile -Append -Encoding utf8
+          "RUNNER=${{ runner.os }}" | Out-File -FilePath $envFile -Append -Encoding utf8
+
+          # Write executor.json for Executors panel
+          $executorFile = Join-Path $resultsPath "executor.json"
+          # Write richer executor.json so Allure Executors panel shows full metadata
+          $executor = [ordered]@{
+            name = "GitHub Actions"
+            type = "github"
+            url = "https://github.com/${{ github.repository }}"
+            buildName = "${{ github.workflow }} #${{ github.run_number }}"
+            buildUrl = "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            buildOrder = [int]("${{ github.run_number }}")
+            reportName = "Allure Report"
+            reportUrl = "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }
+          $executor | ConvertTo-Json -Depth 5 | Out-File -FilePath $executorFile -Encoding utf8
 
       - name: Generate Allure report
         if: always()
@@ -88,6 +121,28 @@ jobs:
             Write-Host "::warning::Allure results folder not found at $resultsPath"
           }
 
+      - name: Write Allure report environment widget
+        if: always()
+        shell: pwsh
+        run: |
+          $widgetsPath = ".\TestResults\backend-allure-report\widgets"
+          if (-not (Test-Path $widgetsPath)) {
+            Write-Host "::warning::Allure widgets folder not found at $widgetsPath"
+            exit 0
+          }
+
+          $environment = @(
+            @{ name = "Branch"; values = @("${{ github.ref_name }}") }
+            @{ name = "ENV"; values = @("CI") }
+            @{ name = "DOTNET"; values = @((& dotnet --version).Trim()) }
+            @{ name = "GIT_SHA"; values = @("${{ github.sha }}") }
+            @{ name = "GITHUB_RUN_ID"; values = @("${{ github.run_id }}") }
+            @{ name = "RUNNER"; values = @("${{ runner.os }}") }
+          )
+
+          $environmentFile = Join-Path $widgetsPath "environment.json"
+          $environment | ConvertTo-Json -Depth 5 | Out-File -FilePath $environmentFile -Encoding utf8
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
@@ -104,4 +159,22 @@ jobs:
           path: |
             Waste-Recycling-Platform/backend/tests/WastePlatform.Tests/bin/Release/net8.0/allure-results
             TestResults/backend-allure-report
+            TestResults/allure-history
+            Waste-Recycling-Platform/allure-history
           retention-days: 30
+
+      # Note: Allure HTML publishing is handled centrally by `allure-gh-pages.yml`.
+      # This workflow uploads artifacts only; avoid pushing to gh-pages to prevent races.
+
+      - name: Fetch and prepare gh-pages
+        if: always()
+        shell: pwsh
+        run: |
+          # Ensure the runner can see the remote gh-pages branch to avoid push rejections
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+          git fetch origin gh-pages || Write-Host "origin/gh-pages not found"
+          if (git show-ref --verify --quiet refs/remotes/origin/gh-pages) {
+            git branch --force gh-pages origin/gh-pages
+          } else {
+            Write-Host "No remote gh-pages; will create on first deploy"
+          }

@@ -8,6 +8,18 @@ namespace WastePlatform.Tests.Application.Admin
     /// WRP-BE-TESTS-005: Admin API Integration Tests
     /// Integration tests for Admin Controllers covering Users, Enterprises, and Analytics endpoints
     /// </summary>
+    [AllureEpic("Administration")]
+    [AllureFeature("Admin APIs")]
+    [Allure.Net.Commons.Attributes.AllureLabel("story", "Users, enterprises, and analytics endpoints")]
+    [Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+    [Allure.Net.Commons.Attributes.AllureLabel("suite", "Application Integration")]
+    [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "AdminApiIntegrationTests")]
+    [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Admin")]
+    [AllureOwner("qa")]
+    [AllureSeverity(SeverityLevel.normal)]
+    [Allure.Net.Commons.Attributes.AllureTag("api")]
+    [Allure.Net.Commons.Attributes.AllureTag("admin")]
+    [Allure.Net.Commons.Attributes.AllureTag("integration")]
     public class AdminApiIntegrationTests
     {
         #region Setup & Fixtures

@@ -1,13 +1,28 @@
 using FluentAssertions;
+using Allure.Xunit.Attributes;
+using Allure.Net.Commons;
 using Moq;
 using WastePlatform.Application.Complaints.Commands;
 using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
+using WastePlatform.Tests.TestSupport;
 using Xunit;
 
 namespace WastePlatform.Tests.Application.Complaints;
 
+[AllureEpic("Complaints")]
+[AllureFeature("Create Complaint Handler")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Complaint creation and linkage to reports")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "CreateComplaintCommandHandlerTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Complaints")]
+[AllureOwner("backend")]
+[AllureSeverity(SeverityLevel.critical)]
+[Allure.Net.Commons.Attributes.AllureTag("unit")]
+[Allure.Net.Commons.Attributes.AllureTag("backend")]
+[Allure.Net.Commons.Attributes.AllureTag("complaints")]
 public class CreateComplaintCommandHandlerTests
 {
     private readonly Mock<IComplaintRepository> _mockComplaintRepository;
@@ -24,6 +39,7 @@ public class CreateComplaintCommandHandlerTests
     #region Happy Path Tests
 
     [Fact]
+    [AllureDescription("Creates a complaint successfully when the input content is valid.")]
     public async Task Handle_WithValidCommand_ShouldCreateComplaintSuccessfully()
     {
         // Arrange
@@ -49,6 +65,7 @@ public class CreateComplaintCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachJson("create-complaint-command", command);
         result.Should().NotBe(Guid.Empty, "Handler should return a valid complaint ID");
         _mockComplaintRepository.Verify(
             x => x.AddAsync(It.IsAny<Complaint>(), It.IsAny<CancellationToken>()),
@@ -59,6 +76,7 @@ public class CreateComplaintCommandHandlerTests
     }
 
     [Fact]
+    [AllureDescription("Creates a complaint from a report and resolves the enterprise id from that report.")]
     public async Task Handle_WithValidCommandAndReportId_ShouldCreateComplaintWithEnterpriseIdFromReport()
     {
         // Arrange
@@ -107,6 +125,7 @@ public class CreateComplaintCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachJson("create-complaint-from-report-command", command);
         result.Should().NotBe(Guid.Empty, "Handler should return a valid complaint ID");
         _mockComplaintRepository.Verify(
             x => x.AddAsync(It.IsAny<Complaint>(), It.IsAny<CancellationToken>()),
@@ -127,6 +146,7 @@ public class CreateComplaintCommandHandlerTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
+    [AllureDescription("Rejects empty or whitespace-only complaint content.")]
     public async Task Handle_WithInvalidContent_ShouldThrowArgumentException(string? invalidContent)
     {
         // Arrange
@@ -140,8 +160,11 @@ public class CreateComplaintCommandHandlerTests
         };
 
         // Act & Assert
-        await Assert.ThrowsAsync<ArgumentException>(
+        var exception = await Assert.ThrowsAsync<ArgumentException>(
             () => _handler.Handle(command, CancellationToken.None));
+
+        AllureAttachmentHelper.AttachJson("invalid-complaint-content-command", command);
+        AllureAttachmentHelper.AttachText("invalid-complaint-content-error", exception.Message);
         
         _mockComplaintRepository.Verify(
             x => x.AddAsync(It.IsAny<Complaint>(), It.IsAny<CancellationToken>()),
@@ -152,6 +175,7 @@ public class CreateComplaintCommandHandlerTests
     }
 
     [Fact]
+    [AllureDescription("Rejects complaint creation when the referenced report cannot be found.")]
     public async Task Handle_WithNonExistentReportId_ShouldThrowArgumentException()
     {
         // Arrange
@@ -175,6 +199,8 @@ public class CreateComplaintCommandHandlerTests
         var exception = await Assert.ThrowsAsync<ArgumentException>(
             () => _handler.Handle(command, CancellationToken.None));
         
+        AllureAttachmentHelper.AttachJson("non-existent-report-complaint-command", command);
+        AllureAttachmentHelper.AttachText("non-existent-report-complaint-error", exception.Message);
         exception.Message.Should().Contain("Report not found");
         _mockReportRepository.Verify(
             x => x.GetByIdAsync(reportId, It.IsAny<CancellationToken>()),
@@ -185,6 +211,7 @@ public class CreateComplaintCommandHandlerTests
     }
 
     [Fact]
+    [AllureDescription("Rejects complaint creation when the referenced report is still pending.")]
     public async Task Handle_WithPendingReportStatus_ShouldThrowInvalidOperationException()
     {
         // Arrange
@@ -211,6 +238,8 @@ public class CreateComplaintCommandHandlerTests
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => _handler.Handle(command, CancellationToken.None));
         
+        AllureAttachmentHelper.AttachJson("pending-report-complaint-command", command);
+        AllureAttachmentHelper.AttachText("pending-report-complaint-error", exception.Message);
         exception.Message.Should().Contain("Cannot file a complaint for a report that has not been accepted by an enterprise yet");
         _mockReportRepository.Verify(
             x => x.GetByIdAsync(reportId, It.IsAny<CancellationToken>()),
@@ -221,6 +250,7 @@ public class CreateComplaintCommandHandlerTests
     }
 
     [Fact]
+    [AllureDescription("Uses the explicit enterprise id when one is supplied in the complaint command.")]
     public async Task Handle_WithExplicitEnterpriseId_ShouldUseProvidedEnterpriseId()
     {
         // Arrange
@@ -248,6 +278,7 @@ public class CreateComplaintCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachJson("explicit-enterprise-complaint-command", command);
         result.Should().NotBe(Guid.Empty);
         _mockReportRepository.Verify(
             x => x.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()),

@@ -7,12 +7,23 @@ using WastePlatform.API.Controllers;
 using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
 using WastePlatform.Infrastructure.Persistence;
-using Allure.Xunit.Attributes;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Controllers;
 
-[AllureEpic("KIEM-17 Enterprise Reward Rules")]
-[AllureFeature("WRP-BE-TESTS-014 Reward Rules Controller")]
+[AllureEpic("Enterprise Operations")]
+[AllureFeature("Reward Rules")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Manage reward rules for waste categories")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Controllers")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "EnterpriseRewardRuleControllerTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Controllers")]
+[AllureOwner("backend")]
+[AllureSeverity(SeverityLevel.normal)]
+[Allure.Net.Commons.Attributes.AllureTag("api")]
+[Allure.Net.Commons.Attributes.AllureTag("enterprise")]
+[Allure.Net.Commons.Attributes.AllureTag("rules")]
+[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-17")]
 public class EnterpriseRewardRuleControllerTests
 {
     [Fact]
@@ -68,6 +79,15 @@ public class EnterpriseRewardRuleControllerTests
             ]
         });
 
+        // Attach the payload used to update reward rules
+        AllureAttachmentHelper.AttachJson("update-reward-rules-payload", new
+        {
+            Rules = new[] {
+                new { WasteCategoryId = scenario.Category.Id, PointsPerReport = 18, BonusQuality = 6, IsActive = false },
+                new { WasteCategoryId = scenario.SecondCategory.Id, PointsPerReport = 8, BonusQuality = 1, IsActive = true }
+            }
+        });
+
         result.Should().BeOfType<OkObjectResult>();
 
         var rule1 = await context.RewardRules.SingleAsync(rule => rule.WasteCategoryId == scenario.Category.Id);
@@ -79,6 +99,11 @@ public class EnterpriseRewardRuleControllerTests
         rule2.PointsPerReport.Should().Be(8);
         rule2.BonusQuality.Should().Be(1);
         rule2.IsActive.Should().BeTrue();
+        // Attach resulting rules for Allure
+        AllureAttachmentHelper.AttachJson("updated-reward-rules", new[] {
+            new { rule1.Id, rule1.WasteCategoryId, rule1.PointsPerReport, rule1.BonusQuality, rule1.IsActive },
+            new { rule2.Id, rule2.WasteCategoryId, rule2.PointsPerReport, rule2.BonusQuality, rule2.IsActive }
+        });
     }
 
     [Fact]
@@ -115,6 +140,55 @@ public class EnterpriseRewardRuleControllerTests
 
         var badRequest = result.Should().BeOfType<BadRequestObjectResult>().Subject;
         GetPropertyValue<string>(badRequest.Value!, "message").Should().Be("Duplicate waste category IDs are not allowed.");
+    }
+
+    [Fact]
+    public async Task UpdateRewardRules_WithEmptyRules_ShouldReturnBadRequest()
+    {
+        await using var context = CreateContext();
+        var scenario = await SeedEnterpriseAsync(context);
+
+        var controller = new EnterpriseRewardRuleController(context)
+        {
+            ControllerContext = BuildControllerContext(scenario.EnterpriseUser.Id)
+        };
+
+        var result = await controller.UpdateRewardRules(new UpdateEnterpriseRewardRulesRequest
+        {
+            Rules = []
+        });
+
+        var badRequest = result.Should().BeOfType<BadRequestObjectResult>().Subject;
+        GetPropertyValue<string>(badRequest.Value!, "message").Should().Be("Rules cannot be empty.");
+    }
+
+    [Fact]
+    public async Task UpdateRewardRules_WithNegativeValues_ShouldReturnBadRequest()
+    {
+        await using var context = CreateContext();
+        var scenario = await SeedEnterpriseAsync(context);
+
+        var controller = new EnterpriseRewardRuleController(context)
+        {
+            ControllerContext = BuildControllerContext(scenario.EnterpriseUser.Id)
+        };
+
+        var result = await controller.UpdateRewardRules(new UpdateEnterpriseRewardRulesRequest
+        {
+            Rules =
+            [
+                new UpdateEnterpriseRewardRuleItem
+                {
+                    WasteCategoryId = scenario.Category.Id,
+                    PointsPerReport = -1,
+                    BonusQuality = 0,
+                    IsActive = true
+                }
+            ]
+        });
+
+        var badRequest = result.Should().BeOfType<BadRequestObjectResult>().Subject;
+        GetPropertyValue<string>(badRequest.Value!, "message").Should().Be("PointsPerReport and BonusQuality must be non-negative.");
     }
 
     private static async Task<EnterpriseScenario> SeedEnterpriseAsync(WastePlatformDbContext context)

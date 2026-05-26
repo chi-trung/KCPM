@@ -1,16 +1,21 @@
 using WastePlatform.Application.Tasks.Commands;
-using Allure.Xunit.Attributes;
-using Allure.Net.Commons;
 
 namespace WastePlatform.Tests.Application.Tasks;
 
-[AllureEpic("KIEM-16 Enterprise Task Module")]
-[AllureFeature("WRP-BE-TESTS-013 Assign Collector Command")]
+[AllureEpic("Enterprise Operations")]
+[AllureFeature("Assign Collector Handler")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Assign a collector and stamp the assignment time")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "AssignCollectorCommandHandlerTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Tasks")]
+[AllureOwner("backend")]
+[AllureSeverity(SeverityLevel.minor)]
+[Allure.Net.Commons.Attributes.AllureTag("unit")]
+[Allure.Net.Commons.Attributes.AllureTag("backend")]
+[Allure.Net.Commons.Attributes.AllureTag("task")]
 public class AssignCollectorCommandHandlerTests
 {
-    [AllureStory("Assign collector command returns timestamps")]
-    [AllureSeverity(SeverityLevel.normal)]
-    [AllureOwner("chi-trung")]
     [Fact]
     public async Task Handle_ShouldReturnCommandDataAndUtcAssignmentTime()
     {

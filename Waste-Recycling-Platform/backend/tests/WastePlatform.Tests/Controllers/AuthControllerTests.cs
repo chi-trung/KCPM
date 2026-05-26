@@ -1,4 +1,6 @@
 using System.Security.Claims;
+using Allure.Xunit.Attributes;
+using Allure.Net.Commons;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,15 +13,26 @@ using WastePlatform.Domain.Enums;
 using WastePlatform.Infrastructure.Persistence;
 using WastePlatform.Infrastructure.Services;
 using WastePlatform.Application.Common.DTOs;
-using Allure.Xunit.Attributes;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Controllers;
 
-[AllureEpic("KIEM-4 Auth Module")]
-[AllureFeature("WRP-BE-TESTS-001 Auth Testing")]
+[AllureEpic("Authentication")]
+[AllureFeature("Auth APIs")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Register, login, and current user profile")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Controllers")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "AuthControllerTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Controllers")]
+[AllureOwner("auth")]
+[AllureSeverity(SeverityLevel.critical)]
+[Allure.Net.Commons.Attributes.AllureTag("api")]
+[Allure.Net.Commons.Attributes.AllureTag("auth")]
+[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-4")]
 public class AuthControllerTests
 {
     [Fact]
+    [AllureDescription("Registers a new citizen, returns a JWT token, and persists the user in the database.")]
     public async Task Register_WithValidCitizen_ShouldReturnOkAndCreateUser()
     {
         // Arrange
@@ -44,6 +57,9 @@ public class AuthControllerTests
         // Assert
         var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
         var response = okResult.Value.Should().BeOfType<AuthResponseDto>().Subject;
+
+        AllureAttachmentHelper.AttachJson("register-command", cmd);
+        AllureAttachmentHelper.AttachJson("register-response", response);
         
         response.Token.Should().Be("fake-jwt-token");
         response.User.Email.Should().Be("newcitizen@example.com");
@@ -56,6 +72,7 @@ public class AuthControllerTests
     }
 
     [Fact]
+    [AllureDescription("Rejects duplicate email registration with a conflict response and message.")]
     public async Task Register_WithDuplicateEmail_ShouldReturnConflict()
     {
         // Arrange
@@ -80,10 +97,13 @@ public class AuthControllerTests
 
         // Assert
         var conflictResult = result.Should().BeOfType<ConflictObjectResult>().Subject;
+        AllureAttachmentHelper.AttachJson("duplicate-email-command", cmd);
+        AllureAttachmentHelper.AttachJson("conflict-response", conflictResult.Value!);
         GetPropertyValue<string>(conflictResult.Value!, "message").Should().Contain("đã được sử dụng");
     }
 
     [Fact]
+    [AllureDescription("Logs in a valid user, returns a token, and auto-creates the enterprise profile.")]
     public async Task Login_WithValidCredentials_ShouldReturnOkAndToken()
     {
         // Arrange
@@ -113,6 +133,9 @@ public class AuthControllerTests
         // Assert
         var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
         var response = okResult.Value.Should().BeOfType<AuthResponseDto>().Subject;
+
+        AllureAttachmentHelper.AttachJson("login-command", cmd);
+        AllureAttachmentHelper.AttachJson("login-response", response);
         
         response.Token.Should().Be("valid-jwt-token");
         response.User.Email.Should().Be("valid@example.com");
@@ -123,6 +146,7 @@ public class AuthControllerTests
     }
 
     [Fact]
+    [AllureDescription("Rejects invalid credentials with an unauthorized response.")]
     public async Task Login_WithInvalidPassword_ShouldReturnUnauthorized()
     {
         // Arrange
@@ -146,10 +170,13 @@ public class AuthControllerTests
 
         // Assert
         var unauthorizedResult = result.Should().BeOfType<UnauthorizedObjectResult>().Subject;
+        AllureAttachmentHelper.AttachJson("invalid-password-command", cmd);
+        AllureAttachmentHelper.AttachJson("unauthorized-response", unauthorizedResult.Value!);
         GetPropertyValue<string>(unauthorizedResult.Value!, "message").Should().Contain("không đúng");
     }
 
     [Fact]
+    [AllureDescription("Returns the authenticated user claims from the controller context.")]
     public void Me_WhenAuthenticated_ShouldReturnUserClaims()
     {
         // Arrange
@@ -175,6 +202,7 @@ public class AuthControllerTests
 
         // Assert
         var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        AllureAttachmentHelper.AttachJson("claims-response", okResult.Value!);
         GetPropertyValue<string>(okResult.Value!, "userId").Should().Be(userId);
         GetPropertyValue<string>(okResult.Value!, "email").Should().Be("me@example.com");
         GetPropertyValue<string>(okResult.Value!, "role").Should().Be("Admin");

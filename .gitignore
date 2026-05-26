@@ -3,6 +3,7 @@
 .env.local
 .env.*.local
 .env.production.local
+allure-results/
 TestResults/
 postman/.postman/
 postman/postman/

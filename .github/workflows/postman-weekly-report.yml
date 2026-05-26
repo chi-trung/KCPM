@@ -54,7 +54,7 @@ jobs:
           }
 
       - name: Install Newman
-        run: npm install -g newman newman-reporter-junitfull
+        run: npm install -g newman newman-reporter-junitfull newman-reporter-allure
 
       - name: Decide run scope
         id: report_scope
@@ -83,6 +83,24 @@ jobs:
           }
 
           & newman @args
+
+      - name: Export Postman Allure results
+        if: always()
+        run: |
+          mkdir -p Waste-Recycling-Platform/allure-results
+          if (Test-Path ./allure-results) {
+            Copy-Item -Recurse -Force ./allure-results/* Waste-Recycling-Platform/allure-results/
+          }
+          $exec = [ordered]@{
+            name = 'GitHub Actions'
+            type = 'github'
+            url = "https://github.com/${{ github.repository }}"
+            buildName = "${{ github.workflow }} #${{ github.run_number }}"
+            buildUrl = "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            reportName = 'Postman Weekly'
+            reportUrl = "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }
+          $exec | ConvertTo-Json | Out-File -FilePath Waste-Recycling-Platform/allure-results/executor.json -Encoding utf8
 
       - name: Upload weekly evidence
         if: always()
