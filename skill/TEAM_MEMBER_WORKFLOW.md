@@ -119,3 +119,25 @@ If you are a member working on a task, do this in order:
 - push
 - wait for CI
 - verify Allure and GitHub Pages
+
+## 10. How Allure Gets Owner From Jira
+
+Allure does not guess the owner by branch name or module name. It needs a Jira key in the test result.
+
+- Put the Jira key like `KIEM-10` in the test metadata, label, link, or test name when possible.
+- The CI workflow will scan Allure result JSON and extract keys such as `KIEM-...` automatically.
+- After that, the workflow queries Jira to get the assignee display name.
+- The report then shows that assignee in `Owner`.
+
+Practical rule:
+
+- If a test result has no Jira key, the workflow cannot map it to an owner.
+- If the Jira key is present, owner sync should work without manual editing.
+
+Quick checklist before you push:
+
+- Does the test case have a Jira key?
+- Does the branch name include the Jira key?
+- Did you sync latest `main`?
+- Did you run the relevant tests?
+- Did CI generate Allure results with the key still visible?
