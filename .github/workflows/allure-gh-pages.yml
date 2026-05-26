@@ -1,25 +1,62 @@
 name: CI - API Tests with Allure Report
 
 on:
-  push:
-    branches:
-      - main
-      - master
   pull_request:
     branches:
       - main
-      - master
+      - develop
+  workflow_run:
+    workflows:
+      - Backend Tests
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+      - 'KIEM-*'
+    types:
+      - completed
   workflow_dispatch:
+    inputs:
+      report_mode:
+        description: Select which report set to generate
+        required: true
+        default: both
+        type: choice
+        options:
+          - all
+          - owner
+          - both
+      export_format:
+        description: Select the export format
+        required: true
+        default: html
+        type: choice
+        options:
+          - html
+          - pdf
+          - both
+      selected_owner:
+        description: Enter an owner name to export only that person, or use all
+        required: true
+        default: all
+        type: string
 
 permissions:
   contents: write
 
+concurrency:
+  group: allure-gh-pages-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   run-api-tests:
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Start Backend with Docker Compose
         run: |
@@ -46,45 +83,343 @@ jobs:
             -r allure \
             --reporter-allure-export allure-results
 
-      - name: Generate Allure Report
-        uses: simple-elf/allure-report-action@master
+      - name: Checkout gh-pages history
         if: always()
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Fetch backend-tests Allure artifact
+        if: always()
+        run: |
+          set -e
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            source_branch="${{ github.event.workflow_run.head_branch }}"
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            source_branch="${{ github.head_ref }}"
+          else
+            source_branch="${{ github.ref_name }}"
+          fi
+
+          echo "Looking for latest successful backend-tests workflow run on ${source_branch}..."
+          OWNER_REPO=${{ github.repository }}
+          WORKFLOW_FILE=backend-tests.yml
+          runs_url="https://api.github.com/repos/${OWNER_REPO}/actions/workflows/${WORKFLOW_FILE}/runs?branch=${source_branch}&status=success"
+          runs_resp=$(curl -sS -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json" "$runs_url")
+          # Extract first run id without jq
+          run_id=$(echo "$runs_resp" | grep -o '"id": [0-9]\+' | head -n1 | sed -E 's/"id": //')
+          if [ -z "$run_id" ]; then
+            echo "No successful backend-tests run found; skipping artifact fetch"
+            exit 0
+          fi
+          echo "Found backend-tests run: $run_id"
+          arts_url="https://api.github.com/repos/${OWNER_REPO}/actions/runs/${run_id}/artifacts"
+          arts_resp=$(curl -sS -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json" "$arts_url")
+          # Find artifact id matching 'allure-results' without jq
+          art_id=$(echo "$arts_resp" | grep -o '"id": [0-9]\+\|"name": "[^"]\+' | paste - - | grep 'allure-results' | head -n1 | sed -E 's/.*"id": ([0-9]+)\s+"name": .*/\1/')
+          if [ -z "$art_id" ]; then
+            echo "No allure-results artifact found in run $run_id; skipping"
+            exit 0
+          fi
+          echo "Found artifact id: $art_id -- downloading..."
+          download_url="https://api.github.com/repos/${OWNER_REPO}/actions/artifacts/${art_id}/zip"
+          curl -sSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json" "$download_url" -o artifact.zip
+          unzip -o artifact.zip -d backend_artifact || true
+          echo "===== BACKEND ARTIFACT TREE ====="
+          find backend_artifact -maxdepth 5 -print | sort || true
+
+          echo "===== BACKEND allure-results DIRS ====="
+          find backend_artifact -type d -name "allure-results" | sort || true
+
+          srcs=$(find backend_artifact -type d -name "allure-results" | sort || true)
+          if [ -n "$srcs" ]; then
+            mkdir -p Waste-Recycling-Platform/allure-results
+            echo "Merged result json count before:"
+            merged_before=$(find Waste-Recycling-Platform/allure-results -name "*.json" | wc -l | tr -d ' ')
+            echo "$merged_before"
+
+            json_count_total=0
+            for src in $srcs; do
+              echo "FOUND_BACKEND_RESULTS=$src"
+              echo "Copying backend results from $src into Waste-Recycling-Platform/allure-results"
+              echo "Backend result json count:"
+              json_count=$(find "$src" -name "*.json" | wc -l | tr -d ' ')
+              echo "$json_count"
+              json_count_total=$((json_count_total + json_count))
+              echo "Sample backend result files:"
+              find "$src" -type f | sort | sed -n '1,20p' || true
+              cp -Rv "$src"/. Waste-Recycling-Platform/allure-results/
+            done
+
+            echo "Merged result json count after:"
+            merged_after=$(find Waste-Recycling-Platform/allure-results -name "*.json" | wc -l | tr -d ' ')
+            echo "$merged_after"
+            if [ "$json_count_total" -eq 0 ]; then
+              echo "Fail: backend result json count is zero after copy"
+              exit 1
+            fi
+          else
+            echo "No allure-results folder found inside artifact"
+            exit 1
+          fi
+          rm -rf artifact.zip backend_artifact || true
+
+      - name: Restore Allure History
+        if: always()
+        run: |
+          mkdir -p Waste-Recycling-Platform/allure-results/history
+          if [ -d gh-pages/last-history ]; then
+            cp -R gh-pages/last-history/. Waste-Recycling-Platform/allure-results/history/
+          elif [ -d gh-pages/history ]; then
+            cp -R gh-pages/history/. Waste-Recycling-Platform/allure-results/history/
+          fi
+
+      - name: Write Allure Environment
+        if: always()
+        run: |
+          mkdir -p Waste-Recycling-Platform/allure-results
+          cat > Waste-Recycling-Platform/allure-results/environment.properties <<EOF
+          GIT_BRANCH=${{ github.ref }}
+          GIT_COMMIT=${{ github.sha }}
+          RUN_ID=${{ github.run_id }}
+          RUN_URL=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          BUILD_NUMBER=${{ github.run_number }}
+          RUNNER_OS=${{ runner.os }}
+          WORKFLOW=${{ github.workflow }}
+          EOF
+
+      - name: Write executor metadata
+        if: always()
+        run: |
+          mkdir -p Waste-Recycling-Platform/allure-results
+          cat > Waste-Recycling-Platform/allure-results/executor.json <<'EOF'
+          {
+            "name": "GitHub Actions",
+            "type": "github",
+            "url": "https://github.com/${{ github.repository }}",
+            "buildName": "${{ github.workflow }} #${{ github.run_number }}",
+            "buildUrl": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+            "reportName": "Allure Report",
+            "reportUrl": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }
+          EOF
+
+      - name: Write Allure categories
+        if: always()
+        run: |
+          mkdir -p Waste-Recycling-Platform/allure-results
+          if [ -f Waste-Recycling-Platform/allure-categories.json ]; then
+            cp Waste-Recycling-Platform/allure-categories.json Waste-Recycling-Platform/allure-results/categories.json
+          fi
+
+      - name: Sync Jira Owners
+        if: always()
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+        run: |
+          python3 Waste-Recycling-Platform/scripts/sync_jira_owners.py
+
+      - name: Inject owners into raw Allure results
+        if: always()
+        run: |
+          python3 Waste-Recycling-Platform/scripts/inject_owners_into_results.py || true
+
+      - name: Debug merged allure results
+        if: always()
+        run: |
+          echo "===== ALLURE RESULTS TREE ====="
+          find Waste-Recycling-Platform/allure-results -type f | sort | head -200 || true
+
+          echo "===== JSON COUNT ====="
+          find Waste-Recycling-Platform/allure-results -name "*.json" | wc -l || true
+
+          echo "===== SAMPLE FILES ====="
+          ls -lah Waste-Recycling-Platform/allure-results | head -50 || true
+
+          echo "===== HISTORY ====="
+          find Waste-Recycling-Platform/allure-results/history -maxdepth 2 -type f || true
+
+      - name: Generate Allure Report
+        if: always() && (github.event_name != 'workflow_dispatch' || github.event.inputs.report_mode == 'all' || github.event.inputs.report_mode == 'both')
+        uses: simple-elf/allure-report-action@master
         id: allure-report
         with:
           allure_results: Waste-Recycling-Platform/allure-results
           gh_pages: gh-pages
-          allure_report: allure-report
-          allure_history: allure-history
+          allure_report: report-main
+          allure_history: Waste-Recycling-Platform/allure-results/history
           keep_reports: 20
 
-      - name: Generate per-owner reports
+      - name: Debug generated report
         if: always()
         run: |
-          python3 Waste-Recycling-Platform/scripts/generate_per_owner_reports.py || true
+          echo "===== GENERATED REPORT ====="
+          find report-main -type f | head -100 || true
 
-
-      - name: Prepare site output for gh-pages
+      - name: Normalize report permissions
         if: always()
         run: |
-          rm -rf site-output
-          mkdir -p site-output/report-main
-          if [ -d "allure-report" ]; then cp -r allure-report/* site-output/report-main/; fi
-          mkdir -p site-output/report-extra
-          if [ -d "report-extra" ]; then cp -r report-extra/* site-output/report-extra/; fi
+          chmod -R u+w report-main || true
 
-      - name: Build landing page index
+      - name: Install Allure CLI for per-owner reports
+        if: always()
+        run: |
+          npm install -g allure-commandline@2.13.0 || true
+
+      - name: Generate per-owner Allure reports
+        if: always() && (github.event_name != 'workflow_dispatch' || github.event.inputs.report_mode == 'owner' || github.event.inputs.report_mode == 'both')
+        env:
+          ALLURE_PUBLISH_DIR: report-extra
+          SELECTED_OWNER: ${{ github.event.inputs.selected_owner }}
+        run: |
+          python3 Waste-Recycling-Platform/scripts/generate_per_owner_reports.py
+
+      - name: Install Playwright for PDF export
+        if: always() && github.event_name == 'workflow_dispatch' && (github.event.inputs.export_format == 'pdf' || github.event.inputs.export_format == 'both')
+        run: |
+          npm install playwright@1.52.0
+          npx playwright install chromium
+
+      - name: Export PDF reports
+        if: always() && github.event_name == 'workflow_dispatch' && (github.event.inputs.export_format == 'pdf' || github.event.inputs.export_format == 'both')
+        env:
+          REPORT_MODE: ${{ github.event.inputs.report_mode }}
+          SELECTED_OWNER: ${{ github.event.inputs.selected_owner }}
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const { chromium } = require('playwright');
+
+          function slugify(value) {
+            return (value || '')
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-+|-+$/g, '');
+          }
+
+          async function exportPdf(htmlPath, pdfPath) {
+            const browser = await chromium.launch({ headless: true });
+            try {
+              const page = await browser.newPage({ viewport: { width: 1600, height: 1200 } });
+              await page.goto(`file://${path.resolve(htmlPath)}`, { waitUntil: 'networkidle' });
+              await page.pdf({ path: pdfPath, format: 'A4', printBackground: true });
+              console.log(`Exported ${pdfPath}`);
+            } finally {
+              await browser.close();
+            }
+          }
+
+          (async () => {
+            const mode = (process.env.REPORT_MODE || 'all').toLowerCase();
+            const selectedOwner = (process.env.SELECTED_OWNER || '').trim();
+            const selectedOwnerSlug = slugify(selectedOwner);
+            if (mode === 'all' || mode === 'both') {
+              const mainHtml = path.resolve('report-main', 'index.html');
+              if (fs.existsSync(mainHtml)) {
+                await exportPdf(mainHtml, path.resolve('report-main', 'report.pdf'));
+              }
+            }
+
+            if (mode === 'owner' || mode === 'both') {
+              const ownersRoot = path.resolve('report-extra', 'owners');
+              if (fs.existsSync(ownersRoot)) {
+                for (const ownerDir of fs.readdirSync(ownersRoot, { withFileTypes: true })) {
+                  if (!ownerDir.isDirectory()) continue;
+                  if (selectedOwner && selectedOwner.toLowerCase() !== 'all' && ownerDir.name !== selectedOwnerSlug) {
+                    continue;
+                  }
+                  const ownerHtml = path.join(ownersRoot, ownerDir.name, 'index.html');
+                  if (fs.existsSync(ownerHtml)) {
+                    await exportPdf(ownerHtml, path.join(ownersRoot, ownerDir.name, 'report.pdf'));
+                  }
+                }
+              }
+            }
+          })().catch((error) => {
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
+
+      - name: Create validation artifacts for Pages
+        if: always()
+        run: |
+          set -e
+          python3 Waste-Recycling-Platform/scripts/create_validation_artifacts.py
+
+      - name: Validate results and build validation page
         if: always()
         env:
+          GITHUB_RUN_ID: ${{ github.run_id }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          SITE_OUTPUT_DIR: site-output
+          ALLURE_PUBLISH_DIR: report-extra
+          ALLURE_MAIN_REPORT_DIR: report-main
           VALIDATION_OUTPUT_DIR: report-extra/validation
         run: |
-          python3 Waste-Recycling-Platform/scripts/build_site_index.py
+          set -e
+          python3 Waste-Recycling-Platform/scripts/build_validation_page.py
+
+      - name: Assemble published site
+        if: always()
+        run: |
+          rm -rf site-output || true
+          mkdir -p site-output
+          if [ -d report-main ]; then
+            mkdir -p site-output/report-main
+            cp -R report-main/. site-output/report-main/
+          fi
+          if [ -d report-extra ]; then
+            mkdir -p site-output/report-extra
+            cp -R report-extra/. site-output/report-extra/
+          fi
+          SITE_OUTPUT_DIR=site-output VALIDATION_OUTPUT_DIR=report-extra/validation ALLURE_MAIN_REPORT_DIR=report-main ALLURE_PUBLISH_DIR=report-extra python3 Waste-Recycling-Platform/scripts/build_site_index.py
 
       - name: Deploy to GitHub Pages
-        if: always()
+        if: always() && github.event_name != 'pull_request'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: site-output
+          keep_files: true
+
+      - name: Persist last-history to gh-pages
+        if: always() && github.event_name != 'pull_request'
+        run: |
+          set -e
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          rm -rf gh-pages/last-history || true
+          mkdir -p gh-pages/last-history
+          if [ -d site-output/report-main/history ]; then
+            cp -R site-output/report-main/history/. gh-pages/last-history/ || true
+          fi
+          cd gh-pages
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No history changes to commit"
+          else
+            git commit -m "Update last-history from run ${{ github.run_id }}"
+            echo "Attempting push to gh-pages (with fetch+rebase strategy)"
+            set +e
+            git fetch origin gh-pages
+            git pull --rebase origin gh-pages || true
+            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:gh-pages
+            status=$?
+            if [ $status -ne 0 ]; then
+              echo "Push failed (status=$status). Retrying once with rebase and push..."
+              git pull --rebase origin gh-pages || true
+              git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:gh-pages
+              status2=$?
+              if [ $status2 -ne 0 ]; then
+                echo "Second push attempt failed (status=$status2). Exiting with non-zero to surface failure."
+                exit $status2
+              fi
+            fi
+            set -e
+          fi
