@@ -8,11 +8,15 @@ namespace WastePlatform.Tests.Infrastructure.SignalR;
 
 [AllureEpic("KIEM-19 SignalR Real-time Notifications")]
 [AllureFeature("WRP-BE-TESTS-016 SignalR Real-time Tests")]
+[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-19")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Infrastructure")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "SignalRRealTimeNotifierTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Infrastructure.SignalR")]
 public class SignalRRealTimeNotifierTests
 {
     [AllureStory("Push notification to a single user")]
     [AllureSeverity(SeverityLevel.critical)]
-    [AllureOwner("chi-trung")]
     [Fact]
     public async Task NotifyUserAsync_ShouldSendPayloadToTheTargetUser()
     {
@@ -48,7 +52,6 @@ public class SignalRRealTimeNotifierTests
 
     [AllureStory("Push notification to multiple users")]
     [AllureSeverity(SeverityLevel.critical)]
-    [AllureOwner("chi-trung")]
     [Fact]
     public async Task NotifyUsersAsync_ShouldSendPayloadToAllTargetUsers()
     {
@@ -84,7 +87,6 @@ public class SignalRRealTimeNotifierTests
 
     [AllureStory("Push notification to an empty user list")]
     [AllureSeverity(SeverityLevel.normal)]
-    [AllureOwner("chi-trung")]
     [Fact]
     public async Task NotifyUsersAsync_WithEmptyUserList_ShouldStillCallHubWithEmptyAudience()
     {
@@ -126,7 +128,6 @@ public class SignalRRealTimeNotifierTests
 
     [AllureStory("Task hub requires authorization")]
     [AllureSeverity(SeverityLevel.normal)]
-    [AllureOwner("chi-trung")]
     [Fact]
     public void TaskHub_ShouldBeProtectedByAuthorizeAttribute()
     {
