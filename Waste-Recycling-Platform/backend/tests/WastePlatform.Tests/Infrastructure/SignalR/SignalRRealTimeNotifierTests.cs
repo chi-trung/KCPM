@@ -3,6 +3,7 @@ using Allure.Xunit.Attributes;
 using Microsoft.AspNetCore.SignalR;
 using Moq;
 using WastePlatform.Infrastructure.SignalR;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Infrastructure.SignalR;
 
@@ -17,6 +18,7 @@ public class SignalRRealTimeNotifierTests
 {
     [AllureStory("Push notification to a single user")]
     [AllureSeverity(SeverityLevel.critical)]
+    [AllureDescription("Sends a realtime notification payload to one target user.")]
     [Fact]
     public async Task NotifyUserAsync_ShouldSendPayloadToTheTargetUser()
     {
@@ -36,6 +38,13 @@ public class SignalRRealTimeNotifierTests
             CreatedAt = DateTime.UtcNow
         };
 
+        AllureAttachmentHelper.AttachJson("signalr-single-user-request", new
+        {
+            targetUserId,
+            methodName = "NewNotification",
+            payload
+        });
+
         userProxy
             .Setup(x => x.SendCoreAsync("NewNotification", It.IsAny<object?[]>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
@@ -48,10 +57,18 @@ public class SignalRRealTimeNotifierTests
                 It.Is<object?[]>(args => HasSinglePayloadWith(args, payload)),
                 It.IsAny<CancellationToken>()),
             Times.Once);
+
+        AllureAttachmentHelper.AttachJson("signalr-single-user-result", new
+        {
+            targetUserId,
+            methodName = "NewNotification",
+            verified = true
+        });
     }
 
     [AllureStory("Push notification to multiple users")]
     [AllureSeverity(SeverityLevel.critical)]
+    [AllureDescription("Broadcasts a realtime notification payload to a list of target users.")]
     [Fact]
     public async Task NotifyUsersAsync_ShouldSendPayloadToAllTargetUsers()
     {
@@ -71,6 +88,13 @@ public class SignalRRealTimeNotifierTests
             CreatedAt = DateTime.UtcNow
         };
 
+        AllureAttachmentHelper.AttachJson("signalr-multi-user-request", new
+        {
+            userIds,
+            methodName = "TaskStatusUpdated",
+            payload
+        });
+
         usersProxy
             .Setup(x => x.SendCoreAsync("TaskStatusUpdated", It.IsAny<object?[]>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
@@ -83,10 +107,18 @@ public class SignalRRealTimeNotifierTests
                 It.Is<object?[]>(args => HasSinglePayloadWith(args, payload)),
                 It.IsAny<CancellationToken>()),
             Times.Once);
+
+        AllureAttachmentHelper.AttachJson("signalr-multi-user-result", new
+        {
+            userCount = userIds.Length,
+            methodName = "TaskStatusUpdated",
+            verified = true
+        });
     }
 
     [AllureStory("Push notification to an empty user list")]
     [AllureSeverity(SeverityLevel.normal)]
+    [AllureDescription("Keeps the SignalR call stable even when no user ids are provided.")]
     [Fact]
     public async Task NotifyUsersAsync_WithEmptyUserList_ShouldStillCallHubWithEmptyAudience()
     {
@@ -104,6 +136,12 @@ public class SignalRRealTimeNotifierTests
             RelatedEntityType = "Task",
             CreatedAt = DateTime.UtcNow
         };
+
+        AllureAttachmentHelper.AttachJson("signalr-empty-user-request", new
+        {
+            methodName = "TaskStatusUpdated",
+            payload
+        });
 
         IReadOnlyList<string>? capturedUserIds = null;
         usersProxy
@@ -124,10 +162,13 @@ public class SignalRRealTimeNotifierTests
                 It.Is<object?[]>(args => HasSinglePayloadWith(args, payload)),
                 It.IsAny<CancellationToken>()),
             Times.Once);
+
+        AllureAttachmentHelper.AttachText("signalr-empty-user-result", "Captured an empty audience and still sent the payload once.");
     }
 
     [AllureStory("Task hub requires authorization")]
     [AllureSeverity(SeverityLevel.normal)]
+    [AllureDescription("Verifies that the TaskHub endpoint is protected by the Authorize attribute.")]
     [Fact]
     public void TaskHub_ShouldBeProtectedByAuthorizeAttribute()
     {
@@ -138,6 +179,7 @@ public class SignalRRealTimeNotifierTests
             .Subject;
 
         authorizeAttribute.Should().NotBeNull();
+        AllureAttachmentHelper.AttachText("taskhub-authorize-attribute", authorizeAttribute.GetType().FullName ?? string.Empty);
     }
 
     private static Mock<IHubContext<TaskHub>> CreateHubContextMock(out Mock<IClientProxy> userProxy, out Mock<IClientProxy> usersProxy)
