@@ -32,6 +32,10 @@ def load_jira_map():
 
 def extract_issue_keys_from_json(data):
     keys = set()
+    # data is expected to be a dict representing a single result entry
+    if not isinstance(data, dict):
+        return keys
+
     for label in data.get('labels') or []:
         if isinstance(label, dict) and label.get('name') in ('issue', 'Issue', 'ISSUE') and label.get('value'):
             parts = str(label.get('value')).split('/')
@@ -71,41 +75,55 @@ def main():
                 data = json.load(f)
         except Exception:
             continue
-
-        issue_keys = extract_issue_keys_from_json(data)
-        assigned = []
-        for k in issue_keys:
-            info = jira_map.get(k)
-            if info and info.get('displayName'):
-                assigned.append(info.get('displayName'))
-
-        if not assigned:
+        # Support files where the root may be a dict (single entry) or a list of entries
+        is_list = isinstance(data, list)
+        if is_list:
+            entries = [e for e in data if isinstance(e, dict)]
+        elif isinstance(data, dict):
+            entries = [data]
+        else:
             continue
 
-        resolved_owner = next((a for a in sorted(set(a.strip() for a in assigned if a and a.strip()))), None)
-        if not resolved_owner:
-            continue
+        file_changed = False
+        for entry in entries:
+            issue_keys = extract_issue_keys_from_json(entry)
+            assigned = []
+            for k in issue_keys:
+                info = jira_map.get(k)
+                if info and info.get('displayName'):
+                    assigned.append(info.get('displayName'))
 
-        # ensure labels list
-        labels = data.get('labels') or []
-        changed = False
+            if not assigned:
+                continue
 
-        # Replace any pre-existing placeholder owner labels (auth/backend/qa)
-        # with the real Jira assignee so Allure shows the person, not the suite.
-        for label in labels:
-            if isinstance(label, dict) and label.get('name') == 'owner':
-                if label.get('value') != resolved_owner:
-                    label['value'] = resolved_owner
-                    changed = True
+            resolved_owner = next((a for a in sorted(set(a.strip() for a in assigned if a and a.strip()))), None)
+            if not resolved_owner:
+                continue
 
-        if not any(isinstance(l, dict) and l.get('name') == 'owner' for l in labels):
-            labels.append({'name': 'owner', 'value': resolved_owner})
-            changed = True
+            # ensure labels list
+            labels = entry.get('labels') or []
+            if not isinstance(labels, list):
+                labels = []
+            changed = False
 
-        owners.add(resolved_owner)
+            # Replace any pre-existing placeholder owner labels with the real Jira assignee
+            for label in labels:
+                if isinstance(label, dict) and label.get('name') == 'owner':
+                    if label.get('value') != resolved_owner:
+                        label['value'] = resolved_owner
+                        changed = True
 
-        if changed:
-            data['labels'] = labels
+            if not any(isinstance(l, dict) and l.get('name') == 'owner' for l in labels):
+                labels.append({'name': 'owner', 'value': resolved_owner})
+                changed = True
+
+            owners.add(resolved_owner)
+
+            if changed:
+                entry['labels'] = labels
+                file_changed = True
+
+        if file_changed:
             try:
                 with open(path, 'w', encoding='utf8') as f:
                     json.dump(data, f, ensure_ascii=False, indent=2)
