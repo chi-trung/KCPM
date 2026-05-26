@@ -21,6 +21,7 @@ namespace WastePlatform.Tests.Infrastructure;
 public class RewardPointsRepositoryTests
 {
     [Fact]
+    [AllureDescription("Creates reward points from an active matching rule and applies the configured points plus bonus.")]
     public async Task CreateRewardPointsAsync_WithMatchingActiveRule_ShouldUseRulePointsAndBonus()
     {
         await using var context = CreateContext();
@@ -55,11 +56,11 @@ public class RewardPointsRepositoryTests
         reward.Reason.Should().Be("Collected successfully");
         reward.IdempotencyKey.Should().Be($"task_{taskId}_{reportId}");
         (await context.RewardPoints.CountAsync()).Should().Be(1);
-        // Attach created reward for Allure
         AllureAttachmentHelper.AttachJson("created-reward", new { reward.Id, reward.Points, reward.Reason, reward.IdempotencyKey });
     }
 
     [Fact]
+    [AllureDescription("Returns the already persisted reward record when the same idempotency key is submitted again.")]
     public async Task CreateRewardPointsAsync_WhenRewardAlreadyExists_ShouldReturnExistingRecord()
     {
         await using var context = CreateContext();
@@ -86,6 +87,18 @@ public class RewardPointsRepositoryTests
         context.RewardPoints.Add(existingReward);
         await context.SaveChangesAsync();
 
+        AllureAttachmentHelper.AttachJson("existing-reward-seed", new
+        {
+            citizenId,
+            reportId,
+            taskId,
+            enterpriseId,
+            wasteCategoryId,
+            idempotencyKey,
+            existingReward.Id,
+            existingReward.Points
+        });
+
         var reward = await repository.CreateRewardPointsAsync(
             citizenId,
             reportId,
@@ -97,25 +110,38 @@ public class RewardPointsRepositoryTests
         reward.Id.Should().Be(existingReward.Id);
         reward.Points.Should().Be(22);
         (await context.RewardPoints.CountAsync()).Should().Be(1);
+
+        AllureAttachmentHelper.AttachJson("existing-reward-result", new { reward.Id, reward.Points, reward.IdempotencyKey });
     }
 
     [Fact]
+    [AllureDescription("Falls back to the default reward points and reason when no active rule exists.")]
     public async Task CreateRewardPointsAsync_WithoutRule_ShouldUseDefaultPoints()
     {
         await using var context = CreateContext();
         var repository = new RewardPointsRepository(context);
 
+        var citizenId = Guid.NewGuid();
+        var reportId = Guid.NewGuid();
+        var taskId = Guid.NewGuid();
+        var enterpriseId = Guid.NewGuid();
+        var wasteCategoryId = 99;
+
+        AllureAttachmentHelper.AttachText("default-reward-request", $"citizenId={citizenId}\nreportId={reportId}\ntaskId={taskId}\nenterpriseId={enterpriseId}\nwasteCategoryId={wasteCategoryId}");
+
         var reward = await repository.CreateRewardPointsAsync(
-            citizenId: Guid.NewGuid(),
-            reportId: Guid.NewGuid(),
-            taskId: Guid.NewGuid(),
-            enterpriseId: Guid.NewGuid(),
-            wasteCategoryId: 99,
+            citizenId,
+            reportId,
+            taskId,
+            enterpriseId,
+            wasteCategoryId,
             reason: null);
 
         reward.Points.Should().Be(10);
         reward.Reason.Should().Be("Báo cáo và thu gom rác");
         (await context.RewardPoints.CountAsync()).Should().Be(1);
+
+        AllureAttachmentHelper.AttachJson("default-reward-result", new { reward.Id, reward.Points, reward.Reason, reward.IdempotencyKey });
     }
 
     private static WastePlatformDbContext CreateContext()

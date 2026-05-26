@@ -28,6 +28,7 @@ namespace WastePlatform.Tests.Controllers;
 public class CollectorControllerTests
 {
     [Fact]
+    [AllureDescription("Returns the profile for the authenticated collector.")]
     public async Task GetProfile_WithValidCollector_ShouldReturnCollectorProfile()
     {
         await using var context = CreateContext();
@@ -50,9 +51,12 @@ public class CollectorControllerTests
         GetPropertyValue<string>(okResult.Value!, "Email").Should().Be("collector@example.com");
         GetPropertyValue<string>(okResult.Value!, "Phone").Should().Be("0900000001");
         GetPropertyValue<bool>(okResult.Value!, "IsAvailable").Should().BeTrue();
+
+        AllureAttachmentHelper.AttachJson("collector-profile-result", new { scenario.Collector.Id, scenario.CollectorUser.Id, scenario.Enterprise.Id, IsAvailable = true });
     }
 
     [Fact]
+    [AllureDescription("Returns an unauthorized response when the collector profile is missing.")]
     public async Task GetProfile_WithoutCollectorRecord_ShouldReturnUnauthorized()
     {
         await using var context = CreateContext();
@@ -70,9 +74,12 @@ public class CollectorControllerTests
 
         var unauthorized = result.Should().BeOfType<UnauthorizedObjectResult>().Subject;
         GetPropertyValue<string>(unauthorized.Value!, "message").Should().Be("Không tìm thấy hồ sơ Collector.");
+
+        AllureAttachmentHelper.AttachText("collector-profile-missing-result", "Không tìm thấy hồ sơ Collector.");
     }
 
     [Fact]
+    [AllureDescription("Updates collector availability for a valid authenticated collector.")]
     public async Task ToggleAvailability_WithValidCollector_ShouldUpdateAvailability()
     {
         await using var context = CreateContext();
@@ -92,9 +99,12 @@ public class CollectorControllerTests
 
         await context.Entry(scenario.Collector).ReloadAsync();
         scenario.Collector.IsAvailable.Should().BeTrue();
+
+        AllureAttachmentHelper.AttachJson("collector-availability-result", new { scenario.Collector.Id, scenario.CollectorUser.Id, IsAvailable = true });
     }
 
     [Fact]
+    [AllureDescription("Returns an unauthorized response when no collector record exists for the authenticated user.")]
     public async Task ToggleAvailability_WithoutCollectorRecord_ShouldReturnUnauthorized()
     {
         await using var context = CreateContext();
@@ -112,6 +122,8 @@ public class CollectorControllerTests
 
         var unauthorized = result.Should().BeOfType<UnauthorizedObjectResult>().Subject;
         GetPropertyValue<string>(unauthorized.Value!, "message").Should().Be("Không tìm thấy hồ sơ Collector.");
+
+        AllureAttachmentHelper.AttachText("collector-availability-missing-result", "Không tìm thấy hồ sơ Collector.");
     }
 
     private static async Task<CollectorScenario> SeedCollectorAsync(WastePlatformDbContext context, bool initialAvailability = true)
