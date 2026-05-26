@@ -2,6 +2,8 @@
 
 This guide is for every team member who pulls the repo and works on one task per branch.
 
+This repository is being used for software verification practice. The goal is not to submit a final assignment file. The goal is to run the right tests, keep the result in Allure, and preserve traceability through Jira, branch names, commits, and PRs.
+
 ## Goal
 
 - Keep one task on one branch.
@@ -9,6 +11,8 @@ This guide is for every team member who pulls the repo and works on one task per
 - Write tests for the assigned task.
 - Push code so GitHub Actions can build the report and publish it to GitHub Pages.
 - Keep Jira, branch names, commit messages, and PR titles traceable.
+- Treat Allure as the evidence store for the team.
+- Do not mix unrelated tasks in one branch or one PR.
 
 ## 1. Branch Rule
 
@@ -41,6 +45,13 @@ git rebase origin/main
 
 If there is a conflict, fix it immediately, run the tests again, and only then push.
 
+Before every task branch, ask:
+
+- Is my branch already created?
+- Did I switch to the exact Jira branch?
+- Did I pull the latest `main` into that branch?
+- Am I only working on one Jira key?
+
 ## 3. What Each Member Should Do
 
 ### If you are assigned to write tests
@@ -49,6 +60,10 @@ If there is a conflict, fix it immediately, run the tests again, and only then p
 - Add integration tests when the flow spans more than one layer.
 - Add Postman/Newman checks if the task is API-focused.
 - Keep the test name clear and tied to the Jira key when possible.
+- For controller tests, verify HTTP status, response body, auth/role checks, and edge cases.
+- For application tests, verify the command handler or service logic directly.
+- For domain tests, verify entity rules, transitions, and invariants.
+- For infrastructure tests, verify repository behavior, persistence, and side effects.
 
 ### If you are assigned to implement code
 
@@ -62,6 +77,7 @@ If there is a conflict, fix it immediately, run the tests again, and only then p
 - Check that the branch was synced from `main`.
 - Check that tests passed.
 - Check that the Jira key appears in the branch, commit, or PR title.
+- Check that the Allure report contains the Jira key or owner mapping.
 
 ## 4. Test Order
 
@@ -78,12 +94,15 @@ For this repository, that usually means:
 - API smoke checks with Newman/Postman
 - Allure for reporting results
 
+The team should use the report as proof that the test was executed.
+
 ## 5. Allure and GitHub Pages
 
 - GitHub Actions will generate the report.
 - Allure is the presentation layer for test results.
 - The published GitHub Pages report should show the real assignee name when Jira owner sync is working.
 - If the owner looks wrong on Pages, check the CI logs first, then check the raw Allure result JSON.
+- For this course, that report is the main deliverable evidence. Keep the report clean and readable.
 
 ## 6. Commit and PR Rules
 
@@ -92,12 +111,16 @@ For this repository, that usually means:
 - Keep PRs focused on one task.
 - Do not merge until the checks and review are complete.
 
+If the branch already exists, do not recreate it. Continue on the existing branch so history stays intact.
+
 ## 7. When You Start a New Round of Work
 
 1. Pull the latest `main` into your branch.
 2. Re-run the relevant tests.
 3. Update the branch with any new changes from `main`.
 4. Push again so CI and Pages stay aligned.
+
+If a branch already contains completed work, do not delete it. Use it as the history trail for that task.
 
 ## 8. For Copilot or Other Agents
 
@@ -134,6 +157,8 @@ Practical rule:
 - If a test result has no Jira key, the workflow cannot map it to an owner.
 - If the Jira key is present, owner sync should work without manual editing.
 
+For the 5 current practice tasks, the branch and test files must stay aligned with the Jira key so the owner map is stable in the report.
+
 Quick checklist before you push:
 
 - Does the test case have a Jira key?
@@ -141,3 +166,4 @@ Quick checklist before you push:
 - Did you sync latest `main`?
 - Did you run the relevant tests?
 - Did CI generate Allure results with the key still visible?
+- Did you confirm the Pages report shows the expected owner and test evidence?
