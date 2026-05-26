@@ -1,0 +1,15 @@
+{
+  "Id": "543bbd88-fdb8-45c2-b3d9-c8ea33c4a31b",
+  "CitizenId": null,
+  "Type": 7,
+  "Channel": 0,
+  "Status": 0,
+  "Title": "Khi\u1EBFu n\u1EA1i \u0111\u01B0\u1EE3c chuy\u1EC3n l\u00EAn Admin",
+  "Message": "M\u1ED9t khi\u1EBFu n\u1EA1i \u0111\u00E3 \u0111\u01B0\u1EE3c Citizen chuy\u1EC3n l\u00EAn Admin x\u1EED l\u00FD.",
+  "ActionUrl": "/admin/complaints/ee007225-d02b-4b37-9eaf-6c02d57b26cf",
+  "RelatedEntityId": "ee007225-d02b-4b37-9eaf-6c02d57b26cf",
+  "RelatedEntityType": "Complaint",
+  "CreatedAt": "2026-05-26T04:17:29.9636757Z",
+  "ReadAt": null,
+  "Citizen": null
+}
