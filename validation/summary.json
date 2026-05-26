@@ -1,45 +1,53 @@
 {
-  "jira_resolved": 0,
+  "jira_resolved": 5,
   "jira_total": 5,
   "jira_sample": {
     "KIEM-14": {
-      "displayName": null,
-      "accountId": null,
-      "unassigned": true
+      "displayName": "Nguyễn Chí Trung ",
+      "accountId": "712020:03652eda-598e-49f0-bc97-e8f983de4296",
+      "email": "trungnc7062@ut.edu.vn",
+      "unassigned": false
     },
     "KIEM-16": {
-      "displayName": null,
-      "accountId": null,
-      "unassigned": true
+      "displayName": "Nguyễn Chí Trung ",
+      "accountId": "712020:03652eda-598e-49f0-bc97-e8f983de4296",
+      "email": "trungnc7062@ut.edu.vn",
+      "unassigned": false
     },
     "KIEM-17": {
-      "displayName": null,
-      "accountId": null,
-      "unassigned": true
+      "displayName": "Nguyễn Chí Trung ",
+      "accountId": "712020:03652eda-598e-49f0-bc97-e8f983de4296",
+      "email": "trungnc7062@ut.edu.vn",
+      "unassigned": false
     },
     "KIEM-19": {
-      "displayName": null,
-      "accountId": null,
-      "unassigned": true
+      "displayName": "Nguyễn Chí Trung ",
+      "accountId": "712020:03652eda-598e-49f0-bc97-e8f983de4296",
+      "email": "trungnc7062@ut.edu.vn",
+      "unassigned": false
     },
     "KIEM-4": {
-      "displayName": null,
-      "accountId": null,
-      "unassigned": true
+      "displayName": "Nguyễn Chí Trung ",
+      "accountId": "712020:03652eda-598e-49f0-bc97-e8f983de4296",
+      "email": "trungnc7062@ut.edu.vn",
+      "unassigned": false
     }
   },
   "injected_count": 91,
   "owners": [
+    "Nguyễn Chí Trung",
     "auth",
     "backend",
     "qa"
   ],
   "owner_slugs": [
+    "nguy-n-ch-trung",
     "auth",
     "backend",
     "qa"
   ],
   "owner_folders": [
+    "report-extra/owners/nguy-n-ch-trung",
     "report-extra/owners/auth",
     "report-extra/owners/backend",
     "report-extra/owners/qa"
