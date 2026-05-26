@@ -1,0 +1,138 @@
+name: CI - API Tests with Allure Report
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  run-api-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Start Backend with Docker Compose
+        run: |
+          cd Waste-Recycling-Platform
+          docker compose up -d backend
+          echo "Waiting for backend and DB to initialize..."
+          sleep 30 # Đợi 30s để đảm bảo db và backend khởi động xong
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Newman and Allure Reporter
+        run: |
+          npm install -g newman newman-reporter-allure
+
+      - name: Run Postman Tests via Newman
+        continue-on-error: true # Cho phép job tiếp tục ngay cả khi có test case bị fail
+        run: |
+          cd Waste-Recycling-Platform
+          newman run "postman/WastePlatform API - Professional QA Suite.postman_collection.json" \
+            -e "postman/WastePlatform.professional.postman_environment.json" \
+            -r allure \
+            --reporter-allure-export allure-results
+
+      - name: Generate Allure Report
+        uses: simple-elf/allure-report-action@master
+        if: always()
+        id: allure-report
+        with:
+          allure_results: Waste-Recycling-Platform/allure-results
+          gh_pages: gh-pages
+          allure_report: allure-report
+          allure_history: allure-history
+          keep_reports: 20
+
+      - name: Generate per-owner reports
+        if: always()
+        run: |
+          python3 Waste-Recycling-Platform/scripts/generate_per_owner_reports.py || true
+
+      - name: Install Playwright and http-server
+        if: always()
+        run: |
+          npm init -y
+          npm i -D playwright http-server
+          npx playwright install --with-deps
+
+      - name: Export reports to PDF using Playwright
+        if: always()
+        run: |
+          # create a small Node script that prints main and owner reports to PDF
+          cat > print-pdfs.js <<'JS'
+          const fs = require('fs');
+          const path = require('path');
+          const { chromium } = require('playwright');
+
+          (async () => {
+            const browser = await chromium.launch();
+            const page = await browser.newPage();
+
+            // Print main report
+            try {
+              const mainUrl = 'http://127.0.0.1:8080/index.html';
+              console.log('Printing main report from', mainUrl);
+              await page.goto(mainUrl, { waitUntil: 'networkidle' });
+              await page.pdf({ path: 'report-main/report.pdf', format: 'A4', printBackground: true });
+            } catch (e) { console.error('Main print failed', e); }
+
+            // Print per-owner reports if present
+            const ownersRoot = path.join(process.cwd(), 'report-extra', 'owners');
+            if (fs.existsSync(ownersRoot)) {
+              const owners = fs.readdirSync(ownersRoot, { withFileTypes: true }).filter(d => d.isDirectory()).map(d => d.name);
+              for (const owner of owners) {
+                const ownerUrl = `http://127.0.0.1:8081/${owner}/index.html`;
+                const outPath = path.join('report-extra', 'owners', owner, 'report.pdf');
+                try {
+                  console.log('Printing owner', owner, 'from', ownerUrl);
+                  await page.goto(ownerUrl, { waitUntil: 'networkidle' });
+                  await page.pdf({ path: outPath, format: 'A4', printBackground: true });
+                } catch (e) { console.error('Owner print failed', owner, e); }
+              }
+            }
+
+            await browser.close();
+          })();
+          JS
+
+          # ensure output dirs exist
+          mkdir -p report-main
+          # start static servers: main on 8080, owners on 8081
+          npx http-server ./allure-report -p 8080 &
+          npx http-server ./report-extra/owners -p 8081 &
+          # give servers a moment
+          sleep 3
+          node print-pdfs.js
+          # stop servers (http-server stops with the job end)
+
+
+      - name: Prepare site output for gh-pages
+        if: always()
+        run: |
+          rm -rf site-output
+          mkdir -p site-output/report-main
+          cp -r allure-report/* site-output/report-main/
+          mkdir -p site-output/report-extra
+          cp -r report-extra/* site-output/report-extra/
+
+      - name: Deploy to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: site-output
