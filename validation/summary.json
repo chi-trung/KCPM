@@ -36,21 +36,15 @@
   "injected_count": 91,
   "owners": [
     "Nguyễn Chí Trung",
-    "auth",
-    "backend",
-    "qa"
+    "backend"
   ],
   "owner_slugs": [
     "nguy-n-ch-trung",
-    "auth",
-    "backend",
-    "qa"
+    "backend"
   ],
   "owner_folders": [
     "report-extra/owners/nguy-n-ch-trung",
-    "report-extra/owners/auth",
-    "report-extra/owners/backend",
-    "report-extra/owners/qa"
+    "report-extra/owners/backend"
   ],
   "xunit_present": true,
   "postman_present": true,
