@@ -205,7 +205,6 @@ def main() -> None:
         </p>
         <div class="actions">
           <a class="btn primary" href="{report_url}">Open main Allure report</a>
-          <a class="btn ghost" href="{validation_url}">Open validation page</a>
         </div>
       </div>
       <aside class="panel stats">
@@ -239,10 +238,11 @@ def main() -> None:
         </div>
       </article>
       <article class="panel card owners">
-        <h2>Owners discovered in this run</h2>
-        <p>These are the assignee names extracted from Jira and injected into Allure result labels.</p>
-        <div class="owner-grid">
-          {build_owner_cards(owners, owner_url if owner_url.endswith('/') else owner_url + '/')}
+        <h2>Test suites present</h2>
+        <p>Reports merged into this run. Currently we only support xUnit and Postman.</p>
+        <div class="badge-row">
+          {badge('xUnit', 'present' if xunit_present else 'missing', 'good' if xunit_present else 'warn')}
+          {badge('Postman', 'present' if postman_present else 'missing', 'good' if postman_present else 'warn')}
         </div>
       </article>
     </section>
