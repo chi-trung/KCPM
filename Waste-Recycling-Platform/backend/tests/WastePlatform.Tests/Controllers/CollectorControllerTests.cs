@@ -9,7 +9,6 @@ using WastePlatform.API.Controllers;
 using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
 using WastePlatform.Infrastructure.Persistence;
-using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Controllers;
 
@@ -42,7 +41,6 @@ public class CollectorControllerTests
         var result = await controller.GetProfile();
 
         var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-        AllureAttachmentHelper.AttachJson("collector-profile-response", okResult.Value!);
 
         GetPropertyValue<Guid>(okResult.Value!, "Id").Should().Be(scenario.Collector.Id);
         GetPropertyValue<Guid>(okResult.Value!, "UserId").Should().Be(scenario.CollectorUser.Id);
@@ -71,7 +69,6 @@ public class CollectorControllerTests
         var result = await controller.GetProfile();
 
         var unauthorized = result.Should().BeOfType<UnauthorizedObjectResult>().Subject;
-        AllureAttachmentHelper.AttachJson("collector-profile-unauthorized", unauthorized.Value!);
         GetPropertyValue<string>(unauthorized.Value!, "message").Should().Be("Không tìm thấy hồ sơ Collector.");
     }
 
@@ -89,7 +86,6 @@ public class CollectorControllerTests
         var result = await controller.ToggleAvailability(new ToggleAvailabilityRequest { IsAvailable = true });
 
         var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-        AllureAttachmentHelper.AttachJson("collector-availability-response", okResult.Value!);
 
         GetPropertyValue<string>(okResult.Value!, "message").Should().Be("Cập nhật trạng thái thành công.");
         GetPropertyValue<bool>(okResult.Value!, "isAvailable").Should().BeTrue();
@@ -115,7 +111,6 @@ public class CollectorControllerTests
         var result = await controller.ToggleAvailability(new ToggleAvailabilityRequest { IsAvailable = true });
 
         var unauthorized = result.Should().BeOfType<UnauthorizedObjectResult>().Subject;
-        AllureAttachmentHelper.AttachJson("collector-availability-unauthorized", unauthorized.Value!);
         GetPropertyValue<string>(unauthorized.Value!, "message").Should().Be("Không tìm thấy hồ sơ Collector.");
     }
 
