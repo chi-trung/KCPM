@@ -2,584 +2,463 @@ using FluentAssertions;
 using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using Moq;
-using WastePlatform.Application.Citizens.Commands;
+using WastePlatform.Application.Citizens.Profile.Commands;
+using WastePlatform.Application.Citizens.Profile.Queries;
+using WastePlatform.Application.Citizens.Profile.DTOs;
+using WastePlatform.Application.Rewards.Queries;
 using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Domain.Entities;
+using WastePlatform.Domain.Enums;
 using WastePlatform.Tests.TestSupport;
 using Xunit;
 
 namespace WastePlatform.Tests.Application.Citizens;
 
-/// <summary>
-/// KIEM-13: Citizen Module Testing - Profile Management
-/// Tests for UpdateCitizenProfileCommandHandler and profile-related operations
-/// </summary>
+#region UpdateProfile Command Handler Tests
+
 [AllureEpic("Citizens")]
-[AllureFeature("Citizen Profile Management")]
-[AllureLabel("story", "Update citizen profile with validation")]
-[AllureLabel("parentSuite", "xUnit Backend Tests")]
-[AllureLabel("suite", "Application")]
-[AllureLabel("subSuite", "CitizenProfileCommandHandlerTests")]
-[AllureLabel("package", "WastePlatform.Tests.Application.Citizens")]
-[AllureLabel("KIEM", "KIEM-13")]
-[AllureLabel("WRP", "WRP-BE-TESTS-013")]
+[AllureFeature("Profile Management")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Citizen profile update operations")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "UpdateProfileCommandHandlerTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Citizens")]
+[Allure.Net.Commons.Attributes.AllureLabel("KIEM", "KIEM-13")]
+[Allure.Net.Commons.Attributes.AllureLabel("WRP", "WRP-BE-TESTS-013")]
 [AllureOwner("backend-team")]
 [AllureSeverity(SeverityLevel.critical)]
-[AllureTag("unit")]
-[AllureTag("backend")]
-[AllureTag("citizen")]
-[AllureTag("profile")]
-public class CitizenProfileCommandHandlerTests
+[Allure.Net.Commons.Attributes.AllureTag("unit")]
+[Allure.Net.Commons.Attributes.AllureTag("citizen")]
+[Allure.Net.Commons.Attributes.AllureTag("profile")]
+public class UpdateProfileCommandHandlerTests
 {
-    private readonly Mock<ICitizenRepository> _mockCitizenRepository;
-    private readonly Mock<IUnitOfWork> _mockUnitOfWork;
+    private readonly Mock<IUserRepository> _mockUserRepository;
+    private readonly UpdateProfileCommandHandler _handler;
 
-    public CitizenProfileCommandHandlerTests()
+    public UpdateProfileCommandHandlerTests()
     {
-        _mockCitizenRepository = new Mock<ICitizenRepository>();
-        _mockUnitOfWork = new Mock<IUnitOfWork>();
+        _mockUserRepository = new Mock<IUserRepository>();
+        _handler = new UpdateProfileCommandHandler(_mockUserRepository.Object);
     }
 
-    #region TC-CIT-001: Profile Update - Valid Data
-
     [Fact]
-    [AllureDescription("Updates citizen profile successfully with valid name, phone, and address")]
-    [AllureLabel("testcase", "TC-CIT-001")]
-    public async Task UpdateProfile_WithValidData_ShouldUpdateSuccessfully()
+    [AllureDescription("Updates citizen profile successfully with valid data")]
+    [Allure.Net.Commons.Attributes.AllureLabel("testcase", "TC-CIT-001")]
+    public async Task Handle_WithValidData_ShouldUpdateProfileSuccessfully()
     {
         // Arrange
         var citizenId = Guid.NewGuid();
-        var citizen = new Citizen
+        var command = new UpdateProfileCommand
         {
-            Id = citizenId,
-            FullName = "Nguyễn Văn A",
-            Email = "a@example.com",
-            Phone = "+84912345678",
-            Address = "123 Main St, HCMC",
-            VerificationStatus = "verified",
-            PreferredLanguage = "vi",
-            TotalPoints = 1000,
-            JoinDate = DateTime.UtcNow.AddMonths(-1)
+            UserId = citizenId,
+            Profile = new UpdateProfileDto
+            {
+                FullName = "Nguyễn Văn A",
+                Phone = "0987654321",
+                District = "Q.1",
+                Ward = "P.1"
+            }
         };
 
-        var command = new UpdateCitizenProfileCommand
-        {
-            CitizenId = citizenId,
-            FullName = "Nguyễn Văn B",
-            Phone = "+84987654321",
-            Address = "456 Oak Ave, HCMC",
-            PreferredLanguage = "en"
-        };
+        var updatedUser = User.Create(
+            "citizen@example.com",
+            "hashedPassword",
+            "Nguyễn Văn A",
+            UserRole.Citizen,
+            "0987654321",
+            "Q.1",
+            "P.1");
 
-        _mockCitizenRepository
-            .Setup(x => x.GetByIdAsync(citizenId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(citizen);
-
-        _mockCitizenRepository
-            .Setup(x => x.UpdateAsync(It.IsAny<Citizen>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Citizen c, CancellationToken _) => c);
-
-        _mockUnitOfWork
-            .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
+        _mockUserRepository
+            .Setup(x => x.UpdateProfileAsync(
+                citizenId,
+                command.Profile.FullName,
+                command.Profile.Phone,
+                command.Profile.District,
+                command.Profile.Ward,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(updatedUser);
 
         // Act
-        var handler = new UpdateCitizenProfileCommandHandler(_mockCitizenRepository.Object, _mockUnitOfWork.Object);
-        var result = await handler.Handle(command, CancellationToken.None);
+        var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
-        result.FullName.Should().Be("Nguyễn Văn B");
-        result.Phone.Should().Be("+84987654321");
-        result.Address.Should().Be("456 Oak Ave, HCMC");
-        result.PreferredLanguage.Should().Be("en");
+        result.Id.Should().NotBe(Guid.Empty);
+        result.FullName.Should().Be("Nguyễn Văn A");
+        result.Phone.Should().Be("0987654321");
+        result.District.Should().Be("Q.1");
+        result.Ward.Should().Be("P.1");
+        
+        AllureAttachmentHelper.AttachJson("update-profile-command", command);
+        AllureAttachmentHelper.AttachJson("profile-result", result);
 
-        _mockCitizenRepository.Verify(
-            x => x.UpdateAsync(It.IsAny<Citizen>(), It.IsAny<CancellationToken>()),
+        _mockUserRepository.Verify(
+            x => x.UpdateProfileAsync(
+                citizenId,
+                command.Profile.FullName,
+                command.Profile.Phone,
+                command.Profile.District,
+                command.Profile.Ward,
+                It.IsAny<CancellationToken>()),
             Times.Once);
-
-        AllureAttachmentHelper.AttachJson("Updated Profile", result);
     }
 
-    #endregion
-
-    #region TC-CIT-002: Profile Update - Invalid Email
-
     [Fact]
-    [AllureDescription("Rejects profile update with invalid email format")]
-    [AllureLabel("testcase", "TC-CIT-002")]
-    [AllureSeverity(SeverityLevel.normal)]
-    public async Task UpdateProfile_WithInvalidEmail_ShouldThrowValidationException()
+    [AllureDescription("Should throw exception when trying to update non-existent citizen")]
+    [Allure.Net.Commons.Attributes.AllureLabel("testcase", "TC-CIT-002")]
+    public async Task Handle_WithNonExistentCitizen_ShouldThrowKeyNotFoundException()
     {
         // Arrange
         var citizenId = Guid.NewGuid();
-        var command = new UpdateCitizenProfileCommand
+        var command = new UpdateProfileCommand
         {
-            CitizenId = citizenId,
-            Email = "invalid-email-format"
+            UserId = citizenId,
+            Profile = new UpdateProfileDto
+            {
+                FullName = "Test User",
+                Phone = "0123456789",
+                District = "Q.1",
+                Ward = "P.1"
+            }
         };
+
+        _mockUserRepository
+            .Setup(x => x.UpdateProfileAsync(
+                It.IsAny<Guid>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new KeyNotFoundException($"User with ID {citizenId} not found"));
 
         // Act & Assert
-        var handler = new UpdateCitizenProfileCommandHandler(_mockCitizenRepository.Object, _mockUnitOfWork.Object);
-        
-        await Assert.ThrowsAsync<ValidationException>(
-            () => handler.Handle(command, CancellationToken.None));
+        await Assert.ThrowsAsync<KeyNotFoundException>(
+            () => _handler.Handle(command, CancellationToken.None));
     }
 
-    #endregion
-
-    #region TC-CIT-003: Profile Update - Citizen Not Found
-
     [Fact]
-    [AllureDescription("Throws exception when updating non-existent citizen")]
-    [AllureLabel("testcase", "TC-CIT-003")]
-    public async Task UpdateProfile_WithNonExistentCitizen_ShouldThrowNotFoundException()
+    [AllureDescription("Should update profile with null optional fields")]
+    [Allure.Net.Commons.Attributes.AllureLabel("testcase", "TC-CIT-003")]
+    public async Task Handle_WithNullOptionalFields_ShouldUpdateSuccessfully()
     {
         // Arrange
         var citizenId = Guid.NewGuid();
-        var command = new UpdateCitizenProfileCommand
+        var command = new UpdateProfileCommand
         {
-            CitizenId = citizenId,
-            FullName = "New Name"
+            UserId = citizenId,
+            Profile = new UpdateProfileDto
+            {
+                FullName = "Test User",
+                Phone = null,
+                District = null,
+                Ward = null
+            }
         };
 
-        _mockCitizenRepository
-            .Setup(x => x.GetByIdAsync(citizenId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Citizen)null);
+        var updatedUser = User.Create(
+            "citizen@example.com",
+            "hashedPassword",
+            "Test User",
+            UserRole.Citizen,
+            null,
+            null,
+            null);
 
-        // Act & Assert
-        var handler = new UpdateCitizenProfileCommandHandler(_mockCitizenRepository.Object, _mockUnitOfWork.Object);
-        
-        await Assert.ThrowsAsync<NotFoundException>(
-            () => handler.Handle(command, CancellationToken.None));
-    }
-
-    #endregion
-
-    #region TC-CIT-004: Profile Update - Empty Required Fields
-
-    [Fact]
-    [AllureDescription("Rejects update with empty required fields")]
-    [AllureLabel("testcase", "TC-CIT-004")]
-    public async Task UpdateProfile_WithEmptyRequiredFields_ShouldThrowValidationException()
-    {
-        // Arrange
-        var citizenId = Guid.NewGuid();
-        var command = new UpdateCitizenProfileCommand
-        {
-            CitizenId = citizenId,
-            FullName = "" // Empty required field
-        };
-
-        // Act & Assert
-        var handler = new UpdateCitizenProfileCommandHandler(_mockCitizenRepository.Object, _mockUnitOfWork.Object);
-        
-        await Assert.ThrowsAsync<ValidationException>(
-            () => handler.Handle(command, CancellationToken.None));
-    }
-
-    #endregion
-
-    #region TC-CIT-005: Profile Update - Oversized String
-
-    [Fact]
-    [AllureDescription("Rejects update with oversized string field")]
-    [AllureLabel("testcase", "TC-CIT-005")]
-    public async Task UpdateProfile_WithOversizedString_ShouldThrowValidationException()
-    {
-        // Arrange
-        var citizenId = Guid.NewGuid();
-        var command = new UpdateCitizenProfileCommand
-        {
-            CitizenId = citizenId,
-            FullName = new string('a', 1000) // Exceeds max length
-        };
-
-        // Act & Assert
-        var handler = new UpdateCitizenProfileCommandHandler(_mockCitizenRepository.Object, _mockUnitOfWork.Object);
-        
-        await Assert.ThrowsAsync<ValidationException>(
-            () => handler.Handle(command, CancellationToken.None));
-    }
-
-    #endregion
-
-    #region TC-CIT-006: Profile Get - Successful Retrieval
-
-    [Fact]
-    [AllureDescription("Retrieves complete citizen profile successfully")]
-    [AllureLabel("testcase", "TC-CIT-006")]
-    public async Task GetProfile_WithValidCitizenId_ShouldReturnCompleteProfile()
-    {
-        // Arrange
-        var citizenId = Guid.NewGuid();
-        var expectedProfile = new Citizen
-        {
-            Id = citizenId,
-            FullName = "Nguyễn Văn C",
-            Email = "c@example.com",
-            Phone = "+84912345678",
-            Address = "789 Main Street",
-            Avatar = "https://avatar.example.com/user.jpg",
-            VerificationStatus = "verified",
-            TotalPoints = 2500,
-            JoinDate = DateTime.UtcNow.AddYears(-1),
-            PreferredLanguage = "vi"
-        };
-
-        _mockCitizenRepository
-            .Setup(x => x.GetByIdAsync(citizenId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(expectedProfile);
+        _mockUserRepository
+            .Setup(x => x.UpdateProfileAsync(
+                citizenId,
+                "Test User",
+                null,
+                null,
+                null,
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(updatedUser);
 
         // Act
-        var query = new GetCitizenProfileQuery { CitizenId = citizenId };
-        var handler = new GetCitizenProfileQueryHandler(_mockCitizenRepository.Object);
-        var result = await handler.Handle(query, CancellationToken.None);
+        var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
-        result.FullName.Should().Be("Nguyễn Văn C");
-        result.Email.Should().Be("c@example.com");
-        result.VerificationStatus.Should().Be("verified");
-        result.TotalPoints.Should().Be(2500);
-
-        AllureAttachmentHelper.AttachJson("Retrieved Profile", result);
+        result.FullName.Should().Be("Test User");
+        result.Phone.Should().BeNullOrEmpty();
+        result.District.Should().BeNullOrEmpty();
+        result.Ward.Should().BeNullOrEmpty();
+        
+        AllureAttachmentHelper.AttachJson("profile-result", result);
     }
-
-    #endregion
 }
 
-/// <summary>
-/// KIEM-13: Citizen Module Testing - Rewards Management
-/// Tests for citizen rewards retrieval and filtering
-/// </summary>
+#endregion
+
+#region GetProfile Query Handler Tests
+
 [AllureEpic("Citizens")]
-[AllureFeature("Citizen Rewards")]
-[AllureLabel("story", "Retrieve and filter citizen rewards")]
-[AllureLabel("parentSuite", "xUnit Backend Tests")]
-[AllureLabel("suite", "Application")]
-[AllureLabel("subSuite", "CitizenRewardsQueryHandlerTests")]
-[AllureLabel("package", "WastePlatform.Tests.Application.Citizens")]
-[AllureLabel("KIEM", "KIEM-13")]
+[AllureFeature("Profile Retrieval")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Citizen profile retrieval operations")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "GetProfileQueryHandlerTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Citizens")]
+[Allure.Net.Commons.Attributes.AllureLabel("KIEM", "KIEM-13")]
+[Allure.Net.Commons.Attributes.AllureLabel("WRP", "WRP-BE-TESTS-013")]
+[AllureOwner("backend-team")]
+[AllureSeverity(SeverityLevel.critical)]
+[Allure.Net.Commons.Attributes.AllureTag("unit")]
+[Allure.Net.Commons.Attributes.AllureTag("citizen")]
+[Allure.Net.Commons.Attributes.AllureTag("profile")]
+public class GetProfileQueryHandlerTests
+{
+    private readonly Mock<IUserRepository> _mockUserRepository;
+    private readonly GetProfileQueryHandler _handler;
+
+    public GetProfileQueryHandlerTests()
+    {
+        _mockUserRepository = new Mock<IUserRepository>();
+        _handler = new GetProfileQueryHandler(_mockUserRepository.Object);
+    }
+
+    [Fact]
+    [AllureDescription("Retrieves citizen profile successfully with valid citizen ID")]
+    [Allure.Net.Commons.Attributes.AllureLabel("testcase", "TC-CIT-101")]
+    public async Task Handle_WithValidCitizenId_ShouldReturnCompleteProfile()
+    {
+        // Arrange
+        var citizenId = Guid.NewGuid();
+        var query = new GetProfileQuery { UserId = citizenId };
+
+        var existingUser = User.Create(
+            "citizen@example.com",
+            "hashedPassword",
+            "Nguyễn Văn A",
+            UserRole.Citizen,
+            "0987654321",
+            "Q.1",
+            "P.1");
+
+        _mockUserRepository
+            .Setup(x => x.GetUserByIdAsync(citizenId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(existingUser);
+
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Email.Should().Be("citizen@example.com");
+        result.FullName.Should().Be("Nguyễn Văn A");
+        result.IsActive.Should().BeTrue();
+        
+        AllureAttachmentHelper.AttachJson("query", query);
+        AllureAttachmentHelper.AttachJson("profile-result", result);
+
+        _mockUserRepository.Verify(
+            x => x.GetUserByIdAsync(citizenId, It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    [AllureDescription("Should throw exception when citizen profile not found")]
+    [Allure.Net.Commons.Attributes.AllureLabel("testcase", "TC-CIT-102")]
+    public async Task Handle_WithNonExistentCitizenId_ShouldThrowKeyNotFoundException()
+    {
+        // Arrange
+        var citizenId = Guid.NewGuid();
+        var query = new GetProfileQuery { UserId = citizenId };
+
+        _mockUserRepository
+            .Setup(x => x.GetUserByIdAsync(citizenId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((User?)null);
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<KeyNotFoundException>(
+            () => _handler.Handle(query, CancellationToken.None));
+        
+        exception.Message.Should().Contain("not found");
+    }
+
+    [Fact]
+    [AllureDescription("Retrieves profile with minimal optional fields")]
+    [Allure.Net.Commons.Attributes.AllureLabel("testcase", "TC-CIT-103")]
+    public async Task Handle_WithMinimalData_ShouldReturnProfileWithNullFields()
+    {
+        // Arrange
+        var citizenId = Guid.NewGuid();
+        var query = new GetProfileQuery { UserId = citizenId };
+
+        var user = User.Create(
+            "minimal@example.com",
+            "hashedPassword",
+            "Minimal User",
+            UserRole.Citizen,
+            null,
+            null,
+            null);
+
+        _mockUserRepository
+            .Setup(x => x.GetUserByIdAsync(citizenId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Phone.Should().BeNullOrEmpty();
+        result.District.Should().BeNullOrEmpty();
+        result.Ward.Should().BeNullOrEmpty();
+        
+        AllureAttachmentHelper.AttachJson("profile-result", result);
+    }
+}
+
+#endregion
+
+#region GetLeaderboard Query Handler Tests
+
+[AllureEpic("Rewards")]
+[AllureFeature("Leaderboard")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Citizen leaderboard ranking queries")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "GetLeaderboardQueryHandlerTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Citizens")]
+[Allure.Net.Commons.Attributes.AllureLabel("KIEM", "KIEM-13")]
+[Allure.Net.Commons.Attributes.AllureLabel("WRP", "WRP-BE-TESTS-013")]
 [AllureOwner("backend-team")]
 [AllureSeverity(SeverityLevel.normal)]
-[AllureTag("unit")]
-[AllureTag("backend")]
-[AllureTag("citizen")]
-[AllureTag("rewards")]
-public class CitizenRewardsQueryHandlerTests
+[Allure.Net.Commons.Attributes.AllureTag("unit")]
+[Allure.Net.Commons.Attributes.AllureTag("citizen")]
+[Allure.Net.Commons.Attributes.AllureTag("leaderboard")]
+public class GetLeaderboardQueryHandlerTests
 {
-    private readonly Mock<IRewardRepository> _mockRewardRepository;
+    private readonly Mock<IRewardPointsRepository> _mockRewardRepository;
+    private readonly GetLeaderboardQueryHandler _handler;
 
-    public CitizenRewardsQueryHandlerTests()
+    public GetLeaderboardQueryHandlerTests()
     {
-        _mockRewardRepository = new Mock<IRewardRepository>();
+        _mockRewardRepository = new Mock<IRewardPointsRepository>();
+        _handler = new GetLeaderboardQueryHandler(_mockRewardRepository.Object);
     }
-
-    #region TC-CIT-101: Get Rewards - Success
 
     [Fact]
-    [AllureDescription("Retrieves all rewards for citizen successfully")]
-    [AllureLabel("testcase", "TC-CIT-101")]
-    public async Task GetRewards_WithValidCitizenId_ShouldReturnRewardsList()
+    [AllureDescription("Retrieves top contributors leaderboard with correct ranking order")]
+    [Allure.Net.Commons.Attributes.AllureLabel("testcase", "TC-CIT-201")]
+    public async Task Handle_WithValidQuery_ShouldReturnRankedLeaderboard()
     {
         // Arrange
-        var citizenId = Guid.NewGuid();
-        var rewards = new List<CitizenReward>
-        {
-            new()
-            {
-                Id = Guid.NewGuid(),
-                Name = "Green Hero Badge",
-                Points = 100,
-                Category = "reporting",
-                UnlockedDate = DateTime.UtcNow.AddMonths(-1),
-                Active = true
-            },
-            new()
-            {
-                Id = Guid.NewGuid(),
-                Name = "Silver Contributor",
-                Points = 250,
-                Category = "engagement",
-                UnlockedDate = DateTime.UtcNow.AddMonths(-2),
-                Active = true
-            }
-        };
-
-        _mockRewardRepository
-            .Setup(x => x.GetCitizenRewardsAsync(citizenId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(rewards);
-
-        // Act
-        var query = new GetCitizenRewardsQuery { CitizenId = citizenId };
-        var handler = new GetCitizenRewardsQueryHandler(_mockRewardRepository.Object);
-        var result = await handler.Handle(query, CancellationToken.None);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.Should().HaveCount(2);
-        result.First().Name.Should().Be("Green Hero Badge");
-        result.First().Points.Should().Be(100);
-
-        AllureAttachmentHelper.AttachJson("Retrieved Rewards", result);
-    }
-
-    #endregion
-
-    #region TC-CIT-102: Get Rewards - With Category Filter
-
-    [Fact]
-    [AllureDescription("Retrieves rewards filtered by category")]
-    [AllureLabel("testcase", "TC-CIT-102")]
-    public async Task GetRewards_WithCategoryFilter_ShouldReturnFilteredRewards()
-    {
-        // Arrange
-        var citizenId = Guid.NewGuid();
-        var category = "reporting";
-        var rewards = new List<CitizenReward>
-        {
-            new()
-            {
-                Id = Guid.NewGuid(),
-                Name = "Green Hero Badge",
-                Points = 100,
-                Category = category,
-                UnlockedDate = DateTime.UtcNow,
-                Active = true
-            }
-        };
-
-        _mockRewardRepository
-            .Setup(x => x.GetCitizenRewardsByCategoryAsync(citizenId, category, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(rewards);
-
-        // Act
-        var query = new GetCitizenRewardsByCategory { CitizenId = citizenId, Category = category };
-        var handler = new GetCitizenRewardsByCategoryHandler(_mockRewardRepository.Object);
-        var result = await handler.Handle(query, CancellationToken.None);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.Should().AllSatisfy(r => r.Category.Should().Be(category));
-    }
-
-    #endregion
-
-    #region TC-CIT-103: Get Rewards - Empty List
-
-    [Fact]
-    [AllureDescription("Returns empty list when citizen has no rewards")]
-    [AllureLabel("testcase", "TC-CIT-103")]
-    public async Task GetRewards_WithNoCitizenRewards_ShouldReturnEmptyList()
-    {
-        // Arrange
-        var citizenId = Guid.NewGuid();
-        _mockRewardRepository
-            .Setup(x => x.GetCitizenRewardsAsync(citizenId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new List<CitizenReward>());
-
-        // Act
-        var query = new GetCitizenRewardsQuery { CitizenId = citizenId };
-        var handler = new GetCitizenRewardsQueryHandler(_mockRewardRepository.Object);
-        var result = await handler.Handle(query, CancellationToken.None);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.Should().BeEmpty();
-    }
-
-    #endregion
-}
-
-/// <summary>
-/// KIEM-13: Citizen Module Testing - Leaderboards
-/// Tests for leaderboard query and ranking operations
-/// </summary>
-[AllureEpic("Citizens")]
-[AllureFeature("Citizen Leaderboards")]
-[AllureLabel("story", "Retrieve leaderboard rankings and personal stats")]
-[AllureLabel("parentSuite", "xUnit Backend Tests")]
-[AllureLabel("suite", "Application")]
-[AllureLabel("subSuite", "CitizenLeaderboardQueryHandlerTests")]
-[AllureLabel("package", "WastePlatform.Tests.Application.Citizens")]
-[AllureLabel("KIEM", "KIEM-13")]
-[AllureOwner("backend-team")]
-[AllureSeverity(SeverityLevel.normal)]
-[AllureTag("unit")]
-[AllureTag("backend")]
-[AllureTag("citizen")]
-[AllureTag("leaderboard")]
-public class CitizenLeaderboardQueryHandlerTests
-{
-    private readonly Mock<ILeaderboardRepository> _mockLeaderboardRepository;
-
-    public CitizenLeaderboardQueryHandlerTests()
-    {
-        _mockLeaderboardRepository = new Mock<ILeaderboardRepository>();
-    }
-
-    #region TC-CIT-201: Get Leaderboard - Top Contributors
-
-    [Fact]
-    [AllureDescription("Retrieves top contributors leaderboard successfully")]
-    [AllureLabel("testcase", "TC-CIT-201")]
-    public async Task GetTopContributorsLeaderboard_ShouldReturnRankedList()
-    {
-        // Arrange
-        var leaderboard = new List<LeaderboardEntry>
-        {
-            new()
-            {
-                Rank = 1,
-                CitizenId = Guid.NewGuid(),
-                CitizenName = "Nguyễn Văn A",
-                ReportsSubmitted = 45,
-                Points = 4500,
-                BadgeCount = 8
-            },
-            new()
-            {
-                Rank = 2,
-                CitizenId = Guid.NewGuid(),
-                CitizenName = "Trần Thị B",
-                ReportsSubmitted = 38,
-                Points = 3800,
-                BadgeCount = 6
-            },
-            new()
-            {
-                Rank = 3,
-                CitizenId = Guid.NewGuid(),
-                CitizenName = "Phạm Văn C",
-                ReportsSubmitted = 32,
-                Points = 3200,
-                BadgeCount = 5
-            }
-        };
-
-        _mockLeaderboardRepository
-            .Setup(x => x.GetTopContributorsAsync(10, "month", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(leaderboard);
-
-        // Act
-        var query = new GetTopContributorsLeaderboardQuery { Limit = 10, Period = "month" };
-        var handler = new GetTopContributorsLeaderboardHandler(_mockLeaderboardRepository.Object);
-        var result = await handler.Handle(query, CancellationToken.None);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.Should().HaveCount(3);
-        result.First().Rank.Should().Be(1);
-        result.First().CitizenName.Should().Be("Nguyễn Văn A");
-        result.First().Points.Should().Be(4500);
-
-        // Verify ranking order
-        for (int i = 1; i < result.Count; i++)
-        {
-            result[i - 1].Points.Should().BeGreaterThan(result[i].Points);
-        }
-
-        AllureAttachmentHelper.AttachJson("Top Contributors Leaderboard", result);
-    }
-
-    #endregion
-
-    #region TC-CIT-202: Get Personal Leaderboard Stats
-
-    [Fact]
-    [AllureDescription("Retrieves personal leaderboard statistics for citizen")]
-    [AllureLabel("testcase", "TC-CIT-202")]
-    public async Task GetPersonalLeaderboardStats_WithValidCitizenId_ShouldReturnPersonalStats()
-    {
-        // Arrange
-        var citizenId = Guid.NewGuid();
-        var personalStats = new PersonalLeaderboardStats
-        {
-            CitizenId = citizenId,
-            MyRank = 25,
-            MyPoints = 1850,
-            MyReportsCount = 18,
-            Percentile = 75,
-            TopInRegion = 5,
-            NextMilestonePoints = 2000,
-            ProgressPercentage = 92.5m
-        };
-
-        _mockLeaderboardRepository
-            .Setup(x => x.GetPersonalStatsAsync(citizenId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(personalStats);
-
-        // Act
-        var query = new GetPersonalLeaderboardStatsQuery { CitizenId = citizenId };
-        var handler = new GetPersonalLeaderboardStatsHandler(_mockLeaderboardRepository.Object);
-        var result = await handler.Handle(query, CancellationToken.None);
-
-        // Assert
-        result.Should().NotBeNull();
-        result.MyRank.Should().Be(25);
-        result.MyPoints.Should().Be(1850);
-        result.Percentile.Should().Be(75);
-        result.ProgressPercentage.Should().Be(92.5m);
-
-        AllureAttachmentHelper.AttachJson("Personal Leaderboard Stats", result);
-    }
-
-    #endregion
-
-    #region TC-CIT-203: Get Leaderboard - Invalid Period
-
-    [Fact]
-    [AllureDescription("Rejects leaderboard query with invalid period")]
-    [AllureLabel("testcase", "TC-CIT-203")]
-    public async Task GetLeaderboard_WithInvalidPeriod_ShouldThrowValidationException()
-    {
-        // Arrange
-        var query = new GetTopContributorsLeaderboardQuery { Period = "invalid_period" };
-
-        // Act & Assert
-        var handler = new GetTopContributorsLeaderboardHandler(_mockLeaderboardRepository.Object);
+        var query = new GetLeaderboardQuery { Page = 1, PageSize = 10 };
         
-        await Assert.ThrowsAsync<ValidationException>(
-            () => handler.Handle(query, CancellationToken.None));
-    }
+        var leaderboardData = new List<(Guid CitizenId, string CitizenName, int TotalPoints, int ReportCount)>
+        {
+            (Guid.NewGuid(), "Top Contributor", 1000, 50),
+            (Guid.NewGuid(), "Second Place", 850, 42),
+            (Guid.NewGuid(), "Third Place", 750, 38)
+        };
 
-    #endregion
-
-    #region TC-CIT-204: Get Leaderboard - Limit Capping
-
-    [Fact]
-    [AllureDescription("Caps leaderboard limit to maximum 100 records")]
-    [AllureLabel("testcase", "TC-CIT-204")]
-    public async Task GetLeaderboard_WithExcessiveLimit_ShouldCapToMax()
-    {
-        // Arrange
-        var requestedLimit = 1000;
-        var maxLimit = 100;
-
-        _mockLeaderboardRepository
-            .Setup(x => x.GetTopContributorsAsync(maxLimit, "month", It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Enumerable.Range(1, 100)
-                .Select(i => new LeaderboardEntry
-                {
-                    Rank = i,
-                    CitizenId = Guid.NewGuid(),
-                    CitizenName = $"Citizen {i}",
-                    ReportsSubmitted = 100 - i,
-                    Points = (100 - i) * 100,
-                    BadgeCount = (100 - i) / 10
-                })
-                .ToList());
+        _mockRewardRepository
+            .Setup(x => x.GetLeaderboardAsync(query.Page, query.PageSize, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((leaderboardData.AsEnumerable(), 150));
 
         // Act
-        var query = new GetTopContributorsLeaderboardQuery { Limit = requestedLimit, Period = "month" };
-        var handler = new GetTopContributorsLeaderboardHandler(_mockLeaderboardRepository.Object);
-        var result = await handler.Handle(query, CancellationToken.None);
+        var result = await _handler.Handle(query, CancellationToken.None);
 
         // Assert
-        result.Should().HaveCount(100);
-        result.Should().HaveCount(x => x <= maxLimit);
+        result.Should().NotBeNull();
+        result.Leaderboard.Should().HaveCount(3);
+        result.Total.Should().Be(150);
+        result.TotalPages.Should().Be(15);
+        
+        var leaderboardList = result.Leaderboard.ToList();
+        leaderboardList[0].TotalPoints.Should().BeGreaterThanOrEqualTo(leaderboardList[1].TotalPoints);
+        
+        AllureAttachmentHelper.AttachJson("leaderboard-response", result);
     }
 
-    #endregion
+    [Fact]
+    [AllureDescription("Respects pagination parameters for leaderboard results")]
+    [Allure.Net.Commons.Attributes.AllureLabel("testcase", "TC-CIT-202")]
+    public async Task Handle_WithPaginationParameters_ShouldReturnPagedResults()
+    {
+        // Arrange
+        var query = new GetLeaderboardQuery { Page = 2, PageSize = 5 };
+        
+        var paginatedData = new List<(Guid CitizenId, string CitizenName, int TotalPoints, int ReportCount)>
+        {
+            (Guid.NewGuid(), "User 6", 500, 25)
+        };
+
+        _mockRewardRepository
+            .Setup(x => x.GetLeaderboardAsync(2, 5, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((paginatedData.AsEnumerable(), 25));
+
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Page.Should().Be(2);
+        result.PageSize.Should().Be(5);
+        result.TotalPages.Should().Be(5);
+        
+        AllureAttachmentHelper.AttachJson("pagination-result", result);
+    }
+
+    [Fact]
+    [AllureDescription("Returns empty leaderboard when no contributors exist")]
+    [Allure.Net.Commons.Attributes.AllureLabel("testcase", "TC-CIT-203")]
+    public async Task Handle_WithNoContributors_ShouldReturnEmptyLeaderboard()
+    {
+        // Arrange
+        var query = new GetLeaderboardQuery { Page = 1, PageSize = 10 };
+        
+        var emptyData = new List<(Guid CitizenId, string CitizenName, int TotalPoints, int ReportCount)>();
+
+        _mockRewardRepository
+            .Setup(x => x.GetLeaderboardAsync(query.Page, query.PageSize, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((emptyData.AsEnumerable(), 0));
+
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Leaderboard.Should().BeEmpty();
+        result.Total.Should().Be(0);
+        result.TotalPages.Should().Be(0);
+        
+        AllureAttachmentHelper.AttachJson("empty-leaderboard", result);
+    }
+
+    [Fact]
+    [AllureDescription("Handles default pagination when not specified")]
+    [Allure.Net.Commons.Attributes.AllureLabel("testcase", "TC-CIT-204")]
+    public async Task Handle_WithDefaultPagination_ShouldUseDefaultValues()
+    {
+        // Arrange
+        var query = new GetLeaderboardQuery();
+        
+        var defaultData = new List<(Guid CitizenId, string CitizenName, int TotalPoints, int ReportCount)>
+        {
+            (Guid.NewGuid(), "User", 100, 5)
+        };
+
+        _mockRewardRepository
+            .Setup(x => x.GetLeaderboardAsync(1, 10, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((defaultData.AsEnumerable(), 100));
+
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Page.Should().Be(1);
+        result.PageSize.Should().Be(10);
+        result.Leaderboard.Should().HaveCount(1);
+        
+        AllureAttachmentHelper.AttachJson("default-pagination-result", result);
+    }
 }
+
+#endregion
