@@ -63,14 +63,21 @@ jobs:
           python3 Waste-Recycling-Platform/scripts/generate_per_owner_reports.py || true
 
 
+      - name: Build landing page index
+        if: always()
+        run: |
+          python3 Waste-Recycling-Platform/scripts/build_site_index.py
+
       - name: Prepare site output for gh-pages
         if: always()
         run: |
           rm -rf site-output
           mkdir -p site-output/report-main
-          cp -r allure-report/* site-output/report-main/
+          if [ -d "allure-report" ]; then cp -r allure-report/* site-output/report-main/; fi
           mkdir -p site-output/report-extra
-          cp -r report-extra/* site-output/report-extra/
+          if [ -d "report-extra" ]; then cp -r report-extra/* site-output/report-extra/; fi
+          # copy generated landing page (if builder wrote to site-output/index.html already)
+          if [ -f site-output/index.html ]; then :; else if [ -f index.html ]; then cp index.html site-output/index.html; fi; fi
 
       - name: Deploy to GitHub Pages
         if: always()
