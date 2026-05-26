@@ -32,6 +32,7 @@ namespace WastePlatform.Tests.Controllers;
 public class EnterpriseTaskControllerTests
 {
     [Fact]
+    [AllureDescription("Returns the assigned tasks for a valid enterprise user.")]
     public async Task GetTasks_WithValidEnterprise_ShouldReturnEnterpriseTasks()
     {
         await using var context = CreateContext();
@@ -55,9 +56,12 @@ public class EnterpriseTaskControllerTests
         json.Should().Contain(scenario.Report.Id.ToString());
         json.Should().Contain("Assigned");
         json.Should().Contain("Test report");
+
+        AllureAttachmentHelper.AttachJson("enterprise-tasks-result", new { taskId = scenario.Task.Id, reportId = scenario.Report.Id, enterpriseId = scenario.Enterprise.Id });
     }
 
     [Fact]
+    [AllureDescription("Returns the collectors that belong to the enterprise and are available for assignment.")]
     public async Task GetAvailableCollectors_WithValidEnterprise_ShouldReturnCollectors()
     {
         await using var context = CreateContext();
@@ -80,9 +84,12 @@ public class EnterpriseTaskControllerTests
         json.Should().Contain(scenario.Collector.Id.ToString());
         json.Should().Contain("Collector One");
         json.Should().Contain("collector@example.com");
+
+        AllureAttachmentHelper.AttachJson("enterprise-available-collectors-result", new { collectorId = scenario.Collector.Id, enterpriseId = scenario.Enterprise.Id });
     }
 
     [Fact]
+    [AllureDescription("Assigns a collector to a task and notifies downstream systems when the request is valid.")]
     public async Task AssignCollector_WhenRequestIsValid_ShouldBroadcastAndNotifyCitizen()
     {
         await using var context = CreateContext();
@@ -129,6 +136,7 @@ public class EnterpriseTaskControllerTests
     }
 
     [Fact]
+    [AllureDescription("Returns a bad request when the selected collector does not belong to the enterprise.")]
     public async Task AssignCollector_WithUnknownCollector_ShouldReturnBadRequest()
     {
         await using var context = CreateContext();
@@ -150,6 +158,8 @@ public class EnterpriseTaskControllerTests
 
         var badRequest = result.Should().BeOfType<BadRequestObjectResult>().Subject;
         GetPropertyValue<string>(badRequest.Value!, "message").Should().Be("Collector not found or does not belong to your enterprise.");
+
+        AllureAttachmentHelper.AttachText("assign-collector-invalid-result", "Collector not found or does not belong to your enterprise.");
     }
 
     private static async Task<EnterpriseScenario> SeedEnterpriseScenarioAsync(WastePlatformDbContext context)

@@ -27,6 +27,7 @@ namespace WastePlatform.Tests.Controllers;
 public class EnterpriseRewardRuleControllerTests
 {
     [Fact]
+    [AllureDescription("Returns the current reward rules for the enterprise.")]
     public async Task GetRewardRules_WhenEnterpriseExists_ShouldReturnItsRules()
     {
         await using var context = CreateContext();
@@ -45,9 +46,12 @@ public class EnterpriseRewardRuleControllerTests
         json.Should().Contain(scenario.Category.Name);
         json.Should().Contain("\"PointsPerReport\":12");
         json.Should().Contain("\"BonusQuality\":4");
+
+        AllureAttachmentHelper.AttachJson("reward-rules-result", new { enterpriseId = scenario.Enterprise.Id, categoryId = scenario.Category.Id, secondCategoryId = scenario.SecondCategory.Id });
     }
 
     [Fact]
+    [AllureDescription("Updates reward rules when the payload is valid.")]
     public async Task UpdateRewardRules_WithValidPayload_ShouldUpdateAndInsertRules()
     {
         await using var context = CreateContext();
@@ -107,6 +111,7 @@ public class EnterpriseRewardRuleControllerTests
     }
 
     [Fact]
+    [AllureDescription("Returns a bad request when duplicate waste categories are submitted.")]
     public async Task UpdateRewardRules_WithDuplicateCategories_ShouldReturnBadRequest()
     {
         await using var context = CreateContext();
@@ -140,9 +145,12 @@ public class EnterpriseRewardRuleControllerTests
 
         var badRequest = result.Should().BeOfType<BadRequestObjectResult>().Subject;
         GetPropertyValue<string>(badRequest.Value!, "message").Should().Be("Duplicate waste category IDs are not allowed.");
+
+        AllureAttachmentHelper.AttachText("reward-rules-duplicate-result", "Duplicate waste category IDs are not allowed.");
     }
 
     [Fact]
+    [AllureDescription("Returns a bad request when the rules payload is empty.")]
     public async Task UpdateRewardRules_WithEmptyRules_ShouldReturnBadRequest()
     {
         await using var context = CreateContext();
@@ -160,9 +168,12 @@ public class EnterpriseRewardRuleControllerTests
 
         var badRequest = result.Should().BeOfType<BadRequestObjectResult>().Subject;
         GetPropertyValue<string>(badRequest.Value!, "message").Should().Be("Rules cannot be empty.");
+
+        AllureAttachmentHelper.AttachText("reward-rules-empty-result", "Rules cannot be empty.");
     }
 
     [Fact]
+    [AllureDescription("Returns a bad request when any reward rule contains negative numeric values.")]
     public async Task UpdateRewardRules_WithNegativeValues_ShouldReturnBadRequest()
     {
         await using var context = CreateContext();
@@ -189,6 +200,8 @@ public class EnterpriseRewardRuleControllerTests
 
         var badRequest = result.Should().BeOfType<BadRequestObjectResult>().Subject;
         GetPropertyValue<string>(badRequest.Value!, "message").Should().Be("PointsPerReport and BonusQuality must be non-negative.");
+
+        AllureAttachmentHelper.AttachText("reward-rules-negative-result", "PointsPerReport and BonusQuality must be non-negative.");
     }
 
     private static async Task<EnterpriseScenario> SeedEnterpriseAsync(WastePlatformDbContext context)
