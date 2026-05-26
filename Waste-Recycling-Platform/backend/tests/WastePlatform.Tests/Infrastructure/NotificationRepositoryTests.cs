@@ -88,7 +88,7 @@ public class NotificationRepositoryTests
         AllureAttachmentHelper.AttachJson("notification-page-result", new
         {
             total,
-            returnedCount = notifications.Count,
+            returnedCount = notifications.Count(),
             firstId = notifications.First().Id,
             lastId = notifications.Last().Id
         });
@@ -121,7 +121,7 @@ public class NotificationRepositoryTests
         AllureAttachmentHelper.AttachJson("notification-status-filter-result", new
         {
             total,
-            returnedCount = notifications.Count,
+            returnedCount = notifications.Count(),
             returnedStatus = notifications.Single().Status
         });
     }
