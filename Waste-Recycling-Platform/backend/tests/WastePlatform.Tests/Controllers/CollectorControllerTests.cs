@@ -9,6 +9,7 @@ using WastePlatform.API.Controllers;
 using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
 using WastePlatform.Infrastructure.Persistence;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Controllers;
 
@@ -52,7 +53,13 @@ public class CollectorControllerTests
         GetPropertyValue<string>(okResult.Value!, "Phone").Should().Be("0900000001");
         GetPropertyValue<bool>(okResult.Value!, "IsAvailable").Should().BeTrue();
 
-        AllureAttachmentHelper.AttachJson("collector-profile-result", new { scenario.Collector.Id, scenario.CollectorUser.Id, scenario.Enterprise.Id, IsAvailable = true });
+        AllureAttachmentHelper.AttachJson("collector-profile-result", new
+        {
+            collectorId = scenario.Collector.Id,
+            collectorUserId = scenario.CollectorUser.Id,
+            enterpriseId = scenario.Enterprise.Id,
+            isAvailable = true
+        });
     }
 
     [Fact]
@@ -100,7 +107,12 @@ public class CollectorControllerTests
         await context.Entry(scenario.Collector).ReloadAsync();
         scenario.Collector.IsAvailable.Should().BeTrue();
 
-        AllureAttachmentHelper.AttachJson("collector-availability-result", new { scenario.Collector.Id, scenario.CollectorUser.Id, IsAvailable = true });
+        AllureAttachmentHelper.AttachJson("collector-availability-result", new
+        {
+            collectorId = scenario.Collector.Id,
+            collectorUserId = scenario.CollectorUser.Id,
+            isAvailable = true
+        });
     }
 
     [Fact]
