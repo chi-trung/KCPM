@@ -82,6 +82,48 @@ public class SignalRRealTimeNotifierTests
             Times.Once);
     }
 
+    [AllureStory("Push notification to an empty user list")]
+    [AllureSeverity(SeverityLevel.normal)]
+    [AllureOwner("chi-trung")]
+    [Fact]
+    public async Task NotifyUsersAsync_WithEmptyUserList_ShouldStillCallHubWithEmptyAudience()
+    {
+        var hubContext = CreateHubContextMock(out _, out var usersProxy);
+        var notifier = new SignalRRealTimeNotifier(hubContext.Object);
+
+        var payload = new
+        {
+            Id = Guid.NewGuid(),
+            Type = "TaskUpdated",
+            Title = "Danh sách trống",
+            Message = "Không có user nào được gửi.",
+            ActionUrl = "/",
+            RelatedEntityId = Guid.NewGuid(),
+            RelatedEntityType = "Task",
+            CreatedAt = DateTime.UtcNow
+        };
+
+        IReadOnlyList<string>? capturedUserIds = null;
+        usersProxy
+            .Setup(x => x.SendCoreAsync("TaskStatusUpdated", It.IsAny<object?[]>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        hubContext.Setup(x => x.Clients.Users(It.IsAny<IReadOnlyList<string>>()))
+            .Callback<IReadOnlyList<string>>(ids => capturedUserIds = ids)
+            .Returns(usersProxy.Object);
+
+        await notifier.NotifyUsersAsync(Array.Empty<Guid>(), "TaskStatusUpdated", payload);
+
+        capturedUserIds.Should().NotBeNull();
+        capturedUserIds.Should().BeEmpty();
+        usersProxy.Verify(
+            x => x.SendCoreAsync(
+                "TaskStatusUpdated",
+                It.Is<object?[]>(args => HasSinglePayloadWith(args, payload)),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
     [AllureStory("Task hub requires authorization")]
     [AllureSeverity(SeverityLevel.normal)]
     [AllureOwner("chi-trung")]
