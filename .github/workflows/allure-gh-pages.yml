@@ -62,63 +62,6 @@ jobs:
         run: |
           python3 Waste-Recycling-Platform/scripts/generate_per_owner_reports.py || true
 
-      - name: Install Playwright and http-server
-        if: always()
-        run: |
-          npm init -y
-          npm i -D playwright http-server
-          npx playwright install --with-deps
-
-      - name: Export reports to PDF using Playwright
-        if: always()
-        run: |
-          # create a small Node script that prints main and owner reports to PDF
-          cat > print-pdfs.js <<'JS'
-          const fs = require('fs');
-          const path = require('path');
-          const { chromium } = require('playwright');
-
-          (async () => {
-            const browser = await chromium.launch();
-            const page = await browser.newPage();
-
-            // Print main report
-            try {
-              const mainUrl = 'http://127.0.0.1:8080/index.html';
-              console.log('Printing main report from', mainUrl);
-              await page.goto(mainUrl, { waitUntil: 'networkidle' });
-              await page.pdf({ path: 'report-main/report.pdf', format: 'A4', printBackground: true });
-            } catch (e) { console.error('Main print failed', e); }
-
-            // Print per-owner reports if present
-            const ownersRoot = path.join(process.cwd(), 'report-extra', 'owners');
-            if (fs.existsSync(ownersRoot)) {
-              const owners = fs.readdirSync(ownersRoot, { withFileTypes: true }).filter(d => d.isDirectory()).map(d => d.name);
-              for (const owner of owners) {
-                const ownerUrl = `http://127.0.0.1:8081/${owner}/index.html`;
-                const outPath = path.join('report-extra', 'owners', owner, 'report.pdf');
-                try {
-                  console.log('Printing owner', owner, 'from', ownerUrl);
-                  await page.goto(ownerUrl, { waitUntil: 'networkidle' });
-                  await page.pdf({ path: outPath, format: 'A4', printBackground: true });
-                } catch (e) { console.error('Owner print failed', owner, e); }
-              }
-            }
-
-            await browser.close();
-          })();
-          JS
-
-          # ensure output dirs exist
-          mkdir -p report-main
-          # start static servers only if directories exist: main on 8080, owners on 8081
-          if [ -d "./allure-report" ]; then npx http-server ./allure-report -p 8080 & fi
-          if [ -d "./report-extra/owners" ]; then npx http-server ./report-extra/owners -p 8081 & fi
-          # give servers a moment
-          sleep 3
-          node print-pdfs.js
-          # stop servers (http-server stops with the job end)
-
 
       - name: Prepare site output for gh-pages
         if: always()
@@ -128,6 +71,15 @@ jobs:
           if [ -d "allure-report" ]; then cp -r allure-report/* site-output/report-main/; fi
           mkdir -p site-output/report-extra
           if [ -d "report-extra" ]; then cp -r report-extra/* site-output/report-extra/; fi
+
+      - name: Build landing page index
+        if: always()
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          SITE_OUTPUT_DIR: site-output
+          VALIDATION_OUTPUT_DIR: report-extra/validation
+        run: |
+          python3 Waste-Recycling-Platform/scripts/build_site_index.py
 
       - name: Deploy to GitHub Pages
         if: always()
