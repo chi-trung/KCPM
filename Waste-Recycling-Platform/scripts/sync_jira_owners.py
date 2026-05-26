@@ -204,6 +204,11 @@ def main():
     # show sample mapping
     for k in list(owner_map.keys())[:10]:
         print(k, '->', owner_map[k])
+    # persist the resolved owner map so downstream steps can inject owners
+    try:
+        write_owner_map(owner_map)
+    except Exception:
+        print('Warning: failed to write owner map files', file=sys.stderr)
 
     print('Done')
 
