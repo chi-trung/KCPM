@@ -10,9 +10,36 @@ on:
       - Backend Tests
     branches:
       - main
+      - develop
+      - 'feature/**'
+      - 'KIEM-*'
     types:
       - completed
   workflow_dispatch:
+    inputs:
+      report_mode:
+        description: Select which report set to generate
+        required: true
+        default: both
+        type: choice
+        options:
+          - all
+          - owner
+          - both
+      export_format:
+        description: Select the export format
+        required: true
+        default: html
+        type: choice
+        options:
+          - html
+          - pdf
+          - both
+      selected_owner:
+        description: Enter an owner name to export only that person, or use all
+        required: true
+        default: all
+        type: string
 
 permissions:
   contents: write
@@ -68,10 +95,18 @@ jobs:
         if: always()
         run: |
           set -e
-          echo "Looking for latest successful backend-tests workflow run on main..."
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            source_branch="${{ github.event.workflow_run.head_branch }}"
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            source_branch="${{ github.head_ref }}"
+          else
+            source_branch="${{ github.ref_name }}"
+          fi
+
+          echo "Looking for latest successful backend-tests workflow run on ${source_branch}..."
           OWNER_REPO=${{ github.repository }}
           WORKFLOW_FILE=backend-tests.yml
-          runs_url="https://api.github.com/repos/${OWNER_REPO}/actions/workflows/${WORKFLOW_FILE}/runs?branch=main&status=success"
+          runs_url="https://api.github.com/repos/${OWNER_REPO}/actions/workflows/${WORKFLOW_FILE}/runs?branch=${source_branch}&status=success"
           runs_resp=$(curl -sS -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json" "$runs_url")
           # Extract first run id without jq
           run_id=$(echo "$runs_resp" | grep -o '"id": [0-9]\+' | head -n1 | sed -E 's/"id": //')
@@ -209,8 +244,8 @@ jobs:
           find Waste-Recycling-Platform/allure-results/history -maxdepth 2 -type f || true
 
       - name: Generate Allure Report
+        if: always() && (github.event_name != 'workflow_dispatch' || github.event.inputs.report_mode == 'all' || github.event.inputs.report_mode == 'both')
         uses: simple-elf/allure-report-action@master
-        if: always()
         id: allure-report
         with:
           allure_results: Waste-Recycling-Platform/allure-results
@@ -236,11 +271,80 @@ jobs:
           npm install -g allure-commandline@2.13.0 || true
 
       - name: Generate per-owner Allure reports
-        if: always()
+        if: always() && (github.event_name != 'workflow_dispatch' || github.event.inputs.report_mode == 'owner' || github.event.inputs.report_mode == 'both')
         env:
           ALLURE_PUBLISH_DIR: report-extra
+          SELECTED_OWNER: ${{ github.event.inputs.selected_owner }}
         run: |
           python3 Waste-Recycling-Platform/scripts/generate_per_owner_reports.py
+
+      - name: Install Playwright for PDF export
+        if: always() && github.event_name == 'workflow_dispatch' && (github.event.inputs.export_format == 'pdf' || github.event.inputs.export_format == 'both')
+        run: |
+          npm install playwright@1.52.0
+          npx playwright install chromium
+
+      - name: Export PDF reports
+        if: always() && github.event_name == 'workflow_dispatch' && (github.event.inputs.export_format == 'pdf' || github.event.inputs.export_format == 'both')
+        env:
+          REPORT_MODE: ${{ github.event.inputs.report_mode }}
+          SELECTED_OWNER: ${{ github.event.inputs.selected_owner }}
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const { chromium } = require('playwright');
+
+          function slugify(value) {
+            return (value || '')
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-+|-+$/g, '');
+          }
+
+          async function exportPdf(htmlPath, pdfPath) {
+            const browser = await chromium.launch({ headless: true });
+            try {
+              const page = await browser.newPage({ viewport: { width: 1600, height: 1200 } });
+              await page.goto(`file://${path.resolve(htmlPath)}`, { waitUntil: 'networkidle' });
+              await page.pdf({ path: pdfPath, format: 'A4', printBackground: true });
+              console.log(`Exported ${pdfPath}`);
+            } finally {
+              await browser.close();
+            }
+          }
+
+          (async () => {
+            const mode = (process.env.REPORT_MODE || 'all').toLowerCase();
+            const selectedOwner = (process.env.SELECTED_OWNER || '').trim();
+            const selectedOwnerSlug = slugify(selectedOwner);
+            if (mode === 'all' || mode === 'both') {
+              const mainHtml = path.resolve('report-main', 'index.html');
+              if (fs.existsSync(mainHtml)) {
+                await exportPdf(mainHtml, path.resolve('report-main', 'report.pdf'));
+              }
+            }
+
+            if (mode === 'owner' || mode === 'both') {
+              const ownersRoot = path.resolve('report-extra', 'owners');
+              if (fs.existsSync(ownersRoot)) {
+                for (const ownerDir of fs.readdirSync(ownersRoot, { withFileTypes: true })) {
+                  if (!ownerDir.isDirectory()) continue;
+                  if (selectedOwner && selectedOwner.toLowerCase() !== 'all' && ownerDir.name !== selectedOwnerSlug) {
+                    continue;
+                  }
+                  const ownerHtml = path.join(ownersRoot, ownerDir.name, 'index.html');
+                  if (fs.existsSync(ownerHtml)) {
+                    await exportPdf(ownerHtml, path.join(ownersRoot, ownerDir.name, 'report.pdf'));
+                  }
+                }
+              }
+            }
+          })().catch((error) => {
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
 
       - name: Create validation artifacts for Pages
         if: always()

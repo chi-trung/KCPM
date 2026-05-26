@@ -48,6 +48,24 @@ If you want a one-command local runner on Windows, use:
 .\Waste-Recycling-Platform\scripts\generate-allure-report.ps1
 ```
 
+You can also choose what to export:
+
+```powershell
+.\Waste-Recycling-Platform\scripts\generate-allure-report.ps1 -ReportMode Both -ExportFormat Both
+```
+
+Supported report modes:
+
+- `All`: generate the main Allure report
+- `Owner`: generate per-owner reports
+- `Both`: generate both
+
+Supported export formats:
+
+- `Html`: keep HTML only
+- `Pdf`: export PDF only
+- `Both`: export HTML and PDF
+
 ### 1. Run the backend tests
 
 Run the xUnit test project with the Allure runsettings enabled so the test adapter writes result files:

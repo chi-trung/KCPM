@@ -16,6 +16,7 @@ RESULTS_DIR = os.path.join('Waste-Recycling-Platform', 'allure-results')
 BASE_OUT = 'owner-report-temp'
 REPORT_BASE = os.environ.get('ALLURE_PUBLISH_DIR', 'report-extra')
 OUTPUT_BASE = os.path.join(REPORT_BASE, 'owners')
+SELECTED_OWNER = (os.environ.get('SELECTED_OWNER') or '').strip()
 
 # optional jira owner map produced by sync_jira_owners.py
 JIRA_MAP_PATHS = [
@@ -90,6 +91,12 @@ def slugify(name: str) -> str:
     return s or 'owner'
 
 
+def owner_matches(owner_name: str, selected_owner: str) -> bool:
+    if not selected_owner or selected_owner.lower() == 'all':
+        return True
+    return owner_name == selected_owner or slugify(owner_name) == slugify(selected_owner)
+
+
 def is_test_result(data):
     if not isinstance(data, dict):
         return False
@@ -145,6 +152,14 @@ if not owners:
     raise SystemExit(0)
 
 print('Discovered owners:', owners)
+
+if SELECTED_OWNER and SELECTED_OWNER.lower() != 'all':
+    filtered_owners = {owner for owner in owners if owner_matches(owner, SELECTED_OWNER)}
+    if not filtered_owners:
+        print(f'Skipping owner reports: no owner matched {SELECTED_OWNER!r}')
+        raise SystemExit(0)
+    owners = filtered_owners
+    print('Filtered owners:', owners)
 
 for owner in owners:
     # safe folder name

@@ -25,18 +25,35 @@ def badge(label: str, value: str, tone: str = 'neutral') -> str:
     return f'<span class="badge {tone}"><strong>{label}</strong><em>{value}</em></span>'
 
 
-def build_owner_cards(owners: list[str], owner_base: str) -> str:
+def slugify(value: str) -> str:
+    slug = ''.join(ch.lower() if ch.isalnum() else '-' for ch in value).strip('-')
+    while '--' in slug:
+        slug = slug.replace('--', '-')
+    return slug or 'owner'
+
+
+def build_owner_cards(owners: list[str], owner_base: str, published_root: Path) -> str:
     if not owners:
         return '<div class="empty">Chưa có owner nào được sync.</div>'
 
     cards = []
     for owner in owners:
-        slug = ''.join(ch.lower() if ch.isalnum() else '-' for ch in owner).strip('-')
+        slug = slugify(owner)
+        owner_html = f'{owner_base}owners/{slug}/'
+        owner_pdf = f'{owner_base}owners/{slug}/report.pdf'
+        owner_pdf_exists = (published_root / 'report-extra' / 'owners' / slug / 'report.pdf').exists()
+        pdf_href = owner_pdf if owner_pdf_exists else owner_html
+        pdf_label = 'Tải PDF' if owner_pdf_exists else 'Mở report'
         cards.append(
-          f'<a class="owner-card" href="{owner_base}owners/{slug}/">'
-            f'<span class="owner-name">{owner}</span>'
-            f'<span class="owner-sub">Mở báo cáo theo owner</span>'
+          f'<div class="owner-card">'
+            f'<a class="owner-link" href="{owner_html}">'
+              f'<span class="owner-name">{owner}</span>'
+              f'<span class="owner-sub">Mở báo cáo theo owner</span>'
             f'</a>'
+            f'<div class="owner-actions">'
+              f'<a class="btn mini ghost" href="{pdf_href}">{pdf_label}</a>'
+            f'</div>'
+          f'</div>'
         )
     return ''.join(cards)
 
@@ -63,8 +80,11 @@ def main() -> None:
     repo_owner, repo_name = repo.split('/', 1) if '/' in repo else ('', '')
     root_url = f'https://{repo_owner}.github.io/{repo_name}/' if repo_owner and repo_name else './'
     report_url = f'{root_url}report-main/'
+    report_pdf_url = f'{root_url}report-main/report.pdf'
     validation_url = f'{root_url}report-extra/validation/'
     owner_url = f'{root_url}report-extra/'
+    owner_reports_root = site_output / 'report-extra' / 'owners'
+    team_pdf_exists = (site_output / 'report-main' / 'report.pdf').exists()
 
     generated_at = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')
 
@@ -148,6 +168,7 @@ def main() -> None:
     .btn:hover {{ transform: translateY(-1px); border-color: rgba(255,255,255,0.24); }}
     .btn.primary {{ background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #07111f; }}
     .btn.ghost {{ background: rgba(255,255,255,0.04); color: var(--text); }}
+    .btn.mini {{ padding: 9px 12px; border-radius: 12px; font-size: 13px; }}
     .stats {{ padding: 22px; display: grid; gap: 12px; }}
     .stat-grid {{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }}
     .stat {{ padding: 16px; border-radius: 18px; background: rgba(255,255,255,0.05); border: 1px solid var(--line); }}
@@ -181,11 +202,13 @@ def main() -> None:
       border: 1px solid var(--line);
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 10px;
       min-height: 94px;
     }}
+    .owner-link {{ display: flex; flex-direction: column; gap: 6px; }}
     .owner-name {{ font-weight: 800; font-size: 16px; }}
     .owner-sub {{ color: var(--muted); font-size: 13px; }}
+    .owner-actions {{ display: flex; flex-wrap: wrap; gap: 10px; }}
     .empty {{ padding: 14px 0; color: var(--muted); }}
     .footer {{ margin-top: 22px; color: var(--muted); font-size: 13px; }}
     @media (max-width: 960px) {{
@@ -205,6 +228,8 @@ def main() -> None:
         </p>
         <div class="actions">
           <a class="btn primary" href="{report_url}">Open main Allure report</a>
+          <a class="btn ghost" href="{report_pdf_url}">{'Download team PDF' if team_pdf_exists else 'Team PDF not built'}</a>
+          <a class="btn ghost" href="{validation_url}">Open validation page</a>
         </div>
       </div>
       <aside class="panel stats">
@@ -243,6 +268,15 @@ def main() -> None:
         <div class="badge-row">
           {badge('xUnit', 'present' if xunit_present else 'missing', 'good' if xunit_present else 'warn')}
           {badge('Postman', 'present' if postman_present else 'missing', 'good' if postman_present else 'warn')}
+        </div>
+        <div class="actions">
+          <a class="btn ghost" href="{report_pdf_url}">{'Download team PDF' if team_pdf_exists else 'Team PDF not built'}</a>
+          <a class="btn ghost" href="{owner_url}">Open owner reports</a>
+        </div>
+        <div class="owners">
+          <div class="owner-grid">
+            {build_owner_cards(owners, root_url, site_output)}
+          </div>
         </div>
       </article>
     </section>
