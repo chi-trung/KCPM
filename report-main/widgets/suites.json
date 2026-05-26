@@ -1,1 +1,1 @@
-{"total":1,"items":[{"uid":"e1743b96b12abe27a6c683539e853d95","name":"Postman API Tests","statistic":{"failed":32,"broken":0,"skipped":0,"passed":42,"unknown":0,"total":74}}]}
+{"total":2,"items":[{"uid":"e1743b96b12abe27a6c683539e853d95","name":"Postman API Tests","statistic":{"failed":32,"broken":0,"skipped":0,"passed":42,"unknown":0,"total":74}},{"uid":"37810b863c4d644ab405e583c9ead296","name":"xUnit Backend Tests","statistic":{"failed":0,"broken":0,"skipped":0,"passed":103,"unknown":0,"total":103}}]}
