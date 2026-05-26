@@ -1,0 +1,212 @@
+using FluentAssertions;
+using Moq;
+using WastePlatform.Application.Reports.Queries;
+using WastePlatform.Application.Common.Interfaces;
+using WastePlatform.Domain.Entities;
+using WastePlatform.Domain.Enums;
+using Xunit;
+
+namespace WastePlatform.Tests.Application.Reports;
+
+/// <summary>
+/// Unit tests for GetEnterpriseReportsQueryHandler
+/// TC-REP-005: Get Enterprise Reports (Reports that enterprise can handle)
+/// </summary>
+public class GetEnterpriseReportsQueryHandlerTests
+{
+    private readonly Mock<IReportRepository> _mockReportRepository;
+    private readonly GetEnterpriseReportsQueryHandler _handler;
+
+    public GetEnterpriseReportsQueryHandlerTests()
+    {
+        _mockReportRepository = new Mock<IReportRepository>();
+        _handler = new GetEnterpriseReportsQueryHandler(_mockReportRepository.Object);
+    }
+
+    #region Happy Path - Get Enterprise Reports
+
+    [Fact]
+    public async Task Handle_WithValidEnterpriseId_ShouldReturnReports()
+    {
+        // Arrange
+        var enterpriseId = Guid.NewGuid();
+        var reports = new List<WasteReport>
+        {
+            CreateReport(ReportStatus.Pending),
+            CreateReport(ReportStatus.Accepted)
+        };
+
+        _mockReportRepository
+            .Setup(x => x.GetEnterpriseReportsAsync(enterpriseId, 1, 10, null, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((reports, 2));
+
+        var query = new GetEnterpriseReportsQuery { EnterpriseId = enterpriseId };
+
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.Reports.Should().HaveCount(2);
+        result.Total.Should().Be(2);
+        result.TotalPages.Should().Be(1);
+        _mockReportRepository.Verify(
+            x => x.GetEnterpriseReportsAsync(enterpriseId, 1, 10, null, It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    #endregion
+
+    #region Status Filtering
+
+    [Theory]
+    [InlineData("Pending", ReportStatus.Pending)]
+    [InlineData("Accepted", ReportStatus.Accepted)]
+    [InlineData("Rejected", ReportStatus.Rejected)]
+    public async Task Handle_WithStatusFilter_ShouldFilterByStatus(string statusString, ReportStatus expectedStatus)
+    {
+        // Arrange
+        var enterpriseId = Guid.NewGuid();
+        var reports = new List<WasteReport> { CreateReport(expectedStatus) };
+
+        _mockReportRepository
+            .Setup(x => x.GetEnterpriseReportsAsync(enterpriseId, 1, 10, expectedStatus, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((reports, 1));
+
+        var query = new GetEnterpriseReportsQuery 
+        { 
+            EnterpriseId = enterpriseId, 
+            Status = statusString 
+        };
+
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.Reports.Should().HaveCount(1);
+        _mockReportRepository.Verify(
+            x => x.GetEnterpriseReportsAsync(enterpriseId, 1, 10, expectedStatus, It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_WithEmptyStatus_ShouldNotFilterByStatus()
+    {
+        // Arrange
+        var enterpriseId = Guid.NewGuid();
+        var reports = new List<WasteReport> { CreateReport(ReportStatus.Pending) };
+
+        _mockReportRepository
+            .Setup(x => x.GetEnterpriseReportsAsync(enterpriseId, 1, 10, null, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((reports, 1));
+
+        var query = new GetEnterpriseReportsQuery 
+        { 
+            EnterpriseId = enterpriseId, 
+            Status = "" 
+        };
+
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        _mockReportRepository.Verify(
+            x => x.GetEnterpriseReportsAsync(enterpriseId, 1, 10, null, It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_WithInvalidStatus_ShouldNotFilterByStatus()
+    {
+        // Arrange - Invalid status should be ignored
+        var enterpriseId = Guid.NewGuid();
+        var reports = new List<WasteReport> { CreateReport(ReportStatus.Pending) };
+
+        _mockReportRepository
+            .Setup(x => x.GetEnterpriseReportsAsync(enterpriseId, 1, 10, null, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((reports, 1));
+
+        var query = new GetEnterpriseReportsQuery 
+        { 
+            EnterpriseId = enterpriseId, 
+            Status = "InvalidStatus" 
+        };
+
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        // Assert - Should call with null status (no filter)
+        _mockReportRepository.Verify(
+            x => x.GetEnterpriseReportsAsync(enterpriseId, 1, 10, null, It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    #endregion
+
+    #region Pagination Tests
+
+    [Fact]
+    public async Task Handle_WithCustomPagination_ShouldApplyPagination()
+    {
+        // Arrange
+        var enterpriseId = Guid.NewGuid();
+        var reports = new List<WasteReport> { CreateReport(ReportStatus.Pending) };
+
+        _mockReportRepository
+            .Setup(x => x.GetEnterpriseReportsAsync(enterpriseId, 3, 15, null, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((reports, 45)); // 45 total, page 3, size 15
+
+        var query = new GetEnterpriseReportsQuery 
+        { 
+            EnterpriseId = enterpriseId, 
+            Page = 3, 
+            PageSize = 15 
+        };
+
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.Reports.Should().HaveCount(1);
+        result.Total.Should().Be(45);
+        result.TotalPages.Should().Be(3); // ceil(45/15) = 3
+    }
+
+    #endregion
+
+    #region Helper Methods
+
+    private static WasteReport CreateReport(ReportStatus status)
+    {
+        var report = WasteReport.Create(
+            citizenId: Guid.NewGuid(),
+            wasteCategoryId: 1,
+            latitude: 10m,
+            longitude: 106m,
+            description: "Test report",
+            address: "Test address",
+            aiSuggestion: "Mixed");
+
+        switch (status)
+        {
+            case ReportStatus.Accepted:
+                report.Accept();
+                break;
+            case ReportStatus.Rejected:
+                report.Reject();
+                break;
+            case ReportStatus.Assigned:
+                report.Accept();
+                report.Assign();
+                break;
+            case ReportStatus.Collected:
+                report.Accept();
+                report.Assign();
+                report.Collect();
+                break;
+        }
+
+        return report;
+    }
+
+    #endregion
+}
