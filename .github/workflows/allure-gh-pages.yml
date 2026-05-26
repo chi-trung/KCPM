@@ -111,8 +111,8 @@ jobs:
           # Extract first run id without jq
           run_id=$(echo "$runs_resp" | grep -o '"id": [0-9]\+' | head -n1 | sed -E 's/"id": //')
           if [ -z "$run_id" ]; then
-            echo "No successful backend-tests run found; skipping artifact fetch"
-            exit 0
+            echo "ERROR: No successful backend-tests run found on ${source_branch}. Backend tests are required."
+            exit 1
           fi
           echo "Found backend-tests run: $run_id"
           arts_url="https://api.github.com/repos/${OWNER_REPO}/actions/runs/${run_id}/artifacts"
@@ -120,8 +120,8 @@ jobs:
           # Find artifact id matching 'allure-results' without jq
           art_id=$(echo "$arts_resp" | grep -o '"id": [0-9]\+\|"name": "[^"]\+' | paste - - | grep 'allure-results' | head -n1 | sed -E 's/.*"id": ([0-9]+)\s+"name": .*/\1/')
           if [ -z "$art_id" ]; then
-            echo "No allure-results artifact found in run $run_id; skipping"
-            exit 0
+            echo "ERROR: No allure-results artifact found in backend-tests run $run_id. Artifact required."
+            exit 1
           fi
           echo "Found artifact id: $art_id -- downloading..."
           download_url="https://api.github.com/repos/${OWNER_REPO}/actions/artifacts/${art_id}/zip"

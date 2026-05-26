@@ -150,10 +150,8 @@ def main():
     keys = discover_all_keys()
     print('Found issue keys in results:', keys)
     if not keys:
-        print('No Jira issue keys found. Writing empty map.')
-        write_owner_map({})
-        print('Done')
-        return
+        print('ERROR: No Jira issue keys found in Allure results. Expected at least one KIEM-* key.')
+        sys.exit(1)
 
     base = os.environ.get('JIRA_BASE_URL')
     email = os.environ.get('JIRA_EMAIL')
