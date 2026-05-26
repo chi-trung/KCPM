@@ -142,6 +142,55 @@ public class EnterpriseRewardRuleControllerTests
         GetPropertyValue<string>(badRequest.Value!, "message").Should().Be("Duplicate waste category IDs are not allowed.");
     }
 
+    [Fact]
+    public async Task UpdateRewardRules_WithEmptyRules_ShouldReturnBadRequest()
+    {
+        await using var context = CreateContext();
+        var scenario = await SeedEnterpriseAsync(context);
+
+        var controller = new EnterpriseRewardRuleController(context)
+        {
+            ControllerContext = BuildControllerContext(scenario.EnterpriseUser.Id)
+        };
+
+        var result = await controller.UpdateRewardRules(new UpdateEnterpriseRewardRulesRequest
+        {
+            Rules = []
+        });
+
+        var badRequest = result.Should().BeOfType<BadRequestObjectResult>().Subject;
+        GetPropertyValue<string>(badRequest.Value!, "message").Should().Be("Rules cannot be empty.");
+    }
+
+    [Fact]
+    public async Task UpdateRewardRules_WithNegativeValues_ShouldReturnBadRequest()
+    {
+        await using var context = CreateContext();
+        var scenario = await SeedEnterpriseAsync(context);
+
+        var controller = new EnterpriseRewardRuleController(context)
+        {
+            ControllerContext = BuildControllerContext(scenario.EnterpriseUser.Id)
+        };
+
+        var result = await controller.UpdateRewardRules(new UpdateEnterpriseRewardRulesRequest
+        {
+            Rules =
+            [
+                new UpdateEnterpriseRewardRuleItem
+                {
+                    WasteCategoryId = scenario.Category.Id,
+                    PointsPerReport = -1,
+                    BonusQuality = 0,
+                    IsActive = true
+                }
+            ]
+        });
+
+        var badRequest = result.Should().BeOfType<BadRequestObjectResult>().Subject;
+        GetPropertyValue<string>(badRequest.Value!, "message").Should().Be("PointsPerReport and BonusQuality must be non-negative.");
+    }
+
     private static async Task<EnterpriseScenario> SeedEnterpriseAsync(WastePlatformDbContext context)
     {
         var enterpriseUser = User.Create("enterprise@example.com", "hash", "Enterprise One", UserRole.Enterprise);
