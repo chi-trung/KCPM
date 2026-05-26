@@ -1,0 +1,7 @@
+pm.test('status code is 200', function () {
+  pm.response.to.have.status(200);
+});
+pm.test('payload contains data', function () {
+  const body = pm.response.json();
+  pm.expect(body).to.have.property('data');
+});
