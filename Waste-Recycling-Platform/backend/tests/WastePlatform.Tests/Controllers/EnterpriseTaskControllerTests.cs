@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -16,6 +17,57 @@ namespace WastePlatform.Tests.Controllers;
 
 public class EnterpriseTaskControllerTests
 {
+    [Fact]
+    public async Task GetTasks_WithValidEnterprise_ShouldReturnEnterpriseTasks()
+    {
+        await using var context = CreateContext();
+        var scenario = await SeedEnterpriseScenarioAsync(context);
+
+        var controller = new EnterpriseTaskController(
+            context,
+            CreateHubContextMock(out _).Object,
+            new Mock<INotificationService>().Object,
+            new Mock<IMediator>().Object)
+        {
+            ControllerContext = BuildControllerContext(scenario.EnterpriseUser.Id)
+        };
+
+        var result = await controller.GetTasks();
+
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        var json = JsonSerializer.Serialize(okResult.Value);
+
+        json.Should().Contain(scenario.Task.Id.ToString());
+        json.Should().Contain(scenario.Report.Id.ToString());
+        json.Should().Contain("Assigned");
+        json.Should().Contain("Test report");
+    }
+
+    [Fact]
+    public async Task GetAvailableCollectors_WithValidEnterprise_ShouldReturnCollectors()
+    {
+        await using var context = CreateContext();
+        var scenario = await SeedEnterpriseScenarioAsync(context);
+
+        var controller = new EnterpriseTaskController(
+            context,
+            CreateHubContextMock(out _).Object,
+            new Mock<INotificationService>().Object,
+            new Mock<IMediator>().Object)
+        {
+            ControllerContext = BuildControllerContext(scenario.EnterpriseUser.Id)
+        };
+
+        var result = await controller.GetAvailableCollectors();
+
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        var json = JsonSerializer.Serialize(okResult.Value);
+
+        json.Should().Contain(scenario.Collector.Id.ToString());
+        json.Should().Contain("Collector One");
+        json.Should().Contain("collector@example.com");
+    }
+
     [Fact]
     public async Task AssignCollector_WhenRequestIsValid_ShouldBroadcastAndNotifyCitizen()
     {
