@@ -33,18 +33,21 @@
       "unassigned": false
     }
   },
-  "injected_count": 115,
+  "injected_count": 125,
   "owners": [
     "Nguyễn Chí Trung",
-    "backend"
+    "backend",
+    "backend-team"
   ],
   "owner_slugs": [
     "nguy-n-ch-trung",
-    "backend"
+    "backend",
+    "backend-team"
   ],
   "owner_folders": [
     "report-extra/owners/nguy-n-ch-trung",
-    "report-extra/owners/backend"
+    "report-extra/owners/backend",
+    "report-extra/owners/backend-team"
   ],
   "xunit_present": true,
   "postman_present": true,
