@@ -1,3 +1,4 @@
+using Allure.Xunit.Attributes;
 using FluentAssertions;
 using Moq;
 using WastePlatform.Application.Reports.Queries;
@@ -12,6 +13,11 @@ namespace WastePlatform.Tests.Application.Reports;
 /// Unit tests for GetEnterpriseReportsQueryHandler
 /// TC-REP-005: Get Enterprise Reports (Reports that enterprise can handle)
 /// </summary>
+[AllureEpic("KIEM-5: Reports Module Testing")]
+[AllureFeature("Get Enterprise Reports Handler")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Enterprise retrieves waste reports within their service area")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
 public class GetEnterpriseReportsQueryHandlerTests
 {
     private readonly Mock<IReportRepository> _mockReportRepository;

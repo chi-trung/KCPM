@@ -1,3 +1,4 @@
+using Allure.Xunit.Attributes;
 using FluentAssertions;
 using Moq;
 using WastePlatform.Application.Reports.Commands;
@@ -13,6 +14,11 @@ namespace WastePlatform.Tests.Application.Reports;
 /// TC-REP-005: Accept Report - Authorized Role (Enterprise/Admin)
 /// TC-REP-007: Invalid State Transition
 /// </summary>
+[AllureEpic("KIEM-5: Reports Module Testing")]
+[AllureFeature("Accept Report Handler")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Enterprise accepts a pending waste report")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
 public class AcceptReportCommandHandlerTests
 {
     private readonly Mock<IReportRepository> _mockReportRepository;

@@ -1,3 +1,4 @@
+using Allure.Xunit.Attributes;
 using FluentAssertions;
 using Moq;
 using WastePlatform.Application.Reports.Queries;
@@ -13,6 +14,11 @@ namespace WastePlatform.Tests.Application.Reports;
 /// TC-REP-003: Get Report by ID - Valid Request
 /// TC-REP-004: Get Report by ID - Invalid/Non-existent ID
 /// </summary>
+[AllureEpic("KIEM-5: Reports Module Testing")]
+[AllureFeature("Get Report By ID Handler")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Retrieve a specific waste report by its ID")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
 public class GetReportByIdQueryHandlerTests
 {
     private readonly Mock<IReportRepository> _mockReportRepository;
