@@ -1,53 +1,51 @@
 {
-  "jira_resolved": 5,
+  "jira_resolved": 0,
   "jira_total": 5,
   "jira_sample": {
     "KIEM-14": {
-      "displayName": "Nguyễn Chí Trung ",
-      "accountId": "712020:03652eda-598e-49f0-bc97-e8f983de4296",
-      "email": "trungnc7062@ut.edu.vn",
-      "unassigned": false
+      "displayName": null,
+      "accountId": null,
+      "unassigned": true
     },
     "KIEM-16": {
-      "displayName": "Nguyễn Chí Trung ",
-      "accountId": "712020:03652eda-598e-49f0-bc97-e8f983de4296",
-      "email": "trungnc7062@ut.edu.vn",
-      "unassigned": false
+      "displayName": null,
+      "accountId": null,
+      "unassigned": true
     },
     "KIEM-17": {
-      "displayName": "Nguyễn Chí Trung ",
-      "accountId": "712020:03652eda-598e-49f0-bc97-e8f983de4296",
-      "email": "trungnc7062@ut.edu.vn",
-      "unassigned": false
+      "displayName": null,
+      "accountId": null,
+      "unassigned": true
     },
     "KIEM-19": {
-      "displayName": "Nguyễn Chí Trung ",
-      "accountId": "712020:03652eda-598e-49f0-bc97-e8f983de4296",
-      "email": "trungnc7062@ut.edu.vn",
-      "unassigned": false
+      "displayName": null,
+      "accountId": null,
+      "unassigned": true
     },
     "KIEM-4": {
-      "displayName": "Nguyễn Chí Trung ",
-      "accountId": "712020:03652eda-598e-49f0-bc97-e8f983de4296",
-      "email": "trungnc7062@ut.edu.vn",
-      "unassigned": false
+      "displayName": null,
+      "accountId": null,
+      "unassigned": true
     }
   },
-  "injected_count": 125,
+  "injected_count": 121,
   "owners": [
-    "Nguyễn Chí Trung",
+    "auth",
     "backend",
-    "backend-team"
+    "backend-team",
+    "qa"
   ],
   "owner_slugs": [
-    "nguy-n-ch-trung",
+    "auth",
     "backend",
-    "backend-team"
+    "backend-team",
+    "qa"
   ],
   "owner_folders": [
-    "report-extra/owners/nguy-n-ch-trung",
+    "report-extra/owners/auth",
     "report-extra/owners/backend",
-    "report-extra/owners/backend-team"
+    "report-extra/owners/backend-team",
+    "report-extra/owners/qa"
   ],
   "xunit_present": true,
   "postman_present": true,
