@@ -98,6 +98,24 @@ jobs:
           $reportPath = ".\TestResults\backend-allure-report"
 
           if (Test-Path $resultsPath) {
+            @(
+              "Environment=GitHub Actions",
+              "Branch=${{ github.ref_name }}",
+              "Workflow=${{ github.workflow }}",
+              "RunNumber=${{ github.run_number }}",
+              "Commit=${{ github.sha }}"
+            ) | Set-Content -Path (Join-Path $resultsPath 'environment.properties') -Encoding utf8
+
+            @{
+              name = 'GitHub Actions'
+              type = 'github'
+              url = 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+              buildOrder = [int]${{ github.run_number }}
+              buildName = '${{ github.workflow }} #${{ github.run_number }}'
+              reportName = 'WastePlatform Backend Allure Report'
+              branch = '${{ github.ref_name }}'
+            } | ConvertTo-Json -Depth 5 | Set-Content -Path (Join-Path $resultsPath 'executor.json') -Encoding utf8
+
             allure generate $resultsPath --clean -o $reportPath
           } else {
             Write-Host "::warning::Allure results folder not found at $resultsPath"
