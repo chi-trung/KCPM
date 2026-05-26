@@ -148,7 +148,10 @@ def main():
         print('Warning: Postman suite not detected; continuing because owner reports were generated successfully')
 
     repo_owner, repo_name = os.environ.get('GITHUB_REPOSITORY', '').split('/') if os.environ.get('GITHUB_REPOSITORY') else ('', '')
-    main_url = f'https://{repo_owner}.github.io/{repo_name}/'
+    root_url = f'https://{repo_owner}.github.io/{repo_name}/'
+    main_url = f'{root_url}report-main/'
+    validation_url = f'{root_url}report-extra/validation/'
+    owner_base_url = f'{root_url}report-extra/'
     print(f'Report URL: {main_url}')
 
     with open(validation_dir / 'summary.json', 'w', encoding='utf8') as f:
@@ -163,7 +166,7 @@ def main():
         html.write(f'<p>Issues resolved: {summary["jira_resolved"]} of {summary["jira_total"]}</p>')
         html.write('<h2>Owners</h2><ul>')
         for slug, owner in zip(summary['owner_slugs'], summary['owners']):
-            html.write(f'<li><a href="{main_url}owners/{slug}/">{owner}</a></li>')
+            html.write(f'<li><a href="{owner_base_url}owners/{slug}/">{owner}</a></li>')
         html.write('</ul>')
         html.write('<h2>Checks</h2><ul>')
         html.write(f'<li>xUnit merged: {summary["xunit_present"]}</li>')
@@ -171,18 +174,20 @@ def main():
         html.write(f'<li>history exists: {summary["history_exists"]}</li>')
         html.write(f'<li>categories exists: {summary["categories_exists"]}</li>')
         html.write(f'<li>executor exists: {summary["executor_exists"]}</li>')
-        html.write('</ul></body></html>')
+        html.write('</ul>')
+        html.write(f'<p>Validation URL: <a href="{validation_url}">{validation_url}</a></p>')
+        html.write('</body></html>')
 
     with open(validation_dir / 'owner-slugs.txt', 'w', encoding='utf8') as f:
         f.write('\n'.join(summary['owner_slugs']) + ('\n' if summary['owner_slugs'] else ''))
 
     with open(validation_dir / 'urls.txt', 'w', encoding='utf8') as f:
         f.write(f'Main report: {main_url}\n')
-        f.write(f'Validation page: {main_url}validation/\n')
+        f.write(f'Validation page: {validation_url}\n')
         for slug in summary['owner_slugs']:
-            f.write(f'Owner: {main_url}owners/{slug}/\n')
+            f.write(f'Owner: {owner_base_url}owners/{slug}/\n')
 
-    print(f'Validation page URL: {main_url}validation/')
+    print(f'Validation page URL: {validation_url}')
 
 
 if __name__ == '__main__':

@@ -262,11 +262,14 @@ jobs:
           rm -rf site-output || true
           mkdir -p site-output
           if [ -d report-main ]; then
-            cp -R report-main/. site-output/
+            mkdir -p site-output/report-main
+            cp -R report-main/. site-output/report-main/
           fi
           if [ -d report-extra ]; then
-            cp -R report-extra/. site-output/
+            mkdir -p site-output/report-extra
+            cp -R report-extra/. site-output/report-extra/
           fi
+          SITE_OUTPUT_DIR=site-output VALIDATION_OUTPUT_DIR=report-extra/validation ALLURE_MAIN_REPORT_DIR=report-main ALLURE_PUBLISH_DIR=report-extra python3 Waste-Recycling-Platform/scripts/build_site_index.py
 
       - name: Deploy to GitHub Pages
         if: always() && github.event_name != 'pull_request'
@@ -285,8 +288,8 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           rm -rf gh-pages/last-history || true
           mkdir -p gh-pages/last-history
-          if [ -d site-output/history ]; then
-            cp -R site-output/history/. gh-pages/last-history/ || true
+          if [ -d site-output/report-main/history ]; then
+            cp -R site-output/report-main/history/. gh-pages/last-history/ || true
           fi
           cd gh-pages
           git add -A
