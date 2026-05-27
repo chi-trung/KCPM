@@ -15,6 +15,12 @@ JIRA_MAP_PATHS = [
     'jira-owner-map.json',
 ]
 
+LOCAL_MAP_PATHS = [
+    os.path.join(RESULTS_DIR, 'local-owner-map.json'),
+    os.path.join('Waste-Recycling-Platform', 'scripts', 'local-owner-map.json'),
+    'local-owner-map.json',
+]
+
 
 def load_jira_map():
     for p in JIRA_MAP_PATHS:
@@ -27,6 +33,19 @@ def load_jira_map():
             except Exception as e:
                 print('Failed to load', p, e)
     print('No jira-owner-map.json found; nothing to inject')
+    return {}
+
+
+def load_local_map():
+    for p in LOCAL_MAP_PATHS:
+        if os.path.exists(p):
+            try:
+                with open(p, 'r', encoding='utf8') as f:
+                    data = json.load(f)
+                    print('Loaded local owner map from', p)
+                    return data
+            except Exception as e:
+                print('Failed to load', p, e)
     return {}
 
 
@@ -60,8 +79,10 @@ def extract_issue_keys_from_json(data):
 
 def main():
     jira_map = load_jira_map()
-    if not jira_map:
-        print('Empty jira map; exiting')
+    local_map = load_local_map()
+
+    if not jira_map and not local_map:
+        print('Empty jira map and no local owner map; exiting')
         return
 
     modified = 0
@@ -89,9 +110,26 @@ def main():
             issue_keys = extract_issue_keys_from_json(entry)
             assigned = []
             for k in issue_keys:
-                info = jira_map.get(k)
+                info = jira_map.get(k) if jira_map else None
                 if info and info.get('displayName'):
                     assigned.append(info.get('displayName'))
+                else:
+                    # fallback to local map by issue key
+                    lm = local_map.get(k) if local_map else None
+                    if lm and isinstance(lm, dict) and lm.get('displayName'):
+                        assigned.append(lm.get('displayName'))
+
+            # if no assignee found by issue keys, try mapping from existing raw owner label
+            if not assigned:
+                labels_raw = [l.get('value') for l in (entry.get('labels') or []) if isinstance(l, dict) and l.get('name') == 'owner']
+                for raw in labels_raw:
+                    if not raw:
+                        continue
+                    # try exact match in local_map for owner label
+                    lm = local_map.get(raw)
+                    if lm and isinstance(lm, dict) and lm.get('displayName'):
+                        assigned.append(lm.get('displayName'))
+                        break
 
             if not assigned:
                 continue
