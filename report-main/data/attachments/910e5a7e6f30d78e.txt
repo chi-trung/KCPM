@@ -1,0 +1,10 @@
+pm.test('status code is success or auth failure', function () {
+  pm.expect([200, 400, 401, 403, 422]).to.include(pm.response.code);
+});
+if (pm.response.code === 200) {
+  const body = pm.response.json();
+  const token = body.accessToken || body.token || body.jwtToken || (body.data && (body.data.accessToken || body.data.token || body.data.jwtToken));
+  if (token) {
+    pm.collectionVariables.set('citizenToken', token);
+  }
+}
