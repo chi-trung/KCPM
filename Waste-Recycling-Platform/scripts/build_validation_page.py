@@ -39,6 +39,30 @@ def collect_issue_keys(results_dir):
     return keys
 
 
+def extract_issue_keys(entry):
+    keys = set()
+    labels = entry.get('labels') or []
+    links = entry.get('links') or []
+
+    for label in labels:
+        if isinstance(label, dict) and label.get('name') in ('issue', 'Issue', 'ISSUE'):
+            value = label.get('value')
+            if value:
+                keys.add(value.rstrip('/').split('/')[-1])
+
+    for link in links:
+        if isinstance(link, dict) and link.get('type') == 'issue':
+            name = (link.get('name') or '').strip()
+            if name:
+                keys.add(name)
+                continue
+            url = link.get('url') or ''
+            if isinstance(url, str):
+                keys.add(url.rstrip('/').split('/')[-1])
+
+    return keys
+
+
 def main():
     results_dir = Path('Waste-Recycling-Platform/allure-results')
     validation_dir = Path(os.environ.get('VALIDATION_OUTPUT_DIR', 'validation-temp'))
@@ -52,6 +76,7 @@ def main():
         'jira_sample': {},
         'injected_count': 0,
         'owners': [],
+        'raw_owner_labels': [],
         'owner_slugs': [],
         'owner_folders': [],
         'xunit_present': False,
@@ -105,10 +130,28 @@ def main():
                 json_file.name,
             )
         ).lower()
+
+        issue_keys = extract_issue_keys(data)
+        resolved_owner = None
+        for issue_key in issue_keys:
+            jira_entry = jira_map.get(issue_key) or {}
+            display_name = jira_entry.get('displayName')
+            if display_name and not jira_entry.get('unassigned'):
+                resolved_owner = display_name
+                break
+
+        raw_owner_label = None
         for label in labels:
             if label.get('name') == 'owner' and label.get('value'):
                 summary['injected_count'] += 1
-                summary['owners'].append(label.get('value'))
+                raw_owner_label = label.get('value')
+                summary['raw_owner_labels'].append(raw_owner_label)
+
+        if resolved_owner:
+            summary['owners'].append(resolved_owner)
+        elif raw_owner_label:
+            # Fallback only when Jira has not resolved the issue yet.
+            summary['owners'].append(raw_owner_label)
         package_values = [label.get('value') for label in labels if label.get('name') in ('package', 'suite', 'subSuite')]
         joined = ' '.join(str(value) for value in package_values)
         if 'WastePlatform.Tests' in joined or '.Tests.' in joined or 'WastePlatform' in joined:

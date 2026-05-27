@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "76918ebf-d13e-4280-a4de-6027e9aa7e2f",
     "name": "Postman API Tests",
-    "description": "Import this collection together with the matching environment file.\n\nRecommended usage:\n- Set baseUrl to your local or deployed API URL\n- Login with the role-specific requests to populate tokens\n- Use managementToken for endpoints that allow Admin or Enterprise\n- Use the dedicated role tokens for Citizen, Collector, Enterprise, and Admin folders\n\nThis collection covers health, auth, public endpoints, reports, complaints, notifications, citizen flows, collector flows, enterprise flows, and admin flows.",
+    "description": "Import this collection together with the matching environment file.\n\nRecommended usage:\n- Set baseUrl to your local or deployed API URL\n- Login with the role-specific requests to populate tokens\n- Use managementToken for endpoints that allow Admin or Enterprise\n- Use the dedicated role tokens for Citizen, Collector, Enterprise, and Admin folders\n- For task-specific runs, keep only the endpoints related to the Jira key in the task description\n\nTask mapping:\n- KIEM-4: Auth APIs\n- KIEM-14: Collector APIs and Collector Task APIs\n- KIEM-16: Enterprise API task assignment/progress endpoints\n- KIEM-17: Enterprise reward rule endpoints\n- KIEM-19: Notifications APIs and real-time task flow\n\nThis collection covers health, auth, public endpoints, reports, complaints, notifications, citizen flows, collector flows, enterprise flows, and admin flows.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "43354995",
     "_collection_link": "https://go.postman.co/collection/43354995-76918ebf-d13e-4280-a4de-6027e9aa7e2f?source=collection_link"
@@ -124,7 +124,7 @@
                 "roles"
               ]
             },
-            "description": "Use this to inspect available roles before registering users."
+            "description": "KIEM-4 auth flow. Use this to inspect available roles before registering users."
           },
           "response": []
         },
@@ -174,7 +174,7 @@
                 "register"
               ]
             },
-            "description": "Register a new citizen account. The email is timestamped to avoid duplicates."
+            "description": "KIEM-4 auth flow. Register a new citizen account. The email is timestamped to avoid duplicates."
           },
           "response": [
             {
@@ -267,7 +267,7 @@
                 "register"
               ]
             },
-            "description": "Register a new enterprise account. Adjust payload if your backend registration command uses a slightly different shape."
+            "description": "KIEM-4 auth flow. Register a new enterprise account. Adjust payload if your backend registration command uses a slightly different shape."
           },
           "response": []
         },
@@ -316,7 +316,7 @@
                 "login"
               ]
             },
-            "description": "Use this request to capture a citizen token into citizenToken."
+            "description": "KIEM-4 auth flow. Use this request to capture a citizen token into citizenToken."
           },
           "response": []
         },
@@ -365,7 +365,7 @@
                 "login"
               ]
             },
-            "description": "Use this request to capture an enterprise token into enterpriseToken."
+            "description": "KIEM-4 auth flow. Use this request to capture an enterprise token into enterpriseToken."
           },
           "response": []
         },
@@ -414,7 +414,7 @@
                 "login"
               ]
             },
-            "description": "Use this request to capture a collector token into collectorToken."
+            "description": "KIEM-14 collector flow. Use this request to capture a collector token into collectorToken."
           },
           "response": []
         },
@@ -464,7 +464,7 @@
                 "login"
               ]
             },
-            "description": "Use this request to capture an admin token into adminToken and managementToken."
+            "description": "KIEM-16 / KIEM-17 / KIEM-19 admin-management flow. Use this request to capture an admin token into adminToken and managementToken."
           },
           "response": []
         }
@@ -1335,7 +1335,7 @@
                 }
               ]
             },
-            "description": "List the current citizen notifications."
+            "description": "KIEM-19 notifications flow. List the current citizen notifications."
           },
           "response": []
         },
@@ -1368,7 +1368,7 @@
                 "unread-count"
               ]
             },
-            "description": "Get unread notification count for the current citizen."
+            "description": "KIEM-19 notifications flow. Get unread notification count for the current citizen."
           },
           "response": []
         },
@@ -1402,7 +1402,7 @@
                 "read"
               ]
             },
-            "description": "Mark one notification as read."
+            "description": "KIEM-19 notifications flow. Mark one notification as read."
           },
           "response": []
         },
@@ -1435,7 +1435,7 @@
                 "mark-all-read"
               ]
             },
-            "description": "Mark all notifications as read."
+            "description": "KIEM-19 notifications flow. Mark all notifications as read."
           },
           "response": []
         }
@@ -1747,7 +1747,7 @@
                 "profile"
               ]
             },
-            "description": "Fetch the current collector profile."
+            "description": "KIEM-14 collector flow. Fetch the current collector profile."
           },
           "response": []
         },
@@ -1790,7 +1790,7 @@
                 "availability"
               ]
             },
-            "description": "Toggle collector availability."
+            "description": "KIEM-14 collector flow. Toggle collector availability."
           },
           "response": []
         }
@@ -1844,7 +1844,7 @@
                 }
               ]
             },
-            "description": "List tasks assigned to the current collector."
+            "description": "KIEM-14 collector task flow. List tasks assigned to the current collector."
           },
           "response": []
         },
@@ -1878,7 +1878,7 @@
                 "{{taskId}}"
               ]
             },
-            "description": "Get detailed task information."
+            "description": "KIEM-14 collector task flow. Get detailed task information."
           },
           "response": []
         },
@@ -1913,7 +1913,7 @@
                 "on-the-way"
               ]
             },
-            "description": "Move task to OnTheWay."
+            "description": "KIEM-14 collector task flow. Move task to OnTheWay."
           },
           "response": []
         },
@@ -1968,7 +1968,7 @@
                 "complete"
               ]
             },
-            "description": "Complete a task and upload proof images if required."
+            "description": "KIEM-14 collector task flow. Complete a task and upload proof images if required."
           },
           "response": []
         },
@@ -2002,7 +2002,7 @@
                 "stats"
               ]
             },
-            "description": "Collector task summary statistics."
+            "description": "KIEM-14 collector task flow. Collector task summary statistics."
           },
           "response": []
         }
@@ -2363,7 +2363,7 @@
                 "reward-rules"
               ]
             },
-            "description": "List reward rules for the enterprise."
+            "description": "KIEM-17 enterprise reward-rule flow. List reward rules for the enterprise."
           },
           "response": []
         },
@@ -2405,7 +2405,7 @@
                 "reward-rules"
               ]
             },
-            "description": "Bulk update reward rules."
+            "description": "KIEM-17 enterprise reward-rule flow. Bulk update reward rules."
           },
           "response": []
         },
@@ -2439,7 +2439,7 @@
                 "stats"
               ]
             },
-            "description": "Enterprise task statistics."
+            "description": "KIEM-16 enterprise task flow. Enterprise task statistics."
           },
           "response": []
         },
@@ -2474,7 +2474,7 @@
                 "progress"
               ]
             },
-            "description": "Get one task progress."
+            "description": "KIEM-16 enterprise task flow. Get one task progress."
           },
           "response": []
         },
@@ -2508,7 +2508,7 @@
                 "collectors"
               ]
             },
-            "description": "List collectors available for assignment."
+            "description": "KIEM-16 enterprise task flow. List collectors available for assignment."
           },
           "response": []
         },
@@ -2552,7 +2552,7 @@
                 "assign-collector"
               ]
             },
-            "description": "Assign a collector to a task. Use managementToken if you want admin access, or enterpriseToken for enterprise flows."
+            "description": "KIEM-16 enterprise task flow. Assign a collector to a task. Use managementToken if you want admin access, or enterpriseToken for enterprise flows."
           },
           "response": []
         },
