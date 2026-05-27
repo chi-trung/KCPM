@@ -19,6 +19,7 @@ RESULTS_DIRS = [
     os.path.join('Waste-Recycling-Platform', 'allure-results'),
     os.path.join('allure-results'),
 ]
+DEFAULT_BOARD_ID = os.environ.get('JIRA_BOARD_ID', '3')
 # Write owner map to whichever results folder exists and to repo root
 OUT_PATHS = [
     os.path.join('Waste-Recycling-Platform', 'allure-results', 'jira-owner-map.json'),
@@ -108,6 +109,24 @@ def normalize_jira_base_url(base_url):
     return base_url.rstrip('/')
 
 
+def load_local_owner_map():
+    paths = [
+        os.path.join('Waste-Recycling-Platform', 'allure-results', 'local-owner-map.json'),
+        os.path.join('local-owner-map.json'),
+    ]
+    for path in paths:
+        if not os.path.exists(path):
+            continue
+        try:
+            with open(path, 'r', encoding='utf8') as f:
+                data = json.load(f)
+            print('Loaded local owner map from', path)
+            return data
+        except Exception as e:
+            print('Failed to load local owner map from', path, e, file=sys.stderr)
+    return {}
+
+
 def write_owner_map(owner_map):
     for out in OUT_PATHS:
         try:
@@ -173,6 +192,57 @@ def query_jira_issue(base_url, auth_header, issue_key):
             print(f'Error querying Jira for {issue_key}: {e}', file=sys.stderr)
             continue
     return None
+
+
+def fetch_board_issues(base_url, auth_header, board_id):
+    normalized_base = normalize_jira_base_url(base_url)
+    board_issues = []
+    start_at = 0
+    max_results = 1000
+
+    while True:
+        url = normalized_base.rstrip('/') + (
+            f'/rest/agile/1.0/board/{board_id}/issue?startAt={start_at}'
+            f'&maxResults={max_results}&fields=assignee'
+        )
+        print('Request URL:', url)
+        req = urllib.request.Request(url, headers={'Authorization': auth_header, 'Accept': 'application/json'})
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                data = json.loads(resp.read().decode('utf8'))
+        except urllib.error.HTTPError as e:
+            try:
+                body = e.read().decode('utf8')
+            except Exception:
+                body = ''
+            print(f'Jira board HTTP error: {e.code} {e.reason} - {body}', file=sys.stderr)
+            return []
+        except Exception as e:
+            print(f'Error querying Jira board {board_id}: {e}', file=sys.stderr)
+            return []
+
+        issues = data.get('issues') or []
+        if not isinstance(issues, list):
+            issues = []
+        board_issues.extend([issue for issue in issues if isinstance(issue, dict)])
+
+        total = int(data.get('total') or len(board_issues))
+        if start_at + len(issues) >= total or not issues:
+            break
+        start_at += len(issues)
+
+    return board_issues
+
+
+def build_owner_entry(assignee):
+    if not assignee:
+        return {'displayName': None, 'accountId': None, 'email': None, 'unassigned': True}
+    return {
+        'displayName': assignee.get('displayName'),
+        'accountId': assignee.get('accountId'),
+        'email': assignee.get('emailAddress'),
+        'unassigned': not bool(assignee.get('displayName')),
+    }
     
 
 
@@ -185,21 +255,24 @@ def main():
         print('Done')
         return
 
+    local_map = load_local_owner_map()
+
     base = os.environ.get('JIRA_BASE_URL')
     email = os.environ.get('JIRA_EMAIL')
     token = os.environ.get('JIRA_API_TOKEN')
     if not base or not email or not token:
-        # If we discovered issue keys but cannot call Jira, write a map with
-        # all keys marked unassigned so downstream validation sees a non-empty
-        # jira-owner-map.json (avoids failing 'jira-owner-map is empty').
-        print('Warning: Jira secrets missing; cannot query Jira.', file=sys.stderr)
-        if keys:
-            owner_map = {k: {'displayName': None, 'accountId': None, 'unassigned': True} for k in sorted(keys)}
-            write_owner_map(owner_map)
-            print(f'Wrote owner map with {len(owner_map)} keys (unassigned)')
-        else:
-            write_owner_map({})
-            print('No issue keys found; wrote empty map')
+        # If Jira secrets are missing, still use the local owner map so the
+        # report can show the intended assignee names instead of unassigned.
+        print('Warning: Jira secrets missing; using local owner map fallback.', file=sys.stderr)
+        owner_map = {}
+        for key in sorted(keys):
+            fallback = local_map.get(key) if isinstance(local_map, dict) else None
+            owner_map[key] = build_owner_entry(fallback)
+        for alias, entry in (local_map or {}).items():
+            if alias not in owner_map and isinstance(entry, dict):
+                owner_map[alias] = build_owner_entry(entry)
+        write_owner_map(owner_map)
+        print(f'Wrote owner map with {len(owner_map)} keys from local fallback')
         print('Done')
         return
 
@@ -211,23 +284,42 @@ def main():
     auth_header = f'Basic {basic}'
 
     owner_map = {}
+
+    board_issues = fetch_board_issues(normalized_base, auth_header, DEFAULT_BOARD_ID)
+    for issue in board_issues:
+        key = issue.get('key')
+        if not key or key not in keys:
+            continue
+        fields = issue.get('fields') or {}
+        owner_map[key] = build_owner_entry(fields.get('assignee'))
+
     for key in sorted(keys):
+        if key in owner_map and not owner_map[key].get('unassigned'):
+            continue
         print('Querying', key)
         data = query_jira_issue(normalized_base, auth_header, key)
         if not data:
-            owner_map[key] = {'displayName': None, 'accountId': None, 'unassigned': True}
+            fallback = local_map.get(key) if isinstance(local_map, dict) else None
+            owner_map[key] = build_owner_entry(fallback) if fallback else build_owner_entry(None)
             continue
         fields = data.get('fields') or {}
         assignee = fields.get('assignee')
         if not assignee:
-            owner_map[key] = {'displayName': None, 'accountId': None, 'unassigned': True}
+            fallback = local_map.get(key) if isinstance(local_map, dict) else None
+            owner_map[key] = build_owner_entry(fallback) if fallback else build_owner_entry(None)
         else:
-            owner_map[key] = {
-                'displayName': assignee.get('displayName'),
-                'accountId': assignee.get('accountId') or assignee.get('accountId'),
-                'email': assignee.get('emailAddress'),
-                'unassigned': False,
-            }
+            owner_map[key] = build_owner_entry(assignee)
+
+    # Backfill any missing local aliases so manual labels like `auth` can still resolve.
+    if isinstance(local_map, dict):
+        for alias, entry in local_map.items():
+            if alias not in owner_map and isinstance(entry, dict):
+                owner_map[alias] = {
+                    'displayName': entry.get('displayName'),
+                    'accountId': entry.get('accountId'),
+                    'email': entry.get('email'),
+                    'unassigned': not bool(entry.get('displayName')),
+                }
 
     resolved = [k for k,v in owner_map.items() if not v.get('unassigned')]
     print(f'Resolved {len(resolved)} / {len(owner_map)} issues with assignees')
