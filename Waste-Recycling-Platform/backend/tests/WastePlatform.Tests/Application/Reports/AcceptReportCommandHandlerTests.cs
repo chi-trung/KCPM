@@ -5,6 +5,7 @@ using WastePlatform.Application.Reports.Commands;
 using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
+using WastePlatform.Tests.TestSupport;
 using Xunit;
 
 namespace WastePlatform.Tests.Application.Reports;
@@ -19,6 +20,15 @@ namespace WastePlatform.Tests.Application.Reports;
 [Allure.Net.Commons.Attributes.AllureLabel("story", "Enterprise accepts a pending waste report")]
 [Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
 [Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "AcceptReportCommandHandlerTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Reports")]
+[AllureOwner("Nguyễn Minh Phụng")]
+[AllureSeverity(SeverityLevel.critical)]
+[Allure.Net.Commons.Attributes.AllureTag("unit")]
+[Allure.Net.Commons.Attributes.AllureTag("backend")]
+[Allure.Net.Commons.Attributes.AllureTag("reports")]
+[Allure.Net.Commons.Attributes.AllureTag("state-transition")]
+[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-5")]
 public class AcceptReportCommandHandlerTests
 {
     private readonly Mock<IReportRepository> _mockReportRepository;
@@ -33,6 +43,7 @@ public class AcceptReportCommandHandlerTests
     #region TC-REP-005: Happy Path - Accept Pending Report
 
     [Fact]
+    [AllureDescription("TC-REP-005: Enterprise accepts a Pending report — status transitions to Accepted and handler returns success result.")]
     public async Task Handle_WhenReportIsPending_ShouldAcceptSuccessfully()
     {
         // Arrange
@@ -56,8 +67,12 @@ public class AcceptReportCommandHandlerTests
             UserId = Guid.NewGuid()
         };
 
+        AllureAttachmentHelper.AttachJson("accept-report-command", new { command.ReportId, command.UserId, InitialStatus = "Pending" });
+
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
+
+        AllureAttachmentHelper.AttachJson("accept-report-result", new { result.ReportId, ReportStatus = result.ReportStatus.ToString(), result.Message });
 
         // Assert
         result.Should().NotBeNull();
@@ -71,6 +86,7 @@ public class AcceptReportCommandHandlerTests
     #region TC-REP-007: Invalid State Transitions
 
     [Fact]
+    [AllureDescription("TC-REP-007: Attempting to accept an already-Accepted report throws InvalidOperationException.")]
     public async Task Handle_WhenReportIsAccepted_ShouldThrowInvalidOperationException()
     {
         // Arrange - Report already Accepted
@@ -89,21 +105,21 @@ public class AcceptReportCommandHandlerTests
             .Setup(x => x.GetByIdAsync(reportId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(report);
 
-        var command = new AcceptReportAndCreateTaskCommand
-        {
-            ReportId = reportId,
-            UserId = Guid.NewGuid()
-        };
+        var command = new AcceptReportAndCreateTaskCommand { ReportId = reportId, UserId = Guid.NewGuid() };
+
+        AllureAttachmentHelper.AttachJson("accept-already-accepted-command", new { command.ReportId, CurrentStatus = "Accepted" });
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => _handler.Handle(command, CancellationToken.None));
 
+        AllureAttachmentHelper.AttachText("accept-already-accepted-error", exception.Message);
         exception.Message.Should().Contain("can only be accepted if it is in Pending status");
         exception.Message.Should().Contain("Current status: Accepted");
     }
 
     [Fact]
+    [AllureDescription("TC-REP-007: Attempting to accept an already-Rejected report throws InvalidOperationException.")]
     public async Task Handle_WhenReportIsRejected_ShouldThrowInvalidOperationException()
     {
         // Arrange - Report already Rejected
@@ -122,21 +138,21 @@ public class AcceptReportCommandHandlerTests
             .Setup(x => x.GetByIdAsync(reportId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(report);
 
-        var command = new AcceptReportAndCreateTaskCommand
-        {
-            ReportId = reportId,
-            UserId = Guid.NewGuid()
-        };
+        var command = new AcceptReportAndCreateTaskCommand { ReportId = reportId, UserId = Guid.NewGuid() };
+
+        AllureAttachmentHelper.AttachJson("accept-rejected-report-command", new { command.ReportId, CurrentStatus = "Rejected" });
 
         // Act & Assert
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => _handler.Handle(command, CancellationToken.None));
 
+        AllureAttachmentHelper.AttachText("accept-rejected-report-error", exception.Message);
         exception.Message.Should().Contain("can only be accepted if it is in Pending status");
         exception.Message.Should().Contain("Current status: Rejected");
     }
 
     [Fact]
+    [AllureDescription("TC-REP-007: Attempting to accept a Collected report throws InvalidOperationException.")]
     public async Task Handle_WhenReportIsCollected_ShouldThrowInvalidOperationException()
     {
         // Arrange - Report already Collected
@@ -164,9 +180,12 @@ public class AcceptReportCommandHandlerTests
         };
 
         // Act & Assert
+        AllureAttachmentHelper.AttachJson("accept-collected-report-command", new { command.ReportId, CurrentStatus = "Collected" });
+
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => _handler.Handle(command, CancellationToken.None));
 
+        AllureAttachmentHelper.AttachText("accept-collected-report-error", exception.Message);
         exception.Message.Should().Contain("can only be accepted if it is in Pending status");
         exception.Message.Should().Contain("Current status: Collected");
     }
@@ -176,6 +195,7 @@ public class AcceptReportCommandHandlerTests
     #region TC-REP-004: Report Not Found
 
     [Fact]
+    [AllureDescription("TC-REP-004: Accept handler returns InvalidOperationException when report ID does not exist.")]
     public async Task Handle_WhenReportDoesNotExist_ShouldThrowInvalidOperationException()
     {
         // Arrange
@@ -192,9 +212,12 @@ public class AcceptReportCommandHandlerTests
         };
 
         // Act & Assert
+        AllureAttachmentHelper.AttachJson("accept-not-found-command", new { command.ReportId });
+
         var exception = await Assert.ThrowsAsync<InvalidOperationException>(
             () => _handler.Handle(command, CancellationToken.None));
 
+        AllureAttachmentHelper.AttachText("accept-not-found-error", exception.Message);
         exception.Message.Should().Be("Report not found");
     }
 

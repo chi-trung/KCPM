@@ -26,19 +26,20 @@ namespace WastePlatform.Tests.Application.Reports;
 ///   TC-REP-005 : Accept Report - Happy Path (Pending → Accepted)
 ///   TC-REP-007 : Invalid State Transition (Assigned → Accept bị chặn)
 /// </summary>
-[AllureEpic("Reports")]
+[AllureEpic("KIEM-5: Reports Module Testing")]
 [AllureFeature("Accept Report Handler (Extended)")]
 [Allure.Net.Commons.Attributes.AllureLabel("story", "Enterprise approves a pending waste report")]
 [Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
 [Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
 [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "AcceptReportCommandHandlerV2Tests")]
 [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Reports")]
-[AllureOwner("backend")]
+[AllureOwner("Nguyễn Minh Phụng")]
 [AllureSeverity(SeverityLevel.critical)]
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("backend")]
 [Allure.Net.Commons.Attributes.AllureTag("reports")]
 [Allure.Net.Commons.Attributes.AllureTag("state-transition")]
+[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-5")]
 public class AcceptReportCommandHandlerV2Tests
 {
     // ─── Dependencies (được mock toàn bộ, không chạm DB/Network thật) ──────────
