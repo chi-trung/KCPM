@@ -111,6 +111,13 @@ def normalize_jira_base_url(base_url):
 def write_owner_map(owner_map):
     for out in OUT_PATHS:
         try:
+            # ensure parent dir exists
+            parent = os.path.dirname(out)
+            if parent and not os.path.isdir(parent):
+                try:
+                    os.makedirs(parent, exist_ok=True)
+                except Exception:
+                    pass
             with open(out, 'w', encoding='utf8') as f:
                 json.dump(owner_map, f, ensure_ascii=False, indent=2)
             print('Wrote', out)
@@ -128,22 +135,45 @@ def get_env_var(name):
 
 def query_jira_issue(base_url, auth_header, issue_key):
     normalized_base = normalize_jira_base_url(base_url)
-    url = normalized_base.rstrip('/') + f'/rest/api/3/issue/{issue_key}?fields=assignee'
-    print('Request URL:', url)
-    req = urllib.request.Request(url, headers={'Authorization': auth_header, 'Accept': 'application/json'})
-    try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            body = resp.read().decode('utf8')
-            return json.loads(body)
-    except urllib.error.HTTPError as e:
-        print(f'Jira HTTP error for {issue_key}: {e.code} {e.reason}', file=sys.stderr)
-        if e.code in (401, 403):
-            print('Jira auth failed. Check JIRA_BASE_URL, JIRA_EMAIL and JIRA_API_TOKEN.', file=sys.stderr)
-            sys.exit(3)
-        return None
-    except Exception as e:
-        print(f'Error querying Jira for {issue_key}: {e}', file=sys.stderr)
-        return None
+    # Try multiple endpoints/approaches to tolerate API differences and permission reveals
+    candidates = [
+        normalized_base.rstrip('/') + f'/rest/api/3/issue/{issue_key}?fields=assignee',
+        normalized_base.rstrip('/') + f'/rest/api/2/issue/{issue_key}?fields=assignee',
+        normalized_base.rstrip('/') + f'/rest/api/3/search?jql=key%3D{issue_key}&fields=assignee',
+        normalized_base.rstrip('/') + f'/rest/api/2/search?jql=key%3D{issue_key}&fields=assignee',
+    ]
+
+    for url in candidates:
+        try:
+            print('Request URL:', url)
+            req = urllib.request.Request(url, headers={'Authorization': auth_header, 'Accept': 'application/json'})
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                body = resp.read().decode('utf8')
+                try:
+                    data = json.loads(body)
+                except Exception:
+                    data = None
+                # If search API returned issues array, normalize to first issue
+                if data and 'issues' in data and isinstance(data.get('issues'), list) and data['issues']:
+                    return data['issues'][0]
+                return data
+        except urllib.error.HTTPError as e:
+            # Try to read response body for debugging; some Jira instances return JSON error details
+            try:
+                body = e.read().decode('utf8')
+            except Exception:
+                body = ''
+            print(f'Jira HTTP error for {issue_key}: {e.code} {e.reason} - {body}', file=sys.stderr)
+            if e.code in (401, 403):
+                print('Jira auth failed. Check JIRA_BASE_URL, JIRA_EMAIL and JIRA_API_TOKEN.', file=sys.stderr)
+                sys.exit(3)
+            # on 404 or other errors, continue trying other candidate endpoints
+            continue
+        except Exception as e:
+            print(f'Error querying Jira for {issue_key}: {e}', file=sys.stderr)
+            continue
+    return None
+    
 
 
 def main():
