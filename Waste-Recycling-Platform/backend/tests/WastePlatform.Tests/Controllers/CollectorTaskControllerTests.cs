@@ -15,7 +15,7 @@ using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Controllers;
 
-[AllureEpic("Collector Operations")]
+[AllureEpic("KIEM-15: CollectorTask Module Testing")]
 [AllureFeature("Task Lifecycle")]
 [Allure.Net.Commons.Attributes.AllureLabel("story", "Set on the way and complete collection tasks")]
 [Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
@@ -27,10 +27,11 @@ namespace WastePlatform.Tests.Controllers;
 [Allure.Net.Commons.Attributes.AllureTag("api")]
 [Allure.Net.Commons.Attributes.AllureTag("collector")]
 [Allure.Net.Commons.Attributes.AllureTag("task")]
-[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-14")]
+[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-15")]
 public class CollectorTaskControllerTests
 {
     [Fact]
+    [AllureDescription("TC-TASK-003: Collector sets task OnTheWay — status updates, SignalR broadcasts, and citizen is notified.")]
     public async Task SetOnTheWay_WhenTaskBelongsToCollector_ShouldUpdateStatusBroadcastAndNotify()
     {
         await using var context = CreateContext();
@@ -57,10 +58,11 @@ public class CollectorTaskControllerTests
 
         var result = await controller.SetOnTheWay(scenario.Task.Id);
 
-        // Attach request context so Allure shows execution details
-        AllureAttachmentHelper.AttachJson("set-on-the-way-request", new { TaskId = scenario.Task.Id });
+        AllureAttachmentHelper.AttachJson("set-on-the-way-request", new { TaskId = scenario.Task.Id, CollectorId = scenario.Collector.Id });
 
         result.Should().BeOfType<OkObjectResult>();
+        var okResult = (OkObjectResult)result;
+        AllureAttachmentHelper.AttachJson("set-on-the-way-response", okResult.Value!);
         scenario.Task.Status.Should().Be(CollectionTaskStatus.OnTheWay);
         scenario.Task.StatusLogs.Should().ContainSingle(log => log.Status == CollectionTaskStatus.OnTheWay);
 
@@ -74,6 +76,7 @@ public class CollectorTaskControllerTests
     }
 
     [Fact]
+    [AllureDescription("TC-TASK-004: Collector completes task with weight and notes — reward points created and SignalR broadcasts to all and user.")]
     public async Task CompleteTask_WithRewardRule_ShouldCollectTaskCreateRewardAndBroadcast()
     {
         await using var context = CreateContext();
@@ -104,12 +107,13 @@ public class CollectorTaskControllerTests
             },
             new FormFileCollection());
 
-        // Attach submitted form for Allure
         AllureAttachmentHelper.AttachJson("complete-task-form", new { TaskId = scenario.Task.Id, WeightKg = "12.5", Notes = "Collected at front gate" });
 
         var result = await controller.CompleteTask(scenario.Task.Id, form);
 
         result.Should().BeOfType<OkObjectResult>();
+        var okResult = (OkObjectResult)result;
+        AllureAttachmentHelper.AttachJson("complete-task-response", okResult.Value!);
 
         var updatedTask = await context.CollectionTasks
             .Include(t => t.WasteReport)
@@ -135,6 +139,7 @@ public class CollectorTaskControllerTests
     }
 
     [Fact]
+    [AllureDescription("TC-TASK-004: CompleteTask rejects non-numeric WeightKg with 400 Bad Request.")]
     public async Task CompleteTask_WithInvalidWeight_ShouldReturnBadRequest()
     {
         await using var context = CreateContext();
