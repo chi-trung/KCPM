@@ -19,6 +19,14 @@ namespace WastePlatform.Tests.Application.Reports;
 [Allure.Net.Commons.Attributes.AllureLabel("story", "Retrieve a specific waste report by its ID")]
 [Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
 [Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "GetReportByIdQueryHandlerTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Reports")]
+[AllureOwner("Nguyễn Minh Phụng")]
+[AllureSeverity(SeverityLevel.normal)]
+[Allure.Net.Commons.Attributes.AllureTag("unit")]
+[Allure.Net.Commons.Attributes.AllureTag("backend")]
+[Allure.Net.Commons.Attributes.AllureTag("reports")]
+[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-5")]
 public class GetReportByIdQueryHandlerTests
 {
     private readonly Mock<IReportRepository> _mockReportRepository;
