@@ -1,0 +1,18 @@
+{
+  "userIds": [
+    "a6a65b0c-cd63-49a1-84d9-8b05a3b16ef0",
+    "68983fbb-567e-484e-87aa-6b0e90f1d7fe",
+    "3d02a320-b804-47d3-a7c0-37b0b2a62ea6"
+  ],
+  "methodName": "TaskStatusUpdated",
+  "payload": {
+    "Id": "c2581223-dc16-405c-9be8-8756ee4a81f5",
+    "Type": "TaskAssigned",
+    "Title": "\u0110\u00E3 ph\u00E2n c\u00F4ng ng\u01B0\u1EDDi thu gom",
+    "Message": "Collector s\u1EBD \u0111\u1EBFn thu gom b\u00E1o c\u00E1o c\u1EE7a b\u1EA1n.",
+    "ActionUrl": "/citizen/reports/2",
+    "RelatedEntityId": "73f12c1e-2652-4a9a-8dde-15a717d8e259",
+    "RelatedEntityType": "Report",
+    "CreatedAt": "2026-05-28T18:49:15.7119432Z"
+  }
+}
