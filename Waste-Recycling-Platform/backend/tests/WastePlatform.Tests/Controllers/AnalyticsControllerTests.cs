@@ -16,10 +16,16 @@ namespace WastePlatform.Tests.Controllers;
 
 [AllureEpic("Verification Practice")]
 [AllureFeature("Analytics Module")]
-[AllureLabel("story", "Public Analytics Verification")]
-[AllureLabel("parentSuite", "xUnit Backend Tests")]
-[AllureLabel("suite", "Controllers")]
-[AllureLabel("package", "WastePlatform.Tests.Controllers")]
+[Allure.Net.Commons.Attributes.AllureLabel("story", "Public Analytics Verification")]
+[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+[Allure.Net.Commons.Attributes.AllureLabel("suite", "Controllers")]
+[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "AnalyticsControllerTests")]
+[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Controllers")]
+[AllureOwner("Thanh Duy")] 
+[AllureSeverity(SeverityLevel.critical)]
+[Allure.Net.Commons.Attributes.AllureTag("api")]
+[Allure.Net.Commons.Attributes.AllureTag("analytics")]
+[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-10")] // Cố định link Jira chứa key KIEM-10 tại đây
 public class AnalyticsControllerTests
 {
     private readonly Mock<IMediator> _mediatorMock;
@@ -30,8 +36,6 @@ public class AnalyticsControllerTests
     }
 
     [Fact]
-    [AllureOwner("Thanh Duy")]
-    [AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-10")]
     [AllureDescription("Verify public analytics endpoint for data availability, response structure, and non-auth access")]
     public async Task GetReportAnalytics_PublicEndpointWithoutToken_ShouldReturn200Ok()
     {
@@ -59,15 +63,14 @@ public class AnalyticsControllerTests
             {
                 HttpContext = new DefaultHttpContext
                 {
-                    // no Authorization header / no user claims
+                    // No Authorization header / no user claims nhằm chứng minh tính công khai công cộng
                     User = new ClaimsPrincipal(new ClaimsIdentity())
                 }
             }
         };
 
-        AllureAttachmentHelper.AttachJson(
-            "public-analytics-report-request",
-            new { startDate = (DateTime?)null, endDate = (DateTime?)null, noAuth = true });
+        var requestAttachment = new { startDate = (DateTime?)null, endDate = (DateTime?)null, noAuth = true };
+        AllureAttachmentHelper.AttachJson("public-analytics-report-request", requestAttachment);
 
         // Act
         var result = await controller.GetReportAnalytics();
@@ -76,15 +79,11 @@ public class AnalyticsControllerTests
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
         ok.StatusCode.Should().Be(StatusCodes.Status200OK);
 
-        AllureAttachmentHelper.AttachJson(
-            "public-analytics-report-response-200",
-            ok.Value!);
+        AllureAttachmentHelper.AttachJson("public-analytics-report-response-200", ok.Value!);
     }
 
     [Fact]
-    [AllureOwner("Thanh Duy")]
-    [AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-10")]
-    [AllureDescription("Verify public analytics endpoint for data availability, response structure, and non-auth access")]
+    [AllureDescription("Verify that the public analytics response body contains a valid structured object with dynamic message and data fields.")]
     public async Task GetReportAnalytics_PublicEndpoint_ShouldReturnValidResponseBodyStructure()
     {
         // Arrange
@@ -103,7 +102,7 @@ public class AnalyticsControllerTests
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
         ok.Value.Should().NotBeNull();
 
-        // Controller wraps response as: { message, data }
+        // Controller bọc kết quả dưới dạng Anonymous Object: { message, data }
         ok.Value!.Should().BeAssignableTo<object>();
 
         var valueType = ok.Value.GetType();
@@ -115,18 +114,12 @@ public class AnalyticsControllerTests
         dataObj.Should().BeOfType<ReportAnalyticsDto>();
 
         var data = (ReportAnalyticsDto)dataObj!;
-
         data.ReportsByCategory.Should().NotBeNull();
         data.WasteByArea.Should().NotBeNull();
         data.WasteByType.Should().NotBeNull();
         data.MonthlyTrends.Should().NotBeNull();
-
-        // key required stats
         data.TotalReports.Should().Be(expectedDto.TotalReports);
 
-        AllureAttachmentHelper.AttachJson(
-            "public-analytics-report-response-structure",
-            ok.Value!);
+        AllureAttachmentHelper.AttachJson("public-analytics-report-response-structure", ok.Value!);
     }
 }
-
