@@ -31,7 +31,7 @@ public class AnalyticsControllerTests
 
     [Fact]
     [AllureOwner("Thanh Duy")]
-    [AllureIssue("https://ut-team-36.atlassian.net/browse/WRP-BE-TESTS-007")]
+    [AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-10")]
     [AllureDescription("Verify public analytics endpoint for data availability, response structure, and non-auth access")]
     public async Task GetReportAnalytics_PublicEndpointWithoutToken_ShouldReturn200Ok()
     {
@@ -83,7 +83,7 @@ public class AnalyticsControllerTests
 
     [Fact]
     [AllureOwner("Thanh Duy")]
-    [AllureIssue("https://ut-team-36.atlassian.net/browse/WRP-BE-TESTS-007")]
+    [AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-10")]
     [AllureDescription("Verify public analytics endpoint for data availability, response structure, and non-auth access")]
     public async Task GetReportAnalytics_PublicEndpoint_ShouldReturnValidResponseBodyStructure()
     {
