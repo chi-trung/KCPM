@@ -156,6 +156,7 @@ Practical rule:
 
 - If a test result has no Jira key, the workflow cannot map it to an owner.
 - If the Jira key is present, owner sync should work without manual editing.
+- If Jira is unreachable or returns 404/410, use `Waste-Recycling-Platform/allure-results/local-owner-map.json` as the fallback source for the assignee display name. See [OWNER_MAPPING_MANUAL_FALLBACK.md](OWNER_MAPPING_MANUAL_FALLBACK.md).
 
 For the 5 current practice tasks, the branch and test files must stay aligned with the Jira key so the owner map is stable in the report.
 
@@ -167,3 +168,4 @@ Quick checklist before you push:
 - Did you run the relevant tests?
 - Did CI generate Allure results with the key still visible?
 - Did you confirm the Pages report shows the expected owner and test evidence?
+- If the CI owner is wrong, did you update `local-owner-map.json` with the exact Jira display name before rebuilding?

@@ -63,6 +63,7 @@ If the owner is wrong:
 2. Check whether Jira sync wrote the owner map.
 3. Check whether the inject step updated the Allure JSON.
 4. Re-run CI if the published Pages site is stale.
+5. If Jira still cannot resolve the assignee, update `Waste-Recycling-Platform/allure-results/local-owner-map.json` with the exact Jira display name and rebuild.
 
 ## Practical Rule For This Course
 

@@ -45,6 +45,8 @@ git rebase origin/main
 - Validation page: check CI and owner sync.
 - Owner report: verify the assignee name from Jira.
 
+If the live Jira owner is unavailable, update `Waste-Recycling-Platform/allure-results/local-owner-map.json` with the real display name and re-run the report pipeline. See [OWNER_MAPPING_MANUAL_FALLBACK.md](OWNER_MAPPING_MANUAL_FALLBACK.md).
+
 ## 6. What to do before PR
 
 - Run the related xUnit tests.
@@ -55,3 +57,5 @@ git rebase origin/main
 ## One-line rule
 
 If the test does not show up in Allure, it is not done yet.
+
+If the owner shows as a placeholder, the Jira key is probably present but the fallback map has not been updated yet.

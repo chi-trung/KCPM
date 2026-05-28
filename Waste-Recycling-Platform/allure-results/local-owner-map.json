@@ -1,7 +1,27 @@
 {
+  "KIEM-3": { "displayName": null, "accountId": null, "unassigned": true },
   "KIEM-4": { "displayName": "Nguyễn Chí Trung", "accountId": null, "unassigned": false },
+  "KIEM-5": { "displayName": "Minh Phụng", "accountId": null, "unassigned": false },
+  "KIEM-6": { "displayName": "Nguyễn Hoàng Phụng-CN2303E", "accountId": null, "unassigned": false },
+  "KIEM-7": { "displayName": "Nguyễn Hoàng Phụng-CN2303E", "accountId": null, "unassigned": false },
+  "KIEM-8": { "displayName": "11A6_03_Đăng", "accountId": null, "unassigned": false },
+  "KIEM-9": { "displayName": "11A6_03_Đăng", "accountId": null, "unassigned": false },
+  "KIEM-10": { "displayName": "Nguyễn Chí Trung", "accountId": null, "unassigned": false },
+  "KIEM-11": { "displayName": "Minh Phụng", "accountId": null, "unassigned": false },
+  "KIEM-12": { "displayName": "Nguyễn Hoàng Phụng-CN2303E", "accountId": null, "unassigned": false },
+  "KIEM-13": { "displayName": "11A6_03_Đăng", "accountId": null, "unassigned": false },
   "KIEM-14": { "displayName": "Nguyễn Chí Trung", "accountId": null, "unassigned": false },
+  "KIEM-15": { "displayName": "Minh Phụng", "accountId": null, "unassigned": false },
   "KIEM-16": { "displayName": "Nguyễn Chí Trung", "accountId": null, "unassigned": false },
   "KIEM-17": { "displayName": "Nguyễn Chí Trung", "accountId": null, "unassigned": false },
-  "KIEM-19": { "displayName": "Nguyễn Chí Trung", "accountId": null, "unassigned": false }
+  "KIEM-18": { "displayName": "Thanh Duy", "accountId": null, "unassigned": false },
+  "KIEM-19": { "displayName": "Nguyễn Chí Trung", "accountId": null, "unassigned": false },
+  "KIEM-20": { "displayName": "Minh Phụng", "accountId": null, "unassigned": false },
+  "KIEM-21": { "displayName": "Nguyễn Hoàng Phụng-CN2303E", "accountId": null, "unassigned": false },
+  "KIEM-22": { "displayName": "Thanh Duy", "accountId": null, "unassigned": false },
+  "KIEM-23": { "displayName": "11A6_03_Đăng", "accountId": null, "unassigned": false },
+  "KIEM-24": { "displayName": "Nguyễn Hoàng Phụng-CN2303E", "accountId": null, "unassigned": false },
+  "KIEM-26": { "displayName": "Nguyễn Hoàng Phụng-CN2303E", "accountId": null, "unassigned": false },
+  "KIEM-27": { "displayName": "Nguyễn Hoàng Phụng-CN2303E", "accountId": null, "unassigned": false },
+  "KIEM-28": { "displayName": "Minh Phụng", "accountId": null, "unassigned": false }
 }

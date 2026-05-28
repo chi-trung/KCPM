@@ -20,6 +20,8 @@ The owner sync logic looks for Jira keys in these places:
 
 It does not read custom label names like `KIEM` or `WRP` unless another script explicitly maps them.
 
+If Jira sync cannot resolve a key, the repo also supports a manual fallback map in `Waste-Recycling-Platform/allure-results/local-owner-map.json`. Read [OWNER_MAPPING_MANUAL_FALLBACK.md](OWNER_MAPPING_MANUAL_FALLBACK.md) before editing that file.
+
 ## Required Class Metadata
 
 Use a consistent set of class-level labels for every xUnit test class:
@@ -184,6 +186,8 @@ When you add or review a new report test, check these items before pushing:
 If the owner sync matters, the test must carry a Jira key in a field the pipeline actually reads.
 
 If you only add `AllureLabel("KIEM", "KIEM-13")`, that is not enough for the current sync flow.
+
+If Jira is temporarily unavailable, use `local-owner-map.json` as a fallback, but keep the Jira key in the test metadata and update the fallback with the real Jira display name.
 
 ## Suggested Review Comment
 
