@@ -25,6 +25,7 @@ namespace WastePlatform.Tests.Controllers;
 [AllureSeverity(SeverityLevel.critical)]
 [Allure.Net.Commons.Attributes.AllureTag("api")]
 [Allure.Net.Commons.Attributes.AllureTag("analytics")]
+[Allure.Net.Commons.Attributes.AllureLabel("WRP", "WRP-BE-TESTS-007")]
 [Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-10")] // Cố định link Jira chứa key KIEM-10 tại đây
 public class AnalyticsControllerTests
 {
