@@ -10,15 +10,16 @@ using Xunit;
 
 namespace WastePlatform.Tests.Controllers;
 
-[AllureEpic("Waste Categories")]
+[AllureEpic("KIEM-12: Waste Category Update Test Data And Report")]
 [AllureFeature("Waste Category Controller")]
 [Allure.Net.Commons.Attributes.AllureLabel("story", "List and get waste categories")]
 [Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
 [Allure.Net.Commons.Attributes.AllureLabel("suite", "Controllers")]
 [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "WasteCategoryControllerTests")]
 [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Controllers")]
-[AllureOwner("backend")]
+[AllureOwner("Hoàng Phụng")]
 [AllureSeverity(SeverityLevel.normal)]
+[Allure.Net.Commons.Attributes.AllureTag("https://ut-team-36.atlassian.net/browse/KIEM-12")]
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("backend")]
 [Allure.Net.Commons.Attributes.AllureTag("waste-categories")]
