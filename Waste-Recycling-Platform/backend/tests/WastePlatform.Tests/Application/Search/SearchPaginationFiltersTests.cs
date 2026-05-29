@@ -155,9 +155,14 @@ public class ComplaintsSearchQueryHandlerTests
         // Assert
         results.Should().HaveCount(2);
         total.Should().Be(2);
-        results.All(c => c.Status == ComplaintStatus.Resolved).Should().BeTrue();
+        totalPages.Should().Be(1);
 
-        AllureAttachmentHelper.AttachJson("status-filter-results", new { Results = results, Total = total });
+        AllureAttachmentHelper.AttachJson("status-filter-results", new { Results = results, Total = total, TotalPages = totalPages });
+
+        // Verify the repository was called with the correct status filter
+        _mockComplaintRepository.Verify(
+            x => x.GetAllAsync(1, 10, ComplaintStatus.Resolved, null, It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 }
 
