@@ -100,10 +100,13 @@ def main():
             print('Warning: jira-owner-map is empty; using discovered Jira keys as unassigned fallback')
             jira_map = {key: {'displayName': None, 'accountId': None, 'unassigned': True} for key in discovered_keys}
         else:
-            print('Note: No KIEM issue keys found in test results; jira-owner-map is empty. This is normal when running non-KIEM tests.')
-            jira_map = {}
+            print('Fail: jira-owner-map is empty')
+            sys.exit(2)
 
     summary['jira_total'] = len(jira_map)
+    if summary['jira_total'] == 0:
+        print('Fail: jira-owner-map is empty')
+        sys.exit(2)
 
     for i, (key, value) in enumerate(jira_map.items()):
         if i < 10:
@@ -172,19 +175,14 @@ def main():
     print(f"Generated owner slugs: {summary['owner_slugs']}")
     print(f"Generated /owners/<slug> folders: {summary['owner_folders']}")
 
-    # Allow empty jira_total if there were no KIEM tests at all
-    discovered_kiem_keys = sorted(collect_issue_keys(results_dir))
-    if summary['jira_total'] == 0 and discovered_kiem_keys:
-        print('Fail: KIEM tests detected but jira-owner-map is empty')
+    if summary['jira_total'] == 0:
+        print('Fail: jira-owner-map is empty')
         sys.exit(3)
-    if summary['jira_total'] == 0 and not discovered_kiem_keys:
-        print('Note: No KIEM tests detected; skipping jira-owner-map validation')
-    
-    if not summary['owner_slugs'] and discovered_kiem_keys:
-        print('Fail: no owner slugs generated for KIEM tests')
+    if not summary['owner_slugs']:
+        print('Fail: no owner slugs generated')
         sys.exit(4)
-    if summary['injected_count'] == 0 and discovered_kiem_keys:
-        print('Fail: owner injection modified 0 files for KIEM tests')
+    if summary['injected_count'] == 0:
+        print('Fail: owner injection modified 0 files')
         sys.exit(5)
     if not summary['xunit_present']:
         print('Fail: xUnit results missing')
