@@ -1,0 +1,19 @@
+{
+  "CitizenId": "82245101-3fe8-4669-a590-4b27e27d4d5b",
+  "WasteCategoryId": 1,
+  "Latitude": 10.7769,
+  "Longitude": 181,
+  "Description": "Test report",
+  "Address": "Test address",
+  "AiSuggestion": null,
+  "Images": [
+    {
+      "ContentType": "image/jpeg",
+      "ContentDisposition": null,
+      "Headers": null,
+      "Length": 1024,
+      "Name": null,
+      "FileName": "test.jpg"
+    }
+  ]
+}
