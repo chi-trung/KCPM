@@ -15,7 +15,7 @@ namespace WastePlatform.Tests.Infrastructure;
 [Allure.Net.Commons.Attributes.AllureLabel("suite", "Infrastructure")]
 [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "WasteCategoryRepositoryTests")]
 [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Infrastructure")]
-[AllureOwner("backend")]
+[AllureOwner("Hoàng Phụng")]
 [AllureSeverity(SeverityLevel.normal)]
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("repository")]

@@ -15,7 +15,7 @@ namespace WastePlatform.Tests.Application.WasteCategories;
 [Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
 [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "GetCategoryByIdQueryHandlerTests")]
 [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.WasteCategories")]
-[AllureOwner("backend")]
+[AllureOwner("Hoàng Phụng")]
 [AllureSeverity(SeverityLevel.normal)]
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("backend")]
