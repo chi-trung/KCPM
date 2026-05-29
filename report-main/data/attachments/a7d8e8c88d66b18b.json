@@ -1,0 +1,7 @@
+{
+  "SRSRequirement": "\u00A73.5: B\u1EAFt bu\u1ED9c \u00EDt nh\u1EA5t 1 \u1EA2nh x\u00E1c th\u1EF1c khi Ho\u00E0n th\u00E0nh",
+  "CurrentBehaviour": "CompleteTask controller accepts completion WITHOUT images (Images field optional)",
+  "CodeReference": "CollectorTaskController.cs line 256: if (images != null \u0026\u0026 images.Count \u003E 0)",
+  "GapType": "Missing validation \u2014 SRS requirement not enforced in controller",
+  "Recommendation": "Add: if (images == null || images.Count == 0) return BadRequest(\u0022At least one evidence image is required\u0022)"
+}
