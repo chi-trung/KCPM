@@ -19,14 +19,9 @@ on:
         description: Optional. When set to 'done', force transitioning the resolved Jira issue to Done.
         required: false
         default: ""
-  push:
-    branches-ignore:
-      - main
-      - develop
   pull_request:
     branches:
       - main
-      - develop
     types:
       - opened
       - edited
@@ -74,8 +69,21 @@ jobs:
             Write-Host "No Jira key detected from branch/PR/commit context."
           }
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and cache Backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: Waste-Recycling-Platform/backend
+          file: Waste-Recycling-Platform/backend/Dockerfile
+          load: true
+          tags: waste-recycling-platform-backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
       - name: Start backend stack
-        run: docker compose -f ./Waste-Recycling-Platform/docker-compose.yml up -d --build db backend
+        run: docker compose -f ./Waste-Recycling-Platform/docker-compose.yml up -d db backend
 
       - name: Show container status
         run: docker compose -f ./Waste-Recycling-Platform/docker-compose.yml ps
