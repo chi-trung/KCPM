@@ -62,19 +62,8 @@ Authorization: Bearer {enterpriseToken} hoặc {adminToken}
 ```json
 {
   "message": "Report accepted successfully",
-  "report": {
-    "id": "ba46f4e6-3e7d-4e3c-81c7-acda3e40cbeb",
-    "status": "Accepted",
-    "previousStatus": "Pending",
-    "acceptedBy": {
-      "userId": "enterprise-id",
-      "name": "Green Recycle Co.",
-      "role": "Enterprise"
-    },
-    "acceptedAt": "2025-05-17T11:00:00Z",
-    "notes": "Tiếp nhận và xử lý trong 24h",
-    "estimatedCollectionTime": "2025-05-18T14:00:00Z"
-  }
+  "reportId": "ba46f4e6-3e7d-4e3c-81c7-acda3e40cbeb",
+  "reportStatus": "Accepted"
 }
 ```
 
