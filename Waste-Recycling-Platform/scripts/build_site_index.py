@@ -13,12 +13,12 @@ from pathlib import Path
 
 
 def read_summary(summary_path: Path) -> dict:
-    if not summary_path.exists():
-        return {}
-    try:
-        return json.loads(summary_path.read_text(encoding='utf8'))
-    except Exception:
-        return {}
+  if not summary_path.exists():
+    return {}
+  try:
+    return json.loads(summary_path.read_text(encoding='utf-8-sig'))
+  except Exception:
+    return {}
 
 
 def badge(label: str, value: str, tone: str = 'neutral') -> str:
@@ -38,11 +38,27 @@ def build_owner_cards(owners: list[str], owner_base: str, published_root: Path) 
 
     cards = []
     for owner in owners:
-        # Render only the owner name (no links or buttons)
         cards.append(
-          f'<div class="owner-card">'
-            f'<div class="owner-name">{owner}</div>'
-          f'</div>'
+            f'<div class="member-item">{owner}</div>'
+        )
+    return ''.join(cards)
+
+
+def build_suite_cards(report_url: str) -> str:
+    suites = [
+        ('Postman API Test', 'API report', '🧪'),
+        ('xUnit Backend Test', 'Backend report', '⚙️'),
+    ]
+    cards = []
+    for title, subtitle, icon in suites:
+        cards.append(
+            f'<a class="suite-card" href="{report_url}">'
+              f'<div class="suite-icon">{icon}</div>'
+              f'<div class="suite-copy">'
+                f'<div class="suite-title">{title}</div>'
+                f'<div class="suite-sub">{subtitle}</div>'
+              f'</div>'
+            f'</a>'
         )
     return ''.join(cards)
 
@@ -69,46 +85,109 @@ def main() -> None:
     repo_owner, repo_name = repo.split('/', 1) if '/' in repo else ('', '')
     root_url = f'https://{repo_owner}.github.io/{repo_name}/' if repo_owner and repo_name else './'
     report_url = f'{root_url}report-main/'
-    report_pdf_url = f'{root_url}report-main/report.pdf'
-    validation_url = f'{root_url}report-extra/validation/'
-    owner_url = f'{root_url}report-extra/'
-    owner_reports_root = site_output / 'report-extra' / 'owners'
-    team_pdf_exists = (site_output / 'report-main' / 'report.pdf').exists()
-
     generated_at = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')
 
     site_output.mkdir(parents=True, exist_ok=True)
 
-    # Minimal landing page: show only owners list and a small header
+    # Minimal landing page: dark dashboard with two suite cards and a single owner column
     html = f'''<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>KCPM — Owners</title>
+  <title>KCPM Test Dashboard</title>
   <style>
-    body {{ font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: #07111f; color: #eaf1ff; margin: 0; }}
-    .wrap {{ max-width: 980px; margin: 32px auto; padding: 20px; }}
-    h1 {{ margin: 0 0 8px; font-size: 28px; }}
-    .meta {{ color: #9db0ce; font-size: 13px; margin-bottom: 18px; }}
-    .owner-grid {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }}
-    .owner-card {{ background: rgba(255,255,255,0.03); padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); }}
-    .owner-card a {{ color: inherit; text-decoration: none; display: block; }}
-    .owner-name {{ font-weight: 700; }}
-    .owner-sub {{ font-size: 13px; color: #9db0ce; margin-top: 6px; }}
-    .footer {{ margin-top: 18px; color: #9db0ce; font-size: 13px; }}
+    :root {{
+      --bg: #050b16;
+      --bg2: #0a1322;
+      --panel: rgba(12, 19, 34, 0.92);
+      --panel-soft: rgba(255, 255, 255, 0.035);
+      --line: rgba(255, 255, 255, 0.08);
+      --text: #ecf3ff;
+      --muted: #95a7c3;
+      --accent: #7dd3fc;
+      --accent2: #a78bfa;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.42);
+      --radius: 20px;
+    }}
+    * {{ box-sizing: border-box; }}
+    body {{
+      margin: 0;
+      font-family: Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(125, 211, 252, 0.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(167, 139, 250, 0.13), transparent 24%),
+        linear-gradient(160deg, var(--bg), var(--bg2));
+      min-height: 100vh;
+    }}
+    a {{ color: inherit; text-decoration: none; }}
+    .wrap {{ max-width: 1180px; margin: 0 auto; padding: 34px 20px 42px; }}
+    .header {{ margin-bottom: 22px; }}
+    h1 {{ margin: 0; font-size: clamp(34px, 5vw, 58px); line-height: 1; letter-spacing: -0.03em; }}
+    .meta {{ margin-top: 10px; color: var(--muted); font-size: 13px; }}
+    .section-title {{ margin: 32px 0 14px; color: var(--muted); font-size: 12px; letter-spacing: .18em; text-transform: uppercase; }}
+    .suite-grid {{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }}
+    .suite-card {{
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 18px 18px 20px;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      min-height: 110px;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }}
+    .suite-card:hover {{ transform: translateY(-2px); border-color: rgba(125, 211, 252, 0.28); background: rgba(255,255,255,0.06); }}
+    .suite-icon {{
+      width: 42px; height: 42px; flex: 0 0 42px;
+      display: grid; place-items: center;
+      border-radius: 13px;
+      background: rgba(255,255,255,0.06);
+      font-size: 20px;
+    }}
+    .suite-copy {{ min-width: 0; }}
+    .suite-title {{ font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }}
+    .suite-sub {{ margin-top: 5px; color: var(--muted); font-size: 13px; }}
+    .member-list {{
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      max-width: 320px;
+    }}
+    .member-item {{
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--panel-soft);
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }}
+    .empty {{ color: var(--muted); padding: 12px 0; }}
+    @media (max-width: 920px) {{
+      .suite-grid {{ grid-template-columns: 1fr; }}
+      .member-list {{ max-width: none; }}
+    }}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>Team owner reports</h1>
-    <div class="meta">Generated {generated_at} — click a member to open their report</div>
-
-    <div class="owner-grid">
-      {build_owner_cards(owners, root_url, site_output)}
+    <div class="header">
+      <h1>KCPM Test Dashboard</h1>
+      <div class="meta">Generated {generated_at}</div>
     </div>
 
-    <div class="footer">Main report: <a href="{report_url}">{report_url}</a></div>
+    <div class="section-title">Main Suites Report</div>
+    <div class="suite-grid">
+      {build_suite_cards(report_url)}
+    </div>
+
+    <div class="section-title">Team Members</div>
+    <div class="member-list">
+      {build_owner_cards(owners, root_url, site_output)}
+    </div>
   </div>
 </body>
 </html>'''
