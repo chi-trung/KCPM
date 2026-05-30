@@ -19,7 +19,7 @@ namespace WastePlatform.Tests.Application.Complaints;
 [Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
 [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "ResolveComplaintCommandHandlerTests")]
 [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Complaints")]
-[AllureOwner("backend")]
+[AllureOwner("Thanh Duy")]
 [AllureSeverity(SeverityLevel.critical)]
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("backend")]

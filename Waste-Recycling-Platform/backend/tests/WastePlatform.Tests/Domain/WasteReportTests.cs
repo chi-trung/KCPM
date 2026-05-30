@@ -11,7 +11,7 @@ namespace WastePlatform.Tests.Domain;
 [Allure.Net.Commons.Attributes.AllureLabel("suite", "Domain")]
 [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "WasteReportTests")]
 [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Domain")]
-[AllureOwner("backend")]
+[AllureOwner("Minh Phụng")]
 [AllureSeverity(SeverityLevel.minor)]
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("domain")]

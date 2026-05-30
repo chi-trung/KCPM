@@ -20,7 +20,7 @@ namespace WastePlatform.Tests.Application.Analytics
     [Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
     [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "AnalyticsModuleTests")]
     [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Analytics")]
-    [AllureOwner("backend")]
+    [AllureOwner("11A6_03_Đăng")]
     [AllureSeverity(SeverityLevel.normal)]
     [Allure.Net.Commons.Attributes.AllureTag("unit")]
     [Allure.Net.Commons.Attributes.AllureTag("backend")]
