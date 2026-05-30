@@ -315,7 +315,7 @@ public class ReportsPaginationTests
 [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "FilteringTests")]
 [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Search")]
 [Allure.Net.Commons.Attributes.AllureLabel("KIEM", "KIEM-23")]
-[AllureOwner("backend-team")]
+[AllureOwner("11A6_03_Đăng")]
 [AllureSeverity(SeverityLevel.normal)]
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("filter")]
