@@ -25,7 +25,7 @@ namespace WastePlatform.Tests.Application.Search;
 [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Search")]
 [Allure.Net.Commons.Attributes.AllureLabel("KIEM", "KIEM-23")]
 [Allure.Net.Commons.Attributes.AllureLabel("WRP", "WRP-BE-TESTS-020")]
-[AllureOwner("backend-team")]
+[AllureOwner("11A6_03_Đăng")]
 [AllureSeverity(SeverityLevel.critical)]
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("search")]
