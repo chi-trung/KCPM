@@ -173,6 +173,105 @@ public class CreateReportCommandHandlerTests
     }
 
     [Fact]
+    [AllureDescription("Creates a report successfully when exactly 5 images are uploaded (Max boundary).")]
+    public async Task Handle_WithFiveImages_ShouldCreateReportSuccessfully()
+    {
+        // Arrange
+        var citizenId = Guid.NewGuid();
+        var categoryId = 1;
+        
+        var files = new FormFileCollection();
+        for (int i = 0; i < 5; i++)
+        {
+            var mockFile = new Mock<IFormFile>();
+            mockFile.Setup(f => f.FileName).Returns($"img{i}.jpg");
+            mockFile.Setup(f => f.Length).Returns(1024);
+            mockFile.Setup(f => f.ContentType).Returns("image/jpeg");
+            files.Add(mockFile.Object);
+        }
+
+        var command = new CreateReportCommand
+        {
+            CitizenId = citizenId,
+            WasteCategoryId = categoryId,
+            Latitude = 10.7769m,
+            Longitude = 106.7009m,
+            Description = "5 images test",
+            Address = "Test address",
+            Images = files
+        };
+
+        var category = new WasteCategory { Id = categoryId, Name = "Rác hữu cơ" };
+        _mockCategoryRepository
+            .Setup(x => x.GetByIdAsync(categoryId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(category);
+
+        _mockFileStorageService
+            .Setup(x => x.SaveFileAsync(It.IsAny<IFormFile>(), It.IsAny<string[]>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync("uploaded-image.jpg");
+
+        _mockReportRepository
+            .Setup(x => x.AddAsync(It.IsAny<WasteReport>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((WasteReport report, CancellationToken _) => report);
+
+        _mockReportRepository
+            .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBe(Guid.Empty);
+        _mockReportRepository.Verify(
+            x => x.AddAsync(
+                It.Is<WasteReport>(r => r.Images.Count == 5),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    [AllureDescription("Rejects report creation when more than 5 images are uploaded (Exceed boundary).")]
+    public async Task Handle_WithSixImages_ShouldThrowArgumentException()
+    {
+        // Arrange
+        var files = new FormFileCollection();
+        for (int i = 0; i < 6; i++)
+        {
+            var mockFile = new Mock<IFormFile>();
+            mockFile.Setup(f => f.FileName).Returns($"img{i}.jpg");
+            mockFile.Setup(f => f.Length).Returns(1024);
+            mockFile.Setup(f => f.ContentType).Returns("image/jpeg");
+            files.Add(mockFile.Object);
+        }
+
+        var command = new CreateReportCommand
+        {
+            CitizenId = Guid.NewGuid(),
+            WasteCategoryId = 1,
+            Latitude = 10.7769m,
+            Longitude = 106.7009m,
+            Description = "6 images test",
+            Address = "Test address",
+            Images = files
+        };
+
+        var category = new WasteCategory { Id = 1, Name = "Rác hữu cơ" };
+        _mockCategoryRepository
+            .Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(category);
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<ArgumentException>(
+            () => _handler.Handle(command, CancellationToken.None));
+
+        exception.Message.Should().Be("Maximum 5 images are allowed");
+        _mockReportRepository.Verify(
+            x => x.AddAsync(It.IsAny<WasteReport>(), It.IsAny<CancellationToken>()),
+            Times.Never);
+    }
+
+    [Fact]
     [AllureDescription("Rejects report creation when the waste category id does not exist.")]
     public async Task Handle_WithInvalidCategoryId_ShouldThrowArgumentException()
     {
