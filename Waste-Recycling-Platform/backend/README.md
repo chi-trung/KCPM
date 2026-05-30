@@ -2,4 +2,4 @@
 
 C# .NET Clean Architecture skeleton.
 
-ad 
+<!-- Test CI Triggers -->
