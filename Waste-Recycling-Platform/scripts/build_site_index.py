@@ -38,21 +38,10 @@ def build_owner_cards(owners: list[str], owner_base: str, published_root: Path) 
 
     cards = []
     for owner in owners:
-        slug = slugify(owner)
-        owner_html = f'{owner_base}owners/{slug}/'
-        owner_pdf = f'{owner_base}owners/{slug}/report.pdf'
-        owner_pdf_exists = (published_root / 'report-extra' / 'owners' / slug / 'report.pdf').exists()
-        pdf_href = owner_pdf if owner_pdf_exists else owner_html
-        pdf_label = 'Tải PDF' if owner_pdf_exists else 'Mở report'
+        # Render only the owner name (no links or buttons)
         cards.append(
           f'<div class="owner-card">'
-            f'<a class="owner-link" href="{owner_html}">'
-              f'<span class="owner-name">{owner}</span>'
-              f'<span class="owner-sub">Mở báo cáo theo owner</span>'
-            f'</a>'
-            f'<div class="owner-actions">'
-              f'<a class="btn mini ghost" href="{pdf_href}">{pdf_label}</a>'
-            f'</div>'
+            f'<div class="owner-name">{owner}</div>'
           f'</div>'
         )
     return ''.join(cards)
