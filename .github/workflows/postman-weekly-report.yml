@@ -32,8 +32,21 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and cache Backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: Waste-Recycling-Platform/backend
+          file: Waste-Recycling-Platform/backend/Dockerfile
+          load: true
+          tags: waste-recycling-platform-backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
       - name: Start backend stack
-        run: docker compose -f ./Waste-Recycling-Platform/docker-compose.yml up -d --build db backend
+        run: docker compose -f ./Waste-Recycling-Platform/docker-compose.yml up -d db backend
 
       - name: Wait for API health
         run: |
@@ -42,7 +55,7 @@ jobs:
           while ($attempt -lt $maxAttempts) {
             $attempt++
             try {
-              $response = Invoke-WebRequest -Uri 'http://localhost:5000/api/health' -UseBasicParsing -TimeoutSec 5
+              $response = Invoke-WebRequest -Uri 'http://localhost:8080/api/health' -UseBasicParsing -TimeoutSec 5
               if ($response.StatusCode -eq 200) {
                 Write-Host 'API is healthy'
                 exit 0

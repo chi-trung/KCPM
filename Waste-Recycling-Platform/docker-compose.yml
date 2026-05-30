@@ -26,6 +26,7 @@ services:
 
   # ── .NET 9 Backend ──────────────────────────────────────────────
   backend:
+    image: waste-recycling-platform-backend:latest
     build:
       context: ./backend
       dockerfile: Dockerfile

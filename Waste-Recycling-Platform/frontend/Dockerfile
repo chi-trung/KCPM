@@ -3,7 +3,8 @@ FROM node:20-alpine AS deps
 WORKDIR /app
 
 COPY package.json package-lock.json* ./
-RUN npm install
+RUN --mount=type=cache,target=/root/.npm \
+    npm install
 
 # ---- Stage 2: Builder ----
 FROM node:20-alpine AS builder

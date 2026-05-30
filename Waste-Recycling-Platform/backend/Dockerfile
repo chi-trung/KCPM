@@ -8,12 +8,14 @@ COPY src/WastePlatform.Application/WastePlatform.Application.csproj src/WastePla
 COPY src/WastePlatform.Infrastructure/WastePlatform.Infrastructure.csproj src/WastePlatform.Infrastructure/
 COPY src/WastePlatform.API/WastePlatform.API.csproj src/WastePlatform.API/
 
-RUN dotnet restore src/WastePlatform.API/WastePlatform.API.csproj
+RUN --mount=type=cache,target=/root/.nuget/packages \
+    dotnet restore src/WastePlatform.API/WastePlatform.API.csproj
 
 # Copy all source and build
 COPY . .
 WORKDIR /src/src/WastePlatform.API
-RUN dotnet publish -c Release -o /app/publish
+RUN --mount=type=cache,target=/root/.nuget/packages \
+    dotnet publish -c Release -o /app/publish
 
 # ---- Stage 2: Runtime ----
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
