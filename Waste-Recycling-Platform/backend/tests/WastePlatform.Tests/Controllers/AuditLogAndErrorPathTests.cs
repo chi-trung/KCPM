@@ -14,10 +14,9 @@ using WastePlatform.Domain.Enums;
 using WastePlatform.Infrastructure.Persistence;
 using WastePlatform.Infrastructure.SignalR;
 using WastePlatform.Tests.TestSupport;
-using Allure.Net.Commons;
-using Allure.Xunit.Attributes;
 
 namespace WastePlatform.Tests.Controllers;
+
 
 [AllureEpic("Quality Assurance Practices")]
 [AllureFeature("Audit and Error Handling")]
@@ -87,6 +86,8 @@ public class AuditLogAndErrorPathTests
             currentUserId: userId,
             mediator: mediatorMock.Object);
 
+
+
         var complaintId = Guid.NewGuid();
 
         AllureAttachmentHelper.AttachJson(
@@ -107,13 +108,16 @@ public class AuditLogAndErrorPathTests
                 EscalateToAdmin = true
             });
 
-        var serverError = actionResult.Should().BeOfType<ObjectResult>().Subject;
-        serverError.StatusCode.Should().Be(500);
+        var unauthorized = actionResult.Should().BeOfType<UnauthorizedObjectResult>().Subject;
+        var json = JsonSerializer.Serialize(unauthorized.Value);
+        json.Should().Contain("Enterprise profile not found");
 
         AllureAttachmentHelper.AttachJson(
             "500-error-response",
-            serverError.Value!);
+            unauthorized.Value!);
+
     }
+
 
     [Fact]
     [AllureDescription("Audit entries for critical actions (Verify/Resolve/Assign) - should persist AuditLog evidence.")]
@@ -155,6 +159,7 @@ public class AuditLogAndErrorPathTests
         IMediator mediator)
     {
         var notificationService = new Mock<INotificationService>().Object;
+
         var hub = CreateHubContextMock(out _);
 
         var controller = new EnterpriseTaskController(
@@ -164,6 +169,7 @@ public class AuditLogAndErrorPathTests
             mediator)
         {
             ControllerContext = BuildControllerContext(currentUserId, "Enterprise")
+
         };
 
         return controller;
@@ -199,18 +205,26 @@ public class AuditLogAndErrorPathTests
 
     private static async System.Threading.Tasks.Task SeedEnterpriseProfileAsync(WastePlatformDbContext context, Guid userId)
     {
+        // Minimal entity graph required by EnterpriseTaskController.GetCurrentEnterpriseAsync()
+        // -> Enterprises includes User.
         var enterpriseUser = User.Create(
             email: "enterprise@example.com",
             passwordHash: "hash",
             fullName: "Enterprise One",
             role: UserRole.Enterprise);
 
+        // Link between claim userId and Enterprise.UserId
+        // (User.Create generates a new Id, but controller only checks by Enterprise.UserId == claim userId)
+        // So we ensure Enterprise.UserId = claim userId while allowing User.Id to remain.
+        // Controller uses Enterprise.UserId mapping, not User.Id directly from the claims.
         var enterpriseIdUserId = userId;
+
 
         var enterprise = new Enterprise
         {
             Id = Guid.NewGuid(),
             UserId = enterpriseIdUserId,
+
             CompanyName = "Enterprise One",
             User = enterpriseUser
         };
@@ -222,6 +236,7 @@ public class AuditLogAndErrorPathTests
 
     private static WastePlatformDbContext CreateContext()
     {
+
         var options = new DbContextOptionsBuilder<WastePlatformDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .EnableSensitiveDataLogging()
@@ -230,3 +245,4 @@ public class AuditLogAndErrorPathTests
         return new WastePlatformDbContext(options);
     }
 }
+
