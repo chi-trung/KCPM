@@ -427,6 +427,141 @@ public class AdminEnterpriseAuthorizationTests : IClassFixture<WebApplicationFac
         // Assert - user with Citizen role should be forbidden from Enterprise endpoints
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
+
+    [Fact]
+    public async System.Threading.Tasks.Task GetEnterprises_WithRealJwtBearerAdmin_ReturnsOk()
+    {
+        // Arrange: use real JwtBearer (do not replace authentication scheme), seed InMemory DB with admin user
+        var seededUserId = Guid.NewGuid();
+        var factory = _factory.WithWebHostBuilder(builder =>
+        {
+            builder.ConfigureAppConfiguration((context, conf) =>
+            {
+                var settings = new System.Collections.Generic.Dictionary<string, string?>
+                {
+                    { "JwtSettings:SecretKey", "test-secret-key-which-is-long-enough" },
+                    { "JwtSettings:Issuer", "test-issuer" },
+                    { "JwtSettings:Audience", "test-audience" },
+                    { "JwtSettings:ExpirationMinutes", "60" }
+                };
+                conf.AddInMemoryCollection(settings);
+            });
+
+            builder.ConfigureTestServices(services =>
+            {
+                // Replace real DB with InMemory and seed admin user
+                services.RemoveAll(typeof(DbContextOptions<WastePlatform.Infrastructure.Persistence.WastePlatformDbContext>));
+                services.AddDbContext<WastePlatform.Infrastructure.Persistence.WastePlatformDbContext>(options =>
+                    options.UseInMemoryDatabase("TestDb_RealJwt_Admin"));
+
+                // Mock mediator to return dummy data once authorization passes
+                var mediatorMock = new Mock<IMediator>();
+                var dummyList = new System.Collections.Generic.List<EnterpriseListDto>
+                {
+                    new EnterpriseListDto { Id = System.Guid.NewGuid(), CompanyName = "RealJwtCo", IsVerified = true, ServiceArea = "Area", CreatedAt = System.DateTime.UtcNow }
+                };
+                var resultTuple = ((System.Collections.Generic.IEnumerable<EnterpriseListDto>)dummyList, dummyList.Count, 1);
+                mediatorMock
+                    .Setup(m => m.Send(It.IsAny<GetEnterprisesQuery>(), It.IsAny<System.Threading.CancellationToken>()))
+                    .ReturnsAsync(resultTuple);
+                services.AddSingleton<IMediator>(mediatorMock.Object);
+
+                // Seed admin user into the InMemory DB after provider is built
+                var sp = services.BuildServiceProvider();
+                using (var scope = sp.CreateScope())
+                {
+                    var db = scope.ServiceProvider.GetRequiredService<WastePlatform.Infrastructure.Persistence.WastePlatformDbContext>();
+                    db.Database.EnsureCreated();
+                    var adminUser = User.Create("realadmin@example.com", "pwd", "Real Admin", UserRole.Admin);
+                    // Set private backing field for Id to a known value so token subject can match
+                    var idField = typeof(User).GetField("<Id>k__BackingField", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                    if (idField != null)
+                        idField.SetValue(adminUser, seededUserId);
+
+                    db.Users.Add(adminUser);
+                    db.SaveChanges();
+                }
+                    // Configure the existing JwtBearer scheme to use our test signing key/issuer/audience
+                    services.Configure<Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerOptions>(
+                        Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme,
+                        options =>
+                        {
+                            options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                            {
+                                ValidateIssuer = true,
+                                ValidateAudience = true,
+                                ValidateLifetime = true,
+                                ValidateIssuerSigningKey = true,
+                                ValidIssuer = "test-issuer",
+                                ValidAudience = "test-audience",
+                                IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("test-secret-key-which-is-long-enough"))
+                            };
+                        });
+                // IMPORTANT: do NOT override authentication scheme here - let JwtBearer from Program run
+            });
+        });
+
+        var client = factory.CreateClient();
+
+        // create a signed admin token using JwtService with same config
+        var jwtConfig = new ConfigurationBuilder().AddInMemoryCollection(new System.Collections.Generic.Dictionary<string, string?>
+        {
+            { "JwtSettings:SecretKey", "test-secret-key-which-is-long-enough" },
+            { "JwtSettings:Issuer", "test-issuer" },
+            { "JwtSettings:Audience", "test-audience" },
+            { "JwtSettings:ExpirationMinutes", "60" }
+        }).Build();
+
+        var jwtService = new JwtService(jwtConfig);
+
+        // Create token for user with the same seeded Id
+        var adminUserForToken = User.Create("realadmin@example.com", "pwd", "Real Admin", UserRole.Admin);
+        var idFieldToken = typeof(User).GetField("<Id>k__BackingField", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+        if (idFieldToken != null)
+            idFieldToken.SetValue(adminUserForToken, seededUserId);
+
+        var token = jwtService.GenerateToken(adminUserForToken);
+
+        // Sanity-check: validate token locally with same validation parameters to catch issues early
+        var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+        var key = System.Text.Encoding.UTF8.GetBytes("test-secret-key-which-is-long-enough");
+        var validationParams = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = "test-issuer",
+            ValidAudience = "test-audience",
+            IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(key)
+        };
+
+        System.Security.Claims.ClaimsPrincipal validated;
+        try
+        {
+            validated = handler.ValidateToken(token, validationParams, out var validatedToken);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Local token validation failed: {ex.Message}");
+        }
+
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        // Act
+        var response = await client.GetAsync("/api/admin/enterprises");
+
+        // Assert - with real JwtBearer and seeded active admin user, request should succeed
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            var www = string.Join(";", response.Headers.WwwAuthenticate.Select(h => h.ToString()));
+            throw new Exception($"Request failed: {(int)response.StatusCode} {response.ReasonPhrase}; WWW-Authenticate: {www}; Body: {body}");
+        }
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var content = await response.Content.ReadAsStringAsync();
+        content.Should().Contain("Enterprises retrieved successfully");
+    }
 }
 
 public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
