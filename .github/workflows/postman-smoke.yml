@@ -199,8 +199,8 @@ jobs:
           EXTRACTED_KEY: ${{ steps.extract_jira.outputs.jira_key }}
         run: |
           if (-not $env:JIRA_BASE_URL -or -not $env:JIRA_API_EMAIL -or -not $env:JIRA_API_TOKEN) { 
-            Write-Host "::error::Missing Jira credentials in GitHub Secrets. Cannot comment or transition Jira issue!"
-            exit 1 
+            Write-Host "::warning::Missing Jira credentials in GitHub Secrets. Skipping Jira integration."
+            exit 0 
           }
           $email = $env:JIRA_API_EMAIL.Trim()
           $token = $env:JIRA_API_TOKEN.Trim()
@@ -228,13 +228,13 @@ jobs:
                  $realKey = $searchResp.issues[0].key
                  Write-Host "Resolved $env:EXTRACTED_KEY to real issue key $realKey via JQL search"
               } else {
-                 Write-Host "::error::Could not find any Jira issue matching $env:EXTRACTED_KEY"
-                 exit 1
+                 Write-Host "::warning::Could not find any Jira issue matching $env:EXTRACTED_KEY. Skipping."
+                 exit 0
               }
             } catch {
-              Write-Host "::error::Jira API search failed. The token may be invalid or the issue doesn't exist."
+              Write-Host "::warning::Jira API search failed. The token may be invalid or the issue doesn't exist."
               Write-Host $_.Exception.Message
-              exit 1
+              exit 0
             }
           }
           Write-Host "Successfully resolved Jira Key: $realKey"
