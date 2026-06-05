@@ -10,12 +10,14 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Allure.Xunit.Attributes;
+using FluentAssertions;
 using Xunit;
 using WastePlatform.Infrastructure.Services;
 using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
 using MediatR;
 using WastePlatform.Application.Admin.Enterprises.DTOs;
+using WastePlatform.Application.Admin.Enterprises.Queries;
 
 namespace WastePlatform.Tests.Integration
 {
@@ -59,7 +61,7 @@ namespace WastePlatform.Tests.Integration
                     var mediatorMock = new Mock<IMediator>();
                     var dummy = new System.Collections.Generic.List<EnterpriseListDto>();
                     var tuple = ((System.Collections.Generic.IEnumerable<EnterpriseListDto>)dummy, 0, 0);
-                    mediatorMock.Setup(m => m.Send(It.IsAny<object>(), It.IsAny<System.Threading.CancellationToken>()))
+                    mediatorMock.Setup(m => m.Send(It.IsAny<GetEnterprisesQuery>(), It.IsAny<System.Threading.CancellationToken>()))
                         .ReturnsAsync(tuple);
                     services.AddSingleton<IMediator>(mediatorMock.Object);
 
