@@ -142,7 +142,7 @@
                   "const body = pm.response.text() ? pm.response.json() : {};",
                   "const token = body.accessToken || body.token || body.jwtToken || (body.data && (body.data.accessToken || body.data.token || body.data.jwtToken));",
                   "if (token) {",
-                  "  pm.collectionVariables.set('citizenToken', token);",
+                  "  pm.environment.set('citizenToken', token);",
                   "}",
                   "pm.test('response has a message or data object', function () {",
                   "  pm.expect(body).to.satisfy(v => typeof v === 'object');",
@@ -286,7 +286,7 @@
                   "  const body = pm.response.json();",
                   "  const token = body.accessToken || body.token || body.jwtToken || (body.data && (body.data.accessToken || body.data.token || body.data.jwtToken));",
                   "  if (token) {",
-                  "    pm.collectionVariables.set('citizenToken', token);",
+                  "    pm.environment.set('citizenToken', token);",
                   "  }",
                   "}"
                 ]
@@ -332,7 +332,7 @@
                   "  const body = pm.response.json();",
                   "  const token = body.accessToken || body.token || body.jwtToken || (body.data && (body.data.accessToken || body.data.token || body.data.jwtToken));",
                   "  if (token) {",
-                  "    pm.collectionVariables.set('enterpriseToken', token);",
+                  "    pm.environment.set('enterpriseToken', token);",
                   "  }",
                   "}",
                   "pm.test('status code is acceptable', function () {",
@@ -381,7 +381,7 @@
                   "  const body = pm.response.json();",
                   "  const token = body.accessToken || body.token || body.jwtToken || (body.data && (body.data.accessToken || body.data.token || body.data.jwtToken));",
                   "  if (token) {",
-                  "    pm.collectionVariables.set('collectorToken', token);",
+                  "    pm.environment.set('collectorToken', token);",
                   "  }",
                   "}",
                   "pm.test('status code is acceptable', function () {",
@@ -430,8 +430,8 @@
                   "  const body = pm.response.json();",
                   "  const token = body.accessToken || body.token || body.jwtToken || (body.data && (body.data.accessToken || body.data.token || body.data.jwtToken));",
                   "  if (token) {",
-                  "    pm.collectionVariables.set('adminToken', token);",
-                  "    pm.collectionVariables.set('managementToken', token);",
+                  "    pm.environment.set('adminToken', token);",
+                  "    pm.environment.set('managementToken', token);",
                   "  }",
                   "}",
                   "pm.test('status code is acceptable', function () {",
@@ -565,7 +565,7 @@
                       "  const body = pm.response.json();",
                       "  const reportId = body.report?.id || body.data?.id || body.data?.reportId || body.id;",
                       "  if (reportId) {",
-                      "    pm.collectionVariables.set('reportId', reportId);",
+                      "    pm.environment.set('reportId', reportId);",
                       "  }",
                       "}"
                     ]
@@ -933,7 +933,7 @@
                       "  const body = pm.response.json();",
                       "  const complaintId = body.data?.id || body.id || body.data?.complaintId;",
                       "  if (complaintId) {",
-                      "    pm.collectionVariables.set('complaintId', complaintId);",
+                      "    pm.environment.set('complaintId', complaintId);",
                       "  }",
                       "}"
                     ]
@@ -2223,7 +2223,7 @@
                   "  const body = pm.response.json();",
                   "  const collectorId = body.data?.id || body.id || body.data?.collectorId;",
                   "  if (collectorId) {",
-                  "    pm.collectionVariables.set('collectorId', collectorId);",
+                  "    pm.environment.set('collectorId', collectorId);",
                   "  }",
                   "}"
                 ]
