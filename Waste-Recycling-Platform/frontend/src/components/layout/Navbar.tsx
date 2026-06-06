@@ -118,7 +118,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="flex items-center gap-3 group flex-shrink-0"
           >
             <Image
-              src="/logo/logo.png"
+              src="/logo/logo.jpg"
               alt="CWCRP Logo"
               width={100}
               height={100}

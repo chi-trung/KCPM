@@ -84,7 +84,7 @@ export const AdminDashboard: React.FC = () => {
           <div className="flex items-center gap-3 overflow-hidden">
             <div className="min-w-[40px] h-10 relative">
               <Image
-                src="/logo/logo.png"
+                src="/logo/logo.jpg"
                 alt="CWCRP Logo"
                 fill
                 className="rounded-xl object-contain"

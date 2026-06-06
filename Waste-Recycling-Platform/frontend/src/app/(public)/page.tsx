@@ -232,7 +232,7 @@ export default function Home() {
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <Image
-                  src="/logo/logo.png"
+                  src="/logo/logo.jpg"
                   alt="CWCRP Logo"
                   width={100}
                   height={100}
