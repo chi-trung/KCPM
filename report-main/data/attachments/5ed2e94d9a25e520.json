@@ -1,0 +1,30 @@
+{
+  "Results": [
+    {
+      "Id": "a737da6c-dcfb-43ba-9d0f-eceb66fbfe0d",
+      "CitizenName": null,
+      "Content": "Issue resolved",
+      "Status": 0,
+      "CreatedAt": "2026-06-06T07:13:34.9128144Z",
+      "HasReport": false,
+      "EnterpriseResponse": null,
+      "EnterpriseRespondedAt": null,
+      "EscalationReason": null,
+      "AdminResponse": null
+    },
+    {
+      "Id": "12e14a91-9a5f-4866-94fd-b11db1315b10",
+      "CitizenName": null,
+      "Content": "Problem fixed",
+      "Status": 0,
+      "CreatedAt": "2026-06-06T07:13:34.9129676Z",
+      "HasReport": false,
+      "EnterpriseResponse": null,
+      "EnterpriseRespondedAt": null,
+      "EscalationReason": null,
+      "AdminResponse": null
+    }
+  ],
+  "Total": 2,
+  "TotalPages": 1
+}

@@ -1,0 +1,26 @@
+{
+  "Leaderboard": [
+    {
+      "CitizenId": "8826d3dc-c85d-476f-80c0-019dd5e4aab2",
+      "CitizenName": "Top Contributor",
+      "TotalPoints": 1000,
+      "ReportCount": 50
+    },
+    {
+      "CitizenId": "c094edff-0a1c-438d-b9b5-c5a9b3ebd216",
+      "CitizenName": "Second Place",
+      "TotalPoints": 850,
+      "ReportCount": 42
+    },
+    {
+      "CitizenId": "c55d1071-3fd4-4cb9-bd3c-bd63521c9025",
+      "CitizenName": "Third Place",
+      "TotalPoints": 750,
+      "ReportCount": 38
+    }
+  ],
+  "Total": 150,
+  "Page": 1,
+  "PageSize": 10,
+  "TotalPages": 15
+}
