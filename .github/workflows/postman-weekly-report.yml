@@ -100,7 +100,7 @@ jobs:
       - name: Export Postman Allure results
         if: always()
         run: |
-          mkdir -p Waste-Recycling-Platform/allure-results
+          New-Item -ItemType Directory -Force -Path Waste-Recycling-Platform/allure-results | Out-Null
           if (Test-Path ./allure-results) {
             Copy-Item -Recurse -Force ./allure-results/* Waste-Recycling-Platform/allure-results/
           }

@@ -134,6 +134,7 @@ jobs:
 
       - name: Run Postman collection
         id: run_postman
+        continue-on-error: true
         run: |
           $scope = '${{ steps.postman_scope.outputs.scope }}'
           $args = @(
@@ -158,13 +159,11 @@ jobs:
           if ($exit -ne 0) {
             Write-Host "::warning::Newman exited with code $exit (tests may have failures). Collecting artifacts and continuing."
           }
-          # Ensure the step does not fail the job so we can export results and upload artifacts
-          exit 0
 
       - name: Export Postman Allure results
         if: always()
         run: |
-          mkdir -p Waste-Recycling-Platform/allure-results
+          New-Item -ItemType Directory -Force -Path Waste-Recycling-Platform/allure-results | Out-Null
           # If newman produced an allure folder, move it into the expected path
           if (Test-Path ./allure-results) {
             Copy-Item -Recurse -Force ./allure-results/* Waste-Recycling-Platform/allure-results/
@@ -188,8 +187,8 @@ jobs:
           name: postman-smoke-results
           path: |
             TestResults
-            **\postman-junit.xml
-            **\postman-report.json
+            **/postman-junit.xml
+            **/postman-report.json
 
       - name: Resolve Jira Issue Key
         id: resolve_jira
@@ -243,7 +242,8 @@ jobs:
           "real_jira_key=$realKey" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
 
       - name: Comment PASS result to Jira
-        if: always() && steps.run_postman.outcome == 'success' && steps.resolve_jira.outputs.real_jira_key != ''
+        # Use the captured exit code so Jira status follows the real Newman result.
+        if: always() && steps.run_postman.outputs.newman_exit == '0' && steps.resolve_jira.outputs.real_jira_key != ''
         env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
@@ -280,7 +280,8 @@ jobs:
           Write-Host "Posted PASS result to Jira issue $($env:JIRA_KEY)"
 
       - name: Transition Jira issue status on PASS
-        if: always() && steps.run_postman.outcome == 'success' && steps.resolve_jira.outputs.real_jira_key != ''
+        # Use the captured exit code so Jira status follows the real Newman result.
+        if: always() && steps.run_postman.outputs.newman_exit == '0' && steps.resolve_jira.outputs.real_jira_key != ''
         env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
@@ -343,7 +344,8 @@ jobs:
           }
 
       - name: Comment FAIL result to Jira
-        if: always() && steps.run_postman.outcome == 'failure' && steps.resolve_jira.outputs.real_jira_key != ''
+        # Use the captured exit code so Jira status follows the real Newman result.
+        if: always() && steps.run_postman.outputs.newman_exit != '0' && steps.resolve_jira.outputs.real_jira_key != ''
         env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
@@ -388,6 +390,7 @@ jobs:
         run: |
           Write-Host "extracted_jira_key: '${{ steps.extract_jira.outputs.jira_key }}'"
           Write-Host "resolved_real_jira_key: '${{ steps.resolve_jira.outputs.real_jira_key }}'"
+          Write-Host "newman_exit: '${{ steps.run_postman.outputs.newman_exit }}'"
           Write-Host "run_postman outcome: '${{ steps.run_postman.outcome }}'"
           Write-Host "JIRA_BASE_URL is set: '${{ secrets.JIRA_BASE_URL != '' }}'"
           Write-Host "JIRA_API_EMAIL is set: '${{ secrets.JIRA_API_EMAIL != '' }}'"

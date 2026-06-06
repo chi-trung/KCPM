@@ -251,7 +251,7 @@ jobs:
 
       - name: Generate Allure Report
         if: always() && (github.event_name != 'workflow_dispatch' || github.event.inputs.report_mode == 'all' || github.event.inputs.report_mode == 'both')
-        uses: simple-elf/allure-report-action@master
+        uses: simple-elf/allure-report-action@v1.14
         id: allure-report
         with:
           allure_results: Waste-Recycling-Platform/allure-results
