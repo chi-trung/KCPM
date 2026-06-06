@@ -1,0 +1,70 @@
+name: Frontend E2E
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: frontend-e2e-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Waste-Recycling-Platform/frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: Waste-Recycling-Platform/frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run CodeceptJS E2E
+        env:
+          CODECEPT_BASE_URL: http://127.0.0.1:3000
+        run: npm run e2e:ci
+
+      - name: Install Allure CLI
+        if: always()
+        run: npm install -g allure-commandline
+
+      - name: Generate Allure report
+        if: always()
+        working-directory: Waste-Recycling-Platform/frontend
+        run: |
+          allure generate ./allure-results -o ./allure-report --clean
+
+      - name: Upload E2E artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-e2e-artifacts-${{ github.run_number }}
+          path: |
+            Waste-Recycling-Platform/frontend/output
+            Waste-Recycling-Platform/frontend/allure-results
+            Waste-Recycling-Platform/frontend/allure-report
+          retention-days: 30
