@@ -67,3 +67,11 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           projectBaseDir: Waste-Recycling-Platform
+          args: >
+            -Dsonar.projectKey=chi-trung_KCPM_frontend
+            -Dsonar.organization=chi-trung
+            -Dsonar.sources=frontend/src,frontend/public
+            -Dsonar.tests=frontend/e2e
+            -Dsonar.exclusions=**/node_modules/**,**/.next/**,frontend/out/**,frontend/output/**,allure-results/**,allure-report/**
+            -Dsonar.coverage.exclusions=frontend/e2e/**
+            -Dsonar.cpd.exclusions=frontend/e2e/**
