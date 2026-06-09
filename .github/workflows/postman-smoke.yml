@@ -396,6 +396,12 @@ jobs:
           Write-Host "JIRA_API_EMAIL is set: '${{ secrets.JIRA_API_EMAIL != '' }}'"
           Write-Host "JIRA_API_TOKEN is set: '${{ secrets.JIRA_API_TOKEN != '' }}'"
 
+      - name: Fail workflow when Newman tests fail
+        if: always() && steps.run_postman.outputs.newman_exit != '0'
+        run: |
+          Write-Host "Newman failed with exit code ${{ steps.run_postman.outputs.newman_exit }}. Marking this quality gate as failed after evidence collection."
+          exit 1
+
       - name: Stop backend stack
         if: always()
         run: docker compose -f ./Waste-Recycling-Platform/docker-compose.yml down -v

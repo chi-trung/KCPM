@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: backend-tests-${{ github.workflow }}-${{ github.ref }}
@@ -162,19 +162,3 @@ jobs:
             TestResults/allure-history
             Waste-Recycling-Platform/allure-history
           retention-days: 30
-
-      # Note: Allure HTML publishing is handled centrally by `allure-gh-pages.yml`.
-      # This workflow uploads artifacts only; avoid pushing to gh-pages to prevent races.
-
-      - name: Fetch and prepare gh-pages
-        if: always()
-        shell: pwsh
-        run: |
-          # Ensure the runner can see the remote gh-pages branch to avoid push rejections
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-          git fetch origin gh-pages || Write-Host "origin/gh-pages not found"
-          if (git show-ref --verify --quiet refs/remotes/origin/gh-pages) {
-            git branch --force gh-pages origin/gh-pages
-          } else {
-            Write-Host "No remote gh-pages; will create on first deploy"
-          }

@@ -1,8 +1,6 @@
-name: Postman Weekly Report
+name: Reporting - Postman Weekly (Optional)
 
 on:
-  schedule:
-    - cron: '0 22 * * 4'
   workflow_dispatch:
     inputs:
       run_scope:

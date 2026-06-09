@@ -105,6 +105,90 @@ jobs:
             Waste-Recycling-Platform/backend/tests/WastePlatform.Tests/bin/Release/net8.0/allure-results
             TestResults/deploy-backend-allure-report
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: Waste-Recycling-Platform/frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: Waste-Recycling-Platform/frontend
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: Waste-Recycling-Platform/frontend
+        run: npx playwright install --with-deps chromium
+
+      - name: Run frontend E2E gate
+        working-directory: Waste-Recycling-Platform/frontend
+        env:
+          CODECEPT_BASE_URL: http://127.0.0.1:3000
+        run: npm run e2e:ci
+
+      - name: Upload frontend E2E gate artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-frontend-e2e-artifacts
+          path: |
+            Waste-Recycling-Platform/frontend/output
+            Waste-Recycling-Platform/frontend/allure-results
+          retention-days: 30
+
+      - name: Start backend stack for Postman gate
+        run: docker compose -f ./Waste-Recycling-Platform/docker-compose.yml up -d --build db backend
+
+      - name: Wait for API health before Postman gate
+        run: |
+          $maxAttempts = 60
+          $attempt = 0
+          while ($attempt -lt $maxAttempts) {
+            $attempt++
+            try {
+              Write-Host "Health check attempt $attempt/$maxAttempts..."
+              $response = Invoke-WebRequest -Uri 'http://localhost:8080/api/health' -UseBasicParsing -TimeoutSec 5
+              if ($response.StatusCode -eq 200) {
+                Write-Host 'API is healthy'
+                exit 0
+              }
+            } catch {
+              if ($attempt -eq $maxAttempts) {
+                Write-Host "Health check failed after $maxAttempts attempts"
+                throw
+              }
+              Start-Sleep -Seconds 5
+            }
+          }
+
+      - name: Install Newman
+        run: npm install -g newman newman-reporter-junitfull
+
+      - name: Run Postman smoke gate
+        run: |
+          New-Item -ItemType Directory -Force -Path ./TestResults | Out-Null
+          newman run ./Waste-Recycling-Platform/postman/WastePlatform.professional.postman_collection.json `
+            -e ./Waste-Recycling-Platform/postman/WastePlatform.professional.postman_environment.json `
+            --env-var baseUrl=http://localhost:8080 `
+            --folder '00 - Smoke & Public' `
+            --reporters cli,junit,json `
+            --reporter-junit-export ./TestResults/deploy-postman-junit.xml `
+            --reporter-json-export ./TestResults/deploy-postman-report.json
+
+      - name: Upload Postman gate artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-postman-smoke-results
+          path: |
+            TestResults/deploy-postman-junit.xml
+            TestResults/deploy-postman-report.json
+          retention-days: 30
+
+      - name: Stop backend stack after Postman gate
+        if: always()
+        run: docker compose -f ./Waste-Recycling-Platform/docker-compose.yml down -v
+
   deploy:
     name: Deploy To Server
     needs: quality-gate
@@ -178,9 +262,27 @@ jobs:
             docker compose -f docker-compose.yml up -d --build db backend frontend
             docker compose -f docker-compose.yml ps
 
+            echo "Post-deploy verification: waiting for backend /api/health"
+            HEALTH_OK=0
+            for i in $(seq 1 30); do
+              if curl -fsS http://127.0.0.1:8080/api/health; then
+                HEALTH_OK=1
+                break
+              fi
+              echo "Backend health check not ready yet ($i/30). Retrying in 5 seconds..."
+              sleep 5
+            done
+
+            if [ "$HEALTH_OK" != "1" ]; then
+              echo "Backend health check failed after deploy. Recent backend logs:"
+              docker compose -f docker-compose.yml logs --tail=120 backend
+              exit 1
+            fi
+
+            echo "Post-deploy backend health check passed."
+
       - name: Deployment summary
         if: steps.check_secrets.outputs.has_secrets == 'true'
         run: |
           echo "Deployment completed for ref: $DEPLOY_REF"
           echo "Server path: $DEPLOY_PATH"
-

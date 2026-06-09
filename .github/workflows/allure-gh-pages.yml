@@ -1,13 +1,6 @@
-name: CI - API Tests with Allure Report
+name: Reporting - Allure Pages (Optional)
 
 on:
-  workflow_run:
-    workflows:
-      - Backend Tests
-    branches:
-      - main
-    types:
-      - completed
   workflow_dispatch:
     inputs:
       report_mode:
@@ -43,7 +36,7 @@ concurrency:
 
 jobs:
   run-api-tests:
-    if: github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request' || github.event.workflow_run.conclusion == 'success'
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
