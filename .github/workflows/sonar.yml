@@ -2,41 +2,65 @@ name: SonarCloud Analysis
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
     types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: sonar-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
+  # ─────────────────────────────────────────────────────────────
+  # JOB 1: Backend SonarCloud (.NET 8 + test coverage)
+  # ─────────────────────────────────────────────────────────────
   sonar-backend:
     name: SonarCloud Backend (.NET)
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: Waste-Recycling-Platform
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0   # needed for SonarCloud blame data
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
-      - name: Set up JDK 17
+      - name: Set up JDK 17 (required by SonarScanner)
         uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: 'zulu'
 
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
       - name: Install SonarScanner for .NET
         run: dotnet tool install --global dotnet-sonarscanner
 
-      - name: Build and Analyze Backend
+      - name: Install coverlet for code coverage
+        run: dotnet tool install --global coverlet.console || true
+
+      - name: Restore dependencies
+        run: dotnet restore backend/tests/WastePlatform.Tests/WastePlatform.Tests.csproj
+
+      - name: Begin SonarCloud scan
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           dotnet-sonarscanner begin \
@@ -44,23 +68,72 @@ jobs:
             /o:"chi-trung" \
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.exclusions="**/bin/**,**/obj/**,**/TestResults/**" \
-            /d:sonar.cs.vscoveragexml.reportsPaths="**/TestResults/**/*.xml"
-          
-          dotnet build Waste-Recycling-Platform.sln
-          
+            /d:sonar.exclusions="**/bin/**,**/obj/**,**/TestResults/**,**/Migrations/**" \
+            /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" \
+            /d:sonar.cs.vstest.reportsPaths="**/TestResults/**/*.trx" \
+            /d:sonar.testExclusions="**/Tests/**" \
+            /d:sonar.coverage.exclusions="**/Tests/**,**/Migrations/**" \
+            /d:sonar.branch.name="${{ github.ref_name }}"
+
+      - name: Build backend
+        run: |
+          dotnet build backend/WastePlatform.sln --no-restore --configuration Release || \
+          dotnet build Waste-Recycling-Platform.sln --no-restore --configuration Release || \
+          dotnet build backend/tests/WastePlatform.Tests/WastePlatform.Tests.csproj --no-restore --configuration Release
+
+      - name: Run tests with coverage
+        run: |
+          dotnet test backend/tests/WastePlatform.Tests/WastePlatform.Tests.csproj \
+            --configuration Release \
+            --no-build \
+            --logger "trx;LogFileName=sonar-backend-tests.trx" \
+            --results-directory ./TestResults/sonar \
+            /p:CollectCoverage=true \
+            /p:CoverletOutputFormat=opencover \
+            /p:CoverletOutput=./TestResults/sonar/coverage.opencover.xml \
+            || true
+
+      - name: End SonarCloud scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
           dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
+  # ─────────────────────────────────────────────────────────────
+  # JOB 2: Frontend SonarCloud (JS/TS + E2E sources)
+  # ─────────────────────────────────────────────────────────────
   sonar-frontend:
-    name: SonarCloud Frontend & E2E (JS/TS)
+    name: SonarCloud Frontend & E2E (JS)
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: SonarCloud Scan
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: Waste-Recycling-Platform/frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: Waste-Recycling-Platform/frontend
+        run: npm install --omit=optional
+
+      - name: Run unit tests with coverage (if available)
+        working-directory: Waste-Recycling-Platform/frontend
+        continue-on-error: true
+        run: |
+          if [ -f package.json ] && grep -q '"test"' package.json; then
+            npm test -- --coverage --coverageDirectory=./coverage --watchAll=false 2>/dev/null || true
+          else
+            echo "No unit test script found – skipping coverage"
+          fi
+
+      - name: SonarCloud Scan (Frontend)
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -70,8 +143,12 @@ jobs:
           args: >
             -Dsonar.projectKey=chi-trung_KCPM_frontend
             -Dsonar.organization=chi-trung
-            -Dsonar.sources=frontend/src,frontend/public
+            -Dsonar.projectName=KCPM Frontend
+            -Dsonar.sources=frontend/src
             -Dsonar.tests=frontend/e2e
-            -Dsonar.exclusions=**/node_modules/**,**/.next/**,frontend/out/**,frontend/output/**,allure-results/**,allure-report/**
+            -Dsonar.test.inclusions=frontend/e2e/**/*_test.js
+            -Dsonar.exclusions=**/node_modules/**,**/.next/**,frontend/out/**,frontend/output/**,allure-results/**,allure-report/**,**/coverage/**
             -Dsonar.coverage.exclusions=frontend/e2e/**
             -Dsonar.cpd.exclusions=frontend/e2e/**
+            -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
+            -Dsonar.branch.name=${{ github.ref_name }}

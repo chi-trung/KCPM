@@ -308,6 +308,12 @@ jobs:
           echo "===== HISTORY ====="
           find Waste-Recycling-Platform/allure-results/history -maxdepth 2 -type f || true
 
+      - name: "Normalize Allure Suites → 3 groups (E2E / Postman / xUnit)"
+        if: always()
+        run: |
+          python3 Waste-Recycling-Platform/scripts/normalize_allure_suites.py \
+            Waste-Recycling-Platform/allure-results
+
       - name: Generate Allure Report
         if: always() && (github.event_name != 'workflow_dispatch' || github.event.inputs.report_mode == 'all' || github.event.inputs.report_mode == 'both')
         uses: simple-elf/allure-report-action@v1.14
