@@ -2,8 +2,16 @@
 // Jira: KIEM-14 | Test Design: State Transition Diagram
 // Technique: End-to-end user journey – collector role
 // State machine: Assigned → OnTheWay → Collected
+//
+// Test account (seeded in V9__e2e_test_accounts.sql):
+//   email: collector@test.waste | password: password
 
 const { I } = inject();
+
+const COLLECTOR = {
+  email: 'collector@test.waste',
+  password: 'password',
+};
 
 Feature('TC-E2E-004: Collector Task Status Flow');
 
@@ -16,8 +24,8 @@ Scenario(
     I.see('WASTE PLATFORM');
 
     // Step 2: Login with collector account (seeded in DB)
-    I.fillField('input[name="email"]', 'collector@test.waste');
-    I.fillField('input[name="password"]', 'Collector@123');
+    I.fillField('input[name="email"]', COLLECTOR.email);
+    I.fillField('input[name="password"]', COLLECTOR.password);
     I.click('button[type="submit"]');
 
     // Step 3: Verify successful login (no error message)
@@ -32,8 +40,8 @@ Scenario(
     // Pre-condition: collector login
     I.amOnPage('/login');
     I.waitForElement('input[name="email"]', 10);
-    I.fillField('input[name="email"]', 'collector@test.waste');
-    I.fillField('input[name="password"]', 'Collector@123');
+    I.fillField('input[name="email"]', COLLECTOR.email);
+    I.fillField('input[name="password"]', COLLECTOR.password);
     I.click('button[type="submit"]');
 
     I.waitForElement('h1, h2', 15);
@@ -56,8 +64,8 @@ Scenario(
     // Pre-condition: collector login
     I.amOnPage('/login');
     I.waitForElement('input[name="email"]', 10);
-    I.fillField('input[name="email"]', 'collector@test.waste');
-    I.fillField('input[name="password"]', 'Collector@123');
+    I.fillField('input[name="email"]', COLLECTOR.email);
+    I.fillField('input[name="password"]', COLLECTOR.password);
     I.click('button[type="submit"]');
 
     I.waitForElement('h1, h2', 15);
@@ -95,8 +103,8 @@ Scenario(
     // Collector login
     I.amOnPage('/login');
     I.waitForElement('input[name="email"]', 10);
-    I.fillField('input[name="email"]', 'collector@test.waste');
-    I.fillField('input[name="password"]', 'Collector@123');
+    I.fillField('input[name="email"]', COLLECTOR.email);
+    I.fillField('input[name="password"]', COLLECTOR.password);
     I.click('button[type="submit"]');
 
     I.waitForElement('h1, h2', 15);

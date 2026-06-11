@@ -1,10 +1,20 @@
 // TC-E2E-002: Citizen Register & Create Waste Report
 // Jira: KIEM-FE | Test Design: State Transition + Error Guessing
 // Technique: End-to-end user journey – happy path + validation guard
+//
+// Pre-seeded account (V9__e2e_test_accounts.sql):
+//   citizen@test.waste / password
+// The register scenario uses a unique timestamp email to avoid conflicts.
 
 const { I } = inject();
 
-// Fixed test account (unique enough to avoid conflicts in CI)
+// Fixed pre-seeded citizen account (password = 'password')
+const CITIZEN = {
+  email: 'citizen@test.waste',
+  password: 'password',
+};
+
+// Unique account for the register scenario
 const TEST_CITIZEN = {
   name: 'E2E Test Citizen',
   email: `e2e.citizen.${Date.now()}@test.waste`,
@@ -42,11 +52,11 @@ Scenario(
 Scenario(
   'Citizen can navigate to create-report page and see the form',
   async ({ I }) => {
-    // Pre-condition: Login with seeded citizen account
+    // Pre-condition: Login with seeded citizen account (V9__e2e_test_accounts.sql)
     I.amOnPage('/login');
     I.waitForElement('input[name="email"]', 10);
-    I.fillField('input[name="email"]', 'quantranhoang24@gmail.com');
-    I.fillField('input[name="password"]', 'Quan1109');
+    I.fillField('input[name="email"]', CITIZEN.email);
+    I.fillField('input[name="password"]', CITIZEN.password);
     I.click('button[type="submit"]');
 
     // Wait for redirect to citizen area
@@ -70,8 +80,8 @@ Scenario(
     // Pre-condition: must be logged in as citizen
     I.amOnPage('/login');
     I.waitForElement('input[name="email"]', 10);
-    I.fillField('input[name="email"]', 'quantranhoang24@gmail.com');
-    I.fillField('input[name="password"]', 'Quan1109');
+    I.fillField('input[name="email"]', CITIZEN.email);
+    I.fillField('input[name="password"]', CITIZEN.password);
     I.click('button[type="submit"]');
 
     I.waitForText('Tạo Báo Cáo', 15);

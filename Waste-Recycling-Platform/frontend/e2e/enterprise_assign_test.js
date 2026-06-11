@@ -1,8 +1,16 @@
 // TC-E2E-003: Enterprise Assign Collector to Task
 // Jira: KIEM-16 | Test Design: State Transition + Decision Table
 // Technique: End-to-end user journey – enterprise role
+//
+// Test account (seeded in V9__e2e_test_accounts.sql):
+//   email: enterprise@test.waste | password: password
 
 const { I } = inject();
+
+const ENTERPRISE = {
+  email: 'enterprise@test.waste',
+  password: 'password',
+};
 
 Feature('TC-E2E-003: Enterprise Assign Collector Flow');
 
@@ -14,10 +22,9 @@ Scenario(
     I.waitForElement('input[name="email"]', 10);
     I.see('WASTE PLATFORM');
 
-    // Step 2: Login with enterprise account
-    // NOTE: Uses seeded enterprise account in DB
-    I.fillField('input[name="email"]', 'enterprise@test.waste');
-    I.fillField('input[name="password"]', 'Enterprise@123');
+    // Step 2: Login with seeded enterprise account (V9__e2e_test_accounts.sql)
+    I.fillField('input[name="email"]', ENTERPRISE.email);
+    I.fillField('input[name="password"]', ENTERPRISE.password);
     I.click('button[type="submit"]');
 
     // Step 3: Verify redirect to enterprise area
@@ -32,8 +39,8 @@ Scenario(
     // Pre-condition: enterprise account login
     I.amOnPage('/login');
     I.waitForElement('input[name="email"]', 10);
-    I.fillField('input[name="email"]', 'enterprise@test.waste');
-    I.fillField('input[name="password"]', 'Enterprise@123');
+    I.fillField('input[name="email"]', ENTERPRISE.email);
+    I.fillField('input[name="password"]', ENTERPRISE.password);
     I.click('button[type="submit"]');
 
     // Navigate to enterprise dashboard / tasks
@@ -54,8 +61,8 @@ Scenario(
     // Pre-condition: enterprise login
     I.amOnPage('/login');
     I.waitForElement('input[name="email"]', 10);
-    I.fillField('input[name="email"]', 'enterprise@test.waste');
-    I.fillField('input[name="password"]', 'Enterprise@123');
+    I.fillField('input[name="email"]', ENTERPRISE.email);
+    I.fillField('input[name="password"]', ENTERPRISE.password);
     I.click('button[type="submit"]');
     I.waitForElement('h1, h2', 15);
 
@@ -76,7 +83,7 @@ Scenario(
     I.waitForElement('input[name="email"]', 10);
 
     // Wrong password – error guessing negative test
-    I.fillField('input[name="email"]', 'enterprise@test.waste');
+    I.fillField('input[name="email"]', ENTERPRISE.email);
     I.fillField('input[name="password"]', 'WrongPassword!');
     I.click('button[type="submit"]');
 
