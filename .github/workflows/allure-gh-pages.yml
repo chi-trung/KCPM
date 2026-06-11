@@ -133,7 +133,7 @@ jobs:
                   if 'allure-results' in a.get('name', ''):
                           print(a['id'])
                           break
-" 2>/dev/null || echo "")
+        " 2>/dev/null || echo "")
           if [ -z "$art_id" ]; then
             echo "No allure-results artifact found in run $run_id; skipping"
             exit 0
