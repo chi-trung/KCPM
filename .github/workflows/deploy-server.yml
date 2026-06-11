@@ -114,7 +114,7 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: Waste-Recycling-Platform/frontend
-        run: npm ci
+        run: npm install --omit=optional
 
       - name: Install Playwright browsers
         working-directory: Waste-Recycling-Platform/frontend
