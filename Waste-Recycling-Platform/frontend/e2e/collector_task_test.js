@@ -13,44 +13,52 @@ const COLLECTOR = {
   password: 'password',
 };
 
+/** Helper: login as collector and wait for redirect */
+async function loginAsCollector() {
+  I.say('[Precondition] Navigate to login page');
+  I.amOnPage('/login');
+  I.waitForElement('input[name="email"]', 10);
+
+  I.say('[Precondition] Enter collector credentials');
+  I.fillField('input[name="email"]', COLLECTOR.email);
+  I.fillField('input[name="password"]', COLLECTOR.password);
+  I.click('button[type="submit"]');
+
+  I.say('[Precondition] Wait for authenticated redirect');
+  I.waitForElement('h1, h2, nav', 15);
+}
+
 Feature('TC-E2E-004: Collector Task Status Flow');
 
 Scenario(
-  'Collector can login and reach collector dashboard',
+  '#1 Collector can login and reach collector dashboard',
   async ({ I }) => {
-    // Step 1: Navigate to login
+    I.say('[Given] User is on the login page');
     I.amOnPage('/login');
     I.waitForElement('input[name="email"]', 10);
     I.see('WASTE PLATFORM');
 
-    // Step 2: Login with collector account (seeded in DB)
+    I.say('[When] Collector enters valid credentials and submits');
     I.fillField('input[name="email"]', COLLECTOR.email);
     I.fillField('input[name="password"]', COLLECTOR.password);
     I.click('button[type="submit"]');
 
-    // Step 3: Verify successful login (no error message)
+    I.say('[Then] Collector is redirected to the authenticated area');
     I.waitForElement('h1, h2, nav', 15);
     I.dontSee('Email hoặc mật khẩu không đúng');
   }
 );
 
 Scenario(
-  'Collector dashboard page loads without error',
+  '#2 Collector dashboard page loads without error',
   async ({ I }) => {
-    // Pre-condition: collector login
-    I.amOnPage('/login');
-    I.waitForElement('input[name="email"]', 10);
-    I.fillField('input[name="email"]', COLLECTOR.email);
-    I.fillField('input[name="password"]', COLLECTOR.password);
-    I.click('button[type="submit"]');
+    await loginAsCollector();
 
-    I.waitForElement('h1, h2', 15);
-
-    // Navigate to collector dashboard
+    I.say('[When] Collector navigates to /collector/dashboard');
     I.amOnPage('/collector/dashboard');
     I.waitForElement('div, h1, h2', 10);
 
-    // Should not show 404 or Unauthorized
+    I.say('[Then] Page loads correctly — no 404 / Unauthorized errors');
     I.dontSee('404');
     I.dontSee('Not Found');
     I.dontSee('Unauthorized');
@@ -59,61 +67,50 @@ Scenario(
 );
 
 Scenario(
-  'Collector tasks page renders task list structure',
+  '#3 Collector tasks page renders task list structure',
   async ({ I }) => {
-    // Pre-condition: collector login
-    I.amOnPage('/login');
-    I.waitForElement('input[name="email"]', 10);
-    I.fillField('input[name="email"]', COLLECTOR.email);
-    I.fillField('input[name="password"]', COLLECTOR.password);
-    I.click('button[type="submit"]');
+    await loginAsCollector();
 
-    I.waitForElement('h1, h2', 15);
-
-    // Navigate directly to tasks list
+    I.say('[When] Collector navigates to /collector/routes (task list)');
     I.amOnPage('/collector/routes');
     I.waitForElement('div', 10);
 
-    // Verify page loads (with or without tasks)
+    I.say('[Then] Page loads without 404 or Unauthorized error');
     I.dontSee('404');
     I.dontSee('Unauthorized');
   }
 );
 
 Scenario(
-  'Collector login fails with wrong password (negative test – error guessing)',
+  '#4 Collector login fails with wrong password (negative test – error guessing)',
   async ({ I }) => {
+    I.say('[Given] User is on the login page');
     I.amOnPage('/login');
     I.waitForElement('input[name="email"]', 10);
 
-    // Error guessing: wrong password for valid collector email
+    I.say('[When] Collector enters valid email but INVALID password');
     I.fillField('input[name="email"]', 'collector@test.waste');
     I.fillField('input[name="password"]', 'InvalidPassword123!');
     I.click('button[type="submit"]');
 
-    // Expect error message – verify Unauthorized state
+    I.say('[Then] System shows authentication error message');
     I.waitForText('Email hoặc mật khẩu không đúng', 10);
+
+    I.say('[And] URL does NOT change to collector dashboard (user stays on login)');
     I.dontSeeCurrentUrlEquals('/collector/dashboard');
   }
 );
 
 Scenario(
-  'Collector role cannot access enterprise-only route (state transition guard)',
+  '#5 Collector role cannot access enterprise-only route (state transition guard)',
   async ({ I }) => {
-    // Collector login
-    I.amOnPage('/login');
-    I.waitForElement('input[name="email"]', 10);
-    I.fillField('input[name="email"]', COLLECTOR.email);
-    I.fillField('input[name="password"]', COLLECTOR.password);
-    I.click('button[type="submit"]');
+    await loginAsCollector();
 
-    I.waitForElement('h1, h2', 15);
-
-    // Try to access enterprise route → should be blocked or redirected
+    I.say('[When] Collector attempts to access enterprise-restricted route');
     I.amOnPage('/enterprise/dashboard');
     I.waitForElement('div, h1, h2', 10);
 
-    // Should NOT see enterprise-specific content
+    I.say('[Then] Enterprise-only content is NOT visible (access blocked or redirected)');
     I.dontSee('Collector Assignment Management');
   }
 );
