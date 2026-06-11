@@ -174,6 +174,55 @@ jobs:
           fi
           rm -rf artifact.zip backend_artifact || true
 
+      - name: Fetch frontend-e2e Allure artifact (merge E2E into report)
+        if: always()
+        run: |
+          set -e
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            source_branch="${{ github.event.workflow_run.head_branch }}"
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            source_branch="${{ github.head_ref }}"
+          else
+            source_branch="${{ github.ref_name }}"
+          fi
+
+          OWNER_REPO=${{ github.repository }}
+          WORKFLOW_FILE=frontend-e2e.yml
+          runs_url="https://api.github.com/repos/${OWNER_REPO}/actions/workflows/${WORKFLOW_FILE}/runs?branch=${source_branch}&status=success"
+          runs_resp=$(curl -sS -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json" "$runs_url")
+          run_id=$(echo "$runs_resp" | grep -o '"id": [0-9]\+' | head -n1 | sed -E 's/"id": //')
+          if [ -z "$run_id" ]; then
+            echo "::notice::No successful frontend-e2e run found; skipping E2E merge"
+            exit 0
+          fi
+          echo "Found frontend-e2e run: $run_id"
+
+          arts_url="https://api.github.com/repos/${OWNER_REPO}/actions/runs/${run_id}/artifacts"
+          arts_resp=$(curl -sS -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json" "$arts_url")
+          # Find artifact matching 'e2e-allure-results'
+          art_id=$(echo "$arts_resp" | grep -o '"id": [0-9]\+\|"name": "[^"]\+' | paste - - | grep 'e2e-allure-results' | head -n1 | sed -E 's/.*"id": ([0-9]+)\s+"name": .*/\1/')
+          if [ -z "$art_id" ]; then
+            echo "::notice::No e2e-allure-results artifact found; skipping E2E merge"
+            exit 0
+          fi
+
+          echo "Downloading E2E artifact id: $art_id"
+          curl -sSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${OWNER_REPO}/actions/artifacts/${art_id}/zip" -o e2e_artifact.zip
+          unzip -o e2e_artifact.zip -d e2e_artifact || true
+
+          e2e_json_count=$(find e2e_artifact -name "*.json" | wc -l | tr -d ' ')
+          echo "E2E json result count: $e2e_json_count"
+
+          if [ "$e2e_json_count" -gt "0" ]; then
+            mkdir -p Waste-Recycling-Platform/allure-results
+            cp -Rv e2e_artifact/. Waste-Recycling-Platform/allure-results/ || true
+            echo "✅ Merged E2E allure-results ($e2e_json_count files) into main report"
+          else
+            echo "::notice::E2E artifact has no JSON results — E2E tests may not have run or allure-codeceptjs not configured"
+          fi
+          rm -rf e2e_artifact.zip e2e_artifact || true
+
       - name: Restore Allure History
         if: always()
         run: |
