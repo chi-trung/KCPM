@@ -1,4 +1,4 @@
-﻿# Traceability Matrix - Waste Recycling Platform
+# Traceability Matrix - Waste Recycling Platform
 
 ## 1. Muc dich
 
@@ -37,6 +37,9 @@ Format nay tham khao tu `UnitestCuaBao.xlsx`: co ma test, muc tieu, buoc test, e
 | KIEM-19 | User can receive/read notifications | TC-NOTI-001 | Unit/API/Integration | State transition | `NotificationServiceTests.cs`, `NotificationControllerTests.cs`, `SignalRRealTimeNotifierTests.cs` | xUnit + Allure | Existing |
 | KIEM-ADMIN | Admin can manage users/enterprises/complaints | TC-ADMIN-001 | Unit/API | Role-based access, negative testing | `AdminModuleTests.cs`, `AdminApiIntegrationTests.cs` | xUnit + Allure | Existing |
 | KIEM-FE | Public pages render and auth entry points are available | TC-E2E-001 | System/E2E | Smoke testing | `frontend/e2e/smoke_test.js` | CodeceptJS output, screenshots on fail | Existing |
+| KIEM-FE | Citizen đăng ký và điều hướng đến create-report form | TC-E2E-002 | System/E2E | End-to-end, Error Guessing | `frontend/e2e/citizen_report_test.js` | CodeceptJS output, screenshots on fail | Added |
+| KIEM-16 | Enterprise đăng nhập và truy cập task management | TC-E2E-003 | System/E2E | State Transition, Role-based Access | `frontend/e2e/enterprise_assign_test.js` | CodeceptJS output, screenshots on fail | Added |
+| KIEM-14 | Collector đăng nhập, truy cập tasks, không vào enterprise route | TC-E2E-004 | System/E2E | State Transition Guard, Error Guessing | `frontend/e2e/collector_task_test.js` | CodeceptJS output, screenshots on fail | Added |
 | KIEM-DEPLOY | Server deploy only after quality gate pass | TC-DEPLOY-001 | Deployment/System | Smoke testing | `.github/workflows/deploy-server.yml` | GitHub Actions deploy log | Existing/Improved |
 | KIEM-DEPLOY | Backend responds after deployment | TC-DEPLOY-002 | Deployment/System | Smoke testing | `.github/workflows/deploy-server.yml` post-deploy curl `/api/health` | Health check log | Added |
 | KIEM-STATIC | Code is reviewed by static analysis | TC-STATIC-001 | Static Testing | Static analysis | `.github/workflows/sonar.yml` | SonarCloud run | Existing |
