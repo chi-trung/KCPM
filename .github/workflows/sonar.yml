@@ -59,6 +59,14 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore backend/tests/WastePlatform.Tests/WastePlatform.Tests.csproj
 
+      - name: Temporarily move sonar-project.properties (not supported by dotnet-sonarscanner)
+        working-directory: Waste-Recycling-Platform
+        run: |
+          # dotnet-sonarscanner errors if sonar-project.properties is present in working dir
+          if [ -f sonar-project.properties ]; then
+            mv sonar-project.properties sonar-project.properties.bak
+          fi
+
       - name: Begin SonarCloud scan
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -98,6 +106,13 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+      - name: Restore sonar-project.properties after .NET scan
+        if: always()
+        working-directory: Waste-Recycling-Platform
+        run: |
+          if [ -f sonar-project.properties.bak ]; then
+            mv sonar-project.properties.bak sonar-project.properties
+          fi
 
   # ─────────────────────────────────────────────────────────────
   # JOB 2: Frontend SonarCloud (JS/TS + E2E sources)
@@ -143,7 +158,7 @@ jobs:
           args: >
             -Dsonar.projectKey=chi-trung_KCPM_frontend
             -Dsonar.organization=chi-trung
-            -Dsonar.projectName=KCPM Frontend
+            "-Dsonar.projectName=KCPM Frontend"
             -Dsonar.sources=frontend/src
             -Dsonar.tests=frontend/e2e
             -Dsonar.test.inclusions=frontend/e2e/**/*_test.js
