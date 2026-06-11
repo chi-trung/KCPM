@@ -116,8 +116,8 @@ jobs:
           WORKFLOW_FILE=backend-tests.yml
           runs_url="https://api.github.com/repos/${OWNER_REPO}/actions/workflows/${WORKFLOW_FILE}/runs?branch=${source_branch}&status=success"
           runs_resp=$(curl -sS -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json" "$runs_url")
-          # Extract first run id without jq
-          run_id=$(echo "$runs_resp" | grep -o '"id": [0-9]\+' | head -n1 | sed -E 's/"id": //')
+          # Extract first run id using jq
+          run_id=$(echo "$runs_resp" | jq -r '.workflow_runs[0].id // empty' 2>/dev/null || echo "")
           if [ -z "$run_id" ]; then
             echo "No successful backend-tests run found; skipping artifact fetch"
             exit 0
@@ -198,7 +198,7 @@ jobs:
           WORKFLOW_FILE=frontend-e2e.yml
           runs_url="https://api.github.com/repos/${OWNER_REPO}/actions/workflows/${WORKFLOW_FILE}/runs?branch=${source_branch}&status=success"
           runs_resp=$(curl -sS -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json" "$runs_url")
-          run_id=$(echo "$runs_resp" | grep -o '"id": [0-9]\+' | head -n1 | sed -E 's/"id": //')
+          run_id=$(echo "$runs_resp" | jq -r '.workflow_runs[0].id // empty' 2>/dev/null || echo "")
           if [ -z "$run_id" ]; then
             echo "::notice::No successful frontend-e2e run found; skipping E2E merge"
             exit 0
