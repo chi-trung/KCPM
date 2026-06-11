@@ -126,14 +126,7 @@ jobs:
           arts_url="https://api.github.com/repos/${OWNER_REPO}/actions/runs/${run_id}/artifacts"
           arts_resp=$(curl -sS -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json" "$arts_url")
           # Find artifact id matching 'allure-results' using Python (more reliable than grep/paste)
-          art_id=$(echo "$arts_resp" | python3 -c "
-          import sys, json
-          data = json.load(sys.stdin)
-          for a in data.get('artifacts', []):
-                  if 'allure-results' in a.get('name', ''):
-                          print(a['id'])
-                          break
-        " 2>/dev/null || echo "")
+          art_id=$(echo "$arts_resp" | python3 -c "import sys, json; data = json.load(sys.stdin); print(next((a['id'] for a in data.get('artifacts', []) if 'allure-results' in a.get('name', '')), ''))" 2>/dev/null || echo "")
           if [ -z "$art_id" ]; then
             echo "No allure-results artifact found in run $run_id; skipping"
             exit 0
