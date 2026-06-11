@@ -1,0 +1,11 @@
+{
+    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkZTMzNGExZC1kYjI1LTRiMmItOTY3OC1kOWFlMDAyNmU2ZWIiLCJlbWFpbCI6ImNpdGl6ZW4rMTc4MTE5MjE5MEBleGFtcGxlLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkNpdGl6ZW4iLCJmdWxsTmFtZSI6IlRlc3QgVXNlciIsImp0aSI6ImJkZjczNTNhLWVhMzEtNGRjZC1hMTVmLTRhOWYzYjliYzhmMSIsImV4cCI6MTc4MTE5NTc5MCwiaXNzIjoiV2FzdGVQbGF0Zm9ybSIsImF1ZCI6Ildhc3RlUGxhdGZvcm1DbGllbnQifQ.QJ4jksRlCQSlZmT8Xycsm55Ps1OuHvODjeb1aMTqzR0",
+    "User-Agent": "PostmanRuntime/7.39.1",
+    "Accept": "*/*",
+    "Cache-Control": "no-cache",
+    "Postman-Token": "1e6705eb-fe91-407c-b672-1697ab93a2a7",
+    "Host": "localhost:8080",
+    "Accept-Encoding": "gzip, deflate, br",
+    "Connection": "keep-alive",
+    "Content-Length": "941"
+}
