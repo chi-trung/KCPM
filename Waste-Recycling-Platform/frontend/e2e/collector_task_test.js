@@ -1,7 +1,6 @@
 // TC-E2E-004: Collector View Tasks & Status Update Flow
 // Jira: KIEM-14 | Test Design: State Transition Diagram
 // Technique: End-to-end user journey – collector role
-// State machine: Assigned → OnTheWay → Collected
 //
 // Test account (seeded in V9__e2e_test_accounts.sql):
 //   email: collector@test.waste | password: password
@@ -32,6 +31,7 @@ Feature('TC-E2E-004: Collector Task Status Flow');
 
 Scenario(
   '#1 Collector can login and reach collector dashboard',
+  { epic: 'E2E Frontend', feature: 'Collector Role', story: 'Authentication', severity: 'critical' },
   async ({ I }) => {
     I.say('[Given] User is on the login page');
     I.amOnPage('/login');
@@ -51,6 +51,7 @@ Scenario(
 
 Scenario(
   '#2 Collector dashboard page loads without error',
+  { epic: 'E2E Frontend', feature: 'Collector Role', story: 'Dashboard Access', severity: 'normal' },
   async ({ I }) => {
     await loginAsCollector();
 
@@ -68,6 +69,7 @@ Scenario(
 
 Scenario(
   '#3 Collector tasks page renders task list structure',
+  { epic: 'E2E Frontend', feature: 'Collector Role', story: 'Task List', severity: 'normal' },
   async ({ I }) => {
     await loginAsCollector();
 
@@ -83,6 +85,7 @@ Scenario(
 
 Scenario(
   '#4 Collector login fails with wrong password (negative test – error guessing)',
+  { epic: 'E2E Frontend', feature: 'Collector Role', story: 'Authentication', severity: 'critical' },
   async ({ I }) => {
     I.say('[Given] User is on the login page');
     I.amOnPage('/login');
@@ -103,6 +106,7 @@ Scenario(
 
 Scenario(
   '#5 Collector role cannot access enterprise-only route (state transition guard)',
+  { epic: 'E2E Frontend', feature: 'Collector Role', story: 'Authorization Guard', severity: 'critical' },
   async ({ I }) => {
     await loginAsCollector();
 

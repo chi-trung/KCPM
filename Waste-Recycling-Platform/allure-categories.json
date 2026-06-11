@@ -32,7 +32,7 @@
   {
     "name": "Timeout / Flaky",
     "matchedStatuses": ["failed", "broken"],
-    "messageRegex": "(?i)timeout|timed out|deadline|deadlock|TaskCanceledException|flaky"
+    "messageRegex": "(?i)timeout|timed out|deadline|deadlock|TaskCanceledException|flaky|after \\d+ sec"
   },
   {
     "name": "File / Storage Error",
@@ -45,8 +45,28 @@
     "messageRegex": "(?i)postman|newman|pm.test|AssertionError|5[0-9]{2}|response code"
   },
   {
+    "name": "E2E – Element Not Found",
+    "matchedStatuses": ["failed"],
+    "messageRegex": "(?i)element .* was not found|locator|visible on page|was not visible|selector"
+  },
+  {
+    "name": "E2E – Page Navigation Error",
+    "matchedStatuses": ["failed"],
+    "messageRegex": "(?i)net::ERR|navigation|page load|ERR_CONNECTION|ERR_FAILED|goto failed"
+  },
+  {
+    "name": "E2E – Text Not Found",
+    "matchedStatuses": ["failed"],
+    "messageRegex": "(?i)text .* was not found on page|waitForText|expected text"
+  },
+  {
+    "name": "E2E – Authentication Failed",
+    "matchedStatuses": ["failed"],
+    "messageRegex": "(?i)login|email hoặc mật khẩu|credentials|authentication|sign in"
+  },
+  {
     "name": "Test Infrastructure Error",
     "matchedStatuses": ["broken"],
     "messageRegex": "(?i)NullReferenceException|setup|teardown|fixture|cannot instantiate"
   }
-]
+]

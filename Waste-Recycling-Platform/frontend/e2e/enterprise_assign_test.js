@@ -12,7 +12,6 @@ const ENTERPRISE = {
   password: 'password',
 };
 
-/** Helper: login as enterprise account */
 async function loginAsEnterprise() {
   I.say('[Precondition] Navigate to login page');
   I.amOnPage('/login');
@@ -31,6 +30,7 @@ Feature('TC-E2E-003: Enterprise Assign Collector Flow');
 
 Scenario(
   '#1 Enterprise can login and reach task management dashboard',
+  { epic: 'E2E Frontend', feature: 'Enterprise Role', story: 'Authentication', severity: 'critical' },
   async ({ I }) => {
     I.say('[Given] User is on the login page');
     I.amOnPage('/login');
@@ -50,6 +50,7 @@ Scenario(
 
 Scenario(
   '#2 Enterprise task management page loads with correct structure',
+  { epic: 'E2E Frontend', feature: 'Enterprise Role', story: 'Dashboard Access', severity: 'normal' },
   async ({ I }) => {
     await loginAsEnterprise();
 
@@ -66,6 +67,7 @@ Scenario(
 
 Scenario(
   '#3 Enterprise can see Collector Assignment Management page',
+  { epic: 'E2E Frontend', feature: 'Enterprise Role', story: 'Collector Assignment', severity: 'critical' },
   async ({ I }) => {
     await loginAsEnterprise();
 
@@ -81,6 +83,7 @@ Scenario(
 
 Scenario(
   '#4 Enterprise login fails with invalid credentials (negative test)',
+  { epic: 'E2E Frontend', feature: 'Enterprise Role', story: 'Authentication', severity: 'critical' },
   async ({ I }) => {
     I.say('[Given] User is on the login page');
     I.amOnPage('/login');

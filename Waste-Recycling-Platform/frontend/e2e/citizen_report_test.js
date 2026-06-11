@@ -4,17 +4,14 @@
 //
 // Pre-seeded account (V9__e2e_test_accounts.sql):
 //   citizen@test.waste / password
-// The register scenario uses a unique timestamp email to avoid conflicts.
 
 const { I } = inject();
 
-// Fixed pre-seeded citizen account (password = 'password')
 const CITIZEN = {
   email: 'citizen@test.waste',
   password: 'password',
 };
 
-// Unique account for the register scenario
 const TEST_CITIZEN = {
   name: 'E2E Test Citizen',
   email: `e2e.citizen.${Date.now()}@test.waste`,
@@ -22,7 +19,6 @@ const TEST_CITIZEN = {
   role: 'citizen',
 };
 
-/** Helper: login as seeded citizen account */
 async function loginAsCitizen() {
   I.say('[Precondition] Navigate to login page');
   I.amOnPage('/login');
@@ -41,6 +37,7 @@ Feature('TC-E2E-002: Citizen Report Flow');
 
 Scenario(
   '#1 Citizen can register a new account and reach citizen dashboard',
+  { epic: 'E2E Frontend', feature: 'Citizen Role', story: 'Registration', severity: 'critical' },
   async ({ I }) => {
     I.say('[Given] User is on the registration page');
     I.amOnPage('/register');
@@ -65,6 +62,7 @@ Scenario(
 
 Scenario(
   '#2 Citizen can navigate to create-report page and see the form',
+  { epic: 'E2E Frontend', feature: 'Citizen Role', story: 'Waste Report Creation', severity: 'critical' },
   async ({ I }) => {
     await loginAsCitizen();
 
@@ -82,6 +80,7 @@ Scenario(
 
 Scenario(
   '#3 Create-report form shows validation error when submitted empty',
+  { epic: 'E2E Frontend', feature: 'Citizen Role', story: 'Form Validation', severity: 'normal' },
   async ({ I }) => {
     await loginAsCitizen();
 
@@ -99,6 +98,7 @@ Scenario(
 
 Scenario(
   '#4 Citizen reports list page is accessible after login',
+  { epic: 'E2E Frontend', feature: 'Citizen Role', story: 'Report History', severity: 'normal' },
   async ({ I }) => {
     I.say('[Given] User is on the login page');
     I.amOnPage('/login');

@@ -64,10 +64,18 @@ jobs:
           cat > ./allure-results/environment.properties << 'EOF'
           ENV=CI
           Framework=CodeceptJS + Playwright
-          Browser=chromium
+          Framework.Version=4.x
+          Browser=Chromium (Headless)
+          Base.URL=http://127.0.0.1:3000
+          Node.Version=$(node --version 2>/dev/null || echo 'N/A')
           GIT_SHA=${{ github.sha }}
-          GITHUB_RUN_ID=${{ github.run_id }}
-          RUNNER=${{ runner.os }}
+          GIT_Branch=${{ github.ref_name }}
+          GitHub.Run.ID=${{ github.run_id }}
+          GitHub.Run.Number=${{ github.run_number }}
+          GitHub.Workflow=${{ github.workflow }}
+          GitHub.Actor=${{ github.actor }}
+          Runner.OS=${{ runner.os }}
+          Allure.Report.URL=https://chi-trung.github.io/KCPM/report-main/
           EOF
 
       - name: Install Allure CLI
