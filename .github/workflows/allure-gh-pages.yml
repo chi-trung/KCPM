@@ -314,6 +314,18 @@ jobs:
           python3 Waste-Recycling-Platform/scripts/normalize_allure_suites.py \
             Waste-Recycling-Platform/allure-results
 
+      - name: Copy categories.json into allure-results
+        if: always()
+        run: |
+          CATS="Waste-Recycling-Platform/allure-categories.json"
+          DEST="Waste-Recycling-Platform/allure-results/categories.json"
+          if [ -f "$CATS" ]; then
+            cp "$CATS" "$DEST"
+            echo "✅ categories.json copied to allure-results"
+          else
+            echo "::warning::allure-categories.json not found, skipping"
+          fi
+
       - name: Generate Allure Report
         if: always() && (github.event_name != 'workflow_dispatch' || github.event.inputs.report_mode == 'all' || github.event.inputs.report_mode == 'both')
         uses: simple-elf/allure-report-action@v1.14
