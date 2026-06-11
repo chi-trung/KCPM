@@ -1,0 +1,12 @@
+{
+  "role": "Enterprise",
+  "fullName": "Test User",
+  "email": "enterprise+1781201784@example.com",
+  "password": "password",
+  "phone": "0900000000",
+  "district": "District 1",
+  "ward": "Ward 1",
+  "companyName": "Green Recycle Co.",
+  "serviceArea": "District 1, District 3",
+  "capacityKgPerDay": 500
+}
