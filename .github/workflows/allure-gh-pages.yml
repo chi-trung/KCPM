@@ -125,8 +125,15 @@ jobs:
           echo "Found backend-tests run: $run_id"
           arts_url="https://api.github.com/repos/${OWNER_REPO}/actions/runs/${run_id}/artifacts"
           arts_resp=$(curl -sS -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json" "$arts_url")
-          # Find artifact id matching 'allure-results' without jq
-          art_id=$(echo "$arts_resp" | grep -o '"id": [0-9]\+\|"name": "[^"]\+' | paste - - | grep 'allure-results' | head -n1 | sed -E 's/.*"id": ([0-9]+)\s+"name": .*/\1/')
+          # Find artifact id matching 'allure-results' using Python (more reliable than grep/paste)
+          art_id=$(echo "$arts_resp" | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+for a in data.get('artifacts', []):
+    if 'allure-results' in a.get('name', ''):
+        print(a['id'])
+        break
+" 2>/dev/null || echo "")
           if [ -z "$art_id" ]; then
             echo "No allure-results artifact found in run $run_id; skipping"
             exit 0
@@ -169,8 +176,16 @@ jobs:
               exit 1
             fi
           else
-            echo "No allure-results folder found inside artifact"
-            exit 1
+            echo "::warning::No allure-results folder found inside artifact — checking top-level files"
+            # Fallback: copy everything at top level if no subfolder named allure-results
+            all_json=$(find backend_artifact -name "*.json" | wc -l | tr -d ' ')
+            if [ "$all_json" -gt "0" ]; then
+              mkdir -p Waste-Recycling-Platform/allure-results
+              cp -Rv backend_artifact/. Waste-Recycling-Platform/allure-results/ || true
+              echo "Fallback: copied $all_json JSON files from artifact root"
+            else
+              echo "::warning::Artifact has no JSON files at all — continuing without backend results"
+            fi
           fi
           rm -rf artifact.zip backend_artifact || true
 
@@ -199,8 +214,15 @@ jobs:
 
           arts_url="https://api.github.com/repos/${OWNER_REPO}/actions/runs/${run_id}/artifacts"
           arts_resp=$(curl -sS -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json" "$arts_url")
-          # Find artifact matching 'e2e-allure-results'
-          art_id=$(echo "$arts_resp" | grep -o '"id": [0-9]\+\|"name": "[^"]\+' | paste - - | grep 'e2e-allure-results' | head -n1 | sed -E 's/.*"id": ([0-9]+)\s+"name": .*/\1/')
+          # Find artifact matching 'e2e-allure-results' using Python
+          art_id=$(echo "$arts_resp" | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+for a in data.get('artifacts', []):
+    if 'e2e-allure-results' in a.get('name', ''):
+        print(a['id'])
+        break
+" 2>/dev/null || echo "")
           if [ -z "$art_id" ]; then
             echo "::notice::No e2e-allure-results artifact found; skipping E2E merge"
             exit 0
