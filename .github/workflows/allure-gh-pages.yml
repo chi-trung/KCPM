@@ -208,14 +208,7 @@ jobs:
           arts_url="https://api.github.com/repos/${OWNER_REPO}/actions/runs/${run_id}/artifacts"
           arts_resp=$(curl -sS -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json" "$arts_url")
           # Find artifact matching 'e2e-allure-results' using Python
-          art_id=$(echo "$arts_resp" | python3 -c "
-import sys, json
-data = json.load(sys.stdin)
-for a in data.get('artifacts', []):
-    if 'e2e-allure-results' in a.get('name', ''):
-        print(a['id'])
-        break
-" 2>/dev/null || echo "")
+          art_id=$(echo "$arts_resp" | jq -r '.artifacts[]? | select(.name? | strings | contains("e2e-allure-results")) | .id' | head -n 1 2>/dev/null || echo "")
           if [ -z "$art_id" ]; then
             echo "::notice::No e2e-allure-results artifact found; skipping E2E merge"
             exit 0
