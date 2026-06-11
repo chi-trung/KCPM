@@ -102,3 +102,24 @@ jobs:
             Waste-Recycling-Platform/frontend/allure-report
           retention-days: 30
 
+      - name: Log test results to Jira
+        if: always()
+        working-directory: ${{ github.workspace }}
+        env:
+          JIRA_BASE_URL:   ${{ secrets.JIRA_BASE_URL }}
+          JIRA_EMAIL:      ${{ secrets.JIRA_EMAIL }}
+          JIRA_API_TOKEN:  ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_PROJECT_KEY: KIEM
+          TEST_TYPE: e2e
+          ALLURE_REPORT_URL: https://chi-trung.github.io/KCPM/report-main/
+        run: |
+          # Parse allure-results summary JSON if available
+          SUMMARY_FILE="Waste-Recycling-Platform/frontend/allure-results/widgets/summary.json"
+          PASSED=0; FAILED=0; TOTAL=0; DURATION_SEC=""
+          if [ -f "$SUMMARY_FILE" ]; then
+            PASSED=$(python3 -c "import json,sys; d=json.load(open('$SUMMARY_FILE')); print(d.get('statistic',{}).get('passed',0))" 2>/dev/null || echo 0)
+            FAILED=$(python3 -c "import json,sys; d=json.load(open('$SUMMARY_FILE')); print(d.get('statistic',{}).get('failed',0))" 2>/dev/null || echo 0)
+            TOTAL=$(python3  -c "import json,sys; d=json.load(open('$SUMMARY_FILE')); print(d.get('statistic',{}).get('total',0))"  2>/dev/null || echo 0)
+          fi
+          export PASSED FAILED TOTAL DURATION_SEC
+          python3 scripts/jira_log_test_execution.py || true

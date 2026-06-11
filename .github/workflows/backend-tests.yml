@@ -151,6 +151,45 @@ jobs:
           path: TestResults/
           retention-days: 30
 
+      - name: Log test results to Jira
+        if: always()
+        shell: pwsh
+        env:
+          JIRA_BASE_URL:    ${{ secrets.JIRA_BASE_URL }}
+          JIRA_EMAIL:       ${{ secrets.JIRA_EMAIL }}
+          JIRA_API_TOKEN:   ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_PROJECT_KEY: KIEM
+          TEST_TYPE:        backend
+          ALLURE_REPORT_URL: https://chi-trung.github.io/KCPM/report-main/
+          GITHUB_RUN_ID:    ${{ github.run_id }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          GITHUB_REF_NAME:  ${{ github.ref_name }}
+          GITHUB_SHA:       ${{ github.sha }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_WORKFLOW:  ${{ github.workflow }}
+        run: |
+          # Parse TRX for pass/fail counts
+          $trx = Get-ChildItem -Recurse -Filter "*.trx" | Select-Object -First 1
+          $passed = 0; $failed = 0; $total = 0; $dur = ""
+          if ($trx) {
+            [xml]$x = Get-Content $trx.FullName
+            $counters = $x.TestRun.ResultSummary.Counters
+            if ($counters) {
+              $passed = [int]($counters.passed)
+              $failed = [int]($counters.failed)
+              $total  = [int]($counters.total)
+            }
+            $ts = $x.TestRun.Times
+            if ($ts -and $ts.start -and $ts.finish) {
+              $dur = [math]::Round(([datetime]$ts.finish - [datetime]$ts.start).TotalSeconds)
+            }
+          }
+          $env:PASSED       = $passed
+          $env:FAILED       = $failed
+          $env:TOTAL        = $total
+          $env:DURATION_SEC = $dur
+          python scripts/jira_log_test_execution.py
+          exit 0
       - name: Upload Allure results
         if: always()
         uses: actions/upload-artifact@v4

@@ -456,3 +456,45 @@ jobs:
       - name: Stop backend stack
         if: always()
         run: docker compose -f ./Waste-Recycling-Platform/docker-compose.yml down -v
+
+      - name: Log Postman results to Jira
+        if: always()
+        shell: pwsh
+        env:
+          JIRA_BASE_URL:     ${{ secrets.JIRA_BASE_URL }}
+          JIRA_EMAIL:        ${{ secrets.JIRA_EMAIL }}
+          JIRA_API_TOKEN:    ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_PROJECT_KEY:  KIEM
+          TEST_TYPE:         postman
+          ALLURE_REPORT_URL: https://chi-trung.github.io/KCPM/report-main/
+          GITHUB_RUN_ID:     ${{ github.run_id }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          GITHUB_REF_NAME:   ${{ github.ref_name }}
+          GITHUB_SHA:        ${{ github.sha }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_WORKFLOW:   ${{ github.workflow }}
+        run: |
+          # Try to parse Newman summary JSON for pass/fail counts
+          $summary = Get-ChildItem -Recurse -Filter "newman-summary*.json" -ErrorAction SilentlyContinue | Select-Object -First 1
+          $passed = 0; $failed = 0; $total = 0; $dur = ""
+          if ($summary) {
+            $json = Get-Content $summary.FullName | ConvertFrom-Json -ErrorAction SilentlyContinue
+            if ($json) {
+              $stats = $json.run.stats.assertions
+              if ($stats) {
+                $passed = [int]($stats.total - $stats.failed)
+                $failed = [int]$stats.failed
+                $total  = [int]$stats.total
+              }
+              $timings = $json.run.timings
+              if ($timings) {
+                $dur = [math]::Round($timings.completed / 1000)
+              }
+            }
+          }
+          $env:PASSED       = $passed
+          $env:FAILED       = $failed
+          $env:TOTAL        = $total
+          $env:DURATION_SEC = $dur
+          python scripts/jira_log_test_execution.py
+          exit 0
