@@ -21,6 +21,7 @@ namespace WastePlatform.Tests.Application.WasteCategories;
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("backend")]
 [Allure.Net.Commons.Attributes.AllureTag("waste-categories")]
+[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-12")]
 public class GetAllCategoriesQueryHandlerTests
 {
     private readonly Mock<IWasteCategoryRepository> _repositoryMock;

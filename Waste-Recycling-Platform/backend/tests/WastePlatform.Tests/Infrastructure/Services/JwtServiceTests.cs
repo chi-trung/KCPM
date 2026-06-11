@@ -21,6 +21,7 @@ namespace WastePlatform.Tests.Infrastructure.Services;
 [AllureSeverity(SeverityLevel.normal)]
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("security")]
+[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-21")]
 public class JwtServiceTests
 {
     [Fact]

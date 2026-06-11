@@ -24,7 +24,8 @@ namespace WastePlatform.Tests.Integration
     [AllureEpic("KIEM-21: Security & Role-based Access Tests")]
     [AllureFeature("JWT Bearer Authentication")]
     [AllureOwner("Hoàng Phụng")]
-    public class JwtBearerIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
+    [Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-21")]
+public class JwtBearerIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly WebApplicationFactory<Program> _factory;
 

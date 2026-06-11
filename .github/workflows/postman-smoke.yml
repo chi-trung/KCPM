@@ -114,7 +114,7 @@ jobs:
           }
 
       - name: Install Newman
-        run: npm install -g newman newman-reporter-junitfull newman-reporter-allure
+        run: npm install -g newman newman-reporter-junitfull newman-reporter-allure@1.4.0
 
       - name: Decide Postman run scope
         id: postman_scope
@@ -132,6 +132,46 @@ jobs:
           "scope=$scope" >> $env:GITHUB_OUTPUT
           Write-Host "Postman run scope: $scope"
 
+      - name: Pre-login — capture JWT tokens for all roles
+        id: prelogin
+        continue-on-error: true
+        run: |
+          $base = "http://localhost:8080"
+
+          function Get-Token($email, $password) {
+            try {
+              $body = @{ email = $email; password = $password } | ConvertTo-Json
+              $resp = Invoke-RestMethod -Method POST -Uri "$base/api/auth/login" `
+                -ContentType "application/json" -Body $body -TimeoutSec 10 -ErrorAction Stop
+              return $resp.token
+            } catch {
+              Write-Host "::warning::Login failed for $email — $($_.Exception.Message)"
+              return ""
+            }
+          }
+
+          # Login với các tài khoản seeded trong DB
+          $citizenToken    = Get-Token "citizen@test.waste"    "Citizen@123"
+          $enterpriseToken = Get-Token "enterprise@test.waste" "Enterprise@123"
+          $adminToken      = Get-Token "admin@test.waste"      "Admin@123"
+          $collectorToken  = Get-Token "collector@test.waste"  "Collector@123"
+
+          # Fallback — thử seed accounts nếu login fail
+          if (-not $citizenToken) {
+            Write-Host "::warning::Citizen token empty — tokens will be empty strings in Newman env"
+          }
+
+          # Export để dùng ở bước tiếp
+          "citizenToken=$citizenToken"    >> $env:GITHUB_OUTPUT
+          "enterpriseToken=$enterpriseToken" >> $env:GITHUB_OUTPUT
+          "adminToken=$adminToken"        >> $env:GITHUB_OUTPUT
+          "collectorToken=$collectorToken" >> $env:GITHUB_OUTPUT
+
+          Write-Host "citizenToken    = $(if($citizenToken){'✅ obtained'}else{'❌ empty'})"
+          Write-Host "enterpriseToken = $(if($enterpriseToken){'✅ obtained'}else{'❌ empty'})"
+          Write-Host "adminToken      = $(if($adminToken){'✅ obtained'}else{'❌ empty'})"
+          Write-Host "collectorToken  = $(if($collectorToken){'✅ obtained'}else{'❌ empty'})"
+
       - name: Run Postman collection
         id: run_postman
         continue-on-error: true
@@ -142,9 +182,14 @@ jobs:
             './Waste-Recycling-Platform/postman/WastePlatform.professional.postman_collection.json',
             '-e', './Waste-Recycling-Platform/postman/WastePlatform.professional.postman_environment.json',
             '--env-var', 'baseUrl=http://localhost:8080',
-            '--reporters', 'cli,junit,json',
+            '--env-var', 'citizenToken=${{ steps.prelogin.outputs.citizenToken }}',
+            '--env-var', 'enterpriseToken=${{ steps.prelogin.outputs.enterpriseToken }}',
+            '--env-var', 'adminToken=${{ steps.prelogin.outputs.adminToken }}',
+            '--env-var', 'collectorToken=${{ steps.prelogin.outputs.collectorToken }}',
+            '--reporters', 'cli,junit,json,allure',
             '--reporter-junit-export', './TestResults/postman-junit.xml',
-            '--reporter-json-export', './TestResults/postman-report.json'
+            '--reporter-json-export', './TestResults/postman-report.json',
+            '--reporter-allure-export', './TestResults/postman-allure-results'
           )
 
           if ($scope -eq 'smoke') {
@@ -164,9 +209,15 @@ jobs:
         if: always()
         run: |
           New-Item -ItemType Directory -Force -Path Waste-Recycling-Platform/allure-results | Out-Null
-          # If newman produced an allure folder, move it into the expected path
+          # Copy từ newman allure reporter (newman-reporter-allure)
+          if (Test-Path ./TestResults/postman-allure-results) {
+            Copy-Item -Recurse -Force ./TestResults/postman-allure-results/* Waste-Recycling-Platform/allure-results/
+            Write-Host "✅ Copied Newman Allure results from TestResults/postman-allure-results"
+          }
+          # Fallback: nếu newman tạo ở thư mục gốc
           if (Test-Path ./allure-results) {
             Copy-Item -Recurse -Force ./allure-results/* Waste-Recycling-Platform/allure-results/
+            Write-Host "✅ Copied Newman Allure results from ./allure-results (fallback)"
           }
           # Write executor metadata so Executors panel shows origin
           $exec = [ordered]@{
@@ -175,7 +226,7 @@ jobs:
             url = "https://github.com/${{ github.repository }}"
             buildName = "${{ github.workflow }} #${{ github.run_number }}"
             buildUrl = "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            reportName = 'Postman Smoke'
+            reportName = 'Postman API Tests'
             reportUrl = "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           }
           $exec | ConvertTo-Json | Out-File -FilePath Waste-Recycling-Platform/allure-results/executor.json -Encoding utf8

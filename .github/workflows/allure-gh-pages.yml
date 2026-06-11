@@ -1,6 +1,12 @@
 name: Reporting - Allure Pages (Optional)
 
 on:
+  # ─── Auto-trigger sau khi Backend Tests xanh trên main ───────────
+  workflow_run:
+    workflows: ["Backend Tests"]
+    types: [completed]
+    branches: [main]
+  # ─── Manual trigger giữ nguyên ────────────────────────────────────
   workflow_dispatch:
     inputs:
       report_mode:
@@ -36,7 +42,10 @@ concurrency:
 
 jobs:
   run-api-tests:
-    if: github.event_name == 'workflow_dispatch'
+    # Chạy khi: (1) manual trigger, hoặc (2) backend-tests xanh tự động
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
