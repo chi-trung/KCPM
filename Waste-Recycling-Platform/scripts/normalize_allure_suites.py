@@ -3,11 +3,14 @@
 normalize_allure_suites.py
 --------------------------
 Post-process allure-results JSON files to group suites into exactly 3 categories:
-  - "E2E Tests"        → TC-E2E-xxx, Frontend smoke, CodeceptJS results
-  - "API Tests"        → Postman / Newman results
-  - "Backend Tests"    → xUnit / WastePlatform.Tests / dotnet results
+  - "E2E Tests"             → TC-E2E-xxx, Frontend smoke, CodeceptJS results
+  - "API Tests (Postman)"   → Postman / Newman results
+  - "Backend Tests (xUnit)" → xUnit / WastePlatform.Tests / dotnet results
 
 Run this BEFORE `allure generate` so the Suites tree shows only 3 top-level items.
+
+NOTE: Only parentSuite and suite labels are overwritten.
+      All other labels (epic, feature, story, severity, owner, tag...) are preserved.
 """
 import json
 import sys
@@ -30,29 +33,34 @@ def classify(data: dict) -> tuple[str, str]:
     labels      = data.get("labels", [])
     full_name   = data.get("fullName", "") or ""
     name        = data.get("name", "") or ""
-    suite_val   = next((l["value"] for l in labels if l["name"] == "suite"),    "")
+    suite_val   = next((l["value"] for l in labels if l["name"] == "suite"),       "")
     parent_val  = next((l["value"] for l in labels if l["name"] == "parentSuite"), "")
-    package_val = next((l["value"] for l in labels if l["name"] == "package"),  "")
+    package_val = next((l["value"] for l in labels if l["name"] == "package"),     "")
+    epic_val    = next((l["value"] for l in labels if l["name"] == "epic"),        "")
+    feature_val = next((l["value"] for l in labels if l["name"] == "feature"),     "")
+
+    search_space = " ".join([
+        suite_val, parent_val, package_val, full_name, name, epic_val, feature_val
+    ]).lower()
 
     # --- E2E signals ---
-    e2e_keywords = ["TC-E2E", "Frontend smoke", "citizen_report", "enterprise_assign",
-                    "collector_task", "waste-platform-frontend", "e2e", "codeceptjs",
-                    "CodeceptJS", "playwright"]
+    e2e_keywords = [
+        "tc-e2e", "frontend smoke", "citizen_report", "enterprise_assign",
+        "collector_task", "waste-platform-frontend", "codeceptjs", "playwright",
+        "citizen role", "collector role", "enterprise role", "e2e frontend",
+    ]
     for kw in e2e_keywords:
-        if kw.lower() in suite_val.lower()   \
-                or kw.lower() in full_name.lower() \
-                or kw.lower() in name.lower()      \
-                or kw.lower() in package_val.lower():
+        if kw in search_space:
             return PARENT_E2E, SUITE_E2E
 
+    # Also detect by file path in fullName
+    if any(x in full_name for x in ["citizen_report", "collector_task", "enterprise_assign", "frontend/e2e"]):
+        return PARENT_E2E, SUITE_E2E
+
     # --- Postman/Newman signals ---
-    postman_keywords = ["Postman", "Newman", "newman", "pm.test", "postman",
-                        "WastePlatform.professional", "API Test", "Smoke"]
+    postman_keywords = ["postman", "newman", "pm.test", "api test", "smoke"]
     for kw in postman_keywords:
-        if kw.lower() in suite_val.lower()   \
-                or kw.lower() in full_name.lower() \
-                or kw.lower() in name.lower()      \
-                or kw.lower() in package_val.lower():
+        if kw in search_space:
             return PARENT_API, SUITE_API
 
     # --- Default → Backend / xUnit ---
@@ -70,7 +78,8 @@ def normalize(path: Path) -> bool:
     parent, suite = classify(data)
 
     labels = data.get("labels", [])
-    # Remove old parentSuite / suite labels, keep everything else
+    # Remove ONLY parentSuite and suite labels — preserve everything else
+    # (epic, feature, story, severity, owner, tag, allureId, etc.)
     labels = [l for l in labels if l["name"] not in ("parentSuite", "suite")]
     labels.append({"name": "parentSuite", "value": parent})
     labels.append({"name": "suite",       "value": suite})
@@ -90,7 +99,11 @@ def main():
 
     counts = {PARENT_E2E: 0, PARENT_API: 0, PARENT_BACKEND: 0}
     for f in result_files:
-        parent, _ = classify(json.loads(f.read_text(encoding="utf-8")) if f.stat().st_size > 0 else {})
+        try:
+            raw_data = json.loads(f.read_text(encoding="utf-8")) if f.stat().st_size > 0 else {}
+        except Exception:
+            raw_data = {}
+        parent, suite = classify(raw_data)
         normalize(f)
         counts[parent] = counts.get(parent, 0) + 1
 
