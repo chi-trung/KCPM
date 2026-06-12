@@ -266,6 +266,16 @@ def main():
     _log(f"[jira] GitHub Run  : {GH_RUN_URL}")
     _log(f"[jira] Jira Base   : {JIRA_BASE}")
 
+    # Verify auth before attempting to post
+    _log("[jira] Checking Jira auth (/myself)...")
+    me = jira_request("GET", "myself")
+    if "error" in me:
+        _log("[jira] WARN: /myself failed - credentials may be wrong or token expired")
+        _log("[jira] HINT: Ensure JIRA_API_TOKEN is a valid Atlassian API token (not PAT)")
+        _log("[jira] HINT: Ensure JIRA_API_EMAIL matches the Atlassian account email")
+        sys.exit(0)   # Don't try to post if auth fails
+    _log(f"[jira] Auth OK - logged in as: {me.get('emailAddress', me.get('displayName', 'unknown'))}")
+
     issue_keys   = ISSUE_MAP.get(TEST_TYPE, ISSUE_MAP["all"])
     comment_body = build_comment_body()
 
@@ -276,7 +286,7 @@ def main():
             transition_issue_if_needed(key)
 
     _log(f"[jira] Done. Posted to {success_count}/{len(issue_keys)} issues.")
-    # Exit 0 always — Jira logging should never break CI
+    # Exit 0 always -- Jira logging should never break CI
     sys.exit(0)
 
 
