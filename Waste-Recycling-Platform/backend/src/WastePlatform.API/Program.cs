@@ -90,11 +90,22 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(AppDomain.
 builder.Services.AddSignalR();
 
 // ── CORS ─────────────────────────────────────────────────────────────
+var allowedOrigins = new List<string> { "http://localhost:3000" };
+// Add configured frontend URLs (comma-separated) from environment
+var frontendUrls = builder.Configuration["FrontendUrls"];
+if (!string.IsNullOrEmpty(frontendUrls))
+{
+    allowedOrigins.AddRange(frontendUrls.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+}
+// Always allow the Vercel production domain
+allowedOrigins.Add("https://kcpm-ecru.vercel.app");
+allowedOrigins.Add("https://kcpm.vercel.app");
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", corsBuilder =>
         corsBuilder
-            .WithOrigins("http://localhost:3000")
+            .WithOrigins(allowedOrigins.ToArray())
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials()); // Required for SignalR with authentication

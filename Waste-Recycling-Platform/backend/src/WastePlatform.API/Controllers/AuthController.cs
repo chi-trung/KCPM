@@ -64,6 +64,10 @@ public class AuthController : ControllerBase
         {
             return Conflict(new { message = ex.Message });
         }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Registration failed due to server error.", error = ex.Message });
+        }
     }
 
     /// <summary>Đăng nhập, nhận JWT token</summary>
@@ -82,6 +86,10 @@ public class AuthController : ControllerBase
         catch (UnauthorizedAccessException ex)
         {
             return Unauthorized(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "Login failed due to server error.", error = ex.Message });
         }
     }
 
