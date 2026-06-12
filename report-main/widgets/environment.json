@@ -1,1 +1,22 @@
-[{"values":["refs/heads/main"],"name":"GIT_BRANCH"},{"values":["fb66f5474b30ff855c33fd50c732deee1281160c"],"name":"GIT_COMMIT"},{"values":["27387585295"],"name":"RUN_ID"},{"values":["https://github.com/chi-trung/KCPM/actions/runs/27387585295"],"name":"RUN_URL"},{"values":["261"],"name":"BUILD_NUMBER"},{"values":["Linux"],"name":"RUNNER_OS"},{"values":["Reporting - Allure Pages (Optional)"],"name":"WORKFLOW"}]
+[ {
+  "values" : [ "Linux" ],
+  "name" : "RUNNER_OS"
+}, {
+  "values" : [ "ae238db7d0c2be5bca31d853449a84099cbbc200" ],
+  "name" : "GIT_COMMIT"
+}, {
+  "values" : [ "262" ],
+  "name" : "BUILD_NUMBER"
+}, {
+  "values" : [ "https://github.com/chi-trung/KCPM/actions/runs/27387838560" ],
+  "name" : "RUN_URL"
+}, {
+  "values" : [ "refs/heads/main" ],
+  "name" : "GIT_BRANCH"
+}, {
+  "values" : [ "Reporting - Allure Pages (Optional)" ],
+  "name" : "WORKFLOW"
+}, {
+  "values" : [ "27387838560" ],
+  "name" : "RUN_ID"
+} ]

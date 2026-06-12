@@ -1,1 +1,10 @@
-[{"name":"GitHub Actions","type":"github","url":"https://chi-trung.github.io/KCPM","buildOrder":261,"buildName":"GitHub Actions Run #27387585295","buildUrl":"https://github.com/chi-trung/KCPM/actions/runs/27387585295","reportName":"Allure Report with history","reportUrl":"https://chi-trung.github.io/KCPM/261"}]
+[ {
+  "name" : "GitHub Actions",
+  "type" : "github",
+  "url" : "https://chi-trung.github.io/KCPM",
+  "buildOrder" : 262,
+  "buildName" : "GitHub Actions Run #27387838560",
+  "buildUrl" : "https://github.com/chi-trung/KCPM/actions/runs/27387838560",
+  "reportName" : "Allure Report with history",
+  "reportUrl" : "https://chi-trung.github.io/KCPM/262"
+} ]
