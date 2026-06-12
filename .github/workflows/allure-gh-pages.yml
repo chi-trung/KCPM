@@ -354,7 +354,10 @@ jobs:
       - name: Normalize report permissions
         if: always()
         run: |
-          chmod -R u+w report-main || true
+          # allure-report-action runs Docker as root → files owned by root
+          # Need sudo chmod to make them writable by runner user
+          sudo chmod -R 777 report-main 2>/dev/null || chmod -R 777 report-main 2>/dev/null || chmod -R u+w report-main 2>/dev/null || true
+          echo "[permissions] data dir writable: $(ls -la report-main/data/ | head -3)"
 
       - name: Build custom categories (Python direct approach)
         if: always()
