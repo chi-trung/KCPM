@@ -1,5 +1,5 @@
 // TC-E2E-002: Citizen Register & Create Waste Report
-// Jira: KIEM-FE | Test Design: State Transition + Error Guessing
+// Jira: KIEM-21 | Test Design: State Transition + Error Guessing
 
 const { I } = inject();
 
