@@ -174,8 +174,8 @@ def build_comment_body() -> dict:
                         _table_row("Branch",       BRANCH),
                         _table_row("Commit",       SHA),
                         _table_row("Run #",        RUN_NUMBER),
-                        _table_row("Allure Report", ALLURE_URL),
-                        _table_row("GitHub Run",   GH_RUN_URL),
+                        _link_row("Allure Report",  ALLURE_URL, "View Allure Report"),
+                        _link_row("GitHub Run",     GH_RUN_URL, f"Run #{RUN_NUMBER}"),
                         _table_row("Logged at",    TIMESTAMP),
                     ]
                 },
@@ -210,6 +210,33 @@ def _table_row(label: str, value: str, header: bool = False) -> dict:
                 "attrs": {},
                 "content": [{"type": "paragraph", "content": [
                     {"type": "text", "text": value}
+                ]}]
+            }
+        ]
+    }
+
+
+def _link_row(label: str, url: str, link_text: str) -> dict:
+    """Create a table row with a clickable hyperlink in the value cell."""
+    return {
+        "type": "tableRow",
+        "content": [
+            {
+                "type": "tableCell",
+                "attrs": {},
+                "content": [{"type": "paragraph", "content": [
+                    {"type": "text", "text": label}
+                ]}]
+            },
+            {
+                "type": "tableCell",
+                "attrs": {},
+                "content": [{"type": "paragraph", "content": [
+                    {
+                        "type": "text",
+                        "text": link_text,
+                        "marks": [{"type": "link", "attrs": {"href": url}}]
+                    }
                 ]}]
             }
         ]
