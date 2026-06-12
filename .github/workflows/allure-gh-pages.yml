@@ -481,7 +481,13 @@ jobs:
             mkdir -p site-output/report-extra
             cp -R report-extra/. site-output/report-extra/
           fi
-          SITE_OUTPUT_DIR=site-output VALIDATION_OUTPUT_DIR=report-extra/validation ALLURE_MAIN_REPORT_DIR=report-main ALLURE_PUBLISH_DIR=report-extra python3 Waste-Recycling-Platform/scripts/build_site_index.py
+          SCRIPT="Waste-Recycling-Platform/scripts/build_site_index.py"
+          if [ -f "$SCRIPT" ]; then
+            SITE_OUTPUT_DIR=site-output VALIDATION_OUTPUT_DIR=report-extra/validation ALLURE_MAIN_REPORT_DIR=report-main ALLURE_PUBLISH_DIR=report-extra python3 "$SCRIPT" || \
+              echo "::warning::build_site_index.py encountered an error but deploy will continue"
+          else
+            echo "::warning::$SCRIPT not found - skipping site index build"
+          fi
 
       - name: Deploy to GitHub Pages
         if: always() && github.event_name != 'pull_request'
