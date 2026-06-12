@@ -67,7 +67,7 @@ TIMESTAMP    = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 #   KIEM-21 = WRP-BE-TESTS-018 Security & Role-based Access Tests (IN PROGRESS)
 #   KIEM-22 = WRP-BE-TESTS-019 AuditLog & Error Path Tests (IN PROGRESS)
 ISSUE_MAP = {
-    "backend": ["KIEM-5"],           # Reports Module - main backend test issue
+    "backend": ["KIEM-5", "KIEM-22", "KIEM-21"],           # Reports Module - main backend test issue
     "postman": ["KIEM-21"],          # Security & Role-based Access Tests
     "e2e":     ["KIEM-14"],          # Collector Module Testing
     "all":     ["KIEM-5"],           # default fallback
@@ -91,7 +91,7 @@ def auth_header() -> dict:
     }
 
 
-def jira_request(method: str, path: str, body: dict | None = None) -> dict:
+def jira_request(method: str, path: str, body: dict = None) -> dict:
     url  = f"{JIRA_BASE}/rest/api/3/{path}"
     data = json.dumps(body).encode("utf-8") if body else None
     req  = urllib.request.Request(url, data=data, headers=auth_header(), method=method)
