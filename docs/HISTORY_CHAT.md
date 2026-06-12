@@ -100,17 +100,35 @@
 
 ---
 
-## Session 3: Documentation (2026-06-12, 23:59)
+## Session 4: Tăng Code Coverage (2026-06-13, 00:07 - overnight)
 
 ### Yêu cầu
-- Tạo file docs chi tiết về tất cả CI/CD workflows
-- Ghi lại lịch sử chat
-- Phát triển thêm nếu có ý tưởng
+- User: "bạn làm đi tôi đi ngủ :D cố lên" (bật mode goal)
+- Mục tiêu: Tăng code coverage từ 37.5% branch / 44.9% line
 
-### Thực hiện
-- Tạo `docs/CI_CD_WORKFLOWS.md` — 11 workflows chi tiết
-- Tạo `docs/HISTORY_CHAT.md` — file này
-- Push tất cả lên GitHub
+### Phân tích khoảng trống (Coverage Gap Analysis)
+- **Controllers**: 18 controllers nhưng chỉ có 10 test files → thiếu 8
+- **Domain**: WasteReport + CollectionTask đã có tests, nhưng User và Complaint chưa có
+- **Infrastructure**: JwtService đã có, AuthService chỉ có basic tests
+- **Application**: Rewards handlers chưa có tests
+
+### Test files mới tạo (7 files, ~65 test cases)
+
+| File | Test Cases | Phạm vi |
+|------|-----------|---------|
+| `Domain/UserTests.cs` | 14 | User.Create, Deactivate, Activate, UpdateRole, UpdateProfile, email normalization |
+| `Domain/ComplaintTests.cs` | 13 | Complaint lifecycle (Create, Assign, Resolve, Reject, EscalateToAdmin, EnterpriseResponse) |
+| `Controllers/CitizenControllerTests.cs` | 13 | Rewards, leaderboard, profile endpoints + auth/unauth scenarios |
+| `Controllers/ComplaintsControllerTests.cs` | 8 | CRUD complaints + ownership authorization |
+| `Controllers/HealthControllerTests.cs` | 2 | Health endpoint returns 200 + status="ok" |
+| `Application/Rewards/RewardsHandlerTests.cs` | 6 | CreateRewardPoints handler + GetLeaderboard query handler |
+| `Infrastructure/Services/AuthServiceExtendedTests.cs` | 9 | Role validation (Collector/Admin rejected), inactive user login, enterprise auto-profile |
+
+### Kỹ thuật kiểm thử áp dụng
+- **State Transition Testing**: Complaint lifecycle (Open → InProgress → Resolved/Rejected/Escalated)
+- **Equivalence Partitioning**: Valid/invalid pagination params, auth/unauth user
+- **Boundary Value Analysis**: Page = 0, PageSize = 0, empty strings
+- **Error Guessing**: Null fields, duplicate emails, case-insensitive comparison
 
 ---
 
@@ -124,6 +142,13 @@
 | `.github/workflows/health-check.yml` | Health monitoring + keep warm |
 | `docs/CI_CD_WORKFLOWS.md` | Tài liệu CI/CD chi tiết |
 | `docs/HISTORY_CHAT.md` | Lịch sử chat (file này) |
+| `tests/Domain/UserTests.cs` | 14 tests cho User entity |
+| `tests/Domain/ComplaintTests.cs` | 13 tests cho Complaint entity |
+| `tests/Controllers/CitizenControllerTests.cs` | 13 tests cho CitizenController |
+| `tests/Controllers/ComplaintsControllerTests.cs` | 8 tests cho ComplaintsController |
+| `tests/Controllers/HealthControllerTests.cs` | 2 tests cho HealthController |
+| `tests/Application/Rewards/RewardsHandlerTests.cs` | 6 tests cho Rewards handlers |
+| `tests/Infrastructure/Services/AuthServiceExtendedTests.cs` | 9 tests cho AuthService edge cases |
 
 ### Files đã sửa
 | File | Thay đổi |
@@ -145,4 +170,7 @@ de7f555 docs: update FINAL_REPORT v4.0 with deployment URLs, MySQL/Aiven info, a
 dc4f723 fix(ci): correct frontend URL in deploy-render.yml summary
 129012d feat: add coverage badges, fix SonarCloud, add health check workflow
 c993986 fix(ci): fix coverage badge publish - use temp dir instead of git stash, add continue-on-error
+a5baada docs: add CI/CD workflow documentation and chat history
+2e960ad test: add comprehensive unit tests to boost code coverage
 ```
+
