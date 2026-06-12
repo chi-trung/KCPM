@@ -91,7 +91,8 @@ KCPM/
 │   ├── backend-tests.yml       # xUnit tests + Jira logging
 │   ├── frontend-e2e.yml        # CodeceptJS E2E + Jira logging
 │   ├── postman-smoke.yml       # Newman API tests + Jira logging
-│   ├── allure-gh-pages.yml     # Allure report deploy
+│   ├── postman-weekly-report.yml  # Weekly full Postman run
+│   ├── allure-gh-pages.yml     # Allure report deploy (auto-triggered)
 │   ├── sonar.yml               # SonarCloud analysis
 │   └── deploy-server.yml       # Production deploy
 ├── Waste-Recycling-Platform/
@@ -99,12 +100,15 @@ KCPM/
 │   ├── frontend/               # Next.js app
 │   │   └── e2e/               # CodeceptJS test files (BDD style)
 │   ├── postman/                # Postman collections
-│   ├── scripts/                # Allure/CI helper scripts
-│   └── allure-categories.json  # Allure failure categories
-├── scripts/                    # Project-level Python scripts
-│   ├── jira_log_test_execution.py  # Auto-post CI results to Jira
-│   ├── check_jira_connection.py    # Verify Jira credentials
-│   └── inject_categories.py        # Post-process Allure categories
+│   ├── scripts/                # Helper Python scripts
+│   │   ├── jira_log_test_execution.py  # Auto-post CI results to Jira
+│   │   ├── check_jira_connection.py    # Verify Jira credentials locally
+│   │   ├── build_categories_report.py  # Build Allure categories widget
+│   │   ├── normalize_allure_suites.py  # Ensure 3 Allure suite groups
+│   │   └── generate_per_owner_reports.py  # Per-owner Allure reports
+│   └── allure-categories.json  # Failure category rules (14 categories)
+├── docs/                       # Project documentation
+│   └── TRACEABILITY_MATRIX.md  # Requirement-to-test mapping
 ├── history-chat/               # Dev session notes
 └── test-cases/                 # Manual test documentation
 ```
