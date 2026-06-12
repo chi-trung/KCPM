@@ -1,0 +1,13 @@
+{
+  "methodName": "TaskStatusUpdated",
+  "payload": {
+    "Id": "7bc16ee7-b519-44bc-86f3-afe846277196",
+    "Type": "TaskUpdated",
+    "Title": "Danh s\u00E1ch tr\u1ED1ng",
+    "Message": "Kh\u00F4ng c\u00F3 user n\u00E0o \u0111\u01B0\u1EE3c g\u1EEDi.",
+    "ActionUrl": "/",
+    "RelatedEntityId": "70fa6e17-da6d-44e3-9ae0-d15ae4165efa",
+    "RelatedEntityType": "Task",
+    "CreatedAt": "2026-06-12T03:31:58.4716704Z"
+  }
+}
