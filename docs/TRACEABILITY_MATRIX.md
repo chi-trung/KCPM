@@ -1,102 +1,130 @@
-# Ma trận Truy vết (Traceability Matrix) - Waste Recycling Platform
+# Ma trận Truy vết (Traceability Matrix) — Waste Recycling Platform
 
-## 1. Muc dich
+**Cập nhật lần cuối**: 2026-06-12 (auto-logged từ CI Backend Tests Run #435)  
+**Allure Report**: https://chi-trung.github.io/KCPM/report-main/  
+**Jira Board**: https://ut-team-36.atlassian.net/jira/software/projects/KIEM/boards/3  
+**CI/CD**: https://github.com/chi-trung/KCPM/actions
 
-Traceability Matrix dùng để nối yêu cầu, Jira issue, test case, automation file và evidence. Đây là bằng chứng quan trọng trong môn Kiểm chứng phần mềm vì nó trả lời câu hỏi:
+---
 
-- Yêu cầu nào đã được test?
-- Test bằng kỹ thuật nào?
-- Test nằm ở file nào?
-- Kết quả chạy test được lưu ở đâu?
-- Ai phụ trách và trạng thái hiện tại là gì?
+## 1. Mục đích
 
-Format này tham khảo từ `UnitestCuaBao.xlsx`: có mã test, mục tiêu, bước test, expected result, requirement liên quan, status, ngày chạy và người chạy.
+Traceability Matrix nối yêu cầu → Jira issue → test case → automation file → CI evidence.  
+Mỗi CI run tự động log kết quả lên Jira bằng token của nhóm trưởng (Nguyễn Chí Trung).
 
-## 2. Mã hóa test case để dùng thống nhất
+---
 
-| Prefix | Y nghia | Vi du |
+## 2. Bảng mã hóa Test Case
+
+| Prefix | Ý nghĩa | Ví dụ |
 |---|---|---|
-| TC-AUTH | Auth/Login/Register | TC-AUTH-001 |
-| TC-REPORT | Citizen waste report | TC-REPORT-001 |
-| TC-TASK | Enterprise/Collector task flow | TC-TASK-001 |
-| TC-NOTI | Notifications/SignalR | TC-NOTI-001 |
+| TC-AUTH | Auth/Login/Register (JWT, roles) | TC-AUTH-001 |
+| TC-REPORT | Citizen waste report lifecycle | TC-REPORT-001 |
+| TC-NOTI | Notifications & SignalR real-time | TC-NOTI-001 |
+| TC-COMPLAINT | Complaints flow | TC-COMPLAINT-001 |
 | TC-ADMIN | Admin management | TC-ADMIN-001 |
-| TC-E2E | End-to-end user journey | TC-E2E-001 |
-| TC-DEPLOY | Deployment verification | TC-DEPLOY-001 |
+| TC-ANALYTICS | Analytics & reporting | TC-ANALYTICS-001 |
+| TC-CITIZEN | Citizen module | TC-CITIZEN-001 |
+| TC-CATEGORY | WasteCategory management | TC-CATEGORY-001 |
+| TC-COLLECTOR | Collector module | TC-COLLECTOR-001 |
+| TC-CTASK | CollectorTask workflow | TC-CTASK-001 |
+| TC-ENTASK | Enterprise Task management | TC-ENTASK-001 |
+| TC-ENCOL | Enterprise Collectors & Reward Rules | TC-ENCOL-001 |
+| TC-COLTASK | CollectionTask / CollectionImage | TC-COLTASK-001 |
+| TC-SIGNALR | SignalR real-time | TC-SIGNALR-001 |
+| TC-FILE | File Uploads & Storage | TC-FILE-001 |
+| TC-SECURITY | Security & Role-based access | TC-SECURITY-001 |
+| TC-AUDIT | AuditLog & Error paths | TC-AUDIT-001 |
+| TC-SEARCH | Search, Pagination & Filters | TC-SEARCH-001 |
+| TC-E2E | End-to-end browser flows | TC-E2E-001 |
+| TC-DEPLOY | Deployment & infrastructure | TC-DEPLOY-001 |
+| TC-STATIC | Static analysis / SonarCloud | TC-STATIC-001 |
 
-## 3. Matrix hiện tại
+---
 
-| Jira Key | Requirement / Feature | Test Case ID | Test Level | Test Design Technique | Automation / Evidence File | Expected Evidence | Status |
-|---|---|---|---|---|---|---|---|
-| KIEM-5  | User can register/login and receive JWT by role | TC-AUTH-001 | Unit/API | Equivalence partitioning, negative testing | `backend/tests/WastePlatform.Tests/Controllers/AuthControllerTests.cs`, Postman `01 - Auth` | xUnit TRX, [Allure report](https://chi-trung.github.io/KCPM/report-main/) | ✅ Automated |
-| KIEM-5  | Invalid login is rejected | TC-AUTH-002 | Unit/API | Error guessing, negative testing | `AuthControllerTests.cs`, Postman login invalid request | 401/400 evidence | ✅ Automated |
-| KIEM-14 | Collector can view assigned tasks | TC-TASK-001 | API/E2E | State transition | `CollectorTaskControllerTests.cs`, Postman `08 - Collector Tasks` | Newman + Allure | ✅ Automated |
-| KIEM-14 | Collector can update task status | TC-TASK-002 | Unit/API/E2E | State transition, decision table | `CollectionTaskDomainTests.cs`, `CollectorTaskControllerExtendedTests.cs` | xUnit + Newman + E2E screenshot | ✅ Automated |
-| KIEM-14 | Collector đăng nhập, truy cập tasks, không vào enterprise route | TC-E2E-004 | System/E2E | State Transition Guard, Error Guessing | `frontend/e2e/collector_task_test.js` | CodeceptJS output, screenshots on fail | ✅ Added |
-| KIEM-16 | Enterprise can assign collector to task | TC-TASK-003 | Unit/API/E2E | Decision table, state transition | `AssignCollectorCommandHandlerTests.cs`, `EnterpriseTaskControllerTests.cs`, Postman `PUT Assign Collector` | xUnit + Newman + Allure | ✅ Automated |
-| KIEM-16 | Enterprise đăng nhập và truy cập task management | TC-E2E-003 | System/E2E | State Transition, Role-based Access | `frontend/e2e/enterprise_assign_test.js` | CodeceptJS output, screenshots on fail | ✅ Added |
-| KIEM-17 | Enterprise can view/update reward rules | TC-REWARD-001 | API | Boundary value, equivalence partitioning | `EnterpriseRewardRuleControllerTests.cs`, Postman reward rule requests | xUnit + Newman | ✅ Automated |
-| KIEM-19 | User can receive/read notifications | TC-NOTI-001 | Unit/API/Integration | State transition | `NotificationServiceTests.cs`, `NotificationControllerTests.cs`, `SignalRRealTimeNotifierTests.cs` | xUnit + Allure | ✅ Automated |
-| KIEM-21 | Public pages render and auth entry points are available | TC-E2E-001 | System/E2E | Smoke testing | `frontend/e2e/smoke_test.js` | CodeceptJS output, screenshots on fail | ✅ Added |
-| KIEM-21 | Citizen đăng ký và điều hướng đến create-report form | TC-E2E-002 | System/E2E | End-to-end, Error Guessing | `frontend/e2e/citizen_report_test.js` | CodeceptJS output, screenshots on fail | ✅ Added |
-| KIEM-FE | Admin can manage users/enterprises/complaints | TC-ADMIN-001 | Unit/API | Role-based access, negative testing | `AdminModuleTests.cs`, `AdminApiIntegrationTests.cs` | xUnit + Allure | ✅ Automated |
-| CI/CD   | Server deploy only after quality gate pass | TC-DEPLOY-001 | Deployment/System | Smoke testing | `.github/workflows/deploy-server.yml` | GitHub Actions deploy log | ✅ Automated |
-| CI/CD   | Backend responds after deployment | TC-DEPLOY-002 | Deployment/System | Smoke testing | `.github/workflows/deploy-server.yml` post-deploy curl `/api/health` | Health check log | ✅ Added |
-| CI/CD   | Code is reviewed by static analysis | TC-STATIC-001 | Static Testing | Static analysis | `.github/workflows/sonar.yml` | [SonarCloud](https://sonarcloud.io/project/overview?id=chi-trung_KCPM) | ✅ Running |
+## 3. Ma trận đầy đủ (xUnit Backend Tests)
 
-## 4. Chi tiết test case (template)
+> Tất cả xUnit test được CI tự động chạy, log kết quả lên Jira, và upload lên Allure report.  
+> **xUnit file path** relative to: `Waste-Recycling-Platform/backend/tests/WastePlatform.Tests/`
 
-Dung template nay khi viet file `.md` moi trong `test-cases`:
+| Jira Key | Title (WRP-BE-TESTS) | Assignee | xUnit Test Files | Postman Collection | Status CI |
+|---|---|---|---|---|---|
+| **KIEM-4** | 001 - Auth Module Testing | Nguyễn Chí Trung | `Controllers/AuthControllerTests.cs`, `Services/JwtServiceTests.cs`, `Integration/JwtBearerIntegrationTests.cs` | `01 - Auth (Login/Register)` | ✅ Auto-logged |
+| **KIEM-5** | 002 - Reports Module Testing | Minh Phụng | `Application/Reports/AcceptReportCommandHandlerTests.cs`, `CreateReportCommandHandlerTests.cs`, `GetAllReportsQueryHandlerTests.cs`, `GetEnterpriseReportsQueryHandlerTests.cs`, `GetMyReportsQueryHandlerTests.cs`, `GetReportByIdQueryHandlerTests.cs`, `RejectReportCommandHandlerTests.cs` | `05 - Reports`, `06 - Citizen Reports` | ✅ Auto-logged |
+| **KIEM-6** | 003 - Notifications Module Testing | Nguyễn Hoàng Phụng | `Application/Notifications/NotificationServiceTests.cs`, `Controllers/NotificationControllerTests.cs`, `Infrastructure/NotificationRepositoryTests.cs` | `09 - Notifications` | ✅ Auto-logged |
+| **KIEM-7** | 004 - Complaints Module Testing | Thanh Duy | `Application/Complaints/CreateComplaintCommandHandlerTests.cs`, `RejectComplaintCommandHandlerTests.cs`, `ResolveComplaintCommandHandlerTests.cs` | `10 - Complaints` | ✅ Auto-logged |
+| **KIEM-8** | 005 - Admin Module Testing | 11A6_03_Đăng | `Controllers/AnalyticsControllerTests.cs` + `AdminModuleTests.cs` (root tests folder), `AdminApiIntegrationTests.cs` | `02 - Admin`, `Admin Users` | ✅ Auto-logged |
+| **KIEM-9** | 006 - Analytics Module Testing | 11A6_03_Đăng | `Controllers/AnalyticsControllerTests.cs`, `AnalyticsModuleTests.cs`, `AnalyticsApiIntegrationTests.cs` | `04 - Analytics` | ✅ Auto-logged |
+| **KIEM-10** | 007 - Public Analytics Testing | Thanh Duy | `Controllers/AnalyticsControllerTests.cs` (public endpoints) | `04 - Analytics (public)` | ✅ Auto-logged |
+| **KIEM-12** | 009 - WasteCategory Module Testing | Nguyễn Hoàng Phụng | `Controllers/WasteCategoryControllerTests.cs`, `Application/WasteCategories/GetAllCategoriesQueryHandlerTests.cs`, `GetCategoryByIdQueryHandlerTests.cs`, `Infrastructure/WasteCategoryRepositoryTests.cs` | `03 - WasteCategory` | ✅ Auto-logged |
+| **KIEM-13** | 010 - Citizen Module Testing | 11A6_03_Đăng | `Application/Citizens/CitizenModuleTests.cs` | `06 - Citizen Profile` | ✅ Auto-logged |
+| **KIEM-14** | 011 - Collector Module Testing | Nguyễn Chí Trung | `Controllers/CollectorControllerTests.cs` + E2E | Postman `07 - Collector` + `frontend/e2e/collector_task_test.js` | ✅ Auto-logged |
+| **KIEM-15** | 012 - CollectorTask Module Testing | Minh Phụng | `Controllers/CollectorTaskControllerTests.cs`, `CollectorTaskControllerExtendedTests.cs`, `Application/Tasks/AssignCollectorCommandHandlerTests.cs` | `08 - CollectorTask` | ✅ Auto-logged |
+| **KIEM-16** | 013 - Enterprise Task Module Testing | Nguyễn Chí Trung | `Controllers/EnterpriseTaskControllerTests.cs` + E2E | Postman `Enterprise Tasks` + `frontend/e2e/enterprise_assign_test.js` | ✅ Auto-logged |
+| **KIEM-17** | 014 - Enterprise Collectors & Reward Rules | Nguyễn Chí Trung | `Controllers/EnterpriseRewardRuleControllerTests.cs`, `Infrastructure/RewardPointsRepositoryTests.cs` | `Enterprise Rewards` | ✅ Auto-logged |
+| **KIEM-18** | 015 - CollectionTask / CollectionImage | Thanh Duy | `Domain/CollectionTaskDomainTests.cs`, `Domain/CollectionTaskTests.cs` | — | ✅ Auto-logged |
+| **KIEM-19** | 016 - SignalR Real-time Tests | Nguyễn Chí Trung | `SignalR/SignalRRealTimeNotifierTests.cs` | — | ✅ Auto-logged |
+| **KIEM-20** | 017 - File Uploads & Storage Tests | Minh Phụng | `Infrastructure/CollectorEvidenceUploadTests.cs`, `LocalFileStorageServiceTests.cs` | File upload requests | ✅ Auto-logged |
+| **KIEM-21** | 018 - Security & Role-based Access Tests | Nguyễn Hoàng Phụng | `Integration/AdminEnterpriseAuthorizationTests.cs`, `Integration/JwtBearerIntegrationTests.cs` | Postman `Security/Auth` | ✅ Auto-logged |
+| **KIEM-22** | 019 - AuditLog & Error Path Tests | Thanh Duy | `Controllers/AuditLogAndErrorPathTests.cs` | — | ✅ Auto-logged |
+| **KIEM-23** | 020 - Search, Pagination & Filters Tests | 11A6_03_Đăng | `Search/SearchPaginationFiltersTests.cs` | — | ✅ Auto-logged |
 
-```md
-# TC-XXX-001 - Short Title
+---
 
-## Requirement
-- Jira Key: KIEM-XX
-- Feature: ...
-- Test basis: requirement/code/business flow
+## 4. Ma trận E2E Tests (CodeceptJS)
 
-## Test Design Technique
-- Equivalence partitioning / Boundary value / Decision table / State transition / Error guessing
+| Jira Key | Feature | Test Case ID | E2E File | Status |
+|---|---|---|---|---|
+| KIEM-14 | Collector đăng nhập, truy cập tasks, không vào enterprise route | TC-E2E-004 | `frontend/e2e/collector_task_test.js` | ✅ Auto-logged |
+| KIEM-16 | Enterprise đăng nhập và truy cập task management | TC-E2E-003 | `frontend/e2e/enterprise_assign_test.js` | ✅ Auto-logged |
+| KIEM-21 | Public pages render and auth entry points available | TC-E2E-001 | `frontend/e2e/smoke_test.js` | ✅ Auto-logged |
+| KIEM-21 | Citizen đăng ký và điều hướng đến create-report form | TC-E2E-002 | `frontend/e2e/citizen_report_test.js` | ✅ Auto-logged |
 
-## Preconditions
-- Test account:
-- Test data:
-- Environment:
+---
 
-## Steps
-1. ...
-2. ...
-3. ...
+## 5. Ma trận Postman API Tests (Newman)
 
-## Expected Result
-1. ...
-2. ...
+| Jira Key | Feature | Postman Folder / Collection | Status |
+|---|---|---|---|
+| KIEM-4 | Auth/Login/Register endpoints | `WastePlatform API - Professional QA Suite` > `01 - Auth` | ✅ Auto-logged |
+| KIEM-21 | Security & Role-based access (JWT, Admin, Enterprise) | `Security/Auth` | ✅ Auto-logged |
 
-## Automation Mapping
-- xUnit:
-- Postman:
-- E2E:
-- CI workflow:
+---
 
-## Execution Record
-- Status: Passed/Failed/Blocked/Untested
-- Executed by:
-- Executed date:
-- Evidence link:
-- Defect link, if failed:
-```
+## 6. CI/CD & Infrastructure
 
-## 5. Quy tắc cập nhật
+| Jira Key | Feature | Test Case ID | Automation File | Status |
+|---|---|---|---|---|
+| CI/CD | Server deploy after quality gate pass | TC-DEPLOY-001 | `.github/workflows/deploy-server.yml` | ✅ Running |
+| CI/CD | Backend health check after deployment | TC-DEPLOY-002 | `deploy-server.yml` > `curl /api/health` | ✅ Running |
+| CI/CD | Static analysis by SonarCloud | TC-STATIC-001 | `.github/workflows/sonar.yml` | ✅ Running |
 
-- Mỗi Jira issue có code thay đổi phải có ít nhất 1 test case ID.
-- Mỗi test case quan trọng phải map đến ít nhất 1 automation file hoặc manual evidence.
-- Nếu automation chưa có, status ghi `Need automation`, không ghi lặp lộn.
-- Bug tìm thấy phải có bước tái tạo, actual result, expected result và issue/defect link.
+---
 
-## 6. Allure Report Links
+## 7. Bug Issues (Manual Testing)
 
-- **Main report (all tests)**: https://chi-trung.github.io/KCPM/report-main/
-- **Behaviors (by epic/feature)**: https://chi-trung.github.io/KCPM/report-main/#behaviors
+| Jira Key | Title | Assignee | Status |
+|---|---|---|---|
+| KIEM-26 | [BUG] Missing mandatory image validation in Create | Nguyễn Hoàng Phụng | IN PROGRESS |
+| KIEM-27 | [BUG] PUT /notifications/{id}/read returns 200 for 404 | Nguyễn Hoàng Phụng | DONE |
+| KIEM-28 | Include taskId in report accept response | Minh Phụng | TO DO |
+| KIEM-29 | [BUG] Missing maximum 5 images validation | Thanh Duy | TO DO |
+
+---
+
+## 8. Allure Report Links
+
+- **Main report (all 3 suites)**: https://chi-trung.github.io/KCPM/report-main/
+- **Behaviors (by feature)**: https://chi-trung.github.io/KCPM/report-main/#behaviors
 - **Suites (3 groups)**: https://chi-trung.github.io/KCPM/report-main/#suites
 - **Categories (failure analysis)**: https://chi-trung.github.io/KCPM/report-main/#categories
+
+---
+
+## 9. Quy tắc cập nhật
+
+- Mỗi Jira issue phải có ít nhất 1 xUnit test file hoặc E2E/Postman test.
+- CI tự động log kết quả lên Jira sau mỗi run (sử dụng `scripts/jira_log_test_execution.py`).
+- ISSUE_MAP trong script xác định Jira issue nào nhận comment từ loại test nào.
+- Bug issues (KIEM-26, 27, 28, 29) không tự động log — cần manual testing.
+- Thành viên nhóm: Nguyễn Chí Trung (trưởng nhóm), Minh Phụng, Nguyễn Hoàng Phụng, Thanh Duy, 11A6_03_Đăng.

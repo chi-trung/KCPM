@@ -1,4 +1,4 @@
-using Xunit;
+﻿using Xunit;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -22,6 +22,7 @@ namespace WastePlatform.Tests.Application.Analytics
     [Allure.Net.Commons.Attributes.AllureTag("api")]
     [Allure.Net.Commons.Attributes.AllureTag("analytics")]
     [Allure.Net.Commons.Attributes.AllureTag("integration")]
+    [Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-9")]
     public class AnalyticsApiIntegrationTests
     {
         #region Setup & Configuration

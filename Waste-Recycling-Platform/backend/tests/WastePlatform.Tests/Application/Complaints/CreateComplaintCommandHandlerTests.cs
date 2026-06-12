@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using Moq;
@@ -23,7 +23,7 @@ namespace WastePlatform.Tests.Application.Complaints;
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("backend")]
 [Allure.Net.Commons.Attributes.AllureTag("complaints")]
-[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-13")]
+[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-7")]
 public class CreateComplaintCommandHandlerTests
 {
     private readonly Mock<IComplaintRepository> _mockComplaintRepository;
@@ -291,3 +291,4 @@ public class CreateComplaintCommandHandlerTests
 
     #endregion
 }
+

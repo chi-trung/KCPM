@@ -24,6 +24,7 @@ namespace WastePlatform.Tests.Application.Admin
     [Allure.Net.Commons.Attributes.AllureTag("unit")]
     [Allure.Net.Commons.Attributes.AllureTag("backend")]
     [Allure.Net.Commons.Attributes.AllureTag("admin")]
+    [Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-8")]
     public class AdminModuleTests
     {
         #region User Management Tests

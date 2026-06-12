@@ -1,4 +1,4 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using FluentAssertions;
@@ -25,7 +25,7 @@ namespace WastePlatform.Tests.Controllers;
 [AllureSeverity(SeverityLevel.normal)]
 [Allure.Net.Commons.Attributes.AllureTag("api")]
 [Allure.Net.Commons.Attributes.AllureTag("notifications")]
-[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-19")]
+[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-6")]
 public class NotificationControllerTests
 {
     private readonly Mock<INotificationRepository> _mockNotificationRepository;

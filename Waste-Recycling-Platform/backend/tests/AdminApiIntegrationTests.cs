@@ -1,4 +1,4 @@
-using Xunit;
+﻿using Xunit;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -20,6 +20,7 @@ namespace WastePlatform.Tests.Application.Admin
     [Allure.Net.Commons.Attributes.AllureTag("api")]
     [Allure.Net.Commons.Attributes.AllureTag("admin")]
     [Allure.Net.Commons.Attributes.AllureTag("integration")]
+    [Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-8")]
     public class AdminApiIntegrationTests
     {
         #region Setup & Fixtures

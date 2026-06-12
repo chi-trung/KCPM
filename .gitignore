@@ -115,3 +115,6 @@ docs/CI_CD_PIPELINE_GUIDE.md
 Waste-Recycling-Platform/frontend/output/
 Waste-Recycling-Platform/frontend/allure-results/
 Waste-Recycling-Platform/frontend/allure-report/
+__pycache__/
+*.pyc
+
