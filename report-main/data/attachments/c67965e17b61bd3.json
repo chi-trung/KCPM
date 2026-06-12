@@ -1,0 +1,12 @@
+{
+  "FileName": "evidence.jpg",
+  "ContentType": "image/jpeg",
+  "Length": 16,
+  "AllowedExtensions": [
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".gif"
+  ],
+  "MaxSizeBytes": 5242880
+}
