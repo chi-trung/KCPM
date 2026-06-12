@@ -43,8 +43,17 @@ def check(path: str, label: str) -> bool:
             print(f"✅ {label}: OK")
             return True
     except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", errors="replace")[:200]
         print(f"❌ {label}: HTTP {e.code}")
         print(f"   URL: {url}")
+        print(f"   Response: {body}")
+        if e.code == 401:
+            print(f"   ⚠️  401 means: email + token combination is WRONG")
+            print(f"   ▶  Check 1: Is JIRA_API_EMAIL the same email you use to login at id.atlassian.com?")
+            print(f"   ▶  Check 2: Was the token created with THIS email account?")
+            print(f"   ▶  Check 3: Is JIRA_BASE_URL in format https://your-org.atlassian.net (no /jira at end)?")
+        elif e.code == 403:
+            print(f"   ⚠️  403 means: authenticated OK but no permission for this resource")
         return False
     except Exception as e:
         print(f"❌ {label}: {e}")
