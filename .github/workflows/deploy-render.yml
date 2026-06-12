@@ -88,7 +88,7 @@ jobs:
           | **Commit** | `${{ github.sha }}` |
           | **Backend URL** | https://kcpm-backend.onrender.com |
           | **API Health** | https://kcpm-backend.onrender.com/api/health |
-          | **Frontend URL** | https://kcpm-frontend.vercel.app |
+          | **Frontend URL** | https://kcpm.vercel.app |
 
           ### 📋 Setup Instructions (nếu chưa config)
 
