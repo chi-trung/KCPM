@@ -100,15 +100,18 @@ KCPM/
 │   ├── frontend/               # Next.js app
 │   │   └── e2e/               # CodeceptJS test files (BDD style)
 │   ├── postman/                # Postman collections
-│   ├── scripts/                # Helper Python scripts
-│   │   ├── jira_log_test_execution.py  # Auto-post CI results to Jira
-│   │   ├── check_jira_connection.py    # Verify Jira credentials locally
+│   ├── scripts/                # Allure/report helper scripts (Python)
 │   │   ├── build_categories_report.py  # Build Allure categories widget
 │   │   ├── normalize_allure_suites.py  # Ensure 3 Allure suite groups
-│   │   └── generate_per_owner_reports.py  # Per-owner Allure reports
+│   │   ├── generate_per_owner_reports.py  # Per-owner Allure reports
+│   │   └── create_validation_artifacts.py  # CI validation artifacts
 │   └── allure-categories.json  # Failure category rules (14 categories)
+├── scripts/                    # Project-level Python scripts
+│   ├── jira_log_test_execution.py  # Auto-post CI results to Jira
+│   └── check_jira_connection.py    # Verify Jira credentials locally
 ├── docs/                       # Project documentation
 │   └── TRACEABILITY_MATRIX.md  # Requirement-to-test mapping
 ├── history-chat/               # Dev session notes
 └── test-cases/                 # Manual test documentation
 ```
+
