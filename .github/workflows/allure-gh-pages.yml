@@ -364,22 +364,25 @@ jobs:
           RESULTS="Waste-Recycling-Platform/allure-results"
           REPORT="report-main"
           if [ -f "$CATS" ] && [ -d "$RESULTS" ]; then
-            # Ensure categories.json is in allure-results
+            # Ensure categories.json is in allure-results BEFORE generate
             cp "$CATS" "$RESULTS/categories.json"
             echo "[categories] Regenerating $REPORT with custom categories..."
-            # Regenerate report using allure CLI (overwrites previous generate)
+            # Regenerate using allure CLI to a temp location
             allure generate "$RESULTS" \
               --output "${REPORT}-cats" \
               --clean \
               2>/dev/null || true
             # Only replace if new report was generated successfully
             if [ -d "${REPORT}-cats" ] && [ -f "${REPORT}-cats/index.html" ]; then
-              chmod -R u+w "$REPORT" || true
-              rm -rf "$REPORT"
-              mv "${REPORT}-cats" "$REPORT"
+              # Use rsync to avoid rm -rf permission issues on github actions
+              chmod -R 777 "$REPORT" 2>/dev/null || sudo chmod -R 777 "$REPORT" 2>/dev/null || true
+              rsync -a --delete "${REPORT}-cats/" "${REPORT}/" 2>/dev/null \
+                || cp -rf "${REPORT}-cats/." "${REPORT}/" 2>/dev/null \
+                || true
+              rm -rf "${REPORT}-cats" 2>/dev/null || true
               echo "[categories] Report regenerated successfully with custom categories."
             else
-              echo "[categories] Allure CLI regeneration failed, keeping original report."
+              echo "[categories] Allure CLI regeneration failed or not installed, keeping original."
               rm -rf "${REPORT}-cats" 2>/dev/null || true
             fi
           else
