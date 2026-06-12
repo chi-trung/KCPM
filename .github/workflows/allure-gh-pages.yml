@@ -346,6 +346,10 @@ jobs:
         run: |
           echo "===== GENERATED REPORT ====="
           find report-main -type f | head -100 || true
+          echo "===== ALLURE-RESULTS AFTER ACTION ====="
+          find Waste-Recycling-Platform/allure-results -name '*.json' | wc -l || echo '0'
+          echo "===== CATEGORIES IN REPORT ====="
+          cat report-main/data/categories.json 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); [print(f'  - {c[\"name\"]}: {len(c.get(\"children\",[]))} items') for c in d.get(\"children\",[])]" 2>/dev/null || echo 'parse fail'
 
       - name: Normalize report permissions
         if: always()
@@ -368,14 +372,22 @@ jobs:
           if [ -f "$CATS" ] && [ -d "$RESULTS" ]; then
             # Ensure categories.json is in allure-results BEFORE generate
             cp "$CATS" "$RESULTS/categories.json"
+            echo "[categories] categories.json content preview:"
+            head -3 "$RESULTS/categories.json"
+            echo "[categories] ALL JSON files in results: $(find $RESULTS -name '*.json' | wc -l)"
+            echo "[categories] Test result files (*-result.json): $(find $RESULTS -name '*-result.json' | wc -l)"
+            echo "[categories] categories.json in results: $(ls -la $RESULTS/categories.json)"
             echo "[categories] Regenerating $REPORT with custom categories..."
-            # Regenerate using allure CLI to a temp location
+            # Regenerate using allure CLI to a temp location (show all output)
             allure generate "$RESULTS" \
               --output "${REPORT}-cats" \
               --clean \
-              2>/dev/null || true
+              2>&1 | tail -20
             # Only replace if new report was generated successfully
             if [ -d "${REPORT}-cats" ] && [ -f "${REPORT}-cats/index.html" ]; then
+              # Peek at the generated categories widget
+              echo "[categories] Generated categories widget:"
+              cat "${REPORT}-cats/widgets/categories.json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'total={d[\"total\"]}, items={[x[\"name\"] for x in d[\"items\"]]}')" 2>/dev/null || cat "${REPORT}-cats/widgets/categories.json" | head -1
               # Use rsync to avoid rm -rf permission issues on github actions
               chmod -R 777 "$REPORT" 2>/dev/null || sudo chmod -R 777 "$REPORT" 2>/dev/null || true
               rsync -a --delete "${REPORT}-cats/" "${REPORT}/" 2>/dev/null \
