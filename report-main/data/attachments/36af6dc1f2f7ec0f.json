@@ -1,0 +1,11 @@
+{
+  "Id": "de26f0a7-ca56-4f5b-bab5-8b1cfad4b39f",
+  "Email": "citizen@example.com",
+  "FullName": "Nguy\u1EC5n V\u0103n A",
+  "Phone": "0987654321",
+  "District": "Q.1",
+  "Ward": "P.1",
+  "IsActive": true,
+  "CreatedAt": "2026-06-12T09:15:50.2091085Z",
+  "UpdatedAt": null
+}
