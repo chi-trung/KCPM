@@ -7,26 +7,19 @@
 
 // Safe environment variable access for Next.js
 declare global {
-  var NEXT_PUBLIC_API_URL: string | undefined;
+    var NEXT_PUBLIC_API_URL: string | undefined;
 }
 
 // Get API URL - works on both server and client in Next.js 14
 const getApiUrl = (): string => {
-  if (typeof window === 'undefined') {
-    // Server-side: use process.env
     return process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
-  } else {
-    // Client-side: use global or fallback
-    return (globalThis as any).NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
-  }
 };
 
 export const API_CONFIG = {
-  // Get base API URL from environment or use localhost for development
-  BASE_URL: `${getApiUrl()}/api`,
-
-  // Get the server URL (without /api prefix) for raw endpoints
-  SERVER_URL: getApiUrl(),
+    // Get base API URL from environment or use localhost for development
+    BASE_URL: `${getApiUrl()}/api`,
+    // Get the server URL (without /api prefix) for raw endpoints
+    SERVER_URL: getApiUrl(),
 };
 
 // Freeze to prevent accidental mutations
