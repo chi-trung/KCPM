@@ -10,33 +10,28 @@ const COLLECTOR = {
 };
 
 async function loginAsCollector() {
-  I.say('[Precondition] Navigate to login page');
   I.amOnPage('/login');
   I.waitForElement('input[name="email"]', 10);
-
-  I.say('[Precondition] Enter collector credentials');
   I.fillField('input[name="email"]', COLLECTOR.email);
   I.fillField('input[name="password"]', COLLECTOR.password);
   I.click('button[type="submit"]');
-
-  I.say('[Precondition] Wait for authenticated redirect');
   I.waitForElement('h1, h2, nav', 15);
 }
 
 Feature('TC-E2E-004: Collector Task Status Flow');
 
 Scenario('#1 Collector can login and reach collector dashboard', async ({ I }) => {
-  I.say('[Given] User is on the login page');
+  // Given: User is on the login page
   I.amOnPage('/login');
   I.waitForElement('input[name="email"]', 10);
   I.see('WASTE PLATFORM');
 
-  I.say('[When] Collector enters valid credentials and submits');
+  // When: Collector enters valid credentials and submits
   I.fillField('input[name="email"]', COLLECTOR.email);
   I.fillField('input[name="password"]', COLLECTOR.password);
   I.click('button[type="submit"]');
 
-  I.say('[Then] Collector is redirected to the authenticated area');
+  // Then: Collector is redirected to the authenticated area
   I.waitForElement('h1, h2, nav', 15);
   I.dontSee('Email hoặc mật khẩu không đúng');
 })
@@ -46,13 +41,14 @@ Scenario('#1 Collector can login and reach collector dashboard', async ({ I }) =
   .tag('@allure.label.severity:critical');
 
 Scenario('#2 Collector dashboard page loads without error', async ({ I }) => {
+  // Given: Collector is logged in
   await loginAsCollector();
 
-  I.say('[When] Collector navigates to /collector/dashboard');
+  // When: Collector navigates to /collector/dashboard
   I.amOnPage('/collector/dashboard');
   I.waitForElement('div, h1, h2', 10);
 
-  I.say('[Then] Page loads correctly — no 404 / Unauthorized errors');
+  // Then: Page loads correctly — no 404 / Unauthorized errors
   I.dontSee('404');
   I.dontSee('Not Found');
   I.dontSee('Unauthorized');
@@ -64,13 +60,14 @@ Scenario('#2 Collector dashboard page loads without error', async ({ I }) => {
   .tag('@allure.label.severity:normal');
 
 Scenario('#3 Collector tasks page renders task list structure', async ({ I }) => {
+  // Given: Collector is logged in
   await loginAsCollector();
 
-  I.say('[When] Collector navigates to /collector/routes (task list)');
+  // When: Collector navigates to /collector/routes (task list)
   I.amOnPage('/collector/routes');
   I.waitForElement('div', 10);
 
-  I.say('[Then] Page loads without 404 or Unauthorized error');
+  // Then: Page loads without 404 or Unauthorized error
   I.dontSee('404');
   I.dontSee('Unauthorized');
 })
@@ -80,19 +77,19 @@ Scenario('#3 Collector tasks page renders task list structure', async ({ I }) =>
   .tag('@allure.label.severity:normal');
 
 Scenario('#4 Collector login fails with wrong password (negative test – error guessing)', async ({ I }) => {
-  I.say('[Given] User is on the login page');
+  // Given: User is on the login page
   I.amOnPage('/login');
   I.waitForElement('input[name="email"]', 10);
 
-  I.say('[When] Collector enters valid email but INVALID password');
+  // When: Collector enters valid email but INVALID password
   I.fillField('input[name="email"]', 'collector@test.waste');
   I.fillField('input[name="password"]', 'InvalidPassword123!');
   I.click('button[type="submit"]');
 
-  I.say('[Then] System shows authentication error message');
+  // Then: System shows authentication error message
   I.waitForText('Email hoặc mật khẩu không đúng', 10);
 
-  I.say('[And] URL does NOT change to collector dashboard');
+  // And: URL does NOT change to collector dashboard
   I.dontSeeCurrentUrlEquals('/collector/dashboard');
 })
   .tag('@allure.label.epic:E2E Frontend')
@@ -101,13 +98,14 @@ Scenario('#4 Collector login fails with wrong password (negative test – error 
   .tag('@allure.label.severity:critical');
 
 Scenario('#5 Collector role cannot access enterprise-only route (state transition guard)', async ({ I }) => {
+  // Given: Collector is logged in
   await loginAsCollector();
 
-  I.say('[When] Collector attempts to access enterprise-restricted route');
+  // When: Collector attempts to access enterprise-restricted route
   I.amOnPage('/enterprise/dashboard');
   I.waitForElement('div, h1, h2', 10);
 
-  I.say('[Then] Enterprise-only content is NOT visible (access blocked or redirected)');
+  // Then: Enterprise-only content is NOT visible (access blocked or redirected)
   I.dontSee('Collector Assignment Management');
 })
   .tag('@allure.label.epic:E2E Frontend')
