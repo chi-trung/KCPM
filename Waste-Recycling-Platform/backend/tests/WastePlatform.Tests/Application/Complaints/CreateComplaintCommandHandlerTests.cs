@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using Moq;
@@ -291,4 +291,3 @@ public class CreateComplaintCommandHandlerTests
 
     #endregion
 }
-

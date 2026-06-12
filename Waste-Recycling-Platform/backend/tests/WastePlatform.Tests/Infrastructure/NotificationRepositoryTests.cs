@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
 using WastePlatform.Infrastructure.Persistence;
@@ -14,7 +14,7 @@ namespace WastePlatform.Tests.Infrastructure;
 [Allure.Net.Commons.Attributes.AllureLabel("suite", "Infrastructure")]
 [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "NotificationRepositoryTests")]
 [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Infrastructure")]
-[AllureOwner("HoÃ ng Phá»¥ng")]
+[AllureOwner("Hoàng Phụng")]
 [AllureSeverity(SeverityLevel.normal)]
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("repository")]

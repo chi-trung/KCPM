@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using Moq;
@@ -384,4 +384,3 @@ public class RejectComplaintCommandHandlerTests
 
     #endregion
 }
-

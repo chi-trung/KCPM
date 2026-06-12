@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using Moq;
 using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Application.Services;
@@ -16,7 +16,7 @@ namespace WastePlatform.Tests.Application.Notifications;
 [Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
 [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "NotificationServiceTests")]
 [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Notifications")]
-[AllureOwner("HoÃ ng Phá»¥ng")]
+[AllureOwner("Hoàng Phụng")]
 [AllureSeverity(SeverityLevel.normal)]
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("backend")]
@@ -77,7 +77,7 @@ public class NotificationServiceTests
         capturedNotification!.CitizenId.Should().Be(citizenId);
         capturedNotification.Type.Should().Be(NotificationType.ReportCreated);
         capturedNotification.Channel.Should().Be(NotificationChannel.InApp);
-        capturedNotification.Title.Should().Be("BÃ¡o cÃ¡o Ä‘Ã£ gá»­i thÃ nh cÃ´ng");
+        capturedNotification.Title.Should().Be("Báo cáo đã gửi thành công");
         capturedNotification.Message.Should().Contain(reportId.ToString()[..8]);
         capturedNotification.RelatedEntityId.Should().Be(reportId);
         capturedNotification.RelatedEntityType.Should().Be("Report");
@@ -104,7 +104,7 @@ public class NotificationServiceTests
         // Arrange
         var citizenId = Guid.NewGuid();
         var reportId = Guid.NewGuid();
-        var reason = "Thiáº¿u áº£nh rÃµ rÃ ng";
+        var reason = "Thiếu ảnh rõ ràng";
         Notification? capturedNotification = null;
 
         _mockNotificationRepository
@@ -164,7 +164,7 @@ public class NotificationServiceTests
         // Assert
         capturedNotification.Should().NotBeNull();
         AllureAttachmentHelper.AttachJson("notification-rejected-default", capturedNotification!);
-        capturedNotification!.Message.Should().Be($"BÃ¡o cÃ¡o #{reportId.ToString()[..8]} khÃ´ng Ä‘Æ°á»£c cháº¥p nháº­n.");
+        capturedNotification!.Message.Should().Be($"Báo cáo #{reportId.ToString()[..8]} không được chấp nhận.");
     }
 
     [Fact]
@@ -193,7 +193,7 @@ public class NotificationServiceTests
         capturedNotification!.CitizenId.Should().BeNull();
         capturedNotification.Type.Should().Be(NotificationType.ComplaintEscalated);
         capturedNotification.Channel.Should().Be(NotificationChannel.InApp);
-        capturedNotification.Title.Should().Be("Khiáº¿u náº¡i Ä‘Æ°á»£c chuyá»ƒn lÃªn Admin");
+        capturedNotification.Title.Should().Be("Khiếu nại được chuyển lên Admin");
         capturedNotification.RelatedEntityId.Should().Be(complaintId);
         capturedNotification.RelatedEntityType.Should().Be("Complaint");
         capturedNotification.ActionUrl.Should().Be($"/admin/complaints/{complaintId}");
