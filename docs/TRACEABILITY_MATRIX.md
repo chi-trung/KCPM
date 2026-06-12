@@ -1,6 +1,6 @@
 # Ma trận Truy vết (Traceability Matrix) — Waste Recycling Platform
 
-**Cập nhật lần cuối**: 2026-06-12 (auto-logged từ CI Backend Tests Run #435)  
+**Cập nhật lần cuối**: 2026-06-12 17h14 (Session: áp dụng giáo trình Ch.4 — BVA/DT/ST techniques)  
 **Allure Report**: https://chi-trung.github.io/KCPM/report-main/  
 **Jira Board**: https://ut-team-36.atlassian.net/jira/software/projects/KIEM/boards/3  
 **CI/CD**: https://github.com/chi-trung/KCPM/actions
@@ -50,9 +50,9 @@ Mỗi CI run tự động log kết quả lên Jira bằng token của nhóm tr�
 | Jira Key | Title (WRP-BE-TESTS) | Assignee | xUnit Test Files | Postman Collection | Status CI |
 |---|---|---|---|---|---|
 | **KIEM-4** | 001 - Auth Module Testing | Nguyễn Chí Trung | `Controllers/AuthControllerTests.cs`, `Services/JwtServiceTests.cs`, `Integration/JwtBearerIntegrationTests.cs` | `01 - Auth (Login/Register)` | ✅ Auto-logged |
-| **KIEM-5** | 002 - Reports Module Testing | Minh Phụng | `Application/Reports/AcceptReportCommandHandlerTests.cs`, `CreateReportCommandHandlerTests.cs`, `GetAllReportsQueryHandlerTests.cs`, `GetEnterpriseReportsQueryHandlerTests.cs`, `GetMyReportsQueryHandlerTests.cs`, `GetReportByIdQueryHandlerTests.cs`, `RejectReportCommandHandlerTests.cs` | `05 - Reports`, `06 - Citizen Reports` | ✅ Auto-logged |
+| **KIEM-5** | 002 - Reports Module Testing | Minh Phụng | `Application/Reports/AcceptReportCommandHandlerTests.cs`, `CreateReportCommandHandlerTests.cs` **(+BVA-02..07 images count)**, `GetAllReportsQueryHandlerTests.cs`, `GetEnterpriseReportsQueryHandlerTests.cs`, `GetMyReportsQueryHandlerTests.cs`, `GetReportByIdQueryHandlerTests.cs`, `RejectReportCommandHandlerTests.cs`, `Domain/WasteReportTests.cs` **(+ST-05/07/08 invalid transitions)** | `05 - Reports`, `06 - Citizen Reports` | ✅ Auto-logged |
 | **KIEM-6** | 003 - Notifications Module Testing | Nguyễn Hoàng Phụng | `Application/Notifications/NotificationServiceTests.cs`, `Controllers/NotificationControllerTests.cs`, `Infrastructure/NotificationRepositoryTests.cs` | `09 - Notifications` | ✅ Auto-logged |
-| **KIEM-7** | 004 - Complaints Module Testing | Thanh Duy | `Application/Complaints/CreateComplaintCommandHandlerTests.cs`, `RejectComplaintCommandHandlerTests.cs`, `ResolveComplaintCommandHandlerTests.cs` | `10 - Complaints` | ✅ Auto-logged |
+| **KIEM-7** | 004 - Complaints Module Testing | Thanh Duy | `Application/Complaints/CreateComplaintCommandHandlerTests.cs` **(+DT-01..06 Decision Table)**, `RejectComplaintCommandHandlerTests.cs`, `ResolveComplaintCommandHandlerTests.cs` | `10 - Complaints` | ✅ Auto-logged |
 | **KIEM-8** | 005 - Admin Module Testing | 11A6_03_Đăng | `Controllers/AnalyticsControllerTests.cs` + `AdminModuleTests.cs` (root tests folder), `AdminApiIntegrationTests.cs` | `02 - Admin`, `Admin Users` | ✅ Auto-logged |
 | **KIEM-9** | 006 - Analytics Module Testing | 11A6_03_Đăng | `Controllers/AnalyticsControllerTests.cs`, `AnalyticsModuleTests.cs`, `AnalyticsApiIntegrationTests.cs` | `04 - Analytics` | ✅ Auto-logged |
 | **KIEM-10** | 007 - Public Analytics Testing | Thanh Duy | `Controllers/AnalyticsControllerTests.cs` (public endpoints) | `04 - Analytics (public)` | ✅ Auto-logged |
@@ -79,6 +79,7 @@ Mỗi CI run tự động log kết quả lên Jira bằng token của nhóm tr�
 | KIEM-16 | Enterprise đăng nhập và truy cập task management | TC-E2E-003 | `frontend/e2e/enterprise_assign_test.js` | ✅ Auto-logged |
 | KIEM-21 | Public pages render and auth entry points available | TC-E2E-001 | `frontend/e2e/smoke_test.js` | ✅ Auto-logged |
 | KIEM-21 | Citizen đăng ký và điều hướng đến create-report form | TC-E2E-002 | `frontend/e2e/citizen_report_test.js` | ✅ Auto-logged |
+| **KIEM-7** | **Citizen Complaint Flow (DT + Error Guessing)** | **TC-E2E-006** | **`frontend/e2e/citizen_complaint_test.js`** | ✅ New |
 
 ---
 
@@ -109,6 +110,19 @@ Mỗi CI run tự động log kết quả lên Jira bằng token của nhóm tr�
 | KIEM-27 | [BUG] PUT /notifications/{id}/read returns 200 for 404 | Nguyễn Hoàng Phụng | DONE |
 | KIEM-28 | Include taskId in report accept response | Minh Phụng | TO DO |
 | KIEM-29 | [BUG] Missing maximum 5 images validation | Thanh Duy | TO DO |
+
+---
+
+## 7.5 Kỹ thuật Kiểm thử áp dụng (Ch.4 Giáo trình)
+
+| Kỹ thuật (Ch.4) | KIEM Issues | Loại test | Test IDs |
+|---|---|---|---|
+| **Equivalence Partitioning (EP)** | KIEM-4, 5, 6, 12, 20 | xUnit + Postman | UTC01-05 (F01), UTC01-06 (F02) |
+| **Boundary Value Analysis (BVA)** | KIEM-5 (lat/long), KIEM-26/29 (images count 1-5) | xUnit | BVA-01..08 (F11), TC-REP-002 |
+| **State Transition Testing** | KIEM-5 (report lifecycle), KIEM-18 (collector task) | xUnit + Domain | ST-01..08 (F13) |
+| **Decision Table Testing** | KIEM-7 (complaint creation) | xUnit | DT-01..06 (F12) |
+| **Error Guessing** | KIEM-4 (auth), KIEM-7 (complaint) | xUnit + E2E | JWT, null, empty, auth guard |
+| **White-box (Branch Coverage)** | All KIEM issues | xUnit | 245+ tests |
 
 ---
 
