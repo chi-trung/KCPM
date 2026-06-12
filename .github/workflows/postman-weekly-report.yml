@@ -79,14 +79,16 @@ jobs:
       - name: Run Postman collection
         run: |
           $scope = '${{ steps.report_scope.outputs.scope }}'
+          New-Item -ItemType Directory -Force -Path TestResults | Out-Null
           $args = @(
             'run',
             './Waste-Recycling-Platform/postman/WastePlatform API - Professional QA Suite.postman_collection.json',
             '-e', './Waste-Recycling-Platform/postman/WastePlatform.professional.postman_environment.json',
             '--env-var', 'baseUrl=http://localhost:8080',
-            '--reporters', 'cli,junit,json',
+            '--reporters', 'cli,junit,json,allure',
             '--reporter-junit-export', './TestResults/postman-weekly-junit.xml',
-            '--reporter-json-export', './TestResults/postman-weekly-report.json'
+            '--reporter-json-export', './TestResults/postman-weekly-report.json',
+            '--reporter-allure-export', './allure-results'
           )
 
           if ($scope -eq 'smoke') {
@@ -121,6 +123,7 @@ jobs:
           path: |
             TestResults/postman-weekly-junit.xml
             TestResults/postman-weekly-report.json
+            allure-results/
 
       - name: Stop backend stack
         if: always()
