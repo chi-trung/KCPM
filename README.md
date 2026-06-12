@@ -30,18 +30,19 @@
 | **CI/CD** | GitHub Actions |
 | **Test Report** | Allure (auto-deploy to GitHub Pages) |
 | **Code Quality** | SonarCloud |
+| **Issue Tracking** | Jira (auto-logged from CI) |
 
 ---
 
 ## 👥 Team
 
 | Thành viên | Phụ trách | KIEM Tasks |
-|-----------|-----------|-----------|
-| Nguyễn Chí Trung | Auth, Collector, CI/CD | KIEM-4, KIEM-21 |
+|-----------|-----------| -----------|
+| Nguyễn Chí Trung | Auth, Collector, CI/CD | KIEM-21 |
 | Minh Phụng | Reports, File Upload | KIEM-5 |
-| Nguyễn Hoàng Phụng | Waste, Security | KIEM-3 |
-| Đăng | Accept/Reject, Complaints | KIEM-13, KIEM-16 |
-| Thanh Duy | Task, Analytics | KIEM-10, KIEM-19 |
+| Nguyễn Hoàng Phụng | Waste, Security | KIEM-21 |
+| Đăng | Accept/Reject, Complaints | KIEM-22 |
+| Thanh Duy | Task, Analytics | KIEM-15, KIEM-19 |
 
 ---
 
@@ -49,15 +50,36 @@
 
 ```
 Push to main
-    ├─ Backend Tests (xUnit)     → Allure results artifact
-    ├─ Frontend E2E (Playwright) → e2e-allure-results artifact
-    ├─ Postman Smoke (Newman)    → merged into allure-results
+    ├─ Backend Tests (xUnit)     → Allure results artifact + Jira comment (KIEM-5)
+    ├─ Frontend E2E (Playwright) → e2e-allure-results artifact + Jira comment (KIEM-14)
+    ├─ Postman Smoke (Newman)    → merged into allure-results + Jira comment (KIEM-21)
     ├─ SonarCloud Analysis       → code quality gate
-    └─ Allure Pages Deploy       → GitHub Pages (auto-triggered)
+    └─ Allure Pages Deploy       → GitHub Pages (auto-triggered after Backend Tests)
              ↓
   https://chi-trung.github.io/KCPM/report-main/
   Suites: E2E Tests | API Tests (Postman) | Backend Tests (xUnit)
+  Behaviors: E2E Frontend epic | xUnit epics (KIEM-5, KIEM-12, KIEM-15...)
 ```
+
+---
+
+## 🔑 Required GitHub Secrets
+
+| Secret | Description | How to get |
+|--------|-------------|------------|
+| `JIRA_BASE_URL` | Jira instance URL | `https://ut-team-36.atlassian.net` |
+| `JIRA_API_EMAIL` | Atlassian account email | Email of Jira account |
+| `JIRA_API_TOKEN` | Atlassian API token | [id.atlassian.com/manage-profile/security/api-tokens](https://id.atlassian.com/manage-profile/security/api-tokens) |
+| `JIRA_API_TOKEN` | ⚠️ Must be **Atlassian API Token**, NOT Personal Access Token (PAT) | Create new token at link above |
+| `SONAR_TOKEN` | SonarCloud token | SonarCloud project settings |
+
+> **Note:** To verify Jira credentials work locally, run:
+> ```bash
+> JIRA_BASE_URL=https://ut-team-36.atlassian.net \
+> JIRA_API_EMAIL=your.email@gmail.com \
+> JIRA_API_TOKEN=your_token \
+> python3 scripts/check_jira_connection.py
+> ```
 
 ---
 
@@ -66,19 +88,23 @@ Push to main
 ```
 KCPM/
 ├── .github/workflows/          # CI/CD workflows
-│   ├── backend-tests.yml       # xUnit tests
-│   ├── frontend-e2e.yml        # CodeceptJS E2E
-│   ├── postman-smoke.yml       # Newman API tests
+│   ├── backend-tests.yml       # xUnit tests + Jira logging
+│   ├── frontend-e2e.yml        # CodeceptJS E2E + Jira logging
+│   ├── postman-smoke.yml       # Newman API tests + Jira logging
 │   ├── allure-gh-pages.yml     # Allure report deploy
 │   ├── sonar.yml               # SonarCloud analysis
 │   └── deploy-server.yml       # Production deploy
 ├── Waste-Recycling-Platform/
 │   ├── backend/                # ASP.NET Core API
 │   ├── frontend/               # Next.js app
-│   │   └── e2e/               # CodeceptJS test files
+│   │   └── e2e/               # CodeceptJS test files (BDD style)
 │   ├── postman/                # Postman collections
 │   ├── scripts/                # Allure/CI helper scripts
 │   └── allure-categories.json  # Allure failure categories
+├── scripts/                    # Project-level Python scripts
+│   ├── jira_log_test_execution.py  # Auto-post CI results to Jira
+│   ├── check_jira_connection.py    # Verify Jira credentials
+│   └── inject_categories.py        # Post-process Allure categories
 ├── history-chat/               # Dev session notes
 └── test-cases/                 # Manual test documentation
 ```
