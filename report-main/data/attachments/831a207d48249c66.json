@@ -1,0 +1,51 @@
+{
+  "Status": "Pending",
+  "Results": [
+    {
+      "Id": "27c69f23-fa05-4f53-bb53-cbbff07faa9b",
+      "CitizenName": null,
+      "CategoryName": null,
+      "Status": 0,
+      "Address": null,
+      "CreatedAt": "2026-06-12T16:19:22.8220334Z",
+      "ImageCount": 0
+    },
+    {
+      "Id": "53fdfe3a-f319-4372-a9f2-7861ca3db64a",
+      "CitizenName": null,
+      "CategoryName": null,
+      "Status": 0,
+      "Address": null,
+      "CreatedAt": "2026-06-12T16:19:22.8220354Z",
+      "ImageCount": 0
+    },
+    {
+      "Id": "ef45b240-3c85-42d7-94df-bf29a8814979",
+      "CitizenName": null,
+      "CategoryName": null,
+      "Status": 0,
+      "Address": null,
+      "CreatedAt": "2026-06-12T16:19:22.8220359Z",
+      "ImageCount": 0
+    },
+    {
+      "Id": "2c2018c7-b998-4b44-8ef3-b8f88c664734",
+      "CitizenName": null,
+      "CategoryName": null,
+      "Status": 0,
+      "Address": null,
+      "CreatedAt": "2026-06-12T16:19:22.8220373Z",
+      "ImageCount": 0
+    },
+    {
+      "Id": "271ec3c1-50df-4adb-970f-c4e3aaef216e",
+      "CitizenName": null,
+      "CategoryName": null,
+      "Status": 0,
+      "Address": null,
+      "CreatedAt": "2026-06-12T16:19:22.8220378Z",
+      "ImageCount": 0
+    }
+  ],
+  "Total": 5
+}
