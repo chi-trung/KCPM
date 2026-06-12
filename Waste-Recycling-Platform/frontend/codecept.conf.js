@@ -23,6 +23,7 @@ exports.config = {
     allure: {
       enabled: true,
       require: 'allure-codeceptjs',
+      outputDir: './allure-results',
     },
     screenshot: {
       enabled: true,
