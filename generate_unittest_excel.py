@@ -662,6 +662,226 @@ FUNCTIONS = [
             {"type": "A", "pf": "P", "date": TODAY, "defect": ""},
         ],
     },
+
+    # ─── FUNCTION 11: BVA — Images Upload Constraints (KIEM-26/29) ──
+    {
+        "code": "KIEM-BVA-F11",
+        "name": "Kiểm thử BVA — Ràng buộc Upload Ảnh (1≤images≤5)",
+        "created_by": "Nguyễn Hoàng Phụng",
+        "executed_by": "Nguyễn Hoàng Phụng",
+        "lines_of_code": 180,
+        "jira_ticket": "KIEM-26",
+        "test_req": (
+            "Áp dụng BVA (Standard + Robustness) theo giáo trình Ch.4: "
+            "Upload ảnh bằng chứng phải thỏa min=1, max=5 ảnh. "
+            "KIEM-26: thiếu validation ảnh bắt buộc. "
+            "KIEM-29: thiếu validation tối đa 5 ảnh."
+        ),
+        "utcids": [
+            "BVA-01",   # images=0 (dưới min, invalid)
+            "BVA-02",   # images=1 (đúng min, valid)
+            "BVA-03",   # images=2 (min+1, valid)
+            "BVA-04",   # images=3 (nominal, valid)
+            "BVA-05",   # images=4 (max-1, valid)
+            "BVA-06",   # images=5 (đúng max, valid)
+            "BVA-07",   # images=6 (vượt max, invalid — KIEM-29 bug)
+            "BVA-08",   # images=null (không gửi field — KIEM-26 bug)
+        ],
+        "conditions": [
+            {
+                "group": "Số lượng ảnh (images count)",
+                "items": [
+                    {"label": "0 ảnh (dưới min — invalid)",       "marks": [0]},
+                    {"label": "1 ảnh (đúng min — valid BVA)",      "marks": [1]},
+                    {"label": "2 ảnh (min+1 — valid BVA)",         "marks": [2]},
+                    {"label": "3 ảnh (giữa — nominal)",            "marks": [3]},
+                    {"label": "4 ảnh (max-1 — valid BVA)",         "marks": [4]},
+                    {"label": "5 ảnh (đúng max — valid BVA)",      "marks": [5]},
+                    {"label": "6 ảnh (vượt max — invalid BVA)",    "marks": [6]},
+                    {"label": "null / không có field",             "marks": [7]},
+                ]
+            },
+            {
+                "group": "File type",
+                "items": [
+                    {"label": "*.jpg / *.png / *.webp (hợp lệ)", "marks": [1, 2, 3, 4, 5]},
+                    {"label": "Loại file không hợp lệ (.exe)",   "marks": [0]},
+                ]
+            },
+            {
+                "group": "JWT Auth",
+                "items": [
+                    {"label": "Token hợp lệ (Citizen đã đăng nhập)", "marks": [0, 1, 2, 3, 4, 5, 6, 7]},
+                ]
+            },
+        ],
+        "returns": [
+            {"code": "201 Created",       "marks": [1, 2, 3, 4, 5]},
+            {"code": "400 Bad Request",   "marks": [0, 6, 7]},
+        ],
+        "exceptions": [
+            {"msg": "ArgumentException: Cần ít nhất 1 ảnh (KIEM-26 bug fix)", "marks": [0, 7]},
+            {"msg": "ArgumentException: Tối đa 5 ảnh (KIEM-29 bug fix)",     "marks": [6]},
+        ],
+        "logs": [
+            {"msg": "Ảnh upload thành công (1-5 ảnh)",              "marks": [1, 2, 3, 4, 5]},
+            {"msg": "Lỗi: Thiếu ảnh bắt buộc (Bug KIEM-26)",        "marks": [0, 7]},
+            {"msg": "Lỗi: Vượt quá số ảnh tối đa 5 (Bug KIEM-29)", "marks": [6]},
+        ],
+        "results": [
+            {"type": "A", "pf": "F", "date": TODAY, "defect": "KIEM-26"},  # BVA-01: 0 images
+            {"type": "N", "pf": "P", "date": TODAY, "defect": ""},         # BVA-02: 1 image
+            {"type": "N", "pf": "P", "date": TODAY, "defect": ""},         # BVA-03: 2 images
+            {"type": "N", "pf": "P", "date": TODAY, "defect": ""},         # BVA-04: 3 images
+            {"type": "B", "pf": "P", "date": TODAY, "defect": ""},         # BVA-05: 4 images
+            {"type": "B", "pf": "P", "date": TODAY, "defect": ""},         # BVA-06: 5 images
+            {"type": "A", "pf": "F", "date": TODAY, "defect": "KIEM-29"},  # BVA-07: 6 images
+            {"type": "A", "pf": "F", "date": TODAY, "defect": "KIEM-26"},  # BVA-08: null
+        ],
+    },
+
+    # ─── FUNCTION 12: Decision Table — Complaint Creation (KIEM-7) ──
+    {
+        "code": "KIEM-7-F12",
+        "name": "Decision Table — Tạo khiếu nại (Complaints)",
+        "created_by": "Thanh Duy",
+        "executed_by": "Thanh Duy",
+        "lines_of_code": 300,
+        "jira_ticket": "KIEM-7",
+        "test_req": (
+            "Áp dụng Decision Table Testing (Ch.4 §IV.3): "
+            "Xác định tất cả tổ hợp điều kiện đầu vào khi tạo khiếu nại. "
+            "Conditions: Content hợp lệ/rỗng × Report tồn tại/không × Report status Valid/Pending."
+        ),
+        "utcids": [
+            "DT-01",  # Content Valid + Report Valid Accepted → 201
+            "DT-02",  # Content Valid + Report Valid Pending → 400 (InvalidOp)
+            "DT-03",  # Content Valid + Report không tồn tại → 400 (ArgEx)
+            "DT-04",  # Content Valid + No reportId (direct) → 201
+            "DT-05",  # Content rỗng/null + bất kỳ → 400 (ArgEx)
+            "DT-06",  # Content > 2000 chars → 400 (ArgEx)
+        ],
+        "conditions": [
+            {
+                "group": "Content (nội dung khiếu nại)",
+                "items": [
+                    {"label": "Hợp lệ (1-2000 ký tự)",          "marks": [0, 1, 2, 3]},
+                    {"label": "Rỗng / null",                     "marks": [4]},
+                    {"label": "> 2000 ký tự (vượt max BVA)",     "marks": [5]},
+                ]
+            },
+            {
+                "group": "reportId (liên kết báo cáo)",
+                "items": [
+                    {"label": "Report tồn tại + status Accepted",  "marks": [0]},
+                    {"label": "Report tồn tại + status Pending",   "marks": [1]},
+                    {"label": "Report không tồn tại",              "marks": [2]},
+                    {"label": "Không truyền reportId",             "marks": [3, 4, 5]},
+                ]
+            },
+            {
+                "group": "Quyền hạn Citizen",
+                "items": [
+                    {"label": "Đã xác thực (JWT hợp lệ)", "marks": [0, 1, 2, 3, 4, 5]},
+                ]
+            },
+        ],
+        "returns": [
+            {"code": "201 Created",                    "marks": [0, 3]},
+            {"code": "400 Bad Request",                "marks": [1, 2, 4, 5]},
+        ],
+        "exceptions": [
+            {"msg": "ArgumentException: Content không được rỗng",            "marks": [4]},
+            {"msg": "ArgumentException: Content vượt 2000 ký tự",            "marks": [5]},
+            {"msg": "ArgumentException: Report not found",                   "marks": [2]},
+            {"msg": "InvalidOperationException: Report chưa được accept",    "marks": [1]},
+        ],
+        "logs": [
+            {"msg": "Khiếu nại tạo thành công",              "marks": [0, 3]},
+            {"msg": "Report chưa được xử lý bởi Enterprise", "marks": [1]},
+            {"msg": "Report không tồn tại",                  "marks": [2]},
+            {"msg": "Nội dung không hợp lệ",                 "marks": [4, 5]},
+        ],
+        "results": [
+            {"type": "N", "pf": "P", "date": TODAY, "defect": ""},  # DT-01
+            {"type": "A", "pf": "P", "date": TODAY, "defect": ""},  # DT-02
+            {"type": "A", "pf": "P", "date": TODAY, "defect": ""},  # DT-03
+            {"type": "N", "pf": "P", "date": TODAY, "defect": ""},  # DT-04
+            {"type": "A", "pf": "P", "date": TODAY, "defect": ""},  # DT-05
+            {"type": "B", "pf": "P", "date": TODAY, "defect": ""},  # DT-06
+        ],
+    },
+
+    # ─── FUNCTION 13: State Transition — WasteReport Lifecycle (KIEM-5) ──
+    {
+        "code": "KIEM-5-F13",
+        "name": "State Transition — Vòng đời báo cáo rác thải",
+        "created_by": "Minh Phụng",
+        "executed_by": "Minh Phụng",
+        "lines_of_code": 250,
+        "jira_ticket": "KIEM-5",
+        "test_req": (
+            "Áp dụng State Transition Testing (Ch.4 §IV.3): "
+            "WasteReport chuyển đổi: Pending → Accepted/Rejected → Assigned → Collected. "
+            "Test mọi chuyển đổi hợp lệ và không hợp lệ (invalid transitions)."
+        ),
+        "utcids": [
+            "ST-01",  # Pending → Accept → Accepted (valid)
+            "ST-02",  # Pending → Reject → Rejected (valid)
+            "ST-03",  # Accepted → Assign → Assigned (valid)
+            "ST-04",  # Assigned → Complete → Collected (valid)
+            "ST-05",  # Accepted → Accept again → ERROR (invalid transition)
+            "ST-06",  # Rejected → Accept → ERROR (invalid transition)
+            "ST-07",  # Collected → any action → ERROR (final state)
+            "ST-08",  # Pending → Complete → ERROR (skip steps)
+        ],
+        "conditions": [
+            {
+                "group": "Trạng thái hiện tại (Current State)",
+                "items": [
+                    {"label": "Pending (báo cáo mới)",         "marks": [0, 1, 7]},
+                    {"label": "Accepted (Enterprise chấp nhận)","marks": [2, 4]},
+                    {"label": "Rejected (bị từ chối)",         "marks": [5]},
+                    {"label": "Assigned (đã giao collector)",  "marks": [3]},
+                    {"label": "Collected (hoàn thành)",        "marks": [6]},
+                ]
+            },
+            {
+                "group": "Hành động (Event/Input)",
+                "items": [
+                    {"label": "Accept()",    "marks": [0, 4, 5]},
+                    {"label": "Reject()",   "marks": [1]},
+                    {"label": "Assign()",   "marks": [2]},
+                    {"label": "Complete()", "marks": [3, 6, 7]},
+                ]
+            },
+        ],
+        "returns": [
+            {"code": "200 OK (chuyển trạng thái thành công)", "marks": [0, 1, 2, 3]},
+            {"code": "400 / InvalidOperation (transition không hợp lệ)", "marks": [4, 5, 6, 7]},
+        ],
+        "exceptions": [
+            {"msg": "InvalidOperationException: Cannot accept a non-Pending report", "marks": [4, 5]},
+            {"msg": "InvalidOperationException: Cannot complete a non-Assigned task", "marks": [6, 7]},
+        ],
+        "logs": [
+            {"msg": "Report → Accepted",  "marks": [0]},
+            {"msg": "Report → Rejected",  "marks": [1]},
+            {"msg": "Report → Assigned",  "marks": [2]},
+            {"msg": "Report → Collected", "marks": [3]},
+            {"msg": "Lỗi: Chuyển trạng thái không hợp lệ", "marks": [4, 5, 6, 7]},
+        ],
+        "results": [
+            {"type": "N", "pf": "P", "date": TODAY, "defect": ""},  # ST-01
+            {"type": "N", "pf": "P", "date": TODAY, "defect": ""},  # ST-02
+            {"type": "N", "pf": "P", "date": TODAY, "defect": ""},  # ST-03
+            {"type": "N", "pf": "P", "date": TODAY, "defect": ""},  # ST-04
+            {"type": "A", "pf": "P", "date": TODAY, "defect": ""},  # ST-05
+            {"type": "A", "pf": "P", "date": TODAY, "defect": ""},  # ST-06
+            {"type": "A", "pf": "P", "date": TODAY, "defect": ""},  # ST-07
+            {"type": "A", "pf": "P", "date": TODAY, "defect": ""},  # ST-08
+        ],
+    },
 ]
 
 

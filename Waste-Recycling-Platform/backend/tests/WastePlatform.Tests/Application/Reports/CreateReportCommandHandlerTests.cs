@@ -448,5 +448,187 @@ public class CreateReportCommandHandlerTests
         return new FormFileCollection { mockFile.Object };
     }
 
+    private static FormFileCollection CreateMockImageCollectionMultiple(int count)
+    {
+        var collection = new FormFileCollection();
+        for (int i = 0; i < count; i++)
+        {
+            var mockFile = new Mock<IFormFile>();
+            mockFile.Setup(f => f.FileName).Returns($"image_{i+1}.jpg");
+            mockFile.Setup(f => f.Length).Returns(1024);
+            mockFile.Setup(f => f.ContentType).Returns("image/jpeg");
+            collection.Add(mockFile.Object);
+        }
+        return collection;
+    }
+
+    #endregion
+
+    #region BVA-F11: Images Count Boundary Value Analysis (KIEM-26, KIEM-29)
+    // Áp dụng Standard BVA theo Ch.4 giáo trình:
+    // min=1, max=5 → test: 0(invalid), 1(min), 2(min+1), 4(max-1), 5(max), 6(over max, invalid)
+    // Số TCs = 4n+1 = 4(1)+1 = 5 valid + invalid cases
+
+    [Fact]
+    [AllureDescription("BVA-02: BVA Standard — 1 ảnh (đúng min) phải được chấp nhận (KIEM-26 fix)")]
+    public async Task Handle_WithExactlyOneImage_ShouldCreateReportSuccessfully_BVA_Min()
+    {
+        // Arrange — BVA: images = 1 (minimum boundary, valid)
+        var command = new CreateReportCommand
+        {
+            CitizenId = Guid.NewGuid(),
+            WasteCategoryId = 1,
+            Latitude = 10.7769m,
+            Longitude = 106.7009m,
+            Description = "BVA min images test",
+            Address = "Test address",
+            Images = CreateMockImageCollectionMultiple(1)
+        };
+
+        var category = new WasteCategory { Id = 1, Name = "Test" };
+        _mockCategoryRepository
+            .Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(category);
+
+        _mockFileStorageService
+            .Setup(x => x.SaveFileAsync(It.IsAny<IFormFile>(), It.IsAny<string[]>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync("image_1.jpg");
+
+        _mockReportRepository
+            .Setup(x => x.AddAsync(It.IsAny<WasteReport>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((WasteReport report, CancellationToken _) => report);
+        _mockReportRepository
+            .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert — BVA-02: min boundary must pass
+        result.Should().NotBe(Guid.Empty, "1 ảnh (min boundary) phải được chấp nhận");
+        _mockReportRepository.Verify(
+            x => x.AddAsync(It.Is<WasteReport>(r => r.Images.Count == 1), It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    [AllureDescription("BVA-06: BVA Standard — 5 ảnh (đúng max) phải được chấp nhận (KIEM-29 boundary)")]
+    public async Task Handle_WithExactlyFiveImages_ShouldCreateReportSuccessfully_BVA_Max()
+    {
+        // Arrange — BVA: images = 5 (maximum boundary, valid)
+        var command = new CreateReportCommand
+        {
+            CitizenId = Guid.NewGuid(),
+            WasteCategoryId = 1,
+            Latitude = 10.7769m,
+            Longitude = 106.7009m,
+            Description = "BVA max images test",
+            Address = "Test address",
+            Images = CreateMockImageCollectionMultiple(5)
+        };
+
+        var category = new WasteCategory { Id = 1, Name = "Test" };
+        _mockCategoryRepository
+            .Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(category);
+
+        _mockFileStorageService
+            .Setup(x => x.SaveFileAsync(It.IsAny<IFormFile>(), It.IsAny<string[]>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync("uploaded.jpg");
+
+        _mockReportRepository
+            .Setup(x => x.AddAsync(It.IsAny<WasteReport>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((WasteReport report, CancellationToken _) => report);
+        _mockReportRepository
+            .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert — BVA-06: max boundary must pass
+        result.Should().NotBe(Guid.Empty, "5 ảnh (max boundary) phải được chấp nhận");
+        _mockReportRepository.Verify(
+            x => x.AddAsync(It.Is<WasteReport>(r => r.Images.Count == 5), It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    [AllureDescription("BVA-07: KIEM-29 Bug — 6 ảnh (vượt max) phải bị từ chối với ArgumentException")]
+    public async Task Handle_WithSixImages_ShouldThrowArgumentException_BVA_OverMax_KIEM29()
+    {
+        // Arrange — BVA: images = 6 (above max boundary, INVALID — KIEM-29 bug)
+        var command = new CreateReportCommand
+        {
+            CitizenId = Guid.NewGuid(),
+            WasteCategoryId = 1,
+            Latitude = 10.7769m,
+            Longitude = 106.7009m,
+            Description = "BVA over-max images test",
+            Address = "Test address",
+            Images = CreateMockImageCollectionMultiple(6)
+        };
+
+        var category = new WasteCategory { Id = 1, Name = "Test" };
+        _mockCategoryRepository
+            .Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(category);
+
+        // Act & Assert — BVA-07: KIEM-29 — must throw when > 5 images
+        // NOTE: This test FAILS on current implementation (bug KIEM-29 not yet fixed)
+        var exception = await Assert.ThrowsAsync<ArgumentException>(
+            () => _handler.Handle(command, CancellationToken.None));
+
+        exception.Message.Should().Contain("5", "Thông báo lỗi phải đề cập giới hạn 5 ảnh");
+        _mockReportRepository.Verify(
+            x => x.AddAsync(It.IsAny<WasteReport>(), It.IsAny<CancellationToken>()),
+            Times.Never, "Không được tạo report khi vượt quá 5 ảnh");
+    }
+
+    [Theory]
+    [InlineData(2)]  // BVA-03: min+1
+    [InlineData(3)]  // BVA-04: nominal
+    [InlineData(4)]  // BVA-05: max-1
+    [AllureDescription("BVA-03/04/05: Images trong khoảng hợp lệ (2, 3, 4) phải được chấp nhận")]
+    public async Task Handle_WithValidImageCount_ShouldCreateReportSuccessfully_BVA_Mid(int imageCount)
+    {
+        // Arrange — BVA: mid-range values (all valid)
+        var command = new CreateReportCommand
+        {
+            CitizenId = Guid.NewGuid(),
+            WasteCategoryId = 1,
+            Latitude = 10.7769m,
+            Longitude = 106.7009m,
+            Description = $"BVA mid test with {imageCount} images",
+            Address = "Test address",
+            Images = CreateMockImageCollectionMultiple(imageCount)
+        };
+
+        var category = new WasteCategory { Id = 1, Name = "Test" };
+        _mockCategoryRepository
+            .Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(category);
+
+        _mockFileStorageService
+            .Setup(x => x.SaveFileAsync(It.IsAny<IFormFile>(), It.IsAny<string[]>(), It.IsAny<long>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync("uploaded.jpg");
+
+        _mockReportRepository
+            .Setup(x => x.AddAsync(It.IsAny<WasteReport>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((WasteReport report, CancellationToken _) => report);
+        _mockReportRepository
+            .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBe(Guid.Empty, $"{imageCount} ảnh (valid range) phải được chấp nhận");
+        _mockReportRepository.Verify(
+            x => x.AddAsync(It.Is<WasteReport>(r => r.Images.Count == imageCount), It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
     #endregion
 }
