@@ -1,0 +1,14 @@
+{
+  "targetUserId": "8ce1b819-548a-43ab-9af0-c361f9955cc8",
+  "methodName": "NewNotification",
+  "payload": {
+    "Id": "5063f4c4-ffe7-4909-b3df-fac4d8c49ec8",
+    "Type": "ReportCreated",
+    "Title": "B\u00E1o c\u00E1o \u0111\u00E3 g\u1EEDi th\u00E0nh c\u00F4ng",
+    "Message": "B\u00E1o c\u00E1o c\u1EE7a b\u1EA1n \u0111\u00E3 \u0111\u01B0\u1EE3c g\u1EEDi.",
+    "ActionUrl": "/citizen/reports/1",
+    "RelatedEntityId": "a730c00d-f08e-49a3-9a23-a45dfca44b89",
+    "RelatedEntityType": "Report",
+    "CreatedAt": "2026-06-12T10:06:37.2574023Z"
+  }
+}
