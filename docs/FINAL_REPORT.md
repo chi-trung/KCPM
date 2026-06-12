@@ -2,7 +2,7 @@
 # Nhóm 11A6 — KiemChungPhanMem (KCPM)
 
 **Ngày báo cáo:** 12/06/2026  
-**Phiên bản:** 3.0  
+**Phiên bản:** 4.0  
 **Nhóm trưởng:** Nguyễn Chí Trung  
 **Giảng viên:** Thầy Bảo
 
@@ -14,8 +14,10 @@
 |-----------|--------|
 | **Tên dự án** | Waste Recycling Platform (WRP) |
 | **Mô tả** | Nền tảng quản lý báo cáo rác thải, thu gom, khiếu nại cho cộng đồng |
-| **Kiến trúc** | Backend .NET 8 (REST API) + Frontend React + PostgreSQL |
+| **Kiến trúc** | Backend .NET 8 (REST API) + Frontend Next.js + MySQL (Aiven) |
 | **Hosting** | Backend: Render.com / Frontend: Vercel |
+| **Live URLs** | Frontend: https://kcpm.vercel.app / Backend: https://kcpm-backend.onrender.com |
+| **Swagger** | https://kcpm-backend.onrender.com/swagger |
 | **Source Control** | GitHub (chi-trung/KCPM) |
 | **CI/CD** | GitHub Actions (4 workflows) |
 | **Project Management** | Jira (KIEM project, 29 issues) |
@@ -226,22 +228,43 @@ Chi tiết đầy đủ: [TRACEABILITY_MATRIX.md](./TRACEABILITY_MATRIX.md)
 
 ---
 
-## ✅ 11. Kết luận
+## 🌐 11. Deployment (Live)
+
+| Component | Platform | URL | Status |
+|-----------|----------|-----|--------|
+| **Frontend** | Vercel | https://kcpm.vercel.app | ✅ Live |
+| **Backend API** | Render.com | https://kcpm-backend.onrender.com/api | ✅ Live |
+| **Database** | Aiven (MySQL) | kcpm-mysql (private) | ✅ Connected |
+| **Swagger UI** | Render.com | https://kcpm-backend.onrender.com/swagger | ✅ Live |
+| **Allure Report** | GitHub Pages | https://chi-trung.github.io/KCPM/report-main/ | ✅ Live |
+
+### Deployment Flow
+```
+Git Push → GitHub Actions → Tests Pass → Auto-deploy
+                                        ├─ Backend → Render.com
+                                        └─ Frontend → Vercel (auto-detect)
+```
+
+---
+
+## ✅ 12. Kết luận
 
 ### Điểm mạnh
 - ✅ **400+ test cases** trải đều 4 loại (xUnit, Postman, E2E, Excel)
 - ✅ **6 kỹ thuật kiểm thử** từ giáo trình (EP, BVA, DT, ST, EG, White-box)
-- ✅ **CI/CD tự động** với 4 workflows + Jira auto-log
+- ✅ **CI/CD tự động** với 6+ workflows + Jira auto-log
 - ✅ **Allure Report** chuyên nghiệp với link Jira
 - ✅ **Code Coverage** tích hợp CI (ReportGenerator + SonarCloud)
 - ✅ **19/19 KIEM issues** đều có test coverage
 - ✅ **4 bugs** được phát hiện và documented (2 fixed, 2 assigned to other members)
 - ✅ **Nguyên tắc độc lập**: Member1 test → Member2 fix
+- ✅ **Full-stack deployment**: Frontend (Vercel) + Backend (Render) + DB (Aiven MySQL)
 
 ### Bài học kinh nghiệm
 - BVA giúp phát hiện 2 bugs quan trọng (KIEM-26, KIEM-29) mà EP bỏ qua
 - Decision Table testing rất hiệu quả cho logic phức tạp (Complaint creation)
 - CI/CD tự động giúp phát hiện lỗi ngay khi commit — giảm 90% thời gian manual testing
+- Deployment tự động (CD) giúp feedback loop nhanh hơn và đảm bảo production luôn up-to-date
 
 ---
 
