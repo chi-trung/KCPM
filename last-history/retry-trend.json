@@ -1,4 +1,12 @@
 [ {
+  "buildOrder" : 263,
+  "reportUrl" : "https://chi-trung.github.io/KCPM/263",
+  "reportName" : "Allure Report with history",
+  "data" : {
+    "run" : 0,
+    "retry" : 0
+  }
+}, {
   "buildOrder" : 262,
   "reportUrl" : "https://chi-trung.github.io/KCPM/262",
   "reportName" : "Allure Report with history",
@@ -145,14 +153,6 @@
 }, {
   "buildOrder" : 229,
   "reportUrl" : "https://chi-trung.github.io/KCPM/229",
-  "reportName" : "Allure Report with history",
-  "data" : {
-    "run" : 335,
-    "retry" : 0
-  }
-}, {
-  "buildOrder" : 228,
-  "reportUrl" : "https://chi-trung.github.io/KCPM/228",
   "reportName" : "Allure Report with history",
   "data" : {
     "run" : 335,
