@@ -58,7 +58,7 @@ print(f"   Token     : {'*' * 10}{JIRA_TOKEN[-4:] if len(JIRA_TOKEN) >= 4 else '
 
 ok1 = check("myself",           "GET /myself (auth check)")
 ok2 = check("project/KIEM",     "GET /project/KIEM")
-ok3 = check("issue/KIEM-4",     "GET /issue/KIEM-4 (backend test issue)")
+ok3 = check("issue/KIEM-5",     "GET /issue/KIEM-5 (backend/reports test issue)")
 ok4 = check("issue/KIEM-14",    "GET /issue/KIEM-14 (E2E collector issue)")
 ok5 = check("issue/KIEM-21",    "GET /issue/KIEM-21 (Postman API issue)")
 
