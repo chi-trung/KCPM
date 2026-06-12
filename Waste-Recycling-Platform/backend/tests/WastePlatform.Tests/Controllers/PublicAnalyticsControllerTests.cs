@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using WastePlatform.API.Controllers;
+using WastePlatform.Application.Admin.Analytics.DTOs;
 using WastePlatform.Application.Public.Analytics.Queries;
 using WastePlatform.Tests.TestSupport;
 
@@ -31,7 +32,7 @@ public class PublicAnalyticsControllerTests
     {
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetPublicReportAnalyticsQuery>(), default))
-            .ReturnsAsync(new { TotalReports = 100, ByArea = new List<object>() });
+            .ReturnsAsync(new ReportAnalyticsDto { TotalReports = 100 });
 
         var controller = new PublicAnalyticsController(_mediatorMock.Object);
 
@@ -51,7 +52,7 @@ public class PublicAnalyticsControllerTests
         _mediatorMock
             .Setup(m => m.Send(It.Is<GetPublicReportAnalyticsQuery>(q =>
                 q.StartDate == start && q.EndDate == end), default))
-            .ReturnsAsync(new { });
+            .ReturnsAsync(new ReportAnalyticsDto());
 
         var controller = new PublicAnalyticsController(_mediatorMock.Object);
 
@@ -85,7 +86,7 @@ public class PublicAnalyticsControllerTests
         _mediatorMock
             .Setup(m => m.Send(It.Is<GetPublicReportAnalyticsQuery>(q =>
                 q.StartDate == null && q.EndDate == null), default))
-            .ReturnsAsync(new { });
+            .ReturnsAsync(new ReportAnalyticsDto());
 
         var controller = new PublicAnalyticsController(_mediatorMock.Object);
 

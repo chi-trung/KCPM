@@ -8,8 +8,9 @@ using Moq;
 using WastePlatform.API.Controllers;
 using WastePlatform.Application.Admin.Users.Queries;
 using WastePlatform.Application.Admin.Users.Commands;
+using WastePlatform.Application.Admin.Users.DTOs;
 using WastePlatform.Application.Admin.Dashboard.Queries;
-using WastePlatform.Application.Common.DTOs;
+using WastePlatform.Application.Admin.Dashboard.DTOs;
 using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Controllers;
@@ -35,8 +36,8 @@ public class AdminUsersControllerTests
     {
         var users = new List<UserDto>
         {
-            new() { Id = Guid.NewGuid().ToString(), FullName = "User 1", Email = "u1@test.com", Role = "citizen" },
-            new() { Id = Guid.NewGuid().ToString(), FullName = "User 2", Email = "u2@test.com", Role = "admin" }
+            new() { Id = Guid.NewGuid(), FullName = "User 1", Email = "u1@test.com", Role = "citizen" },
+            new() { Id = Guid.NewGuid(), FullName = "User 2", Email = "u2@test.com", Role = "admin" }
         };
 
         _mediatorMock
@@ -73,7 +74,7 @@ public class AdminUsersControllerTests
     {
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetDashboardStatsQuery>(), default))
-            .ReturnsAsync(new { TotalUsers = 100, TotalReports = 50 });
+            .ReturnsAsync(new DashboardStatsDto { TotalUsers = 100, TotalReports = 50 });
 
         var controller = new AdminUsersController(_mediatorMock.Object);
 
