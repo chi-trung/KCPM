@@ -10,6 +10,16 @@
 
 ---
 
+## 🌐 Live Demo
+
+| Component | URL |
+|-----------|-----|
+| **🖥️ Frontend** | [kcpm.vercel.app](https://kcpm.vercel.app) |
+| **⚙️ Backend API** | [kcpm-backend.onrender.com/api](https://kcpm-backend.onrender.com/api) |
+| **📖 Swagger UI** | [kcpm-backend.onrender.com/swagger](https://kcpm-backend.onrender.com/swagger) |
+
+---
+
 ## 📊 Test Reports
 
 | Report | URL |
@@ -94,7 +104,8 @@ KCPM/
 │   ├── postman-weekly-report.yml  # Weekly full Postman run
 │   ├── allure-gh-pages.yml     # Allure report deploy (auto-triggered)
 │   ├── sonar.yml               # SonarCloud analysis
-│   └── deploy-server.yml       # Production deploy
+│   ├── deploy-server.yml       # Production deploy (Docker)
+│   └── deploy-render.yml       # Auto-deploy to Render.com
 ├── Waste-Recycling-Platform/
 │   ├── backend/                # ASP.NET Core API
 │   ├── frontend/               # Next.js app
