@@ -148,6 +148,75 @@ public class WasteReportTests
         AllureAttachmentHelper.AttachText("waste-report-invalid-transition-error", exception.Which.Message);
     }
 
+    #region ST-F13: State Transition Testing — Invalid Transitions (KIEM-5)
+    // Áp dụng State Transition Testing theo Ch.4 giáo trình
+    // Test mọi invalid transitions để đảm bảo chuyển đổi trạng thái an toàn
+    // F13 trong UnitestKCPM.xlsx — ST-05, ST-07, ST-08
+
+    [Fact]
+    [AllureDescription("ST-05: State Transition — Accepted → Accept() lại → InvalidOperationException (không hợp lệ)")]
+    public void Accept_WhenAlreadyAccepted_ShouldThrowInvalidOperationException_ST05()
+    {
+        // ST-05: Start state = Accepted → Event = Accept() → ERROR (invalid transition)
+        var report = CreateReport();
+        report.Accept();  // Pending → Accepted (valid)
+
+        AllureAttachmentHelper.AttachText("ST-05-start-state", $"Status = {report.Status} (already Accepted)");
+
+        // Act — Try Accept() again (invalid)
+        var act = () => report.Accept();
+
+        // Assert — ST-05: phải throw InvalidOperationException
+        var exception = act.Should().Throw<InvalidOperationException>(
+            "ST-05: Không thể Accept một report đã Accepted");
+
+        AllureAttachmentHelper.AttachText("ST-05-result", $"Exception: {exception.Which.Message}");
+    }
+
+    [Fact]
+    [AllureDescription("ST-07: State Transition — Collected (final state) → Accept() → InvalidOperationException")]
+    public void Accept_WhenCollected_ShouldThrowInvalidOperationException_ST07()
+    {
+        // ST-07: Start state = Collected (final) → any event → ERROR
+        var report = CreateReport();
+        report.Accept();   // Pending → Accepted
+        report.Assign();   // Accepted → Assigned
+        report.Collect();  // Assigned → Collected (final state)
+
+        AllureAttachmentHelper.AttachText("ST-07-start-state", $"Status = {report.Status} (final state Collected)");
+
+        // Act — Try to transition from final state (invalid)
+        var act = () => report.Accept();
+
+        // Assert — ST-07: final state cannot transition
+        act.Should().Throw<InvalidOperationException>(
+            "ST-07: Collected là trạng thái cuối, không thể chuyển sang trạng thái khác");
+
+        AllureAttachmentHelper.AttachText("ST-07-result", "InvalidOperationException thrown correctly");
+    }
+
+    [Fact]
+    [AllureDescription("ST-08: State Transition — Pending → Collect() (bỏ qua các bước) → InvalidOperationException")]
+    public void Collect_WhenPending_ShouldThrowInvalidOperationException_ST08()
+    {
+        // ST-08: Start state = Pending → Event = Collect() → ERROR (skip steps)
+        // Giáo trình: State Transition test phải cover cả invalid transitions
+        var report = CreateReport();  // Status = Pending
+
+        AllureAttachmentHelper.AttachText("ST-08-start-state", $"Status = {report.Status} (Pending)");
+
+        // Act — Try to Collect() before Accept() and Assign() (invalid skip)
+        var act = () => report.Collect();
+
+        // Assert — ST-08: không thể skip từ Pending thẳng đến Collected
+        act.Should().Throw<InvalidOperationException>(
+            "ST-08: Không thể Collect report đang Pending (phải qua Accept → Assign trước)");
+
+        AllureAttachmentHelper.AttachText("ST-08-result", "InvalidOperationException thrown correctly");
+    }
+
+    #endregion
+
     private static WasteReport CreateReport()
     {
         return WasteReport.Create(
