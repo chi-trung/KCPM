@@ -138,7 +138,7 @@ def build_categories(results_dir, categories_rules_file, report_dir):
     categories_children = []
     all_total = 0
 
-    for cat_name, msgs in sorted(category_map.items()):
+    for cat_name, msgs in category_map.items():  # preserve insertion order (E2E first)
         cat_uid = str(uuid.uuid4()).replace('-', '')[:16]
         msg_children = []
         cat_total = 0
@@ -194,7 +194,7 @@ def build_categories(results_dir, categories_rules_file, report_dir):
         "items": []
     }
 
-    for cat_name, msgs in sorted(category_map.items()):
+    for cat_name, msgs in category_map.items():  # preserve insertion order (E2E first)
         cat_total = sum(len(v) for v in msgs.values())
         failed = sum(1 for tests in msgs.values() for t in tests if t.get('status') == 'failed')
         broken = sum(1 for tests in msgs.values() for t in tests if t.get('status') == 'broken')
