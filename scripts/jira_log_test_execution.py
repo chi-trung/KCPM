@@ -293,10 +293,14 @@ def main():
     _log(f"[jira] GitHub Run  : {GH_RUN_URL}")
     _log(f"[jira] Jira Base   : {JIRA_BASE}")
 
-    # Diagnostic: show credential info (masked)
-    email_masked = JIRA_EMAIL[:3] + "***" + JIRA_EMAIL[-8:] if len(JIRA_EMAIL) > 11 else "***"
+    # Diagnostic: show credential info (partially masked)
+    parts = JIRA_EMAIL.split('@')
+    if len(parts) == 2:
+        local, domain = parts
+        email_masked = local[:3] + "***@" + domain  # e.g. "huy***@gmail.com"
+    else:
+        email_masked = "***"
     token_prefix = JIRA_TOKEN[:8] if len(JIRA_TOKEN) >= 8 else "(short token)"
-    token_suffix = JIRA_TOKEN[-4:] if len(JIRA_TOKEN) >= 4 else ""
     _log(f"[jira] Email       : {email_masked}")
     _log(f"[jira] Token prefix: {token_prefix}... (len={len(JIRA_TOKEN)})")
     _log(f"[jira] Token hint  : {'Atlassian Cloud token (ATAT...)' if JIRA_TOKEN.startswith('ATAT') else 'WARNING: does NOT start with ATAT - may be wrong token type'}")
@@ -307,11 +311,13 @@ def main():
     _log(f"[jira] Checking Jira auth...")
     me = jira_request("GET", "myself")
     if "error" in me:
-        _log("[jira] WARN: /myself failed - credentials may be wrong or token expired")
-        _log("[jira] HINT: Ensure JIRA_API_TOKEN is a valid Atlassian Cloud API token")
-        _log("[jira]       Create at: https://id.atlassian.com/manage-profile/security/api-tokens")
-        _log("[jira]       Token must start with 'ATAT' for Atlassian Cloud accounts")
-        _log("[jira] HINT: Ensure JIRA_API_EMAIL matches the email in id.atlassian.com")
+        err_body = me.get("body", "no response body")
+        _log(f"[jira] WARN: /myself failed - HTTP {me['error']}")
+        _log(f"[jira] Response body: {err_body[:200]}")
+        _log(f"[jira] HINT #1: Token ATATT3xF... is correct format (ATAT)")
+        _log(f"[jira] HINT #2: Verify email {email_masked} matches id.atlassian.com login email")
+        _log(f"[jira] HINT #3: Ensure JIRA_BASE_URL is https://your-org.atlassian.net (no /jira suffix)")
+        _log(f"[jira]          Current URL ends with: ...{JIRA_BASE[-30:] if len(JIRA_BASE) > 30 else JIRA_BASE}")
         sys.exit(0)   # Don't try to post if auth fails
     _log(f"[jira] Auth OK - logged in as: {me.get('emailAddress', me.get('displayName', 'unknown'))}")
 
