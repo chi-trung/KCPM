@@ -151,6 +151,75 @@ jobs:
           path: TestResults/
           retention-days: 30
 
+      - name: Write GitHub Actions Step Summary
+        if: always()
+        shell: pwsh
+        run: |
+          $trx = Get-ChildItem -Recurse -Filter "*.trx" | Select-Object -First 1
+          $passed = 0; $failed = 0; $total = 0; $dur = "N/A"
+          if ($trx) {
+            [xml]$x = Get-Content $trx.FullName
+            $counters = $x.TestRun.ResultSummary.Counters
+            if ($counters) {
+              $passed = [int]($counters.passed)
+              $failed = [int]($counters.failed)
+              $total  = [int]($counters.total)
+            }
+            $ts = $x.TestRun.Times
+            if ($ts -and $ts.start -and $ts.finish) {
+              $sec = [math]::Round(([datetime]$ts.finish - [datetime]$ts.start).TotalSeconds)
+              $m = [math]::Floor($sec / 60); $s = $sec % 60
+              $dur = if ($m -gt 0) { "${m}m ${s}s" } else { "${s}s" }
+            }
+          }
+          $rate = if ($total -gt 0) { "$([math]::Round($passed/$total*100,1))%" } else { "N/A" }
+          $emoji = if ($failed -eq 0 -and $total -gt 0) { "✅" } elseif ($failed -gt 0) { "❌" } else { "⚠️" }
+          $status = if ($failed -eq 0 -and $total -gt 0) { "**PASSED**" } elseif ($failed -gt 0) { "**FAILED**" } else { "NO DATA" }
+
+          $summary = @"
+          ## $emoji Backend Tests — Run #${{ github.run_number }}
+
+          | Metric | Value |
+          |--------|-------|
+          | Status | $status |
+          | ✅ Passed | $passed |
+          | ❌ Failed | $failed |
+          | 📊 Total | $total |
+          | 🎯 Pass Rate | $rate |
+          | ⏱ Duration | $dur |
+          | 🌿 Branch | ``${{ github.ref_name }}`` |
+          | 🔖 Commit | ``${{ github.sha }}`` |
+
+          ### 📋 KIEM Issues Covered by this Run
+
+          | KIEM Issue | Module | Assignee |
+          |-----------|--------|----------|
+          | [KIEM-4](https://ut-team-36.atlassian.net/browse/KIEM-4) | Auth Module | Nguyễn Chí Trung |
+          | [KIEM-5](https://ut-team-36.atlassian.net/browse/KIEM-5) | Reports Module | Minh Phụng |
+          | [KIEM-6](https://ut-team-36.atlassian.net/browse/KIEM-6) | Notifications Module | Nguyễn Hoàng Phụng |
+          | [KIEM-7](https://ut-team-36.atlassian.net/browse/KIEM-7) | Complaints Module | Thanh Duy |
+          | [KIEM-8](https://ut-team-36.atlassian.net/browse/KIEM-8) | Admin Module | 11A6_03_Đăng |
+          | [KIEM-9](https://ut-team-36.atlassian.net/browse/KIEM-9) | Analytics Module | 11A6_03_Đăng |
+          | [KIEM-10](https://ut-team-36.atlassian.net/browse/KIEM-10) | Public Analytics | Thanh Duy |
+          | [KIEM-12](https://ut-team-36.atlassian.net/browse/KIEM-12) | WasteCategory Module | Nguyễn Hoàng Phụng |
+          | [KIEM-13](https://ut-team-36.atlassian.net/browse/KIEM-13) | Citizen Module | 11A6_03_Đăng |
+          | [KIEM-15](https://ut-team-36.atlassian.net/browse/KIEM-15) | CollectorTask Module | Minh Phụng |
+          | [KIEM-16](https://ut-team-36.atlassian.net/browse/KIEM-16) | Enterprise Task Module | Nguyễn Chí Trung |
+          | [KIEM-17](https://ut-team-36.atlassian.net/browse/KIEM-17) | Enterprise Reward Rules | Nguyễn Chí Trung |
+          | [KIEM-18](https://ut-team-36.atlassian.net/browse/KIEM-18) | CollectionTask/Image | Thanh Duy |
+          | [KIEM-19](https://ut-team-36.atlassian.net/browse/KIEM-19) | SignalR Real-time | Nguyễn Chí Trung |
+          | [KIEM-20](https://ut-team-36.atlassian.net/browse/KIEM-20) | File Uploads & Storage | Minh Phụng |
+          | [KIEM-22](https://ut-team-36.atlassian.net/browse/KIEM-22) | AuditLog & Error Paths | Thanh Duy |
+          | [KIEM-23](https://ut-team-36.atlassian.net/browse/KIEM-23) | Search, Pagination & Filters | 11A6_03_Đăng |
+
+          ### 🔗 Links
+          - [📊 Allure Report](https://chi-trung.github.io/KCPM/report-main/)
+          - [🎯 Jira Board](https://ut-team-36.atlassian.net/jira/software/projects/KIEM/boards/3)
+          - [🔧 GitHub Actions Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          "@
+
+          $summary | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Encoding utf8 -Append
+
       - name: Log test results to Jira
         if: always()
         shell: pwsh
@@ -190,6 +259,7 @@ jobs:
           $env:DURATION_SEC = $dur
           python scripts/jira_log_test_execution.py
           exit 0
+
       - name: Upload Allure results
         if: always()
         uses: actions/upload-artifact@v4
