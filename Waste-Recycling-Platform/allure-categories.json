@@ -1,5 +1,30 @@
 [
   {
+    "name": "E2E – Text Not Found",
+    "matchedStatuses": ["failed"],
+    "messageRegex": "(?i)text .{0,100} was not found on page|waitForText|expected text"
+  },
+  {
+    "name": "E2E – Element Not Found",
+    "matchedStatuses": ["failed"],
+    "messageRegex": "(?i)element .{0,100} was not found|locator|visible on page|was not visible|selector"
+  },
+  {
+    "name": "E2E – Page Navigation Error",
+    "matchedStatuses": ["failed"],
+    "messageRegex": "(?i)net::ERR|navigation|page load|ERR_CONNECTION|ERR_FAILED|goto failed"
+  },
+  {
+    "name": "E2E – Authentication Failed",
+    "matchedStatuses": ["failed"],
+    "messageRegex": "(?i)login|email ho.{0,20}c m.{0,20}t kh.{0,20}u|credentials|authentication|sign in"
+  },
+  {
+    "name": "Timeout / Flaky",
+    "matchedStatuses": ["failed", "broken"],
+    "messageRegex": "(?i)timeout|timed out|deadline|deadlock|TaskCanceledException|flaky"
+  },
+  {
     "name": "Assertion Failure",
     "matchedStatuses": ["failed"],
     "messageRegex": "(?i)assert|expected|should be|fluentassertions|xunit.sdk.xunitexception|AssertionError"
@@ -22,17 +47,12 @@
   {
     "name": "Not Found",
     "matchedStatuses": ["failed"],
-    "messageRegex": "(?i)not found|KeyNotFoundException|404|does not exist|no such"
+    "messageRegex": "(?i)KeyNotFoundException|404|does not exist|no such"
   },
   {
     "name": "Database / Infrastructure",
     "matchedStatuses": ["failed"],
     "messageRegex": "(?i)sql|entityframework|database|dbcontext|inmemory|efcore|connection|socket|ioexception"
-  },
-  {
-    "name": "Timeout / Flaky",
-    "matchedStatuses": ["failed", "broken"],
-    "messageRegex": "(?i)timeout|timed out|deadline|deadlock|TaskCanceledException|flaky|after \\d+ sec"
   },
   {
     "name": "File / Storage Error",
@@ -42,27 +62,7 @@
   {
     "name": "Postman / API Error",
     "matchedStatuses": ["failed"],
-    "messageRegex": "(?i)postman|newman|pm.test|AssertionError|5[0-9]{2}|response code"
-  },
-  {
-    "name": "E2E – Element Not Found",
-    "matchedStatuses": ["failed"],
-    "messageRegex": "(?i)element .* was not found|locator|visible on page|was not visible|selector"
-  },
-  {
-    "name": "E2E – Page Navigation Error",
-    "matchedStatuses": ["failed"],
-    "messageRegex": "(?i)net::ERR|navigation|page load|ERR_CONNECTION|ERR_FAILED|goto failed"
-  },
-  {
-    "name": "E2E – Text Not Found",
-    "matchedStatuses": ["failed"],
-    "messageRegex": "(?i)text .* was not found on page|waitForText|expected text"
-  },
-  {
-    "name": "E2E – Authentication Failed",
-    "matchedStatuses": ["failed"],
-    "messageRegex": "(?i)login|email hoặc mật khẩu|credentials|authentication|sign in"
+    "messageRegex": "(?i)postman|newman|pm.test|5[0-9]{2}|response code"
   },
   {
     "name": "Test Infrastructure Error",
