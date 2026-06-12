@@ -228,16 +228,17 @@ jobs:
 
       - name: Publish coverage badge to gh-pages
         if: always() && github.ref == 'refs/heads/main'
+        continue-on-error: true
         shell: pwsh
         run: |
-          # Create badges directory
-          $badgesDir = ".\\badges"
-          New-Item -ItemType Directory -Force -Path $badgesDir | Out-Null
+          # Save badge files to a temp location OUTSIDE the repo
+          $tempBadges = "$env:RUNNER_TEMP\badges"
+          New-Item -ItemType Directory -Force -Path $tempBadges | Out-Null
 
-          # Copy coverage badge JSON
-          $badgeFile = ".\\TestResults\\coverage-report\\coverage-badge.json"
+          # Copy/create coverage badge JSON files
+          $badgeFile = ".\TestResults\coverage-report\coverage-badge.json"
           if (Test-Path $badgeFile) {
-            Copy-Item $badgeFile "$badgesDir\\coverage-badge.json"
+            Copy-Item $badgeFile "$tempBadges\coverage-badge.json"
           }
 
           # Create line coverage badge
@@ -245,7 +246,7 @@ jobs:
           if ($lineCov -and $lineCov -ne "N/A") {
             $lineNum = [double]$lineCov
             $lineColor = if ($lineNum -ge 80) { "brightgreen" } elseif ($lineNum -ge 60) { "yellow" } else { "red" }
-            @{ schemaVersion = 1; label = "line coverage"; message = "$lineCov%"; color = $lineColor } | ConvertTo-Json | Out-File "$badgesDir\line-coverage-badge.json" -Encoding utf8
+            @{ schemaVersion = 1; label = "line coverage"; message = "$lineCov%"; color = $lineColor } | ConvertTo-Json | Out-File "$tempBadges\line-coverage-badge.json" -Encoding utf8
           }
 
           # Create method coverage badge
@@ -253,33 +254,29 @@ jobs:
           if ($methodCov -and $methodCov -ne "N/A") {
             $methodNum = [double]$methodCov
             $methodColor = if ($methodNum -ge 80) { "brightgreen" } elseif ($methodNum -ge 60) { "yellow" } else { "red" }
-            @{ schemaVersion = 1; label = "method coverage"; message = "$methodCov%"; color = $methodColor } | ConvertTo-Json | Out-File "$badgesDir\method-coverage-badge.json" -Encoding utf8
+            @{ schemaVersion = 1; label = "method coverage"; message = "$methodCov%"; color = $methodColor } | ConvertTo-Json | Out-File "$tempBadges\method-coverage-badge.json" -Encoding utf8
           }
 
-          # Push to gh-pages branch
+          # Clean checkout of gh-pages
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git stash --include-untracked
-          git fetch origin gh-pages || true
-          git checkout gh-pages || git checkout --orphan gh-pages
-          
-          # Copy badges
+          git fetch origin gh-pages
+          git checkout gh-pages
+
+          # Copy badges from temp
           New-Item -ItemType Directory -Force -Path badges | Out-Null
-          git stash pop || true
-          if (Test-Path ".\\badges") {
-            Copy-Item ".\\badges\\*" "badges\\" -Force
-          }
+          Copy-Item "$tempBadges\*" "badges\" -Force -ErrorAction SilentlyContinue
 
           git add badges/
-          git diff --staged --quiet 2>$null
-          if ($LASTEXITCODE -ne 0) {
+          $changes = git diff --staged --name-only
+          if ($changes) {
             git commit -m "ci: update coverage badges [skip ci]"
             git push origin gh-pages
             Write-Host "Coverage badges published to gh-pages/badges/"
           } else {
             Write-Host "No badge changes to publish"
           }
-          
+
           # Switch back to main
           git checkout main
 
