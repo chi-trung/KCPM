@@ -1,0 +1,14 @@
+{
+  "message": "Complaint created successfully",
+  "data": {
+    "Id": "99875e18-817b-44e6-82fe-79716097e08e",
+    "CitizenId": "2bde523f-9448-48e1-a0f6-34ac9d64f48f",
+    "CitizenName": null,
+    "ReportId": null,
+    "Content": "Test complaint",
+    "Status": 0,
+    "AdminResponse": null,
+    "CreatedAt": "0001-01-01T00:00:00",
+    "ResolvedAt": null
+  }
+}
