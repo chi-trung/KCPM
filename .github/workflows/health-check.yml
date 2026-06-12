@@ -1,0 +1,81 @@
+name: Deployment Health Check
+
+on:
+  schedule:
+    # Every 6 hours — keep Render free tier alive + monitor uptime
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  health-check:
+    name: Check Deployed Services
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Backend Health
+        id: backend
+        run: |
+          echo "🏥 Checking Backend API..."
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "https://kcpm-backend.onrender.com/api/health")
+          echo "Backend: HTTP $RESPONSE"
+          if [ "$RESPONSE" = "200" ]; then
+            echo "status=✅ Healthy" >> $GITHUB_OUTPUT
+          else
+            echo "status=❌ Down (HTTP $RESPONSE)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check Frontend
+        id: frontend
+        run: |
+          echo "🖥️ Checking Frontend..."
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "https://kcpm.vercel.app/")
+          echo "Frontend: HTTP $RESPONSE"
+          if [ "$RESPONSE" = "200" ]; then
+            echo "status=✅ Healthy" >> $GITHUB_OUTPUT
+          else
+            echo "status=❌ Down (HTTP $RESPONSE)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check Swagger
+        id: swagger
+        run: |
+          echo "📖 Checking Swagger..."
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "https://kcpm-backend.onrender.com/swagger/index.html")
+          echo "Swagger: HTTP $RESPONSE"
+          if [ "$RESPONSE" = "200" ]; then
+            echo "status=✅ Available" >> $GITHUB_OUTPUT
+          else
+            echo "status=⚠️ Unavailable (HTTP $RESPONSE)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check Allure Report
+        id: allure
+        run: |
+          echo "📊 Checking Allure Report..."
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "https://chi-trung.github.io/KCPM/report-main/")
+          echo "Allure: HTTP $RESPONSE"
+          if [ "$RESPONSE" = "200" ]; then
+            echo "status=✅ Available" >> $GITHUB_OUTPUT
+          else
+            echo "status=⚠️ Unavailable (HTTP $RESPONSE)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Write Summary
+        if: always()
+        run: |
+          cat << 'EOF' >> $GITHUB_STEP_SUMMARY
+          ## 🏥 Deployment Health Check
+
+          | Service | URL | Status |
+          |---------|-----|--------|
+          | **Backend API** | https://kcpm-backend.onrender.com/api/health | ${{ steps.backend.outputs.status }} |
+          | **Frontend** | https://kcpm.vercel.app | ${{ steps.frontend.outputs.status }} |
+          | **Swagger UI** | https://kcpm-backend.onrender.com/swagger | ${{ steps.swagger.outputs.status }} |
+          | **Allure Report** | https://chi-trung.github.io/KCPM/report-main/ | ${{ steps.allure.outputs.status }} |
+
+          > ⏰ Checked at: $(date -u '+%Y-%m-%d %H:%M UTC')
+          > 💡 This check also keeps the Render free tier service warm (prevents spin-down).
+          EOF

@@ -72,11 +72,11 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           dotnet-sonarscanner begin \
-            /k:"chi-trung_KCPM_backend" \
+            /k:"chi-trung_KCPM" \
             /o:"chi-trung" \
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
-            /d:sonar.exclusions="**/bin/**,**/obj/**,**/TestResults/**,**/Migrations/**" \
+            /d:sonar.exclusions="**/bin/**,**/obj/**,**/TestResults/**,**/Migrations/**,**/frontend/**" \
             /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" \
             /d:sonar.cs.vstest.reportsPaths="**/TestResults/**/*.trx" \
             /d:sonar.testExclusions="**/Tests/**" \
@@ -156,9 +156,9 @@ jobs:
         with:
           projectBaseDir: Waste-Recycling-Platform
           args: >
-            -Dsonar.projectKey=chi-trung_KCPM_frontend
+            -Dsonar.projectKey=chi-trung_KCPM
             -Dsonar.organization=chi-trung
-            "-Dsonar.projectName=KCPM Frontend"
+            "-Dsonar.projectName=KCPM (Waste Recycling Platform)"
             -Dsonar.sources=frontend/src
             -Dsonar.tests=frontend/e2e
             -Dsonar.test.inclusions=frontend/e2e/**/*_test.js

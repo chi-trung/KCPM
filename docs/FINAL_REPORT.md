@@ -152,14 +152,16 @@
 
 ---
 
-## 📊 7. CI/CD Pipeline (4 Workflows)
+## 📊 7. CI/CD Pipeline (7+ Workflows)
 
 | # | Workflow | Trigger | Chức năng |
 |---|---------|---------|----------|
-| 1 | **Backend Tests** (#446+) | push/PR/schedule | xUnit → Allure → Coverage → Jira log |
-| 2 | **Frontend E2E** (#91+) | push/PR | CodeceptJS → Allure → Jira log |
+| 1 | **Backend Tests** (#455+) | push/PR/schedule | xUnit → Allure → Coverage badges → Jira log |
+| 2 | **Frontend E2E** (#103+) | push/PR | CodeceptJS → Allure → Jira log |
 | 3 | **Postman Smoke** | manual/schedule | Newman → Docker → API tests → Jira |
 | 4 | **SonarCloud Analysis** | push/PR | Static analysis + coverage upload |
+| 5 | **Deploy to Render** | after Backend Tests | Auto-deploy backend → Health check |
+| 6 | **Health Check** | every 6h / manual | Monitor all deployed services + keep Render warm |
 | + | **Allure Pages** | after tests | Publish to GitHub Pages |
 | + | **CI CD Deploy** | after quality gate | Deploy to Render.com |
 

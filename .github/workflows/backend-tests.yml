@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: backend-tests-${{ github.workflow }}-${{ github.ref }}
@@ -225,6 +225,63 @@ jobs:
           name: coverage-report-${{ github.run_number }}
           path: TestResults/coverage-report/
           retention-days: 30
+
+      - name: Publish coverage badge to gh-pages
+        if: always() && github.ref == 'refs/heads/main'
+        shell: pwsh
+        run: |
+          # Create badges directory
+          $badgesDir = ".\\badges"
+          New-Item -ItemType Directory -Force -Path $badgesDir | Out-Null
+
+          # Copy coverage badge JSON
+          $badgeFile = ".\\TestResults\\coverage-report\\coverage-badge.json"
+          if (Test-Path $badgeFile) {
+            Copy-Item $badgeFile "$badgesDir\\coverage-badge.json"
+          }
+
+          # Create line coverage badge
+          $lineCov = $env:LINE_COVERAGE
+          if ($lineCov -and $lineCov -ne "N/A") {
+            $lineNum = [double]$lineCov
+            $lineColor = if ($lineNum -ge 80) { "brightgreen" } elseif ($lineNum -ge 60) { "yellow" } else { "red" }
+            @{ schemaVersion = 1; label = "line coverage"; message = "$lineCov%"; color = $lineColor } | ConvertTo-Json | Out-File "$badgesDir\line-coverage-badge.json" -Encoding utf8
+          }
+
+          # Create method coverage badge
+          $methodCov = $env:METHOD_COVERAGE
+          if ($methodCov -and $methodCov -ne "N/A") {
+            $methodNum = [double]$methodCov
+            $methodColor = if ($methodNum -ge 80) { "brightgreen" } elseif ($methodNum -ge 60) { "yellow" } else { "red" }
+            @{ schemaVersion = 1; label = "method coverage"; message = "$methodCov%"; color = $methodColor } | ConvertTo-Json | Out-File "$badgesDir\method-coverage-badge.json" -Encoding utf8
+          }
+
+          # Push to gh-pages branch
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git stash --include-untracked
+          git fetch origin gh-pages || true
+          git checkout gh-pages || git checkout --orphan gh-pages
+          
+          # Copy badges
+          New-Item -ItemType Directory -Force -Path badges | Out-Null
+          git stash pop || true
+          if (Test-Path ".\\badges") {
+            Copy-Item ".\\badges\\*" "badges\\" -Force
+          }
+
+          git add badges/
+          git diff --staged --quiet 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            git commit -m "ci: update coverage badges [skip ci]"
+            git push origin gh-pages
+            Write-Host "Coverage badges published to gh-pages/badges/"
+          } else {
+            Write-Host "No badge changes to publish"
+          }
+          
+          # Switch back to main
+          git checkout main
 
       - name: Write GitHub Actions Step Summary
         if: always()

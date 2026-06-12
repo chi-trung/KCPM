@@ -7,6 +7,16 @@
 [![Postman Smoke](https://github.com/chi-trung/KCPM/actions/workflows/postman-smoke.yml/badge.svg)](https://github.com/chi-trung/KCPM/actions/workflows/postman-smoke.yml)
 [![Allure Report](https://github.com/chi-trung/KCPM/actions/workflows/allure-gh-pages.yml/badge.svg)](https://github.com/chi-trung/KCPM/actions/workflows/allure-gh-pages.yml)
 [![SonarCloud](https://github.com/chi-trung/KCPM/actions/workflows/sonar.yml/badge.svg)](https://github.com/chi-trung/KCPM/actions/workflows/sonar.yml)
+[![Deploy to Render](https://github.com/chi-trung/KCPM/actions/workflows/deploy-render.yml/badge.svg)](https://github.com/chi-trung/KCPM/actions/workflows/deploy-render.yml)
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=chi-trung_KCPM&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=chi-trung_KCPM)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=chi-trung_KCPM&metric=bugs)](https://sonarcloud.io/summary/new_code?id=chi-trung_KCPM)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=chi-trung_KCPM&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=chi-trung_KCPM)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=chi-trung_KCPM&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=chi-trung_KCPM)
+
+[![Branch Coverage](https://img.shields.io/endpoint?url=https://chi-trung.github.io/KCPM/badges/coverage-badge.json)](https://github.com/chi-trung/KCPM/actions/workflows/backend-tests.yml)
+[![Line Coverage](https://img.shields.io/endpoint?url=https://chi-trung.github.io/KCPM/badges/line-coverage-badge.json)](https://github.com/chi-trung/KCPM/actions/workflows/backend-tests.yml)
+[![Method Coverage](https://img.shields.io/endpoint?url=https://chi-trung.github.io/KCPM/badges/method-coverage-badge.json)](https://github.com/chi-trung/KCPM/actions/workflows/backend-tests.yml)
 
 ---
 
@@ -26,6 +36,7 @@
 |--------|-----|
 | **Allure Report (Live)** | [chi-trung.github.io/KCPM/report-main](https://chi-trung.github.io/KCPM/report-main/) |
 | **Jira Board** | [ut-team-36.atlassian.net](https://ut-team-36.atlassian.net/jira/software/projects/KIEM/boards/3) |
+| **SonarCloud** | [sonarcloud.io/chi-trung_KCPM](https://sonarcloud.io/summary/overall?id=chi-trung_KCPM) |
 
 ---
 
