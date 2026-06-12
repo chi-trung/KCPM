@@ -355,7 +355,9 @@ jobs:
       - name: Install Allure CLI for per-owner reports and category injection
         if: always()
         run: |
-          npm install -g allure-commandline@2.13.0 || true
+          # Use latest allure-commandline (v2.13.0 from 2020 fails to parse modern results)
+          npm install -g allure-commandline@latest || npm install -g allure-commandline@2.32.0 || true
+          echo "Allure CLI version: $(allure --version 2>/dev/null || echo 'not found')"
 
       - name: Regenerate report-main with custom categories (Allure CLI)
         if: always()
