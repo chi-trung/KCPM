@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using WastePlatform.API.Controllers;
 using WastePlatform.Application.Rewards.Queries;
+using WastePlatform.Application.Common.DTOs;
 using WastePlatform.Application.Citizens.Profile.Commands;
 using WastePlatform.Application.Citizens.Profile.Queries;
 using WastePlatform.Application.Citizens.Profile.DTOs;
@@ -37,7 +38,7 @@ public class CitizenControllerTests
         var userId = Guid.NewGuid();
         _mediatorMock
             .Setup(m => m.Send(It.Is<GetTotalPointsQuery>(q => q.CitizenId == userId), default))
-            .ReturnsAsync(150);
+            .ReturnsAsync(new TotalRewardsDto { TotalPoints = 150, LastUpdated = DateTime.UtcNow });
 
         var controller = CreateController(userId);
 
@@ -69,7 +70,7 @@ public class CitizenControllerTests
         var userId = Guid.NewGuid();
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetRewardHistoryQuery>(), default))
-            .ReturnsAsync(new object());
+            .ReturnsAsync(new RewardHistoryResponseDto());
 
         var controller = CreateController(userId);
 
@@ -152,7 +153,7 @@ public class CitizenControllerTests
         var userId = Guid.NewGuid();
         _mediatorMock
             .Setup(m => m.Send(It.Is<GetProfileQuery>(q => q.UserId == userId), default))
-            .ReturnsAsync(new object());
+            .ReturnsAsync(new ProfileDto { Id = userId, Email = "citizen@test.com", FullName = "Test" });
 
         var controller = CreateController(userId);
 
@@ -195,7 +196,7 @@ public class CitizenControllerTests
         var userId = Guid.NewGuid();
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<UpdateProfileCommand>(), default))
-            .ReturnsAsync(new object());
+            .ReturnsAsync(new ProfileDto { Id = userId, Email = "citizen@test.com", FullName = "Updated Name" });
 
         var controller = CreateController(userId);
         var profile = new UpdateProfileDto { FullName = "Updated Name" };

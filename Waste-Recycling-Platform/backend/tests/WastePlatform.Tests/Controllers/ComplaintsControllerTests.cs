@@ -90,7 +90,7 @@ public class ComplaintsControllerTests
         var userId = Guid.NewGuid();
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetCitizenComplaintsQuery>(), default))
-            .ReturnsAsync(new object());
+            .ReturnsAsync(new ComplaintsResponseDto());
 
         var controller = CreateController(userId);
 
