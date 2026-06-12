@@ -226,3 +226,40 @@ f994b7f fix(tests): fix MediatR mock type mismatches causing CS1929 build errors
 a83bf97 test: add EnterpriseAnalytics and AdminEnterprise controller tests
 ```
 
+---
+
+## Session 6: Fix Deployment — Registration + CORS + DB Migration (2026-06-13)
+
+### Vấn đề
+- User báo **đăng ký không được** trên domain deploy
+- Vercel hiện nhiều lỗi "Error" ở deployments
+
+### Nguyên nhân tìm được (3 vấn đề)
+
+1. **CORS chỉ cho localhost**
+   - `Program.cs` chỉ cấu hình `.WithOrigins("http://localhost:3000")`
+   - Frontend trên Vercel (`kcpm-ecru.vercel.app`) bị browser block CORS
+
+2. **Database tables không tồn tại**
+   - Aiven MySQL database KHÔNG có tables (chưa chạy SQL migration)
+   - Error: `"Table 'defaultdb.waste_categories' doesn't exist"`
+   - Register → 500 Internal Server Error (unhandled DB exception)
+
+3. **Vercel gh-pages errors**
+   - Branch `gh-pages` (coverage badges) auto-deploy trên Vercel → build failure
+   - Chỉ nên deploy từ `main` branch
+
+### Fix đã áp dụng
+
+1. **CORS**: `SetIsOriginAllowed` cho phép tất cả `*.vercel.app` subdomains + env var `FrontendUrls`
+2. **DB Auto-migration**: Thêm `db.Database.EnsureCreated()` trên startup
+3. **Error handling**: Thêm `catch (Exception)` cho Register + Login endpoints
+4. **Vercel config**: Thêm `vercel.json` disable gh-pages branch deployment
+
+### Git Commits (Session 6)
+```
+70a75c0 fix(deploy): fix CORS for Vercel frontend + add error handling to auth
+edb073a fix(cors): use SetIsOriginAllowed to support all *.vercel.app subdomains
+9111bcf fix(db): add EF Core EnsureCreated on startup for cloud deployments
+```
+
