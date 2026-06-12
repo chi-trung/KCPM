@@ -1,6 +1,11 @@
 /** @type {import('next').NextConfig} */
-module.exports = {
+const nextConfig = {
   reactStrictMode: true,
-  // Required for Docker: bundles a minimal server in .next/standalone
-  output: 'standalone',
 };
+
+// Only use standalone output for Docker builds, not Vercel
+if (process.env.DOCKER_BUILD === 'true') {
+  nextConfig.output = 'standalone';
+}
+
+module.exports = nextConfig;
