@@ -5,10 +5,10 @@
   "values" : [ "ae238db7d0c2be5bca31d853449a84099cbbc200" ],
   "name" : "GIT_COMMIT"
 }, {
-  "values" : [ "262" ],
+  "values" : [ "263" ],
   "name" : "BUILD_NUMBER"
 }, {
-  "values" : [ "https://github.com/chi-trung/KCPM/actions/runs/27387838560" ],
+  "values" : [ "https://github.com/chi-trung/KCPM/actions/runs/27387915602" ],
   "name" : "RUN_URL"
 }, {
   "values" : [ "refs/heads/main" ],
@@ -17,6 +17,6 @@
   "values" : [ "Reporting - Allure Pages (Optional)" ],
   "name" : "WORKFLOW"
 }, {
-  "values" : [ "27387838560" ],
+  "values" : [ "27387915602" ],
   "name" : "RUN_ID"
 } ]
