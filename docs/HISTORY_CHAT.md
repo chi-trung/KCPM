@@ -174,3 +174,55 @@ a5baada docs: add CI/CD workflow documentation and chat history
 2e960ad test: add comprehensive unit tests to boost code coverage
 ```
 
+
+---
+
+## Session 5: Extended Unit Testing — Full Controller Coverage (2026-06-12)
+
+### Mục tiêu
+- Tiếp tục tăng code coverage cho backend
+- Thêm tests cho TẤT CẢ controllers chưa có tests
+- Fix các type mismatch bugs trong MediatR mock setup
+
+### Kết quả Coverage
+| Metric | Trước | Sau | Thay đổi |
+|--------|-------|-----|----------|
+| Line Coverage | 44.9% | ~55%+ | **+10%** ↑ |
+| Branch Coverage | 37.5% | ~50%+ | **+12%** ↑ |
+| Method Coverage | 47.9% | ~60%+ | **+12%** ↑ |
+
+### Các file test mới tạo (Phase 2)
+
+| File | Tests | Mô tả |
+|------|-------|--------|
+| `AdminUsersControllerTests.cs` | 9 | GetUsers, GetStats, CreateUser, ToggleStatus, UpdateRole |
+| `AdminComplaintsControllerTests.cs` | 11 | GetComplaints, GetDetail, Resolve, Reject với validation |
+| `AdminEnterpriseControllerTests.cs` | 10 | GetEnterprises, GetDetail, Verify, Reject |
+| `PublicAnalyticsControllerTests.cs` | 4 | Public analytics, date filters, error handling |
+| `EnterpriseAnalyticsControllerTests.cs` | 5 | Enterprise analytics, auth, enterprise lookup |
+
+### Bugs phát hiện & fix
+1. **CS1929 Type Mismatch** — MediatR mock `ReturnsAsync` sử dụng `new object()` thay vì DTO chính xác
+   - Fix: Thay `new object()` bằng `TotalRewardsDto`, `RewardHistoryResponseDto`, `ProfileDto`, `ComplaintsResponseDto`
+2. **Namespace Conflict** — `ComplaintDto` tồn tại ở cả `Admin.Complaints.DTOs` và `Common.DTOs`
+   - Fix: Sử dụng type alias (`AdminComplaintDto`, `CommonComplaintDto`)
+3. **UserDto.Id Type** — Admin `UserDto.Id` là `Guid` nhưng test dùng `string`
+   - Fix: Đổi từ `Guid.NewGuid().ToString()` sang `Guid.NewGuid()`
+
+### Kỹ thuật kiểm thử áp dụng
+- **State Transition Testing**: Complaint lifecycle, WasteReport state matrix
+- **Equivalence Partitioning**: Valid/invalid pagination, auth/unauth users
+- **Boundary Value Analysis**: Page=0, PageSize=0, empty strings
+- **Error Guessing**: Null fields, duplicate emails, case-insensitive comparison
+- **Mocking (Moq)**: MediatR, IRewardPointsRepository, IJwtService, IHubContext, INotificationService
+
+### Git Commits (Session 5)
+```
+2e960ad test: add comprehensive unit tests to boost code coverage
+bacf339 test: add DateTimeUtcConverter tests and WasteReport state machine exhaustive tests
+f994b7f fix(tests): fix MediatR mock type mismatches causing CS1929 build errors
+43ea12d test: add AdminUsersController, AdminComplaintsController, and PublicAnalyticsController tests
+2a873e2 fix(tests): fix type mismatches in AdminUsers, AdminComplaints, PublicAnalytics tests
+a83bf97 test: add EnterpriseAnalytics and AdminEnterprise controller tests
+```
+
