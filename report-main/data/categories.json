@@ -1,183 +1,7 @@
 {
-  "uid": "b6344d059a5544b9b8cb809679be71ec",
+  "uid": "bc8c84561dac4e1ab1e877a4479e2723",
   "name": "categories",
   "children": [
-    {
-      "name": "E2E – Text Not Found",
-      "children": [
-        {
-          "name": "Text \"Tạo Báo Cáo\" was not found on page after 15 sec.",
-          "children": [
-            {
-              "name": "#3 Create-report form shows validation error when submitted empty Frontend Role Validation",
-              "uid": "4c3a0a8606214f49",
-              "parentUid": "494063e2e25a4547",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [],
-              "tags": []
-            },
-            {
-              "name": "#4 Citizen reports list page is accessible after login Frontend Role History",
-              "uid": "c86bf1954c3d49ff",
-              "parentUid": "494063e2e25a4547",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [],
-              "tags": []
-            },
-            {
-              "name": "#2 Citizen can navigate to create-report page and see the form Frontend Role Report Creation",
-              "uid": "ec13d25d3523430f",
-              "parentUid": "494063e2e25a4547",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [],
-              "tags": []
-            }
-          ],
-          "uid": "494063e2e25a4547"
-        },
-        {
-          "name": "Text \"Email hoặc mật khẩu không đúng\" was not found on page after 10 sec.",
-          "children": [
-            {
-              "name": "#4 Enterprise login fails with invalid credentials (negative test) Frontend Role",
-              "uid": "4a8e9a2c4c4548c7",
-              "parentUid": "8da469f2f9f3475b",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [],
-              "tags": []
-            },
-            {
-              "name": "#4 Collector login fails with wrong password (negative test – error guessing) Frontend Role",
-              "uid": "5f37615b06204ca8",
-              "parentUid": "8da469f2f9f3475b",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [],
-              "tags": []
-            }
-          ],
-          "uid": "8da469f2f9f3475b"
-        },
-        {
-          "name": "Text \"Đăng ký thành công\" was not found on page after 10 sec.",
-          "children": [
-            {
-              "name": "#1 Citizen can register a new account and reach citizen dashboard Frontend Role",
-              "uid": "4d8158bc49004614",
-              "parentUid": "228e34b3f0f84a65",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [],
-              "tags": []
-            }
-          ],
-          "uid": "228e34b3f0f84a65"
-        }
-      ],
-      "uid": "ee702858c918496f"
-    },
-    {
-      "name": "Not Found",
-      "children": [
-        {
-          "name": "status code is 200 or 404",
-          "children": [
-            {
-              "name": "GET Enterprise Detail",
-              "uid": "52b40405af0b4267",
-              "parentUid": "7b93ab2eff44465a",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [
-                {
-                  "name": "Request",
-                  "value": "GET - http://localhost:8080/api/admin/enterprises/"
-                },
-                {
-                  "name": "Response Code",
-                  "value": "500",
-                  "excluded": true
-                }
-              ],
-              "tags": []
-            },
-            {
-              "name": "GET Task By ID",
-              "uid": "d6f79fa43ba1441c",
-              "parentUid": "7b93ab2eff44465a",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [
-                {
-                  "name": "Request",
-                  "value": "GET - http://localhost:8080/api/collector/tasks/"
-                },
-                {
-                  "name": "Response Code",
-                  "value": "401",
-                  "excluded": true
-                }
-              ],
-              "tags": []
-            }
-          ],
-          "uid": "7b93ab2eff44465a"
-        }
-      ],
-      "uid": "10456fe44e6f4585"
-    },
     {
       "name": "Product defects",
       "children": [
@@ -185,59 +9,9 @@
           "name": "status code is 200",
           "children": [
             {
-              "name": "GET Leaderboard by Area",
-              "uid": "4d33907deb6e4428",
-              "parentUid": "a79d74c49d9f4330",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [
-                {
-                  "name": "Request",
-                  "value": "GET - http://localhost:8080/api/citizens/rewards/leaderboard/area?district=District%201&ward=Ward%201&page=1&pageSize=10"
-                },
-                {
-                  "name": "Response Code",
-                  "value": "500",
-                  "excluded": true
-                }
-              ],
-              "tags": []
-            },
-            {
-              "name": "GET Leaderboard",
-              "uid": "e987394395b3409c",
-              "parentUid": "a79d74c49d9f4330",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [
-                {
-                  "name": "Request",
-                  "value": "GET - http://localhost:8080/api/citizens/rewards/leaderboard?page=1&pageSize=10"
-                },
-                {
-                  "name": "Response Code",
-                  "value": "500",
-                  "excluded": true
-                }
-              ],
-              "tags": []
-            },
-            {
               "name": "GET My Tasks",
-              "uid": "1e087398a814419c",
-              "parentUid": "a79d74c49d9f4330",
+              "uid": "047b0b89117848d1",
+              "parentUid": "93195d7b34664970",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -260,9 +34,9 @@
               "tags": []
             },
             {
-              "name": "GET Enterprise Report Analytics",
-              "uid": "676f24c5973a49d1",
-              "parentUid": "a79d74c49d9f4330",
+              "name": "GET Enterprises",
+              "uid": "a2f81ea49c6b40c5",
+              "parentUid": "93195d7b34664970",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -274,7 +48,32 @@
               "parameters": [
                 {
                   "name": "Request",
-                  "value": "GET - http://localhost:8080/api/enterprise/analytics/reports?startDate=&endDate="
+                  "value": "GET - http://localhost:8080/api/admin/enterprises?page=1&pageSize=10&isVerified=&searchTerm="
+                },
+                {
+                  "name": "Response Code",
+                  "value": "500",
+                  "excluded": true
+                }
+              ],
+              "tags": []
+            },
+            {
+              "name": "GET Collector Profile",
+              "uid": "1db094ccbd694e50",
+              "parentUid": "93195d7b34664970",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [
+                {
+                  "name": "Request",
+                  "value": "GET - http://localhost:8080/api/collector/profile"
                 },
                 {
                   "name": "Response Code",
@@ -285,59 +84,9 @@
               "tags": []
             },
             {
-              "name": "GET User Stats",
-              "uid": "1bb394dbaffc4e4d",
-              "parentUid": "a79d74c49d9f4330",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [
-                {
-                  "name": "Request",
-                  "value": "GET - http://localhost:8080/api/admin/users/stats"
-                },
-                {
-                  "name": "Response Code",
-                  "value": "500",
-                  "excluded": true
-                }
-              ],
-              "tags": []
-            },
-            {
-              "name": "GET Analytics Summary",
-              "uid": "d54b493ce5b34b91",
-              "parentUid": "a79d74c49d9f4330",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [
-                {
-                  "name": "Request",
-                  "value": "GET - http://localhost:8080/api/admin/analytics/summary"
-                },
-                {
-                  "name": "Response Code",
-                  "value": "500",
-                  "excluded": true
-                }
-              ],
-              "tags": []
-            },
-            {
               "name": "GET Reward Rules",
-              "uid": "9301ce0236f7411e",
-              "parentUid": "a79d74c49d9f4330",
+              "uid": "5633d474c6964579",
+              "parentUid": "93195d7b34664970",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -361,8 +110,8 @@
             },
             {
               "name": "GET Enterprise Available Reports",
-              "uid": "d44417bdefb246b9",
-              "parentUid": "a79d74c49d9f4330",
+              "uid": "0710bca21baf444a",
+              "parentUid": "93195d7b34664970",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -385,9 +134,9 @@
               "tags": []
             },
             {
-              "name": "GET Enterprises",
-              "uid": "1cb6c6baf39e4a20",
-              "parentUid": "a79d74c49d9f4330",
+              "name": "GET Analytics Summary",
+              "uid": "0fb8afce8e0e4fee",
+              "parentUid": "93195d7b34664970",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -399,7 +148,7 @@
               "parameters": [
                 {
                   "name": "Request",
-                  "value": "GET - http://localhost:8080/api/admin/enterprises?page=1&pageSize=10&isVerified=&searchTerm="
+                  "value": "GET - http://localhost:8080/api/admin/analytics/summary"
                 },
                 {
                   "name": "Response Code",
@@ -410,9 +159,9 @@
               "tags": []
             },
             {
-              "name": "GET Collectors",
-              "uid": "da9bb82b36f4464c",
-              "parentUid": "a79d74c49d9f4330",
+              "name": "GET Leaderboard by Area",
+              "uid": "a321cc00bfff45bc",
+              "parentUid": "93195d7b34664970",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -424,20 +173,20 @@
               "parameters": [
                 {
                   "name": "Request",
-                  "value": "GET - http://localhost:8080/api/enterprise/collectors"
+                  "value": "GET - http://localhost:8080/api/citizens/rewards/leaderboard/area?district=District%201&ward=Ward%201&page=1&pageSize=10"
                 },
                 {
                   "name": "Response Code",
-                  "value": "401",
+                  "value": "500",
                   "excluded": true
                 }
               ],
               "tags": []
             },
             {
-              "name": "GET Available Collectors",
-              "uid": "02413e6f74564ed0",
-              "parentUid": "a79d74c49d9f4330",
+              "name": "GET User Stats",
+              "uid": "ab7f22fb70104ae9",
+              "parentUid": "93195d7b34664970",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -449,7 +198,32 @@
               "parameters": [
                 {
                   "name": "Request",
-                  "value": "GET - http://localhost:8080/api/enterprise/tasks/collectors"
+                  "value": "GET - http://localhost:8080/api/admin/users/stats"
+                },
+                {
+                  "name": "Response Code",
+                  "value": "500",
+                  "excluded": true
+                }
+              ],
+              "tags": []
+            },
+            {
+              "name": "GET Enterprise Report Analytics",
+              "uid": "6ad911e5789a4e10",
+              "parentUid": "93195d7b34664970",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [
+                {
+                  "name": "Request",
+                  "value": "GET - http://localhost:8080/api/enterprise/analytics/reports?startDate=&endDate="
                 },
                 {
                   "name": "Response Code",
@@ -461,8 +235,8 @@
             },
             {
               "name": "GET Analytics Users",
-              "uid": "55532b78aa9a4b60",
-              "parentUid": "a79d74c49d9f4330",
+              "uid": "e356d575739d4faf",
+              "parentUid": "93195d7b34664970",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -485,34 +259,9 @@
               "tags": []
             },
             {
-              "name": "GET Collector Profile",
-              "uid": "cdbc7b128609409e",
-              "parentUid": "a79d74c49d9f4330",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [
-                {
-                  "name": "Request",
-                  "value": "GET - http://localhost:8080/api/collector/profile"
-                },
-                {
-                  "name": "Response Code",
-                  "value": "401",
-                  "excluded": true
-                }
-              ],
-              "tags": []
-            },
-            {
               "name": "GET Task Stats",
-              "uid": "37f861d0087f4a9a",
-              "parentUid": "a79d74c49d9f4330",
+              "uid": "6df2de10e0e74b8d",
+              "parentUid": "93195d7b34664970",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -533,17 +282,11 @@
                 }
               ],
               "tags": []
-            }
-          ],
-          "uid": "a79d74c49d9f4330"
-        },
-        {
-          "name": "status code is success",
-          "children": [
+            },
             {
-              "name": "PUT Update Collector",
-              "uid": "cac320a0b40d4ac5",
-              "parentUid": "e0485c7874254eb6",
+              "name": "GET Available Collectors",
+              "uid": "a25a033bb7e04ac6",
+              "parentUid": "93195d7b34664970",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -555,20 +298,76 @@
               "parameters": [
                 {
                   "name": "Request",
-                  "value": "PUT - http://localhost:8080/api/enterprise/collectors/"
+                  "value": "GET - http://localhost:8080/api/enterprise/tasks/collectors"
                 },
                 {
                   "name": "Response Code",
-                  "value": "405",
+                  "value": "401",
                   "excluded": true
                 }
               ],
               "tags": []
             },
             {
+              "name": "GET Collectors",
+              "uid": "5638290d692a419e",
+              "parentUid": "93195d7b34664970",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [
+                {
+                  "name": "Request",
+                  "value": "GET - http://localhost:8080/api/enterprise/collectors"
+                },
+                {
+                  "name": "Response Code",
+                  "value": "401",
+                  "excluded": true
+                }
+              ],
+              "tags": []
+            },
+            {
+              "name": "GET Leaderboard",
+              "uid": "4e0edb5eea814aa5",
+              "parentUid": "93195d7b34664970",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [
+                {
+                  "name": "Request",
+                  "value": "GET - http://localhost:8080/api/citizens/rewards/leaderboard?page=1&pageSize=10"
+                },
+                {
+                  "name": "Response Code",
+                  "value": "500",
+                  "excluded": true
+                }
+              ],
+              "tags": []
+            }
+          ],
+          "uid": "93195d7b34664970"
+        },
+        {
+          "name": "status code is success",
+          "children": [
+            {
               "name": "DELETE Collector",
-              "uid": "0f2d1429892a4f7f",
-              "parentUid": "e0485c7874254eb6",
+              "uid": "654e1b7840d840b3",
+              "parentUid": "9dbf94db263b4800",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -589,12 +388,213 @@
                 }
               ],
               "tags": []
+            },
+            {
+              "name": "PUT Update Collector",
+              "uid": "73f34b9f0ccf4856",
+              "parentUid": "9dbf94db263b4800",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [
+                {
+                  "name": "Request",
+                  "value": "PUT - http://localhost:8080/api/enterprise/collectors/"
+                },
+                {
+                  "name": "Response Code",
+                  "value": "405",
+                  "excluded": true
+                }
+              ],
+              "tags": []
             }
           ],
-          "uid": "e0485c7874254eb6"
+          "uid": "9dbf94db263b4800"
         }
       ],
-      "uid": "307281450b35421d"
+      "uid": "16c726eecdcb4f63"
+    },
+    {
+      "name": "Not Found",
+      "children": [
+        {
+          "name": "status code is 200 or 404",
+          "children": [
+            {
+              "name": "GET Enterprise Detail",
+              "uid": "3cb1059688ed457e",
+              "parentUid": "55c3bb40fdd94cd5",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [
+                {
+                  "name": "Request",
+                  "value": "GET - http://localhost:8080/api/admin/enterprises/"
+                },
+                {
+                  "name": "Response Code",
+                  "value": "500",
+                  "excluded": true
+                }
+              ],
+              "tags": []
+            },
+            {
+              "name": "GET Task By ID",
+              "uid": "ebe41ee0c5694a58",
+              "parentUid": "55c3bb40fdd94cd5",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [
+                {
+                  "name": "Request",
+                  "value": "GET - http://localhost:8080/api/collector/tasks/"
+                },
+                {
+                  "name": "Response Code",
+                  "value": "401",
+                  "excluded": true
+                }
+              ],
+              "tags": []
+            }
+          ],
+          "uid": "55c3bb40fdd94cd5"
+        }
+      ],
+      "uid": "f255ece33d524198"
+    },
+    {
+      "name": "E2E – Text Not Found",
+      "children": [
+        {
+          "name": "Text \"Tạo Báo Cáo\" was not found on page after 15 sec.",
+          "children": [
+            {
+              "name": "#3 Create-report form shows validation error when submitted empty Frontend Role Validation",
+              "uid": "7e645a0aa80c4910",
+              "parentUid": "18d10e5bb0114877",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [],
+              "tags": []
+            },
+            {
+              "name": "#4 Citizen reports list page is accessible after login Frontend Role History",
+              "uid": "c3e977d5f295438c",
+              "parentUid": "18d10e5bb0114877",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [],
+              "tags": []
+            },
+            {
+              "name": "#2 Citizen can navigate to create-report page and see the form Frontend Role Report Creation",
+              "uid": "99d7a4e1e84d44d0",
+              "parentUid": "18d10e5bb0114877",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [],
+              "tags": []
+            }
+          ],
+          "uid": "18d10e5bb0114877"
+        },
+        {
+          "name": "Text \"Email hoặc mật khẩu không đúng\" was not found on page after 10 sec.",
+          "children": [
+            {
+              "name": "#4 Enterprise login fails with invalid credentials (negative test) Frontend Role",
+              "uid": "de5a4d4c38be41f3",
+              "parentUid": "91281e6f37904cc2",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [],
+              "tags": []
+            },
+            {
+              "name": "#4 Collector login fails with wrong password (negative test – error guessing) Frontend Role",
+              "uid": "006918e3180b47b0",
+              "parentUid": "91281e6f37904cc2",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [],
+              "tags": []
+            }
+          ],
+          "uid": "91281e6f37904cc2"
+        },
+        {
+          "name": "Text \"Đăng ký thành công\" was not found on page after 10 sec.",
+          "children": [
+            {
+              "name": "#1 Citizen can register a new account and reach citizen dashboard Frontend Role",
+              "uid": "6ca48c2d62c54903",
+              "parentUid": "5f11b6e3a83b4ceb",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [],
+              "tags": []
+            }
+          ],
+          "uid": "5f11b6e3a83b4ceb"
+        }
+      ],
+      "uid": "22c58c0d5a5348fd"
     }
   ]
 }
