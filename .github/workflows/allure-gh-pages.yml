@@ -352,22 +352,39 @@ jobs:
         run: |
           chmod -R u+w report-main || true
 
-      - name: Inject custom categories into generated report
-        if: always()
-        run: |
-          CATS="Waste-Recycling-Platform/allure-categories.json"
-          if [ -f "$CATS" ] && [ -d "report-main" ]; then
-            python3 Waste-Recycling-Platform/scripts/inject_categories.py \
-              report-main \
-              "$CATS"
-          else
-            echo "::warning::Skipping category injection (report-main or categories.json not found)"
-          fi
-
-      - name: Install Allure CLI for per-owner reports
+      - name: Install Allure CLI for per-owner reports and category injection
         if: always()
         run: |
           npm install -g allure-commandline@2.13.0 || true
+
+      - name: Regenerate report-main with custom categories (Allure CLI)
+        if: always()
+        run: |
+          CATS="Waste-Recycling-Platform/allure-categories.json"
+          RESULTS="Waste-Recycling-Platform/allure-results"
+          REPORT="report-main"
+          if [ -f "$CATS" ] && [ -d "$RESULTS" ]; then
+            # Ensure categories.json is in allure-results
+            cp "$CATS" "$RESULTS/categories.json"
+            echo "[categories] Regenerating $REPORT with custom categories..."
+            # Regenerate report using allure CLI (overwrites previous generate)
+            allure generate "$RESULTS" \
+              --output "${REPORT}-cats" \
+              --clean \
+              2>/dev/null || true
+            # Only replace if new report was generated successfully
+            if [ -d "${REPORT}-cats" ] && [ -f "${REPORT}-cats/index.html" ]; then
+              chmod -R u+w "$REPORT" || true
+              rm -rf "$REPORT"
+              mv "${REPORT}-cats" "$REPORT"
+              echo "[categories] Report regenerated successfully with custom categories."
+            else
+              echo "[categories] Allure CLI regeneration failed, keeping original report."
+              rm -rf "${REPORT}-cats" 2>/dev/null || true
+            fi
+          else
+            echo "::warning::Skipping category regeneration (missing cats or results)"
+          fi
 
       - name: Generate per-owner Allure reports
         if: always() && (github.event_name != 'workflow_dispatch' || github.event.inputs.report_mode == 'owner' || github.event.inputs.report_mode == 'both')
