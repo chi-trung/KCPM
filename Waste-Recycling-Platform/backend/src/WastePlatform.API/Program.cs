@@ -167,9 +167,24 @@ builder.Services.AddSwaggerGen(
 
 var app = builder.Build();
 
-// ── Database is initialized via SQL migration scripts in docker-compose ───
-// The db/migrations folder is mounted to /docker-entrypoint-initdb.d in MySQL
-// Auto-migration is skipped since DDL is managed by versioned SQL files
+// ── Database auto-migration ──────────────────────────────────────────
+// EnsureCreated creates all tables from the EF Core model if they don't exist.
+// This is needed for cloud deployments (Render + Aiven MySQL) where Docker Compose
+// is not available to mount SQL migration scripts.
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<WastePlatformDbContext>();
+    try
+    {
+        db.Database.EnsureCreated();
+        Console.WriteLine("✅ Database schema verified/created successfully.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"⚠️ Database initialization warning: {ex.Message}");
+        // Don't crash the app — let it start and handle DB errors per-request
+    }
+}
 
 // ── Middleware pipeline ───────────────────────────────────────────────
 if (app.Environment.IsDevelopment())
