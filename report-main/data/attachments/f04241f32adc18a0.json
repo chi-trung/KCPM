@@ -1,0 +1,11 @@
+{
+  "Id": "2c21233a-210c-413e-afd7-d49da1c77d8e",
+  "Email": "minimal@example.com",
+  "FullName": "Minimal User",
+  "Phone": null,
+  "District": null,
+  "Ward": null,
+  "IsActive": true,
+  "CreatedAt": "2026-06-12T01:01:32.6021433Z",
+  "UpdatedAt": null
+}
