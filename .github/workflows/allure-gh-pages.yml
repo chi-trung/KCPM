@@ -314,14 +314,18 @@ jobs:
           python3 Waste-Recycling-Platform/scripts/normalize_allure_suites.py \
             Waste-Recycling-Platform/allure-results
 
-      - name: Copy categories.json into allure-results
+      - name: Copy categories.json into allure-results AND gh-pages (for allure-report-action)
         if: always()
         run: |
           CATS="Waste-Recycling-Platform/allure-categories.json"
-          DEST="Waste-Recycling-Platform/allure-results/categories.json"
           if [ -f "$CATS" ]; then
-            cp "$CATS" "$DEST"
+            # Copy into allure-results so it's included in the archive
+            cp "$CATS" "Waste-Recycling-Platform/allure-results/categories.json"
             echo "✅ categories.json copied to allure-results"
+            # Also copy into gh-pages dir (simple-elf reads categories from gh_pages path)
+            mkdir -p gh-pages
+            cp "$CATS" "gh-pages/categories.json"
+            echo "✅ categories.json copied to gh-pages dir"
           else
             echo "::warning::allure-categories.json not found, skipping"
           fi
