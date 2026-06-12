@@ -61,34 +61,77 @@ TIMESTAMP    = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 # Map TEST_TYPE -> Jira issue keys to comment on.
 # Board: https://ut-team-36.atlassian.net/jira/software/projects/KIEM/boards/3
 #
-# Complete KIEM issue map (2026-06-12):
-#   KIEM-3  = WRP-BE-TESTS — Backend API Testing & QA (IN PROGRESS, Unassigned)
-#   KIEM-5  = WRP-BE-TESTS-002 — Reports Module Testing (DONE)
-#   KIEM-12 = WRP-BE-TESTS-009 — WasteCategory Module Testing (DONE)
-#   KIEM-14 = WRP-BE-TESTS-011 — Collector Module Testing (DONE, assignee: Nguyen Chi Trung)
-#   KIEM-15 = WRP-BE-TESTS-012 — CollectorTask Module Testing
-#   KIEM-19 = WRP-BE-TESTS-016 — SignalR Real-time Tests (DONE)
-#   KIEM-21 = WRP-BE-TESTS-018 — Security & Role-based Access Tests (IN PROGRESS, assignee: Nguyen Hoang Phung)
-#   KIEM-22 = WRP-BE-TESTS-019 — AuditLog & Error Path Tests (IN PROGRESS, assignee: Thanh Duy)
+# COMPLETE KIEM issue map (verified 2026-06-12, 24 total issues):
+#
+# WRP-BE-TESTS (xUnit coverage confirmed):
+#   KIEM-4  = WRP-BE-TESTS-001 - Auth Module Testing                     (Nguyễn Chí Trung)
+#   KIEM-5  = WRP-BE-TESTS-002 - Reports Module Testing                  (Minh Phụng)
+#   KIEM-6  = WRP-BE-TESTS-003 - Notifications Module Testing            (Nguyễn Hoàng Phụng)
+#   KIEM-7  = WRP-BE-TESTS-004 - Complaints Module Testing               (Thanh Duy)
+#   KIEM-8  = WRP-BE-TESTS-005 - Admin Module Testing                    (11A6_03_Đăng)
+#   KIEM-9  = WRP-BE-TESTS-006 - Analytics Module Testing                (11A6_03_Đăng)
+#   KIEM-10 = WRP-BE-TESTS-007 - Public Analytics Testing               (Thanh Duy)
+#   KIEM-12 = WRP-BE-TESTS-009 - WasteCategory Module Testing           (Nguyễn Hoàng Phụng)
+#   KIEM-13 = WRP-BE-TESTS-010 - Citizen Module Testing                 (11A6_03_Đăng)
+#   KIEM-14 = WRP-BE-TESTS-011 - Collector Module Testing               (Nguyễn Chí Trung)
+#   KIEM-15 = WRP-BE-TESTS-012 - CollectorTask Module Testing           (Minh Phụng)
+#   KIEM-16 = WRP-BE-TESTS-013 - Enterprise Task Module Testing         (Nguyễn Chí Trung)
+#   KIEM-17 = WRP-BE-TESTS-014 - Enterprise Collectors & Reward Rules  (Nguyễn Chí Trung)
+#   KIEM-18 = WRP-BE-TESTS-015 - CollectionTask / CollectionImage       (Thanh Duy)
+#   KIEM-19 = WRP-BE-TESTS-016 - SignalR Real-time Tests               (Nguyễn Chí Trung)
+#   KIEM-20 = WRP-BE-TESTS-017 - File Uploads & Storage Tests          (Minh Phụng)
+#   KIEM-21 = WRP-BE-TESTS-018 - Security & Role-based Access Tests    (Nguyễn Hoàng Phụng)
+#   KIEM-22 = WRP-BE-TESTS-019 - AuditLog & Error Path Tests           (Thanh Duy)
+#   KIEM-23 = WRP-BE-TESTS-020 - Search, Pagination & Filters Tests    (11A6_03_Đăng)
+#
+# Non-test issues (BUGs/features - NOT auto-logged):
+#   KIEM-3  = WRP-BE-TESTS parent epic (IN PROGRESS)
+#   KIEM-26 = [BUG] Missing mandatory image validation (IN PROGRESS)
+#   KIEM-27 = [BUG] PUT /notifications/{id}/read returns 200 for 404 (DONE)
+#   KIEM-28 = Include taskId in report accept response (TO DO)
+#   KIEM-29 = [BUG] Missing max 5 images validation (TO DO)
 #
 # Team leader (trungnc7062@ut.edu.vn) logs on behalf of all members via CI token.
 #
 # Mapping logic:
-#   backend (xUnit) => all .NET backend test issues
-#   postman         => API/auth test issues
-#   e2e             => frontend/browser test issues
+#   backend (xUnit .NET) => all WRP-BE-TESTS issues with xUnit coverage
+#   postman (Newman API) => auth/security/API-level test issues
+#   e2e (CodeceptJS)     => frontend/browser test issues (Collector E2E)
 ISSUE_MAP = {
-    # xUnit backend tests: covers Reports, AuditLog/Error paths, WasteCategory, SignalR
-    "backend": ["KIEM-5", "KIEM-22", "KIEM-12", "KIEM-19"],
+    # xUnit backend tests — all WRP-BE-TESTS-001 through WRP-BE-TESTS-020
+    "backend": [
+        "KIEM-4",   # Auth Module (Nguyễn Chí Trung)
+        "KIEM-5",   # Reports Module (Minh Phụng)
+        "KIEM-6",   # Notifications Module (Nguyễn Hoàng Phụng)
+        "KIEM-7",   # Complaints Module (Thanh Duy)
+        "KIEM-8",   # Admin Module (11A6_03_Đăng)
+        "KIEM-9",   # Analytics Module (11A6_03_Đăng)
+        "KIEM-10",  # Public Analytics (Thanh Duy)
+        "KIEM-12",  # WasteCategory Module (Nguyễn Hoàng Phụng)
+        "KIEM-13",  # Citizen Module (11A6_03_Đăng)
+        "KIEM-15",  # CollectorTask Module (Minh Phụng)
+        "KIEM-16",  # Enterprise Task Module (Nguyễn Chí Trung)
+        "KIEM-17",  # Enterprise Collectors & Reward Rules (Nguyễn Chí Trung)
+        "KIEM-18",  # CollectionTask / CollectionImage (Thanh Duy)
+        "KIEM-19",  # SignalR Real-time (Nguyễn Chí Trung)
+        "KIEM-20",  # File Uploads & Storage (Minh Phụng)
+        "KIEM-22",  # AuditLog & Error Path (Thanh Duy)
+        "KIEM-23",  # Search, Pagination & Filters (11A6_03_Đăng)
+    ],
 
-    # Postman API tests: covers Security/Role-based + general Backend API QA
-    "postman": ["KIEM-21", "KIEM-3"],
+    # Postman API tests — auth, security, role-based access
+    "postman": [
+        "KIEM-4",   # Auth Module - login/register endpoints
+        "KIEM-21",  # Security & Role-based Access (Nguyễn Hoàng Phụng)
+    ],
 
-    # CodeceptJS E2E tests: covers Collector module (main E2E scope)
-    "e2e":     ["KIEM-14"],
+    # CodeceptJS E2E tests — Collector module browser tests
+    "e2e": [
+        "KIEM-14",  # Collector Module Testing (Nguyễn Chí Trung)
+    ],
 
     # Default fallback
-    "all":     ["KIEM-5"],
+    "all": ["KIEM-5"],
 }
 
 # ── helpers ───────────────────────────────────────────────────────────────────
