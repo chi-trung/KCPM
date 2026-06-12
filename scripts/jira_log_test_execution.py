@@ -302,7 +302,9 @@ def main():
     _log(f"[jira] Token hint  : {'Atlassian Cloud token (ATAT...)' if JIRA_TOKEN.startswith('ATAT') else 'WARNING: does NOT start with ATAT - may be wrong token type'}")
 
     # Verify auth before attempting to post
-    _log(f"[jira] Checking Jira auth: {JIRA_BASE}/rest/api/3/myself ...")
+    rest_url = f"{JIRA_BASE}/rest/api/3/myself"
+    _log(f"[jira] Auth URL    : {rest_url}")
+    _log(f"[jira] Checking Jira auth...")
     me = jira_request("GET", "myself")
     if "error" in me:
         _log("[jira] WARN: /myself failed - credentials may be wrong or token expired")
