@@ -1,0 +1,14 @@
+{
+  "Leaderboard": [
+    {
+      "CitizenId": "b1da0e17-5f1b-4bfa-8706-2c15d9a7ebfb",
+      "CitizenName": "User 6",
+      "TotalPoints": 500,
+      "ReportCount": 25
+    }
+  ],
+  "Total": 25,
+  "Page": 2,
+  "PageSize": 5,
+  "TotalPages": 5
+}
