@@ -13,7 +13,7 @@ import shutil
 import subprocess
 
 RESULTS_DIR = os.path.join('Waste-Recycling-Platform', 'allure-results')
-BASE_OUT = 'owner-report-temp'
+BASE_OUT = os.environ.get('ALLURE_RESULTS_TEMP', 'owner-report-temp')
 REPORT_BASE = os.environ.get('ALLURE_PUBLISH_DIR', 'report-extra')
 OUTPUT_BASE = os.path.join(REPORT_BASE, 'owners')
 SELECTED_OWNER = (os.environ.get('SELECTED_OWNER') or '').strip()
