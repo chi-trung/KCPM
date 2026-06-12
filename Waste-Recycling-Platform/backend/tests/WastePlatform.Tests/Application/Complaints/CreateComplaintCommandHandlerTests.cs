@@ -306,13 +306,12 @@ public class CreateComplaintCommandHandlerTests
         var enterpriseId = Guid.NewGuid();
         var content = "Khiếu nại về báo cáo rác chưa được thu gom";
 
-        var report = new WasteReport
-        {
-            Id = reportId,
-            Status = ReportStatus.Accepted,
-            EnterpriseId = enterpriseId,
-            CitizenId = citizenId
-        };
+        var report = WasteReport.Create(citizenId, 1, 10.5m, 20.5m, "Test report for DT-01");
+        report.Accept();  // Pending → Accepted
+        // Set Id via reflection (same pattern as existing tests)
+        typeof(WasteReport).GetProperty(nameof(WasteReport.Id))?.SetValue(report, reportId);
+        var collectionTask = CollectionTask.Create(reportId, enterpriseId);
+        typeof(WasteReport).GetProperty(nameof(WasteReport.CollectionTask))?.SetValue(report, collectionTask);
 
         _mockReportRepository
             .Setup(x => x.GetByIdAsync(reportId, It.IsAny<CancellationToken>()))
@@ -351,12 +350,9 @@ public class CreateComplaintCommandHandlerTests
         var citizenId = Guid.NewGuid();
         var reportId = Guid.NewGuid();
 
-        var report = new WasteReport
-        {
-            Id = reportId,
-            Status = ReportStatus.Pending,  // Pending - chưa được Enterprise xử lý
-            CitizenId = citizenId
-        };
+        var report = WasteReport.Create(citizenId, 1, 10.5m, 20.5m, "Test report for DT-02");
+        // Status stays Pending (default from Create)
+        typeof(WasteReport).GetProperty(nameof(WasteReport.Id))?.SetValue(report, reportId);
 
         _mockReportRepository
             .Setup(x => x.GetByIdAsync(reportId, It.IsAny<CancellationToken>()))
