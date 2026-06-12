@@ -1,0 +1,56 @@
+# Render.com Blueprint — Infrastructure as Code
+# https://render.com/docs/blueprint-spec
+
+services:
+  # ── Backend .NET 8 API ──────────────────────────────────────
+  - type: web
+    name: kcpm-backend
+    runtime: docker
+    repo: https://github.com/chi-trung/KCPM
+    rootDir: Waste-Recycling-Platform/backend
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: singapore
+    branch: main
+    healthCheckPath: /api/health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      - key: ConnectionStrings__DefaultConnection
+        sync: false  # Set manually in Render dashboard
+      - key: JwtSettings__SecretKey
+        generateValue: true
+      - key: JwtSettings__Issuer
+        value: WastePlatform
+      - key: JwtSettings__Audience
+        value: WastePlatformClient
+
+  # ── Frontend Next.js ────────────────────────────────────────
+  - type: web
+    name: kcpm-frontend
+    runtime: docker
+    repo: https://github.com/chi-trung/KCPM
+    rootDir: Waste-Recycling-Platform/frontend
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: singapore
+    branch: main
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: kcpm-backend
+          property: hostport
+        # Or set manually: https://kcpm-backend.onrender.com/api
+
+databases:
+  # ── MySQL via PlanetScale or external ────────────────────────
+  # Note: Render free tier does not include MySQL.
+  # Use one of these free MySQL/DB providers:
+  #   - PlanetScale.com (MySQL, free hobby tier)
+  #   - Railway.app (MySQL, $5 credit/month)
+  #   - Aiven.io (MySQL, free tier 1GB)
+  #   - TiDB Cloud (MySQL-compatible, free tier)
+  # Set ConnectionStrings__DefaultConnection manually in Render dashboard.
