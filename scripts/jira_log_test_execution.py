@@ -60,17 +60,35 @@ TIMESTAMP    = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 # ── Jira issue mapping ────────────────────────────────────────────────────────
 # Map TEST_TYPE -> Jira issue keys to comment on.
 # Board: https://ut-team-36.atlassian.net/jira/software/projects/KIEM/boards/3
-# Verified issue keys (from board screenshot 2026-06-12):
-#   KIEM-5  = WRP-BE-TESTS-002 Reports Module Testing (IN PROGRESS)
-#   KIEM-14 = WRP-BE-TESTS-011 Collector Module Testing (DONE)
-#   KIEM-15 = CollectorTask Module Testing
-#   KIEM-21 = WRP-BE-TESTS-018 Security & Role-based Access Tests (IN PROGRESS)
-#   KIEM-22 = WRP-BE-TESTS-019 AuditLog & Error Path Tests (IN PROGRESS)
+#
+# Complete KIEM issue map (2026-06-12):
+#   KIEM-3  = WRP-BE-TESTS — Backend API Testing & QA (IN PROGRESS, Unassigned)
+#   KIEM-5  = WRP-BE-TESTS-002 — Reports Module Testing (DONE)
+#   KIEM-12 = WRP-BE-TESTS-009 — WasteCategory Module Testing (DONE)
+#   KIEM-14 = WRP-BE-TESTS-011 — Collector Module Testing (DONE, assignee: Nguyen Chi Trung)
+#   KIEM-15 = WRP-BE-TESTS-012 — CollectorTask Module Testing
+#   KIEM-19 = WRP-BE-TESTS-016 — SignalR Real-time Tests (DONE)
+#   KIEM-21 = WRP-BE-TESTS-018 — Security & Role-based Access Tests (IN PROGRESS, assignee: Nguyen Hoang Phung)
+#   KIEM-22 = WRP-BE-TESTS-019 — AuditLog & Error Path Tests (IN PROGRESS, assignee: Thanh Duy)
+#
+# Team leader (trungnc7062@ut.edu.vn) logs on behalf of all members via CI token.
+#
+# Mapping logic:
+#   backend (xUnit) => all .NET backend test issues
+#   postman         => API/auth test issues
+#   e2e             => frontend/browser test issues
 ISSUE_MAP = {
-    "backend": ["KIEM-5", "KIEM-22", "KIEM-21"],           # Reports Module - main backend test issue
-    "postman": ["KIEM-21"],          # Security & Role-based Access Tests
-    "e2e":     ["KIEM-14"],          # Collector Module Testing
-    "all":     ["KIEM-5"],           # default fallback
+    # xUnit backend tests: covers Reports, AuditLog/Error paths, WasteCategory, SignalR
+    "backend": ["KIEM-5", "KIEM-22", "KIEM-12", "KIEM-19"],
+
+    # Postman API tests: covers Security/Role-based + general Backend API QA
+    "postman": ["KIEM-21", "KIEM-3"],
+
+    # CodeceptJS E2E tests: covers Collector module (main E2E scope)
+    "e2e":     ["KIEM-14"],
+
+    # Default fallback
+    "all":     ["KIEM-5"],
 }
 
 # ── helpers ───────────────────────────────────────────────────────────────────
@@ -260,9 +278,11 @@ def post_comment(issue_key: str, body: dict) -> bool:
 
 
 def transition_issue_if_needed(issue_key: str) -> None:
-    """If all tests pass, try to move issue to Done/In Review."""
+    """If all tests pass (100%), try to move IN PROGRESS issue to Done/In Review.
+    Skips issues that are already Done, or when there are failures.
+    """
     if FAILED > 0 or TOTAL == 0:
-        return
+        return  # Don't transition if any tests failed
 
     resp = jira_request("GET", f"issue/{issue_key}?fields=status")
     if "error" in resp:
@@ -270,6 +290,12 @@ def transition_issue_if_needed(issue_key: str) -> None:
 
     current = resp.get("fields", {}).get("status", {}).get("name", "")
     _log(f"[jira] {issue_key} current status: {current}")
+
+    # Skip if already Done/Closed - don't re-transition
+    already_done = {"done", "closed", "resolved", "completed"}
+    if current.lower() in already_done:
+        _log(f"[jira] {issue_key} already {current} - skipping transition")
+        return
 
     transitions = jira_request("GET", f"issue/{issue_key}/transitions")
     if "error" in transitions:
@@ -279,8 +305,10 @@ def transition_issue_if_needed(issue_key: str) -> None:
     for t in transitions.get("transitions", []):
         if t.get("name", "").lower() in target_names:
             _log(f"[jira] Transitioning {issue_key} to {t['name']} (id={t['id']})")
-            jira_request("POST", f"issue/{issue_key}/transitions",
+            result = jira_request("POST", f"issue/{issue_key}/transitions",
                          {"transition": {"id": t["id"]}})
+            if "error" not in result:
+                _log(f"[jira] {issue_key} transitioned to {t['name']} successfully")
             break
 
 
