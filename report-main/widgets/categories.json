@@ -2,7 +2,19 @@
   "total": 3,
   "items": [
     {
-      "uid": "d20e585a5fbd4fdfbdd258aaffee231d",
+      "uid": "d7a7673c1cfc4a24a0a73e00a1827ca2",
+      "name": "Not Found",
+      "statistic": {
+        "failed": 2,
+        "broken": 0,
+        "skipped": 0,
+        "passed": 0,
+        "unknown": 0,
+        "total": 2
+      }
+    },
+    {
+      "uid": "eb1516b7e7984ec08f4753eecc134313",
       "name": "E2E – Text Not Found",
       "statistic": {
         "failed": 6,
@@ -14,7 +26,7 @@
       }
     },
     {
-      "uid": "c17aec436d224c098b9576e7a55a99d6",
+      "uid": "62afd0fa87fb444fa2756a46b6034936",
       "name": "Product defects",
       "statistic": {
         "failed": 16,
@@ -23,18 +35,6 @@
         "passed": 0,
         "unknown": 0,
         "total": 16
-      }
-    },
-    {
-      "uid": "3d45d5336a4547bf9cb5d30f8cbedb4d",
-      "name": "Not Found",
-      "statistic": {
-        "failed": 2,
-        "broken": 0,
-        "skipped": 0,
-        "passed": 0,
-        "unknown": 0,
-        "total": 2
       }
     }
   ]
