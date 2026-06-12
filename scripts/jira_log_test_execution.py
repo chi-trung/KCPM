@@ -293,13 +293,23 @@ def main():
     _log(f"[jira] GitHub Run  : {GH_RUN_URL}")
     _log(f"[jira] Jira Base   : {JIRA_BASE}")
 
+    # Diagnostic: show credential info (masked)
+    email_masked = JIRA_EMAIL[:3] + "***" + JIRA_EMAIL[-8:] if len(JIRA_EMAIL) > 11 else "***"
+    token_prefix = JIRA_TOKEN[:8] if len(JIRA_TOKEN) >= 8 else "(short token)"
+    token_suffix = JIRA_TOKEN[-4:] if len(JIRA_TOKEN) >= 4 else ""
+    _log(f"[jira] Email       : {email_masked}")
+    _log(f"[jira] Token prefix: {token_prefix}... (len={len(JIRA_TOKEN)})")
+    _log(f"[jira] Token hint  : {'Atlassian Cloud token (ATAT...)' if JIRA_TOKEN.startswith('ATAT') else 'WARNING: does NOT start with ATAT - may be wrong token type'}")
+
     # Verify auth before attempting to post
-    _log("[jira] Checking Jira auth (/myself)...")
+    _log(f"[jira] Checking Jira auth: {JIRA_BASE}/rest/api/3/myself ...")
     me = jira_request("GET", "myself")
     if "error" in me:
         _log("[jira] WARN: /myself failed - credentials may be wrong or token expired")
-        _log("[jira] HINT: Ensure JIRA_API_TOKEN is a valid Atlassian API token (not PAT)")
-        _log("[jira] HINT: Ensure JIRA_API_EMAIL matches the Atlassian account email")
+        _log("[jira] HINT: Ensure JIRA_API_TOKEN is a valid Atlassian Cloud API token")
+        _log("[jira]       Create at: https://id.atlassian.com/manage-profile/security/api-tokens")
+        _log("[jira]       Token must start with 'ATAT' for Atlassian Cloud accounts")
+        _log("[jira] HINT: Ensure JIRA_API_EMAIL matches the email in id.atlassian.com")
         sys.exit(0)   # Don't try to post if auth fails
     _log(f"[jira] Auth OK - logged in as: {me.get('emailAddress', me.get('displayName', 'unknown'))}")
 
