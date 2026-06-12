@@ -66,12 +66,17 @@ GH_RUN_URL   = f"https://github.com/{REPO}/actions/runs/{RUN_ID}"
 TIMESTAMP    = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
 # ── Jira issue mapping ─────────────────────────────────────────────────────────
-# Map TEST_TYPE → primary Jira issue keys to comment on
+# Map TEST_TYPE → primary Jira issue keys to comment on.
+# Keys are from KIEM project board: https://ut-team-36.atlassian.net/jira/software/projects/KIEM/boards/3
 ISSUE_MAP = {
-    "backend":  ["KIEM-4"],   # xUnit backend tests → Auth/Collector module
-    "postman":  ["KIEM-21"],  # Postman API smoke tests
-    "e2e":      ["KIEM-14", "KIEM-16"],  # E2E → Collector Task + Enterprise Assign
-    "all":      ["KIEM-4"],   # full merge → main CI issue
+    # xUnit backend tests → Auth module (KIEM-4) + a fallback key if exists
+    "backend":  ["KIEM-4"],
+    # Postman API smoke tests → CI Evidence issue (KIEM-21)
+    "postman":  ["KIEM-21"],
+    # E2E tests → Collector Task (KIEM-14) + Enterprise Assign (KIEM-16)
+    "e2e":      ["KIEM-14", "KIEM-16"],
+    # Full CI run → main CI issue
+    "all":      ["KIEM-4"],
 }
 
 # ── helpers ────────────────────────────────────────────────────────────────────
