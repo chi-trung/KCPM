@@ -97,7 +97,10 @@ def jira_request(method: str, path: str, body: dict | None = None) -> dict:
     req  = urllib.request.Request(url, data=data, headers=auth_header(), method=method)
     try:
         with urllib.request.urlopen(req, timeout=15) as resp:
-            return json.loads(resp.read())
+            raw = resp.read()
+            if not raw:  # 204 No Content (e.g. POST /transitions returns empty body)
+                return {"ok": True, "status": resp.status}
+            return json.loads(raw)
     except urllib.error.HTTPError as e:
         err = e.read().decode("utf-8", errors="replace")
         _log(f"[jira] HTTP {e.code} on {method} {url}: {err[:300]}")
