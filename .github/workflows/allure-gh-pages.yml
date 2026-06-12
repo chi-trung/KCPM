@@ -356,52 +356,20 @@ jobs:
         run: |
           chmod -R u+w report-main || true
 
-      - name: Install Allure CLI for per-owner reports and category injection
+      - name: Build custom categories (Python direct approach)
         if: always()
         run: |
-          # Use latest allure-commandline (v2.13.0 from 2020 fails to parse modern results)
-          npm install -g allure-commandline@latest || npm install -g allure-commandline@2.32.0 || true
-          echo "Allure CLI version: $(allure --version 2>/dev/null || echo 'not found')"
+          python3 Waste-Recycling-Platform/scripts/build_categories_report.py \
+            report-main \
+            Waste-Recycling-Platform/allure-results \
+            Waste-Recycling-Platform/allure-categories.json \
+            || echo "::warning::Categories build failed, keeping default"
 
-      - name: Regenerate report-main with custom categories (Allure CLI)
+      - name: Install Allure CLI for per-owner reports
         if: always()
         run: |
-          CATS="Waste-Recycling-Platform/allure-categories.json"
-          RESULTS="Waste-Recycling-Platform/allure-results"
-          REPORT="report-main"
-          if [ -f "$CATS" ] && [ -d "$RESULTS" ]; then
-            # Ensure categories.json is in allure-results BEFORE generate
-            cp "$CATS" "$RESULTS/categories.json"
-            echo "[categories] categories.json content preview:"
-            head -3 "$RESULTS/categories.json"
-            echo "[categories] ALL JSON files in results: $(find $RESULTS -name '*.json' | wc -l)"
-            echo "[categories] Test result files (*-result.json): $(find $RESULTS -name '*-result.json' | wc -l)"
-            echo "[categories] categories.json in results: $(ls -la $RESULTS/categories.json)"
-            echo "[categories] Regenerating $REPORT with custom categories..."
-            # Regenerate using allure CLI to a temp location (show all output)
-            allure generate "$RESULTS" \
-              --output "${REPORT}-cats" \
-              --clean \
-              2>&1 | tail -20
-            # Only replace if new report was generated successfully
-            if [ -d "${REPORT}-cats" ] && [ -f "${REPORT}-cats/index.html" ]; then
-              # Peek at the generated categories widget
-              echo "[categories] Generated categories widget:"
-              cat "${REPORT}-cats/widgets/categories.json" | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'total={d[\"total\"]}, items={[x[\"name\"] for x in d[\"items\"]]}')" 2>/dev/null || cat "${REPORT}-cats/widgets/categories.json" | head -1
-              # Use rsync to avoid rm -rf permission issues on github actions
-              chmod -R 777 "$REPORT" 2>/dev/null || sudo chmod -R 777 "$REPORT" 2>/dev/null || true
-              rsync -a --delete "${REPORT}-cats/" "${REPORT}/" 2>/dev/null \
-                || cp -rf "${REPORT}-cats/." "${REPORT}/" 2>/dev/null \
-                || true
-              rm -rf "${REPORT}-cats" 2>/dev/null || true
-              echo "[categories] Report regenerated successfully with custom categories."
-            else
-              echo "[categories] Allure CLI regeneration failed or not installed, keeping original."
-              rm -rf "${REPORT}-cats" 2>/dev/null || true
-            fi
-          else
-            echo "::warning::Skipping category regeneration (missing cats or results)"
-          fi
+          npm install -g allure-commandline@latest || true
+          echo "Allure CLI version: $(allure --version 2>/dev/null || echo 'not found')"
 
       - name: Generate per-owner Allure reports
         if: always() && (github.event_name != 'workflow_dispatch' || github.event.inputs.report_mode == 'owner' || github.event.inputs.report_mode == 'both')
