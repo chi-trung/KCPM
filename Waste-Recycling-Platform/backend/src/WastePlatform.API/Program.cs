@@ -90,22 +90,33 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(AppDomain.
 builder.Services.AddSignalR();
 
 // ── CORS ─────────────────────────────────────────────────────────────
-var allowedOrigins = new List<string> { "http://localhost:3000" };
+var allowedOrigins = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+{
+    "http://localhost:3000",
+    "https://kcpm-ecru.vercel.app",
+    "https://kcpm.vercel.app"
+};
 // Add configured frontend URLs (comma-separated) from environment
 var frontendUrls = builder.Configuration["FrontendUrls"];
 if (!string.IsNullOrEmpty(frontendUrls))
 {
-    allowedOrigins.AddRange(frontendUrls.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+    foreach (var url in frontendUrls.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        allowedOrigins.Add(url);
 }
-// Always allow the Vercel production domain
-allowedOrigins.Add("https://kcpm-ecru.vercel.app");
-allowedOrigins.Add("https://kcpm.vercel.app");
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", corsBuilder =>
         corsBuilder
-            .WithOrigins(allowedOrigins.ToArray())
+            .SetIsOriginAllowed(origin =>
+            {
+                // Allow explicit origins
+                if (allowedOrigins.Contains(origin)) return true;
+                // Allow all *.vercel.app subdomains (preview deployments)
+                if (Uri.TryCreate(origin, UriKind.Absolute, out var uri))
+                    return uri.Host.EndsWith(".vercel.app", StringComparison.OrdinalIgnoreCase);
+                return false;
+            })
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials()); // Required for SignalR with authentication
