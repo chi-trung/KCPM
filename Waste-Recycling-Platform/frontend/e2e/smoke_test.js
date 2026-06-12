@@ -1,5 +1,5 @@
 // TC-E2E-001: Frontend Smoke Tests — Public Pages
-// Test Design: Checklist / Exploratory
+// Jira: KIEM-21 | Test Design: Checklist / Exploratory
 // No login required — tests public-facing routes only
 
 Feature('TC-E2E-001: Frontend Smoke');
