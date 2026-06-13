@@ -149,6 +149,10 @@ public class ReportController : ControllerBase
     }
 
     /// <summary>Lấy danh sách tất cả báo cáo (Admin/Enterprise)</summary>
+    /// <remarks>
+    /// KIEM-30 FIX: Enterprise users now only see reports within their service area.
+    /// Admin users still see all reports.
+    /// </remarks>
     [HttpGet("all")]
     [Authorize(Roles = "Admin,Enterprise")]
     public async Task<IActionResult> GetAllReports([FromQuery] int page = 1, [FromQuery] int pageSize = 10, [FromQuery] string? status = null)
@@ -162,6 +166,36 @@ public class ReportController : ControllerBase
                 Status = status 
             });
 
+            // KIEM-30 FIX: Filter by Enterprise service area if caller is Enterprise
+            var roleClaim = User.FindFirst(ClaimTypes.Role);
+            var filteredReports = result.Reports;
+
+            if (roleClaim?.Value == "Enterprise")
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out var userId))
+                {
+                    var enterprise = await _context.Enterprises
+                        .FirstOrDefaultAsync(e => e.UserId == userId);
+
+                    if (enterprise != null)
+                    {
+                        var serviceAreaTerms = ParseServiceAreaValues(enterprise.ServiceArea);
+                        if (serviceAreaTerms.Any())
+                        {
+                            filteredReports = filteredReports.Where(r =>
+                            {
+                                if (string.IsNullOrWhiteSpace(r.Address))
+                                    return false;
+                                return serviceAreaTerms.Any(term =>
+                                    r.Address.Contains(term, StringComparison.OrdinalIgnoreCase));
+                            });
+                        }
+                    }
+                }
+            }
+
+            var reportsList = filteredReports.ToList();
             var response = new
             {
                 message = "All reports retrieved successfully",
@@ -169,10 +203,10 @@ public class ReportController : ControllerBase
                 {
                     page = page,
                     pageSize = pageSize,
-                    total = result.Total,
-                    totalPages = result.TotalPages
+                    total = reportsList.Count,
+                    totalPages = (int)Math.Ceiling(reportsList.Count / (double)pageSize)
                 },
-                reports = result.Reports
+                reports = reportsList
             };
 
             return Ok(response);
