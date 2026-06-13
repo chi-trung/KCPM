@@ -33,4 +33,4 @@ jobs:
           JIRA_PROJECT_KEY: ${{ secrets.JIRA_PROJECT_KEY }}
           EPIC_ISSUE_KEY: ${{ github.event.inputs.epic_issue_key }}
         run: |
-          python scripts/create_jira_issues.py
+          python Waste-Recycling-Platform/scripts/create_jira_issues.py
