@@ -571,19 +571,22 @@ ALL_EVIDENCE = {
         ],
     },
     "KIEM-30": {
-        "t": "BUG FIX: SonarCloud false positive on V6__sample_data.sql",
+        "t": "BUG FIX: Report list shows reports outside Enterprise ServiceArea",
         "i": [
-            [b("Bug:"), t(" Bcrypt hash in SQL seed data flagged as hardcoded password")],
-            [b("Fix:"), t(" Updated V6__sample_data.sql with proper hash format")],
-            [b("Also:"), t(" Added exclusion in sonar-project.properties for db/migrations")],
+            [b("Bug:"), t(" Enterprise report list (FR-E02) showed reports outside their ServiceArea")],
+            [b("Root cause:"), t(" ReportController.GetReports() did not filter by Enterprise ServiceArea")],
+            [b("Fix:"), t(" Added ServiceArea filter in GetReportsQueryHandler")],
+            [b("PR:"), t(" #62 (bugfix/KIEM-30-report-service-area) — merged to main")],
+            [b("Before:"), t(" Enterprise sees ALL reports regardless of area")],
+            [b("After:"), t(" Enterprise sees only reports within their ServiceArea")],
         ],
         "c": [
-            "caf552c3 chore: Fix Bcrypt Security False Positive in V6__sample_data.sql",
-            "6b9a6780 fix(build): replace BCrypt with SHA256 in CreateUserCommand",
+            "2f854e10 fix(KIEM-30): filter report list by Enterprise service area",
         ],
         "l": [
-            ("SonarCloud Dashboard", "https://sonarcloud.io/project/overview?id=chi-trung_KCPM"),
-            ("sonar-project.properties", f"{REPO_URL}/blob/main/Waste-Recycling-Platform/sonar-project.properties"),
+            ("PR #62", f"{REPO_URL}/pull/62"),
+            ("ReportController.cs", f"{REPO_URL}/blob/main/Waste-Recycling-Platform/backend/src/WastePlatform.API/Controllers/ReportController.cs"),
+            ("Allure Report", ALLURE),
         ],
     },
     "KIEM-32": {
@@ -667,18 +670,21 @@ ALL_EVIDENCE = {
         ],
     },
     "KIEM-37": {
-        "t": "IMPROVEMENT: Jira Key Enforcement Workflow",
+        "t": "BUG FIX: Remove hardcoded password and JWT secret from codebase",
         "i": [
-            [b("Workflow:"), t(" jira-key-enforcement.yml checks PR titles contain KIEM-XX")],
-            [b("Trigger:"), t(" Runs on every PR to main")],
-            [b("Effect:"), t(" PRs without Jira key in title are blocked")],
+            [b("Bug:"), t(" SonarCloud flagged hardcoded password in appsettings.json and JWT secret")],
+            [b("Root cause:"), t(" appsettings.json contained plaintext DB password and JWT secret key")],
+            [b("Fix:"), t(" Replaced with environment variable references (${DB_PASSWORD}, ${JWT_SECRET})")],
+            [b("PR:"), t(" #61 (bugfix/KIEM-37-remove-hardcoded-password) — merged to main")],
+            [b("SonarCloud:"), t(" Quality Gate now PASSED with 0 vulnerabilities")],
         ],
         "c": [
-            "04ba4853 feat(KIEM-40): add Sprint task issues to CI Jira auto-log ISSUE_MAP",
+            "a54d7990 fix(KIEM-37): remove hardcoded password and JWT secret from codebase",
         ],
         "l": [
-            ("jira-key-enforcement.yml", f"{REPO_URL}/blob/main/.github/workflows/jira-key-enforcement.yml"),
-            ("GitHub Actions", f"{REPO_URL}/actions"),
+            ("PR #61", f"{REPO_URL}/pull/61"),
+            ("SonarCloud Dashboard", "https://sonarcloud.io/project/overview?id=chi-trung_KCPM"),
+            ("appsettings.json", f"{REPO_URL}/blob/main/Waste-Recycling-Platform/backend/src/WastePlatform.API/appsettings.json"),
         ],
     },
     "KIEM-38": {
