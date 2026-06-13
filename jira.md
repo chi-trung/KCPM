@@ -1,183 +1,485 @@
-# 🟦 EPIC: WRP-BE-TESTS — Backend API Testing & QA
-> **Mô tả:** Hệ thống kiểm thử Backend API & Đảm bảo chất lượng (Sử dụng Postman + Jira + GitHub Evidence).
+# Jira Sprint Issues — Waste Recycling Platform (KCPM)
+
+## Epic: WRP Testing & Quality Assurance
 
 ---
 
-## 🟩 TASK 1 — AUTH MODULE
-**Mã công việc:** `WRP-BE-TESTS-001` — Auth Module Testing (Register / Login / Profile)  
-* **Postman Setup:** Auth collection setup + JWT environment variables.
+## Sprint 1: Test Planning & Infrastructure Setup
 
-| Mã Kịch Bản (TC ID) | Tên Kịch Bản Kiểm Thử (Test Case Name) | Loại (Type) | Trạng thái |
-| :--- | :--- | :--- | :--- |
-| **TC-AUTH-001** | Register valid user | Tích cực (Positive) | ⬜ TBD |
-| **TC-AUTH-002** | Register missing field | Tiêu cực (Negative) | ⬜ TBD |
-| **TC-AUTH-003** | Register duplicate email | Tiêu cực (Negative) | ⬜ TBD |
-| **TC-AUTH-004** | Login valid credentials | Tích cực (Positive) | ⬜ TBD |
-| **TC-AUTH-005** | Login wrong password | Tiêu cực (Negative) | ⬜ TBD |
-| **TC-AUTH-006** | Login non-existing user | Tiêu cực (Negative) | ⬜ TBD |
-| **TC-AUTH-007** | Get profile (`/me`) valid token | Tích cực (Positive) | ⬜ TBD |
-| **TC-AUTH-008** | Get profile without token | Tiêu cực (Negative) | ⬜ TBD |
+### [Task] KIEM-SP1-01: Thiết lập CI/CD Pipeline với GitHub Actions
+- **Assignee**: Nguyễn Chí Trung
+- **Priority**: High
+- **Labels**: sprint-1, ci-cd, infrastructure
+- **Description**:
+  Thiết lập 11 GitHub Actions workflows cho dự án:
+  1. backend-tests.yml — Chạy 451 xUnit tests
+  2. frontend-e2e.yml — Chạy 19 E2E scenarios (CodeceptJS + Playwright)
+  3. sonar.yml — SonarCloud static analysis
+  4. deploy-server.yml — CI/CD deploy pipeline
+  5. deploy-render.yml — Deploy backend lên Render.com
+  6. allure-gh-pages.yml — Tạo Allure report trên GitHub Pages
+  7. postman-smoke.yml — API smoke tests (Newman)
+  8. health-check.yml — Health check mỗi 6 giờ
+  9. jira-key-enforcement.yml — Validate PR title
+  10. create-jira-issues.yml — Auto-create Jira issues
+  11. postman-weekly-report.yml — Weekly Postman report
+  
+  **Acceptance Criteria:**
+  - [ ] Tất cả 11 workflows chạy thành công trên main
+  - [ ] CI tự động trigger khi push code
+  - [ ] Allure report publish lên GitHub Pages
 
----
+### [Task] KIEM-SP1-02: Thiết lập Test Plan & Testing Strategy
+- **Assignee**: Nguyễn Chí Trung
+- **Priority**: High
+- **Labels**: sprint-1, documentation, test-plan
+- **Description**:
+  Tạo Test Plan và Testing Strategy cho dự án, bao gồm:
+  - Scope of testing
+  - Test levels (Unit, Integration, E2E, API)
+  - Test types (Functional, Non-functional, Security)
+  - Entry/Exit criteria
+  - Test environment
+  - Tools: xUnit, CodeceptJS, Postman/Newman, SonarCloud, Allure
+  
+  **Files:**
+  - `docs/TEST_PLAN.md`
+  - `docs/TESTING_STRATEGY.md`
+  
+  **Acceptance Criteria:**
+  - [ ] Test Plan có đầy đủ sections theo template chuẩn
+  - [ ] Testing Strategy áp dụng kỹ thuật Ch.4 giáo trình
 
-## 🟩 TASK 2 — REPORTS MODULE
-**Mã công việc:** `WRP-BE-TESTS-002` — Reports Module Testing (Waste Reports Lifecycle)  
-* **Postman Setup:** Reports folder + file upload tests (form-data).
+### [Task] KIEM-SP1-03: Deploy Production Environment
+- **Assignee**: Nguyễn Chí Trung
+- **Priority**: High
+- **Labels**: sprint-1, deployment, infrastructure
+- **Description**:
+  Deploy full-stack application lên production:
+  - Backend: Render.com (Docker, .NET 8)
+  - Frontend: Vercel (Next.js)
+  - Database: Aiven MySQL (free tier)
+  - Seed data: 5 categories, 8 accounts, enterprise/collector profiles
+  
+  **URLs:**
+  - Frontend: https://kcpm.vercel.app
+  - Backend: https://kcpm-backend.onrender.com
+  - Swagger: https://kcpm-backend.onrender.com/swagger
+  
+  **Acceptance Criteria:**
+  - [ ] Admin login thành công
+  - [ ] CRUD operations hoạt động
+  - [ ] Health check endpoint trả về 200
 
-| Mã Kịch Bản (TC ID) | Tên Kịch Bản Kiểm Thử (Test Case Name) | Loại (Type) | Trạng thái |
-| :--- | :--- | :--- | :--- |
-| **TC-REP-001** | Create report valid (image + data) | Tích cực (Positive) | ⬜ TBD |
-| **TC-REP-002** | Create report missing field | Tiêu cực (Negative) | ⬜ TBD |
-| **TC-REP-003** | Get report by ID valid | Tích cực (Positive) | ⬜ TBD |
-| **TC-REP-004** | Get report invalid ID | Tiêu cực (Negative) | ⬜ TBD |
-| **TC-REP-005** | Accept report (authorized role) | Tích cực (Positive) | ⬜ TBD |
-| **TC-REP-006** | Reject report with reason | Tích cực (Positive) | ⬜ TBD |
-| **TC-REP-007** | Invalid state transition | Tiêu cực (Negative) | ⬜ TBD |
-| **TC-REP-008** | Upload image invalid format | Tiêu cực (Negative) | ⬜ TBD |
+### [Task] KIEM-SP1-04: Thiết lập Jira Project & Traceability Matrix
+- **Assignee**: Nguyễn Chí Trung
+- **Priority**: Medium
+- **Labels**: sprint-1, documentation, jira
+- **Description**:
+  Thiết lập Jira project KIEM với:
+  - Sprint board (Kanban)
+  - Issue types: Task, Bug, Story
+  - Tạo Traceability Matrix mapping: Requirement → Jira → Test Case → CI Evidence
+  - Tự động log CI results lên Jira comments
+  
+  **Files:**
+  - `docs/TRACEABILITY_MATRIX.md`
+  - `scripts/jira_log_test_execution.py` (in backend-tests.yml)
+  
+  **Acceptance Criteria:**
+  - [ ] Ma trận truy vết đầy đủ cho tất cả modules
+  - [ ] CI tự động log kết quả lên Jira issues
 
----
-
-## 🟩 TASK 3 — NOTIFICATIONS MODULE
-**Mã công việc:** `WRP-BE-TESTS-003` — Notifications Module Testing  
-* **Postman Setup:** Notifications folder + environment token reuse.
-
-| Mã Kịch Bản (TC ID) | Tên Kịch Bản Kiểm Thử (Test Case Name) | Loại (Type) | Trạng thái |
-| :--- | :--- | :--- | :--- |
-| **TC-NOTIF-001** | Get notifications list (valid token) | Tích cực (Positive) | ⬜ TBD |
-| **TC-NOTIF-002** | Get notifications without token | Tiêu cực (Negative) | ⬜ TBD |
-| **TC-NOTIF-003** | Get unread count | Tích cực (Positive) | ⬜ TBD |
-| **TC-NOTIF-004** | Mark notification as read | Tích cực (Positive) | ⬜ TBD |
-| **TC-NOTIF-005** | Mark all notifications as read | Tích cực (Positive) | ⬜ TBD |
-| **TC-NOTIF-006** | Invalid notification ID | Tiêu cực (Negative) | ⬜ TBD |
-
----
-
-## 🟩 TASK 4 — COMPLAINTS MODULE
-**Mã công việc:** `WRP-BE-TESTS-004` — Complaints Module Testing (Admin + Citizen Flow)  
-* **Postman Setup:** Complaints admin/citizen separation tests.
-
-| Mã Kịch Bản (TC ID) | Tên Kịch Bản Kiểm Thử (Test Case Name) | Loại (Type) | Trạng thái |
-| :--- | :--- | :--- | :--- |
-| **TC-COMP-001** | Create complaint valid | Tích cực (Positive) | ⬜ TBD |
-| **TC-COMP-002** | Create complaint missing field | Tiêu cực (Negative) | ⬜ TBD |
-| **TC-COMP-003** | Get complaint by ID | Tích cực (Positive) | ⬜ TBD |
-| **TC-COMP-004** | Get complaint invalid ID | Tiêu cực (Negative) | ⬜ TBD |
-| **TC-COMP-005** | Resolve complaint (admin only) | Tích cực (Positive) | ⬜ TBD |
-| **TC-COMP-006** | Reject complaint with reason (admin only) | Tích cực (Positive) | ⬜ TBD |
-| **TC-COMP-007** | Unauthorized resolve attempt | Tiêu cực (Negative) | ⬜ TBD |
-
----
-
-## 🟩 TASK 5 — ADMIN MODULE
-**Mã công việc:** `WRP-BE-TESTS-005` — Admin Module Testing (Users / Enterprises / Analytics)  
-* **Postman Setup:** Admin folder + role-based JWT tokens.
-
-| Mã Kịch Bản (TC ID) | Tên Kịch Bản Kiểm Thử (Test Case Name) | Loại (Type) | Trạng thái |
-| :--- | :--- | :--- | :--- |
-| **TC-ADMIN-001** | Get users list (admin) | Tích cực (Positive) | ⬜ TBD |
-| **TC-ADMIN-002** | Get users without admin role | Tiêu cực (Negative) | ⬜ TBD |
-| **TC-ADMIN-003** | Create user (admin) | Tích cực (Positive) | ⬜ TBD |
-| **TC-ADMIN-004** | Toggle user status | Tích cực (Positive) | ⬜ TBD |
-| **TC-ADMIN-005** | Update user role | Tích cực (Positive) | ⬜ TBD |
-| **TC-ADMIN-006** | Get enterprises list | Tích cực (Positive) | ⬜ TBD |
-| **TC-ADMIN-007** | Verify enterprise | Tích cực (Positive) | ⬜ TBD |
-| **TC-ADMIN-008** | Reject enterprise | Tích cực (Positive) | ⬜ TBD |
-| **TC-ADMIN-009** | Get analytics overview | Tích cực (Positive) | ⬜ TBD |
-| **TC-ADMIN-010** | Get analytics reports by date range | Tích cực (Positive) | ⬜ TBD |
-
----
-
-## 🟩 TASK 6 — ANALYTICS MODULE
-**Mã công việc:** `WRP-BE-TESTS-006` — Analytics Module Testing  
-* **Postman Setup:** Analytics folder + date query tests.
-
-| Mã Kịch Bản (TC ID) | Tên Kịch Bản Kiểm Thử (Test Case Name) | Loại (Type) | Trạng thái |
-| :--- | :--- | :--- | :--- |
-| **TC-ANALYTICS-001** | Get admin overview analytics | Tích cực (Positive) | ⬜ TBD |
-| **TC-ANALYTICS-002** | Get report analytics by date range | Tích cực (Positive) | ⬜ TBD |
-| **TC-ANALYTICS-003** | Get user analytics | Tích cực (Positive) | ⬜ TBD |
-| **TC-ANALYTICS-004** | Get waste analytics | Tích cực (Positive) | ⬜ TBD |
-| **TC-ANALYTICS-005** | Unauthorized access | Tiêu cực (Negative) | ⬜ TBD |
-
----
-
-## 🟩 TASK 7 — PUBLIC ANALYTICS MODULE
-**Mã công việc:** `WRP-BE-TESTS-007` — Public Analytics Testing  
-* **Postman Setup:** Public endpoints (no auth required).
-
-| Mã Kịch Bản (TC ID) | Tên Kịch Bản Kiểm Thử (Test Case Name) | Loại (Type) | Trạng thái |
-| :--- | :--- | :--- | :--- |
-| **TC-PUBLIC-001** | Get public analytics reports | Tích cực (Positive) | ⬜ TBD |
-| **TC-PUBLIC-002** | Invalid date range | Tiêu cực (Negative) | ⬜ TBD |
+### [Task] KIEM-SP1-05: Thiết lập Postman Collection cho API Testing
+- **Assignee**: Minh Phụng
+- **Priority**: Medium
+- **Labels**: sprint-1, api-testing, postman
+- **Description**:
+  Tạo Postman Collection "WastePlatform API - Professional QA Suite" với:
+  - 10 folders (Auth, Admin, WasteCategory, Analytics, Reports, Citizen, Collector, CollectorTask, Notifications, Complaints)
+  - 74 requests, 128 assertions
+  - Environment variables cho auth token
+  - Pre-request scripts cho auto-login
+  
+  **Acceptance Criteria:**
+  - [ ] Newman chạy thành công trên CI (0 failures)
+  - [ ] Tất cả folders có assertions
+  - [ ] Collection export ở `Waste-Recycling-Platform/postman/`
 
 ---
 
-## 🟩 TASK 8 — CI + POSTMAN EVIDENCE
-**Mã công việc:** `WRP-BE-TESTS-008` — CI/CD + Test Evidence (GitHub Actions + Postman)
+## Sprint 2: Test Development & Execution
 
-### 🚀 CI/CD Integration
-* **CI-001** — Setup Newman Postman runner
-* **CI-002** — Export Postman collection to GitHub
-* **CI-003** — Run API tests in CI pipeline
+### [Task] KIEM-SP2-01: Viết Unit Tests cho Auth Module
+- **Assignee**: Nguyễn Chí Trung
+- **Priority**: High
+- **Labels**: sprint-2, unit-test, auth
+- **Description**:
+  Viết xUnit tests cho Auth module, áp dụng kỹ thuật:
+  - **Equivalence Partitioning (EP)**: valid/invalid email, password
+  - **Error Guessing**: JWT expired, malformed token, null input
+  
+  **Test files:**
+  - `AuthControllerTests.cs`
+  - `JwtServiceTests.cs`
+  - `JwtBearerIntegrationTests.cs`
+  
+  **Jira**: KIEM-4
+  
+  **Branch**: `feature/KIEM-4-auth-tests`
+  
+  **Acceptance Criteria:**
+  - [ ] ≥ 20 test methods
+  - [ ] Tất cả pass trên CI
+  - [ ] Allure report hiển thị đúng
 
-### 📊 Test Evidences
-* **EVD-001** — Save Postman run results (CLI/HTML)
-* **EVD-002** — Attach screenshots of test results
-* **EVD-003** — Link Jira tickets with commits
+### [Task] KIEM-SP2-02: Viết Unit Tests cho Reports Module (BVA + State Transition)
+- **Assignee**: Minh Phụng
+- **Priority**: High
+- **Labels**: sprint-2, unit-test, reports, bva, state-transition
+- **Description**:
+  Viết xUnit tests cho Reports module, áp dụng kỹ thuật:
+  - **Boundary Value Analysis (BVA)**: images count (0, 1, 5, 6), lat/long values
+  - **State Transition Testing**: report lifecycle (Pending → Accepted → Assigned → Completed/Rejected)
+  
+  **Test files:**
+  - `CreateReportCommandHandlerTests.cs` (BVA-02..07)
+  - `AcceptReportCommandHandlerTests.cs`
+  - `WasteReportTests.cs` (ST-05/07/08)
+  
+  **Jira**: KIEM-5
+  
+  **Branch**: `feature/KIEM-5-reports-tests`
+  
+  **Acceptance Criteria:**
+  - [ ] BVA tests cho boundary values (0, 1, 5, 6 images)
+  - [ ] State transition tests cho tất cả valid/invalid transitions
+  - [ ] ≥ 30 test methods
 
-### 🐙 GitHub Actions Workflow
-* **GH-001** — Commit Postman collection JSON
-* **GH-002** — Commit test updates after bug fixes
+### [Task] KIEM-SP2-03: Viết Unit Tests cho Notifications Module
+- **Assignee**: Nguyễn Hoàng Phụng
+- **Priority**: High
+- **Labels**: sprint-2, unit-test, notifications
+- **Description**:
+  Viết xUnit tests cho Notifications module:
+  - **EP**: valid/invalid notification IDs
+  - **Error Guessing**: mark-as-read for 404, unauthorized access
+  
+  **Test files:**
+  - `NotificationServiceTests.cs`
+  - `NotificationControllerTests.cs`
+  - `NotificationRepositoryTests.cs`
+  
+  **Jira**: KIEM-6
+  
+  **Branch**: `feature/KIEM-6-notification-tests`
+  
+  **Acceptance Criteria:**
+  - [ ] ≥ 15 test methods
+  - [ ] Repository + Service + Controller layers tested
+  - [ ] Bug KIEM-27 covered by test
+
+### [Task] KIEM-SP2-04: Viết Unit Tests cho Complaints Module (Decision Table)
+- **Assignee**: Thanh Duy
+- **Priority**: High
+- **Labels**: sprint-2, unit-test, complaints, decision-table
+- **Description**:
+  Viết xUnit tests cho Complaints module, áp dụng kỹ thuật:
+  - **Decision Table Testing (DT)**: 6 combinations of complaint creation conditions
+  - **Error Guessing**: empty description, null enterprise
+  
+  **Test files:**
+  - `CreateComplaintCommandHandlerTests.cs` (DT-01..06)
+  - `RejectComplaintCommandHandlerTests.cs`
+  - `ResolveComplaintCommandHandlerTests.cs`
+  
+  **Jira**: KIEM-7
+  
+  **Branch**: `feature/KIEM-7-complaint-tests`
+  
+  **Acceptance Criteria:**
+  - [ ] Decision table có ≥ 6 test cases
+  - [ ] Tất cả pass trên CI
+
+### [Task] KIEM-SP2-05: Viết Unit Tests cho Admin + Analytics Module
+- **Assignee**: 11A6_03_Đăng
+- **Priority**: High
+- **Labels**: sprint-2, unit-test, admin, analytics
+- **Description**:
+  Viết xUnit tests cho Admin và Analytics modules:
+  - **EP**: valid/invalid admin operations
+  - **Error Guessing**: unauthorized access, missing data
+  
+  **Test files:**
+  - `AdminModuleTests.cs`
+  - `AdminApiIntegrationTests.cs`
+  - `AnalyticsModuleTests.cs`
+  - `AnalyticsApiIntegrationTests.cs`
+  
+  **Jira**: KIEM-8, KIEM-9
+  
+  **Branch**: `feature/KIEM-8-admin-analytics-tests`
+  
+  **Acceptance Criteria:**
+  - [ ] ≥ 25 test methods (Admin + Analytics combined)
+  - [ ] Integration tests cho API endpoints
+
+### [Task] KIEM-SP2-06: Viết E2E Tests (CodeceptJS + Playwright)
+- **Assignee**: Nguyễn Chí Trung
+- **Priority**: High
+- **Labels**: sprint-2, e2e, codeceptjs, playwright
+- **Description**:
+  Viết 5 E2E test files với 19 scenarios:
+  1. `smoke_test.js` — Public pages, auth entry points
+  2. `citizen_report_test.js` — Citizen registration, create report
+  3. `enterprise_assign_test.js` — Enterprise login, task management
+  4. `collector_task_test.js` — Collector login, task access
+  5. `citizen_complaint_test.js` — Complaint flow (DT + Error Guessing)
+  
+  **Branch**: `feature/KIEM-e2e-tests`
+  
+  **Acceptance Criteria:**
+  - [ ] 19 scenarios pass trên CI
+  - [ ] Allure report hiển thị E2E suite
+  - [ ] Screenshots on failure
+
+### [Task] KIEM-SP2-07: Viết Unit Tests cho WasteCategory + Security
+- **Assignee**: Nguyễn Hoàng Phụng
+- **Priority**: Medium
+- **Labels**: sprint-2, unit-test, category, security
+- **Description**:
+  Viết xUnit tests cho WasteCategory và Security modules:
+  
+  **Test files:**
+  - `WasteCategoryControllerTests.cs`
+  - `GetAllCategoriesQueryHandlerTests.cs`
+  - `AdminEnterpriseAuthorizationTests.cs`
+  - `JwtBearerIntegrationTests.cs`
+  
+  **Jira**: KIEM-12, KIEM-21
+  
+  **Branch**: `feature/KIEM-12-category-security-tests`
+  
+  **Acceptance Criteria:**
+  - [ ] ≥ 20 test methods
+  - [ ] Role-based access tests (Admin, Enterprise, Citizen)
+
+### [Task] KIEM-SP2-08: Viết Unit Tests cho CollectorTask + File Uploads
+- **Assignee**: Minh Phụng
+- **Priority**: Medium
+- **Labels**: sprint-2, unit-test, collector, file-upload
+- **Description**:
+  Viết xUnit tests cho CollectorTask và File Upload modules:
+  
+  **Test files:**
+  - `CollectorTaskControllerTests.cs`
+  - `CollectorTaskControllerExtendedTests.cs`
+  - `AssignCollectorCommandHandlerTests.cs`
+  - `CollectorEvidenceUploadTests.cs`
+  - `LocalFileStorageServiceTests.cs`
+  
+  **Jira**: KIEM-15, KIEM-20
+  
+  **Branch**: `feature/KIEM-15-collector-file-tests`
+  
+  **Acceptance Criteria:**
+  - [ ] ≥ 20 test methods
+  - [ ] File upload edge cases tested
+
+### [Task] KIEM-SP2-09: Viết Unit Tests cho CollectionTask + Public Analytics
+- **Assignee**: Thanh Duy
+- **Priority**: Medium
+- **Labels**: sprint-2, unit-test, collection-task
+- **Description**:
+  Viết xUnit tests cho CollectionTask domain và Public Analytics:
+  
+  **Test files:**
+  - `CollectionTaskDomainTests.cs`
+  - `CollectionTaskTests.cs`
+  - `AuditLogAndErrorPathTests.cs`
+  
+  **Jira**: KIEM-10, KIEM-18, KIEM-22
+  
+  **Branch**: `feature/KIEM-18-collection-audit-tests`
+  
+  **Acceptance Criteria:**
+  - [ ] Domain logic tests cho state transitions
+  - [ ] Error path coverage
+
+### [Task] KIEM-SP2-10: Viết Unit Tests cho Citizen + Search/Pagination
+- **Assignee**: 11A6_03_Đăng
+- **Priority**: Medium
+- **Labels**: sprint-2, unit-test, citizen, search
+- **Description**:
+  Viết xUnit tests cho Citizen module và Search/Pagination:
+  
+  **Test files:**
+  - `CitizenModuleTests.cs`
+  - `SearchPaginationFiltersTests.cs`
+  
+  **Jira**: KIEM-13, KIEM-23
+  
+  **Branch**: `feature/KIEM-13-citizen-search-tests`
+  
+  **Acceptance Criteria:**
+  - [ ] ≥ 15 test methods
+  - [ ] Pagination edge cases (page 0, negative, beyond max)
 
 ---
 
-## 🟦 Additional Tasks (scanned from source)
-These tasks were added after scanning backend controllers and domain entities to cover modules not listed previously.
+## Sprint 3: Quality Assurance, Bug Fixing & Final Report
 
-## 🟩 TASK 9 — WASTE CATEGORY MODULE
-**Mã công việc:** `WRP-BE-TESTS-009` — WasteCategory Module Testing
-* Kiểm tra: GET list, GET by id, validation, edge cases (empty, paging).
+### [Task] KIEM-SP3-01: Fix SonarCloud Quality Gate
+- **Assignee**: Nguyễn Chí Trung
+- **Priority**: Critical
+- **Labels**: sprint-3, sonarcloud, security
+- **Description**:
+  Fix SonarCloud Quality Gate (16 vulnerabilities → 0):
+  - Xóa hardcoded secrets trong appsettings.json
+  - Thay hardcoded password trong CreateUserCommand.cs
+  - Thêm path sanitization trong Python scripts
+  - Cập nhật SonarCloud exclusions
+  
+  **Commits:**
+  - `1d50e4c`, `6b9a678`, `bf05e20`
+  
+  **Acceptance Criteria:**
+  - [ ] SonarCloud: 0 open vulnerabilities
+  - [ ] Quality Gate: new_security_rating ≤ A
 
-## 🟩 TASK 10 — CITIZEN MODULE
-**Mã công việc:** `WRP-BE-TESTS-010` — Citizen Module Testing
-* Kiểm tra: profile GET/PUT, rewards endpoints, leaderboards, auth-required cases.
+### [Task] KIEM-SP3-02: Fix Bug KIEM-29 — Max 5 Images Validation
+- **Assignee**: Thanh Duy
+- **Priority**: High
+- **Labels**: sprint-3, bug-fix, bva
+- **Description**:
+  **Bug**: API cho phép upload > 5 hình khi tạo report, nhưng yêu cầu chỉ cho phép tối đa 5.
+  
+  **Fix**: Thêm validation `if (request.Images.Count > 5)` trong `CreateReportCommand.cs`
+  
+  **BVA Boundary Values:**
+  - 0 images → rejected (minimum 1)
+  - 1 image → accepted ✅
+  - 5 images → accepted ✅ (boundary)
+  - 6 images → rejected (maximum 5)
+  
+  **Acceptance Criteria:**
+  - [ ] API trả về error khi > 5 images
+  - [ ] xUnit test cover boundary values
 
-## 🟩 TASK 11 — COLLECTOR MODULE
-**Mã công việc:** `WRP-BE-TESTS-011` — Collector Module Testing
-* Kiểm tra: collector profile, availability PATCH, auth role checks.
+### [Task] KIEM-SP3-03: Fix Bug KIEM-28 — Include taskId in Response
+- **Assignee**: Minh Phụng
+- **Priority**: Medium
+- **Labels**: sprint-3, bug-fix
+- **Description**:
+  **Bug**: PUT /api/reports/{id}/accept response thiếu `taskId` field.
+  
+  **Steps to reproduce:**
+  1. Login as Enterprise
+  2. Accept a pending report
+  3. Check response body → missing `taskId`
+  
+  **Expected**: Response includes `taskId` for client to navigate to task detail.
+  
+  **Branch**: `bugfix/KIEM-28-include-taskId`
+  
+  **Acceptance Criteria:**
+  - [ ] Response body includes `taskId`
+  - [ ] xUnit test verifies taskId in response
 
-## 🟩 TASK 12 — COLLECTOR TASK MODULE
-**Mã công việc:** `WRP-BE-TESTS-012` — CollectorTask Module Testing
-* Kiểm tra: list tasks, task detail, set on-the-way, complete (form+images), status transitions, image uploads.
+### [Task] KIEM-SP3-04: Fix E2E Allure Suite Missing
+- **Assignee**: Nguyễn Hoàng Phụng
+- **Priority**: Medium
+- **Labels**: sprint-3, e2e, allure, bug-fix
+- **Description**:
+  **Bug**: Allure Report chỉ hiển thị 2 suites (API Tests + Backend Tests), thiếu E2E Tests.
+  
+  **Nguyên nhân**: Frontend start script sử dụng `node .next/standalone/server.js` → server không start đúng trên CI.
+  
+  **Fix**: Thay `"start": "next start"` trong `package.json`
+  
+  **Branch**: `bugfix/KIEM-e2e-allure-fix`
+  
+  **Acceptance Criteria:**
+  - [ ] Allure Report hiển thị 3 suites
+  - [ ] E2E test results merge vào report
 
-## 🟩 TASK 13 — ENTERPRISE TASK MODULE
-**Mã công việc:** `WRP-BE-TESTS-013` — Enterprise Task Module Testing
-* Kiểm tra: enterprise task listing, assign collector, assign/unassign, enterprise-specific filters.
+### [Task] KIEM-SP3-05: Tạo Final Report & Deployment Guide
+- **Assignee**: Nguyễn Chí Trung
+- **Priority**: High
+- **Labels**: sprint-3, documentation, report
+- **Description**:
+  Tạo và cập nhật tài liệu cuối cùng:
+  - `docs/FINAL_REPORT.md` — Báo cáo tổng kết (451 tests, 11 workflows)
+  - `docs/DEPLOYMENT_GUIDE.md` — Hướng dẫn deploy (892 dòng)
+  - `docs/CI_CD_WORKFLOWS.md` — Chi tiết 11 workflows
+  - `docs/DEMO.md` — Kịch bản demo cho thầy
+  
+  **Acceptance Criteria:**
+  - [ ] Tất cả docs có nội dung đầy đủ
+  - [ ] Test counts chính xác (451 xUnit, 19 E2E, 74 Postman)
 
-## 🟩 TASK 14 — ENTERPRISE COLLECTORS & REWARD RULES
-**Mã công việc:** `WRP-BE-TESTS-014` — Enterprise Collectors & Reward Rules Testing
-* Kiểm tra: CRUD collectors, update reward rules bulk, reward points accrual.
+### [Task] KIEM-SP3-06: Viết Manual Test Cases (Excel)
+- **Assignee**: 11A6_03_Đăng
+- **Priority**: Medium
+- **Labels**: sprint-3, manual-testing, documentation
+- **Description**:
+  Tạo file Excel UnitestKCPM.xlsx với 68 test cases cho 13 functions:
+  - Mỗi TC có: ID, Description, Steps, Expected Result, Actual Result, Status
+  - Áp dụng kỹ thuật: EP, BVA, DT, ST, Error Guessing
+  
+  **Acceptance Criteria:**
+  - [ ] 68 test cases covering 13 functions
+  - [ ] Pass rate ≥ 95%
+  - [ ] Có screenshots evidence
 
-## 🟩 TASK 15 — COLLECTION TASK & IMAGES
-**Mã công việc:** `WRP-BE-TESTS-015` — CollectionTask / CollectionImage Tests
-* Kiểm tra: domain rules for `CollectionTask` transitions, image persistence, DB referential integrity.
+### [Task] KIEM-SP3-07: Cập nhật Traceability Matrix
+- **Assignee**: Nguyễn Hoàng Phụng
+- **Priority**: Medium
+- **Labels**: sprint-3, documentation, traceability
+- **Description**:
+  Cập nhật Traceability Matrix với:
+  - Tất cả Jira issues (KIEM-4 → KIEM-38+)
+  - Bug status updates
+  - Test technique mapping (Ch.4)
+  - Allure report links
+  
+  **Acceptance Criteria:**
+  - [ ] Tất cả issues có test case mapping
+  - [ ] Bug issues có status cập nhật
 
-## 🟩 TASK 16 — SIGNALR / REAL-TIME NOTIFICATIONS
-**Mã công việc:** `WRP-BE-TESTS-016` — SignalR Real-time Tests
-* Kiểm tra: hub endpoints, message send on events (complaint resolved, task assigned), fallback behavior.
+### [Task] KIEM-SP3-08: Chuẩn bị Demo cho Thầy
+- **Assignee**: Nguyễn Chí Trung
+- **Priority**: High
+- **Labels**: sprint-3, demo, presentation
+- **Description**:
+  Chuẩn bị demo cho thầy, bao gồm:
+  1. Kiến trúc hệ thống (Client-Server)
+  2. CI/CD Pipeline demo (push code → 11 workflows chạy)
+  3. Test results (451 xUnit, 19 E2E, 74 Postman)
+  4. Allure Report demo
+  5. SonarCloud Quality Gate
+  6. Bug tracking trên Jira
+  7. Production app demo
+  
+  **Files**: `docs/DEMO.md` (696 dòng kịch bản chi tiết)
 
-## 🟩 TASK 17 — FILE UPLOADS & STORAGE
-**Mã công việc:** `WRP-BE-TESTS-017` — File Uploads & Storage Tests
-* Kiểm tra: form-data uploads, allowed formats/size limits, missing files handling, CI-friendly mocking for newman.
+---
 
-## 🟩 TASK 18 — SECURITY & ROLE-BASED ACCESS
-**Mã công việc:** `WRP-BE-TESTS-018` — Security & Role-based Access Tests
-* Kiểm tra: endpoints requiring Admin/Enterprise/Citizen roles reject other roles, JWT expiry, invalid token handling.
+## Summary
 
-## 🟩 TASK 19 — AUDIT LOG / ERROR PATHS
-**Mã công việc:** `WRP-BE-TESTS-019` — AuditLog & Error Path Tests
-* Kiểm tra: error responses, 500 handling, audit entries for critical actions (verify/resolve/assign).
+| Sprint | Tasks | Focus |
+|--------|-------|-------|
+| Sprint 1 | 5 tasks | Infrastructure, CI/CD, Test Planning |
+| Sprint 2 | 10 tasks | Test Development & Execution |
+| Sprint 3 | 8 tasks | Quality, Bug Fix, Documentation |
+| **Total** | **23 tasks** | |
 
-## 🟩 TASK 20 — SEARCH / PAGINATION / FILTERS
-**Mã công việc:** `WRP-BE-TESTS-020` — Search, Pagination & Filters Tests
-* Kiểm tra: query params, date-range boundaries, totalPages calculation, invalid params handling.
+### Task Distribution
+
+| Member | Sprint 1 | Sprint 2 | Sprint 3 | Total |
+|--------|----------|----------|----------|-------|
+| Nguyễn Chí Trung | SP1-01, 02, 03, 04 | SP2-01, 06 | SP3-01, 05, 08 | **9** |
+| Minh Phụng | SP1-05 | SP2-02, 08 | SP3-03 | **4** |
+| Nguyễn Hoàng Phụng | — | SP2-03, 07 | SP3-04, 07 | **4** |
+| Thanh Duy | — | SP2-04, 09 | SP3-02 | **3** |
+| 11A6_03_Đăng | — | SP2-05, 10 | SP3-06 | **3** |
