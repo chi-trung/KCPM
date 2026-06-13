@@ -118,7 +118,7 @@ SPRINT_EVIDENCE = {
         "title": "Sprint-1: CI/CD Pipeline (11 GitHub Actions Workflows)",
         "evidence": [
             [bold("11 workflows"), text(" configured and running on every push to main")],
-            [bold("Workflows: "), text("backend-tests, frontend-e2e, sonar, deploy-server, deploy-render, allure-gh-pages, postman-smoke, health-check, jira-key-enforcement, create-jira-issues, postman-weekly-report")],
+            [bold("Workflows: "), text("backend-tests, frontend-e2e, sonar, deploy-server, allure-gh-pages, postman-smoke, health-check, jira-key-enforcement, create-jira-issues")],
             [bold("Auto-trigger: "), text("push to main + PR to main")],
             [bold("Auto-log Jira: "), text("CI posts test results as comments on 21 KIEM issues")],
             [bold("Allure Report: "), text("3 suites merged (Backend + API + E2E) on GitHub Pages")],

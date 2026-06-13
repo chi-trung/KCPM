@@ -34,23 +34,21 @@ SPRINTS = [
         "name": "Sprint 1: Test Planning & Infrastructure",
         "tasks": [
             {
-                "summary": "[Sprint-1] Thiet lap CI/CD Pipeline voi GitHub Actions (11 workflows)",
+                "summary": "[Sprint-1] Thiet lap CI/CD Pipeline voi GitHub Actions (9 workflows)",
                 "assignee_name": "Nguyen Chi Trung",
                 "priority": "High",
                 "labels": ["sprint-1", "ci-cd", "infrastructure"],
                 "description": (
-                    "Thiet lap 11 GitHub Actions workflows:\n"
-                    "1. backend-tests.yml — 451 xUnit tests\n"
+                    "Thiet lap 9 GitHub Actions workflows:\n"
+                    "1. backend-tests.yml — 455 xUnit tests\n"
                     "2. frontend-e2e.yml — 19 E2E scenarios\n"
                     "3. sonar.yml — SonarCloud analysis\n"
                     "4. deploy-server.yml — CI/CD deploy\n"
-                    "5. deploy-render.yml — Deploy Render\n"
-                    "6. allure-gh-pages.yml — Allure report\n"
-                    "7. postman-smoke.yml — API tests\n"
-                    "8. health-check.yml — Health check\n"
-                    "9. jira-key-enforcement.yml — PR validation\n"
-                    "10. create-jira-issues.yml — Jira automation\n"
-                    "11. postman-weekly-report.yml — Weekly report\n\n"
+                    "5. allure-gh-pages.yml — Allure report\n"
+                    "6. postman-smoke.yml — API tests\n"
+                    "7. health-check.yml — Health check\n"
+                    "8. jira-key-enforcement.yml — PR validation\n"
+                    "9. create-jira-issues.yml — Jira automation\n\n"
                     "Status: DONE"
                 ),
             },
@@ -366,7 +364,7 @@ SPRINTS = [
                 "description": (
                     "Chuan bi demo:\n"
                     "1. Kien truc Client-Server\n"
-                    "2. CI/CD Pipeline (11 workflows)\n"
+                    "2. CI/CD Pipeline (9 workflows)\n"
                     "3. Test results (451 xUnit, 19 E2E, 74 Postman)\n"
                     "4. Allure Report\n"
                     "5. SonarCloud Quality Gate\n"
