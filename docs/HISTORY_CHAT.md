@@ -1,8 +1,8 @@
 # 📝 Lịch Sử Chat — KCPM Project
 
 > **Conversation ID**: `69a3cfb5-7077-4e4f-b638-8edd85d6ccc3`  
-> **Ngày**: 2026-06-11 → 2026-06-13  
-> **Tổng thời gian**: ~9 sessions
+> **Ngày**: 2026-06-11 → 2026-06-14  
+> **Tổng thời gian**: ~10 sessions
 
 ---
 
@@ -590,3 +590,29 @@ Cross-referenced tất cả git commits (có KIEM key) với Jira assignments �
 |------|---------|
 | ae37716 | fix: correct evidence for KIEM-30 and KIEM-37 in jira_log_all_evidence.py |
 
+---
+
+## Session 10: Jira Evidence Sync & Board Cleanup (2026-06-14 02h21)
+
+### Yêu cầu
+Bổ sung minh chứng cho tasks thiếu, phát triển Jira board chuyên nghiệp.
+
+### Evidence Bổ Sung
+| KIEM | Title |
+|------|-------|
+| KIEM-60 | Manual Test Cases Excel (68 TCs) |
+| KIEM-61 | Traceability Matrix Update |
+| KIEM-65 | Test Report WasteCategory + Notifications |
+
+### Workflow Fix
+- Removed dangerous "both" action → replaced with safe "post_all_evidence"
+- Added "cleanup_duplicates" action to clean up KIEM-74+ duplicates
+- Fixed KIEM-40 title "11 workflows" → "9 workflows"
+- Fixed KIEM-73 garbled title → "[Sprint-3] Fix Health Endpoint Verification"
+
+### Commits
+
+| Hash | Message |
+|------|---------|
+| 6c394d2 | add missing evidence for KIEM-60/61/65, fix 9-workflow refs |
+| 9d6c133 | fix Jira workflow, add cleanup script |
