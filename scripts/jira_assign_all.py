@@ -85,23 +85,23 @@ def find_members():
 
 
 def find_unassigned():
-    """Query Jira for ALL unassigned issues in KIEM project using POST search."""
-    # Use POST /rest/api/3/search with JQL in body
-    body = {
-        "jql": "project = KIEM AND assignee is EMPTY ORDER BY key ASC",
-        "maxResults": 100,
-        "fields": ["key", "summary", "status", "assignee"]
-    }
-    resp = jira("POST", "search", body)
+    """Query Jira for ALL unassigned issues in KIEM project."""
+    # Use GET /rest/api/3/search with JQL in query params
+    jql = quote("project = KIEM AND assignee is EMPTY ORDER BY key ASC")
+    resp = jira("GET", f"search?jql={jql}&maxResults=100&fields=key,summary,status,assignee")
 
     if "issues" not in resp:
-        # Fallback: try GET with URL-encoded JQL
-        print("  POST search failed, trying GET...")
-        jql = quote("project = KIEM AND assignee is EMPTY ORDER BY key ASC")
-        resp = jira("GET", f"search?jql={jql}&maxResults=100&fields=key,summary,status,assignee")
+        # Fallback: try the newer search/jql endpoint with POST
+        print("  GET search failed, trying POST /search/jql...")
+        body = {
+            "jql": "project = KIEM AND assignee is EMPTY ORDER BY key ASC",
+            "maxResults": 100,
+            "fields": ["key", "summary", "status", "assignee"]
+        }
+        resp = jira("POST", "search/jql", body)
 
     if "issues" not in resp:
-        print(f"  Search failed: {resp}")
+        print(f"  Both search methods failed: {resp}")
         return []
 
     issues = []
