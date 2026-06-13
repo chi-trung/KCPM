@@ -437,7 +437,7 @@ Nginx routes:
 - `/` → `frontend:3000`
 - `/api/*` → `backend:5000`
 
-### CI/CD (GitHub Actions — 11 Workflows)
+### CI/CD (GitHub Actions — 9 Workflows)
 
 | # | Workflow | Trigger | Action |
 |---|---------|---------|--------|
@@ -447,11 +447,9 @@ Nginx routes:
 | 4 | `postman-smoke.yml` | PR / Schedule / Manual | Newman API tests → Docker → Jira |
 | 5 | `allure-gh-pages.yml` | After Backend Tests | Merged Allure report → GitHub Pages |
 | 6 | `deploy-server.yml` | Push to main | Quality gate → SSH deploy |
-| 7 | `deploy-render.yml` | After Backend Tests | Deploy Hook → Render.com |
-| 8 | `health-check.yml` | Every 6h / Manual | Monitor uptime |
-| 9 | `jira-key-enforcement.yml` | PR events | Validate Jira keys in PR/commits |
-| 10 | `create-jira-issues.yml` | Manual | Create Jira issues from test plan |
-| 11 | `postman-weekly-report.yml` | Manual | Full Postman collection + evidence |
+| 7 | `health-check.yml` | Every 6h / Manual | Monitor uptime |
+| 8 | `jira-key-enforcement.yml` | PR events | Validate Jira keys in PR/commits |
+| 9 | `create-jira-issues.yml` | Manual | Create Jira issues from test plan |
 
 > 📚 Full documentation: [DEPLOYMENT_GUIDE.md](../docs/DEPLOYMENT_GUIDE.md) | [CI_CD_WORKFLOWS.md](../docs/CI_CD_WORKFLOWS.md)
 
