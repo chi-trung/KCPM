@@ -2,31 +2,19 @@
   "total": 4,
   "items": [
     {
-      "uid": "5e7563da469a48e1953ff5b221700022",
-      "name": "Product defects",
+      "uid": "5674edc684904be8bea426996ce7cf1c",
+      "name": "E2E – Text Not Found",
       "statistic": {
-        "failed": 21,
+        "failed": 8,
         "broken": 0,
         "skipped": 0,
         "passed": 0,
         "unknown": 0,
-        "total": 21
+        "total": 8
       }
     },
     {
-      "uid": "dc80e5c8de4d4e02ba861a19f358f869",
-      "name": "Not Found",
-      "statistic": {
-        "failed": 3,
-        "broken": 0,
-        "skipped": 0,
-        "passed": 0,
-        "unknown": 0,
-        "total": 3
-      }
-    },
-    {
-      "uid": "bd4c1e385d69489faa9d9d3a11b7b7d5",
+      "uid": "b3dda38226c64cc3bf02f092cc9446a5",
       "name": "Assertion Failure",
       "statistic": {
         "failed": 1,
@@ -38,15 +26,27 @@
       }
     },
     {
-      "uid": "ab14bfc4d67d42c8b868304e437206e6",
-      "name": "E2E – Text Not Found",
+      "uid": "813dc4e427f54a39abe5bed34ded57b8",
+      "name": "Product defects",
       "statistic": {
-        "failed": 8,
+        "failed": 21,
         "broken": 0,
         "skipped": 0,
         "passed": 0,
         "unknown": 0,
-        "total": 8
+        "total": 21
+      }
+    },
+    {
+      "uid": "767315718ed942c3b201e50e939a2e55",
+      "name": "Not Found",
+      "statistic": {
+        "failed": 3,
+        "broken": 0,
+        "skipped": 0,
+        "passed": 0,
+        "unknown": 0,
+        "total": 3
       }
     }
   ]
