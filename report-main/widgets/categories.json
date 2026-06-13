@@ -2,7 +2,7 @@
   "total": 4,
   "items": [
     {
-      "uid": "d3b174052c4a459497f6d74c79cfd687",
+      "uid": "1c4ef2415fc74917b7f8bf9b3aac7b6b",
       "name": "Product defects",
       "statistic": {
         "failed": 21,
@@ -14,19 +14,7 @@
       }
     },
     {
-      "uid": "9e69e287537d424fb6035a1a7a7929cb",
-      "name": "Not Found",
-      "statistic": {
-        "failed": 3,
-        "broken": 0,
-        "skipped": 0,
-        "passed": 0,
-        "unknown": 0,
-        "total": 3
-      }
-    },
-    {
-      "uid": "82c77f9264bc45fd98e03aff806da5f7",
+      "uid": "a2d4c093193645db8263e9714f24594a",
       "name": "E2E – Text Not Found",
       "statistic": {
         "failed": 8,
@@ -38,7 +26,19 @@
       }
     },
     {
-      "uid": "df9d4ab39c68402ea63db83a43845e8e",
+      "uid": "417489036b484684ad1bfa8d0252657d",
+      "name": "Not Found",
+      "statistic": {
+        "failed": 3,
+        "broken": 0,
+        "skipped": 0,
+        "passed": 0,
+        "unknown": 0,
+        "total": 3
+      }
+    },
+    {
+      "uid": "b420d0ae0d5641caaf128be72b300cd1",
       "name": "Assertion Failure",
       "statistic": {
         "failed": 1,
