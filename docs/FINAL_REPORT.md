@@ -1,8 +1,8 @@
 # 📊 Báo cáo Tổng kết Kiểm thử — Waste Recycling Platform
 # Nhóm 11A6 — KiemChungPhanMem (KCPM)
 
-**Ngày báo cáo:** 12/06/2026  
-**Phiên bản:** 4.0  
+**Ngày báo cáo:** 13/06/2026  
+**Phiên bản:** 5.0  
 **Nhóm trưởng:** Nguyễn Chí Trung  
 **Giảng viên:** Thầy Bảo
 
@@ -19,7 +19,7 @@
 | **Live URLs** | Frontend: https://kcpm.vercel.app / Backend: https://kcpm-backend.onrender.com |
 | **Swagger** | https://kcpm-backend.onrender.com/swagger |
 | **Source Control** | GitHub (chi-trung/KCPM) |
-| **CI/CD** | GitHub Actions (4 workflows) |
+| **CI/CD** | GitHub Actions (11 workflows) |
 | **Project Management** | Jira (KIEM project, 29 issues) |
 | **Quality Gate** | SonarCloud + Allure Reports |
 
@@ -144,7 +144,7 @@
 | **API Testing** | Postman + Newman | REST API validation |
 | **Static Analysis** | SonarCloud | Code quality + coverage |
 | **Coverage** | Coverlet + ReportGenerator | Code coverage measurement |
-| **CI/CD** | GitHub Actions (4 workflows) | Automated test pipeline |
+| **CI/CD** | GitHub Actions (11 workflows) | Automated test + deploy + reporting pipeline |
 | **Defect Tracking** | Jira (KIEM project) | Bug management + traceability |
 | **Source Control** | Git (GitHub) | Version control |
 | **Containerization** | Docker | Test environment isolation |
@@ -152,18 +152,23 @@
 
 ---
 
-## 📊 7. CI/CD Pipeline (7+ Workflows)
+## 📊 7. CI/CD Pipeline (11 Workflows)
 
-| # | Workflow | Trigger | Chức năng |
-|---|---------|---------|----------|
-| 1 | **Backend Tests** (#455+) | push/PR/schedule | xUnit → Allure → Coverage badges → Jira log |
-| 2 | **Frontend E2E** (#103+) | push/PR | CodeceptJS → Allure → Jira log |
-| 3 | **Postman Smoke** | manual/schedule | Newman → Docker → API tests → Jira |
-| 4 | **SonarCloud Analysis** | push/PR | Static analysis + coverage upload |
-| 5 | **Deploy to Render** | after Backend Tests | Auto-deploy backend → Health check |
-| 6 | **Health Check** | every 6h / manual | Monitor all deployed services + keep Render warm |
-| + | **Allure Pages** | after tests | Publish to GitHub Pages |
-| + | **CI CD Deploy** | after quality gate | Deploy to Render.com |
+| # | Workflow | File | Trigger | Chức năng |
+|---|---------|------|---------|----------|
+| 1 | **Backend Tests** | `backend-tests.yml` | push/PR/schedule | xUnit → Allure → Coverage badges → Jira log |
+| 2 | **Frontend E2E** | `frontend-e2e.yml` | push/PR | CodeceptJS → Allure → Jira log |
+| 3 | **SonarCloud Analysis** | `sonar.yml` | push/PR | Static analysis + coverage upload |
+| 4 | **Postman Smoke** | `postman-smoke.yml` | manual/PR/schedule | Newman → Docker → API tests → Jira |
+| 5 | **Allure Pages Report** | `allure-gh-pages.yml` | after Backend Tests | Merged report → GitHub Pages |
+| 6 | **CI CD Deploy Server** | `deploy-server.yml` | push main | Quality gate → SSH deploy |
+| 7 | **Deploy to Render** | `deploy-render.yml` | after Backend Tests | Deploy Hook → Health check |
+| 8 | **Health Check** | `health-check.yml` | every 6h / manual | Monitor uptime + keep Render warm |
+| 9 | **Jira Key Enforcement** | `jira-key-enforcement.yml` | PR events | Validate PR title + commit messages |
+| 10 | **Create Jira Issues** | `create-jira-issues.yml` | manual | Auto-create Jira issues from test plan |
+| 11 | **Postman Weekly Report** | `postman-weekly-report.yml` | manual | Full collection run + evidence |
+
+> Chi tiết đầy đủ: [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) | [CI_CD_WORKFLOWS.md](./CI_CD_WORKFLOWS.md)
 
 ### CI Dashboard Output (mỗi run):
 
@@ -254,7 +259,7 @@ Git Push → GitHub Actions → Tests Pass → Auto-deploy
 ### Điểm mạnh
 - ✅ **400+ test cases** trải đều 4 loại (xUnit, Postman, E2E, Excel)
 - ✅ **6 kỹ thuật kiểm thử** từ giáo trình (EP, BVA, DT, ST, EG, White-box)
-- ✅ **CI/CD tự động** với 6+ workflows + Jira auto-log
+- ✅ **CI/CD tự động** với 11 workflows + Jira auto-log
 - ✅ **Allure Report** chuyên nghiệp với link Jira
 - ✅ **Code Coverage** tích hợp CI (ReportGenerator + SonarCloud)
 - ✅ **19/19 KIEM issues** đều có test coverage

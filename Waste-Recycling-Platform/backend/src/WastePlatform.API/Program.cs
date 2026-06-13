@@ -11,6 +11,8 @@ using WastePlatform.Infrastructure.SignalR;
 // Thêm thư mục chứa UserRepository (điều chỉnh lại nếu bạn để thư mục khác nhé)
 using WastePlatform.Infrastructure.Persistence.Repositories; 
 using WastePlatform.API.Converters;
+using WastePlatform.Domain.Entities;
+using WastePlatform.Domain.Enums;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -167,8 +169,9 @@ builder.Services.AddSwaggerGen(
 
 var app = builder.Build();
 
-// ── Database auto-migration ──────────────────────────────────────────
+// ── Database auto-migration + seed ──────────────────────────────────────────
 // EnsureCreated creates all tables from the EF Core model if they don't exist.
+// Then we seed essential data (categories, sample accounts) if tables are empty.
 // This is needed for cloud deployments (Render + Aiven MySQL) where Docker Compose
 // is not available to mount SQL migration scripts.
 using (var scope = app.Services.CreateScope())
@@ -178,6 +181,107 @@ using (var scope = app.Services.CreateScope())
     {
         db.Database.EnsureCreated();
         Console.WriteLine("✅ Database schema verified/created successfully.");
+
+        // ── Auto-seed: Waste Categories ─────────────────────────────
+        if (!db.WasteCategories.Any())
+        {
+            Console.WriteLine("🌱 Seeding waste categories...");
+            db.Database.ExecuteSqlRaw(@"
+                INSERT INTO waste_categories (id, name, description) VALUES
+                (1, 'Rác thải sinh hoạt', 'Rác thải từ nhà ở, cơ quan, cửa hàng'),
+                (2, 'Rác thải thực phẩm', 'Thực phẩm thừa, xương, rau quả'),
+                (3, 'Rác thải nguy hiểm', 'Pin, thuốc, hóa chất, v.v.'),
+                (4, 'Rác thải xây dựng', 'Xi măng, gạch, thép, v.v.'),
+                (5, 'Rác thải cây lá', 'Lá rơi, cành cây, cỏ, v.v.')
+            ");
+            Console.WriteLine("✅ Seeded 5 waste categories.");
+        }
+
+        // ── Auto-seed: Sample user accounts ─────────────────────────
+        if (!db.Users.Any())
+        {
+            Console.WriteLine("🌱 Seeding sample user accounts...");
+            // BCrypt hash for "password" (cost=11)
+            var passwordHash = BCrypt.Net.BCrypt.HashPassword("password");
+
+            // Admin
+            var admin = User.Create("admin@gmail.com", passwordHash, "System Administrator", UserRole.Admin);
+
+            // Citizens
+            var citizen1 = User.Create("nguyenvana@gmail.com", passwordHash, "Nguyễn Văn A", UserRole.Citizen, "0901234561", "Quận 1", "Phường Bến Nghé");
+            var citizen2 = User.Create("lethib@gmail.com", passwordHash, "Lê Thị B", UserRole.Citizen, "0901234562", "Quận 3", "Phường Võ Thị Sáu");
+            var citizen3 = User.Create("tranvanc@gmail.com", passwordHash, "Trần Văn C", UserRole.Citizen, "0901234563", "Quận Bình Thạnh", "Phường 25");
+
+            // Enterprises
+            var enterprise1User = User.Create("greenlife@gmail.com", passwordHash, "Green Life CEO", UserRole.Enterprise, "0283800001");
+            var enterprise2User = User.Create("ecofriendly@gmail.com", passwordHash, "EcoFriendly Manager", UserRole.Enterprise, "0283800002");
+
+            // Collectors
+            var collector1User = User.Create("collector1@gmail.com", passwordHash, "Phạm Minh Dũng", UserRole.Collector, "0911000001");
+            var collector2User = User.Create("collector2@gmail.com", passwordHash, "Lý Đại Nghĩa", UserRole.Collector, "0911000002");
+
+            db.Users.AddRange(admin, citizen1, citizen2, citizen3, enterprise1User, enterprise2User, collector1User, collector2User);
+            db.SaveChanges();
+
+            // Enterprise profiles
+            var ent1 = new Enterprise
+            {
+                Id = Guid.NewGuid(),
+                UserId = enterprise1User.Id,
+                CompanyName = "Công ty Tái chế Green Life",
+                CapacityKgPerDay = 5000,
+                IsVerified = true,
+                CreatedAt = DateTime.UtcNow
+            };
+            var ent2 = new Enterprise
+            {
+                Id = Guid.NewGuid(),
+                UserId = enterprise2User.Id,
+                CompanyName = "Eco-Friendly Collection",
+                CapacityKgPerDay = 3500,
+                IsVerified = true,
+                CreatedAt = DateTime.UtcNow
+            };
+            db.Enterprises.Add(ent1);
+            db.Enterprises.Add(ent2);
+            db.SaveChanges();
+
+            // Collector profiles
+            db.Collectors.Add(new Collector
+            {
+                Id = Guid.NewGuid(),
+                UserId = collector1User.Id,
+                EnterpriseId = ent1.Id,
+                IsAvailable = true,
+                CreatedAt = DateTime.UtcNow
+            });
+            db.Collectors.Add(new Collector
+            {
+                Id = Guid.NewGuid(),
+                UserId = collector2User.Id,
+                EnterpriseId = ent2.Id,
+                IsAvailable = true,
+                CreatedAt = DateTime.UtcNow
+            });
+            db.SaveChanges();
+
+            // Enterprise waste types
+            db.EnterpriseWasteTypes.Add(new EnterpriseWasteType
+            {
+                Id = Guid.NewGuid(),
+                EnterpriseId = ent1.Id,
+                WasteCategoryId = 1
+            });
+            db.EnterpriseWasteTypes.Add(new EnterpriseWasteType
+            {
+                Id = Guid.NewGuid(),
+                EnterpriseId = ent2.Id,
+                WasteCategoryId = 2
+            });
+            db.SaveChanges();
+
+            Console.WriteLine("✅ Seeded 8 user accounts (1 admin, 3 citizens, 2 enterprises, 2 collectors).");
+        }
     }
     catch (Exception ex)
     {
