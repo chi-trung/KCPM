@@ -106,10 +106,10 @@ Mỗi CI run tự động log kết quả lên Jira bằng token của nhóm tr�
 
 | Jira Key | Title | Assignee | Status |
 |---|---|---|---|
-| KIEM-26 | [BUG] Missing mandatory image validation in Create | Nguyễn Hoàng Phụng | IN PROGRESS |
-| KIEM-27 | [BUG] PUT /notifications/{id}/read returns 200 for 404 | Nguyễn Hoàng Phụng | DONE |
+| KIEM-26 | [BUG] Missing mandatory image validation in Create | Nguyễn Hoàng Phụng | ✅ DONE |
+| KIEM-27 | [BUG] PUT /notifications/{id}/read returns 200 for 404 | Nguyễn Hoàng Phụng | ✅ DONE |
 | KIEM-28 | Include taskId in report accept response | Minh Phụng | TO DO |
-| KIEM-29 | [BUG] Missing maximum 5 images validation | Thanh Duy | TO DO |
+| KIEM-29 | [BUG] Missing maximum 5 images validation | Thanh Duy | ✅ DONE |
 
 ---
 

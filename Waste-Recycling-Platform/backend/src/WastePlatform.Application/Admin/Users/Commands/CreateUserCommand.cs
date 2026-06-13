@@ -24,8 +24,9 @@ namespace WastePlatform.Application.Admin.Users.Commands
 
         public async Task<string> Handle(CreateUserCommand request, CancellationToken ct)
         {
-            // Tạm thời fix cứng password cho user mới tạo là 123456 (đã hash)
-            var passwordHash = "hashed_123456"; 
+            // Generate a temporary password and hash it with BCrypt
+            var tempPassword = Guid.NewGuid().ToString("N")[..12];
+            var passwordHash = BCrypt.Net.BCrypt.HashPassword(tempPassword);
 
             return await _userRepository.CreateUserAsync(
                 request.Email, passwordHash, request.FullName, 

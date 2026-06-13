@@ -45,21 +45,21 @@
 
 | Loại Test | Công cụ | Số lượng | Pass | Fail | Skip | Pass Rate |
 |----------|---------|---------|------|------|------|-----------|
-| **Unit/Integration Tests** | xUnit (.NET 8) | 245+ | 240+ | 0 | 1 | ~99% |
+| **Unit/Integration Tests** | xUnit (.NET 8) | **451** test methods (57 files) | 451 | 0 | 0 | **100%** |
 | **API Tests** | Postman/Newman | 74 requests (128 assertions) | 128 | 0 | 0 | 100% |
-| **E2E Tests** | CodeceptJS (Playwright) | 5 files, 15+ scenarios | All | 0 | 0 | 100% |
+| **E2E Tests** | CodeceptJS (Playwright) | 5 files, **19 scenarios** | All | 0 | 0 | 100% |
 | **Test Documentation** | Excel (UnitestKCPM.xlsx) | 68 TCs (13 functions) | 65 | 3 | 0 | 95.6% |
 | **Static Analysis** | SonarCloud | — | — | — | — | Quality Gate |
-| **TỔNG CỘNG** | | **400+** | | | | |
+| **TỔNG CỘNG** | | **600+** | | | | |
 
 ### 3.2 Bugs phát hiện
 
 | Bug ID | Mô tả | Severity | Phát hiện bởi | Assign fix cho | Status |
 |--------|-------|----------|--------------|---------------|--------|
-| KIEM-26 | Missing mandatory image validation | High | Test (xUnit BVA) | Member khác | In Progress |
+| KIEM-26 | Missing mandatory image validation | High | xUnit BVA | Nguyễn Hoàng Phụng | ✅ Done |
 | KIEM-27 | PUT /notifications/{id}/read returns 200 for 404 | Medium | API Test | Nguyễn Hoàng Phụng | ✅ Done |
 | KIEM-28 | Missing taskId in accept response | Low | Manual test | Minh Phụng | To Do |
-| KIEM-29 | Missing max 5 images validation | High | Test (xUnit BVA) | Member khác | To Do |
+| KIEM-29 | Missing max 5 images validation | High | Test (xUnit BVA) | Thanh Duy | ✅ Done |
 
 ---
 

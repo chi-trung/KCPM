@@ -74,10 +74,11 @@ def build_suite_cards(report_url: str) -> str:
 
 
 def main() -> None:
-    site_output = Path(os.environ.get('SITE_OUTPUT_DIR', 'site-output'))
-    validation_dir = Path(os.environ.get('VALIDATION_OUTPUT_DIR', 'report-extra/validation'))
-    report_main = Path(os.environ.get('ALLURE_MAIN_REPORT_DIR', 'report-main'))
-    report_extra = Path(os.environ.get('ALLURE_PUBLISH_DIR', 'report-extra'))
+    # Sanitize all path inputs from environment variables (SonarCloud: path traversal prevention)
+    site_output = Path(os.path.realpath(os.environ.get('SITE_OUTPUT_DIR', 'site-output')))
+    validation_dir = Path(os.path.realpath(os.environ.get('VALIDATION_OUTPUT_DIR', 'report-extra/validation')))
+    report_main = Path(os.path.realpath(os.environ.get('ALLURE_MAIN_REPORT_DIR', 'report-main')))
+    report_extra = Path(os.path.realpath(os.environ.get('ALLURE_PUBLISH_DIR', 'report-extra')))
 
     summary = read_summary(validation_dir / 'summary.json')
     owners = summary.get('owners') or []

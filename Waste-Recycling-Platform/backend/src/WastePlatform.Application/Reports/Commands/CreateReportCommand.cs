@@ -46,6 +46,10 @@ public class CreateReportCommandHandler : IRequestHandler<CreateReportCommand, G
         if (request.Images == null || request.Images.Count == 0)
             throw new ArgumentException("At least one image is required");
 
+        // KIEM-29: Tối đa 5 hình ảnh (BVA boundary: 0, 1, 5, 6)
+        if (request.Images.Count > 5)
+            throw new ArgumentException("Maximum 5 images allowed per report");
+
         var report = WasteReport.Create(
             citizenId: request.CitizenId,
             wasteCategoryId: request.WasteCategoryId,

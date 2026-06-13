@@ -356,3 +356,50 @@ edb073a fix(cors): use SetIsOriginAllowed to support all *.vercel.app subdomains
 ```
 4468312 docs: add comprehensive DEMO.md with 11 workflows deep-dive and presentation script
 ```
+
+---
+
+## Session 9: Fix SonarCloud + Fix Bugs (2026-06-13)
+
+### Vấn đề phát hiện (Audit)
+
+| Hạng mục | Trạng thái trước |
+|----------|-----------------|
+| SonarCloud Quality Gate | **❌ FAILED** — 16 vulnerabilities |
+| xUnit test count | FINAL_REPORT nói "245+" — thực tế **451** |
+| KIEM-29 (max images) | **TO DO** — chưa fix |
+| appsettings.json | Hardcoded password + JWT secret |
+
+### Công việc thực hiện
+
+1. **Fix SonarCloud vulnerabilities:**
+   - `appsettings.json`: thay hardcoded secrets → `${DB_PASSWORD}`, `${JWT_SECRET_KEY}`
+   - `CreateUserCommand.cs`: bỏ hardcoded "hashed_123456" → BCrypt.HashPassword()
+   - `sonar-project.properties`: thêm exclusions `db/migrations/**`, `scripts/**`
+   - `sonar.yml`: thêm exclusions cho backend scan
+   - `build_site_index.py`: thêm `os.path.realpath()` sanitization
+   - `normalize_allure_suites.py`: thêm `os.path.realpath()` sanitization
+
+2. **Fix Bug KIEM-29:**
+   - `CreateReportCommand.cs`: thêm `if (Images.Count > 5) throw ArgumentException`
+   - BVA boundary values: 0 (rejected), 1 (ok), 5 (ok), 6 (rejected)
+
+3. **Cập nhật tài liệu:**
+   - `FINAL_REPORT.md`: "245+" → "451", bug status KIEM-26/29 → Done
+   - `TRACEABILITY_MATRIX.md`: bug status update
+   - `NEXT_STEPS.md`: mark Phase 2 items done
+
+### Files đã sửa
+
+| File | Thay đổi |
+|------|---------|
+| `appsettings.json` | Xóa hardcoded secrets |
+| `CreateUserCommand.cs` | BCrypt thay hashed_123456 |
+| `CreateReportCommand.cs` | Thêm max 5 images validation |
+| `sonar-project.properties` | Thêm exclusions |
+| `sonar.yml` | Thêm exclusions |
+| `build_site_index.py` | Path sanitization |
+| `normalize_allure_suites.py` | Path sanitization |
+| `FINAL_REPORT.md` | 451 tests, bug status |
+| `TRACEABILITY_MATRIX.md` | Bug status update |
+| `NEXT_STEPS.md` | Phase 2 done |

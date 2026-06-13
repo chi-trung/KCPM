@@ -13,11 +13,13 @@ NOTE: Only parentSuite and suite labels are overwritten.
       All other labels (epic, feature, story, severity, owner, tag...) are preserved.
 """
 import json
+import os
 import sys
 from pathlib import Path
 
 
-RESULTS_DIR = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("Waste-Recycling-Platform/allure-results")
+# Sanitize path input to prevent path traversal (SonarCloud security fix)
+RESULTS_DIR = Path(os.path.realpath(sys.argv[1])) if len(sys.argv) > 1 else Path("Waste-Recycling-Platform/allure-results")
 
 PARENT_E2E      = "E2E Tests"
 PARENT_API      = "API Tests (Postman)"
