@@ -79,8 +79,7 @@ def find_members():
             print(f"  WARNING: Not found: {key}")
 
     if not MEMBERS:
-        print("
-  All assignable users:")
+        print("\n  All assignable users:")
         for user in resp:
             print(f"    {user.get('displayName', '?')} ({user.get('accountId', '?')[:12]}...)")
 
@@ -145,8 +144,7 @@ def main():
     print(f"Authenticated as: {me.get('displayName','?')}")
 
     # Step 1: Find team members
-    print("
-=== Step 1: Find team members ===")
+    print("\n=== Step 1: Find team members ===")
     find_members()
     print(f"Found {len(MEMBERS)}/5 members")
 
@@ -155,11 +153,9 @@ def main():
         sys.exit(1)
 
     # Step 2: Find all unassigned issues
-    print("
-=== Step 2: Find unassigned issues ===")
+    print("\n=== Step 2: Find unassigned issues ===")
     unassigned = find_unassigned()
-    print(f"
-Found {len(unassigned)} unassigned issues")
+    print(f"\nFound {len(unassigned)} unassigned issues")
 
     if not unassigned:
         print("No unassigned issues found. All issues already assigned!")
@@ -167,8 +163,7 @@ Found {len(unassigned)} unassigned issues")
 
     # Step 3: Distribute evenly using round-robin
     available = [k for k in MEMBER_ORDER if k in MEMBERS]
-    print(f"
-=== Step 3: Assign {len(unassigned)} issues to {len(available)} members ===")
+    print(f"\n=== Step 3: Assign {len(unassigned)} issues to {len(available)} members ===")
     ok = 0
     distribution = {k: [] for k in available}
 
@@ -179,11 +174,9 @@ Found {len(unassigned)} unassigned issues")
             ok += 1
 
     # Summary
-    print(f"
-{'='*60}")
+    print(f"\n{'='*60}")
     print(f"Assigned {ok}/{len(unassigned)} issues")
-    print("
-Distribution:")
+    print("\nDistribution:")
     for member in available:
         keys = distribution.get(member, [])
         print(f"  {member}: {len(keys)} issues: {', '.join(keys)}")
