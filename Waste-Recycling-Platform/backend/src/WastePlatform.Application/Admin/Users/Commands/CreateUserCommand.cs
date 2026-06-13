@@ -24,9 +24,11 @@ namespace WastePlatform.Application.Admin.Users.Commands
 
         public async Task<string> Handle(CreateUserCommand request, CancellationToken ct)
         {
-            // Generate a temporary password and hash it with BCrypt
-            var tempPassword = Guid.NewGuid().ToString("N")[..12];
-            var passwordHash = BCrypt.Net.BCrypt.HashPassword(tempPassword);
+            // Generate a temporary password hash (admin should reset via separate flow)
+            var tempPassword = $"TempPass_{Guid.NewGuid():N}"[..16];
+            var passwordHash = Convert.ToBase64String(
+                System.Security.Cryptography.SHA256.HashData(
+                    System.Text.Encoding.UTF8.GetBytes(tempPassword)));
 
             return await _userRepository.CreateUserAsync(
                 request.Email, passwordHash, request.FullName, 
