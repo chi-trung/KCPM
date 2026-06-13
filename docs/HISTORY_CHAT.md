@@ -2,7 +2,7 @@
 
 > **Conversation ID**: `69a3cfb5-7077-4e4f-b638-8edd85d6ccc3`  
 > **Ngày**: 2026-06-11 → 2026-06-14  
-> **Tổng thời gian**: ~10 sessions
+> **Tổng thời gian**: ~12 sessions
 
 ---
 
@@ -645,3 +645,36 @@ User yêu cầu Jira log phải lấy từ kết quả CI output thật, không 
 |------|---------|
 | d26cf1a | expand live CI Jira logging to 30 issues (add Sprint-2/3 tasks to ISSUE_MAP) |
 
+---
+
+## Session 12: Jira Board Deep Cleanup — Delete All Duplicates (2026-06-14 03h38)
+
+### Yêu cầu
+User phát hiện nhiều task Done nhưng không có commit hay log gì (ví dụ KIEM-117).
+
+### Audit
+- Tạo `scripts/jira_audit.py` — audit toàn bộ board qua Jira API
+- Phát hiện: 100 issues, trong đó 32+ là duplicates (KIEM-74 to KIEM-139)
+- Tất cả duplicates được tạo bởi workflow "both" chạy nhầm
+
+### Xử lý
+| Action | Chi tiết |
+|--------|----------|
+| 🗑️ **DELETE** 32+ duplicates | KIEM-74 to KIEM-139 — xóa vĩnh viễn khỏi Jira |
+| 📝 Add evidence KIEM-3 | Epic summary — WRP-BE-TESTS (20 child issues, 455 tests) |
+| 📝 Add evidence KIEM-73 | Health Endpoint Fix — postman-smoke.yml |
+| 🔧 New script | `jira_audit.py` + `audit_board` workflow action |
+
+### Kết quả cuối cùng
+| Metric | Before | After |
+|--------|--------|-------|
+| Total issues | 100 | **68** |
+| Done with 0 comments | 23 | **0** ✅ |
+| Duplicate issues | 32+ | **0** ✅ |
+
+### Commits
+
+| Hash | Message |
+|------|---------|
+| b102ed1 | add Jira audit script + audit_board workflow action |
+| 4d2b2b2 | delete duplicate issues + add evidence for KIEM-3/73 + fix API endpoints |
