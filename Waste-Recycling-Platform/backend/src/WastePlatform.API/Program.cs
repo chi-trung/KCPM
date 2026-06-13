@@ -203,8 +203,10 @@ using (var scope = app.Services.CreateScope())
         if (!adminExists)
         {
             Console.WriteLine("🌱 Seeding sample user accounts...");
-            // BCrypt hash for "password" (cost=11)
-            var passwordHash = BCrypt.Net.BCrypt.HashPassword("password");
+            // Seed password: use SEED_PASSWORD env var or default
+            // Note: This is dev/staging seed data only, NOT production credentials
+            var seedPassword = Environment.GetEnvironmentVariable("SEED_PASSWORD") ?? "S33dP@ss!2026";
+            var passwordHash = BCrypt.Net.BCrypt.HashPassword(seedPassword);
 
             // Clean up any existing seed emails that may have been registered with wrong roles
             var seedEmails = new[] { "admin@gmail.com", "nguyenvana@gmail.com", "lethib@gmail.com",
