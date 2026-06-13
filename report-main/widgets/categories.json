@@ -2,7 +2,7 @@
   "total": 2,
   "items": [
     {
-      "uid": "54ae636f94c84fe0a3ebe3513999c0e9",
+      "uid": "c0fdd75e037242dd806b4fe4d8f13ff7",
       "name": "Product defects",
       "statistic": {
         "failed": 16,
@@ -14,7 +14,7 @@
       }
     },
     {
-      "uid": "1117173c62464535951648c18229b8d6",
+      "uid": "32788438a2474ff697421c6e49a25256",
       "name": "Not Found",
       "statistic": {
         "failed": 2,
