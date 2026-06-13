@@ -117,17 +117,24 @@ ISSUE_MAP = {
         "KIEM-20",  # File Uploads & Storage (Minh Phụng)
         "KIEM-22",  # AuditLog & Error Path (Thanh Duy)
         "KIEM-23",  # Search, Pagination & Filters (11A6_03_Đăng)
+        # Sprint tasks — CI/CD & Infrastructure (Nguyễn Chí Trung)
+        "KIEM-40",  # [Sprint-1] CI/CD Pipeline (11 workflows)
+        "KIEM-45",  # [Sprint-2] Auth Tests (EP + Error Guessing)
+        "KIEM-50",  # [Sprint-2] E2E Tests (19 scenarios)
+        "KIEM-53",  # [Sprint-3] Fix SonarCloud Quality Gate
     ],
 
     # Postman API tests — auth, security, role-based access
     "postman": [
         "KIEM-4",   # Auth Module - login/register endpoints
         "KIEM-21",  # Security & Role-based Access (Nguyễn Hoàng Phụng)
+        "KIEM-44",  # [Sprint-1] Postman Collection (Minh Phụng)
     ],
 
     # CodeceptJS E2E tests — Collector module browser tests
     "e2e": [
         "KIEM-14",  # Collector Module Testing (Nguyễn Chí Trung)
+        "KIEM-50",  # [Sprint-2] E2E Tests (19 scenarios)
     ],
 
     # Default fallback
