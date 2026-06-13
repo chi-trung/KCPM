@@ -11,21 +11,19 @@
 - **Priority**: High
 - **Labels**: sprint-1, ci-cd, infrastructure
 - **Description**:
-  Thiết lập 11 GitHub Actions workflows cho dự án:
+  Thiết lập 9 GitHub Actions workflows cho dự án:
   1. backend-tests.yml — Chạy 451 xUnit tests
   2. frontend-e2e.yml — Chạy 19 E2E scenarios (CodeceptJS + Playwright)
   3. sonar.yml — SonarCloud static analysis
   4. deploy-server.yml — CI/CD deploy pipeline
-  5. deploy-render.yml — Deploy backend lên Render.com
-  6. allure-gh-pages.yml — Tạo Allure report trên GitHub Pages
-  7. postman-smoke.yml — API smoke tests (Newman)
-  8. health-check.yml — Health check mỗi 6 giờ
-  9. jira-key-enforcement.yml — Validate PR title
-  10. create-jira-issues.yml — Auto-create Jira issues
-  11. postman-weekly-report.yml — Weekly Postman report
+  5. allure-gh-pages.yml — Tạo Allure report trên GitHub Pages
+  6. postman-smoke.yml — API smoke tests (Newman)
+  7. health-check.yml — Health check mỗi 6 giờ
+  8. jira-key-enforcement.yml — Validate PR title
+  9. create-jira-issues.yml — Auto-create Jira issues
   
   **Acceptance Criteria:**
-  - [ ] Tất cả 11 workflows chạy thành công trên main
+  - [ ] Tất cả 9 workflows chạy thành công trên main
   - [ ] CI tự động trigger khi push code
   - [ ] Allure report publish lên GitHub Pages
 
@@ -409,9 +407,9 @@
 - **Labels**: sprint-3, documentation, report
 - **Description**:
   Tạo và cập nhật tài liệu cuối cùng:
-  - `docs/FINAL_REPORT.md` — Báo cáo tổng kết (451 tests, 11 workflows)
-  - `docs/DEPLOYMENT_GUIDE.md` — Hướng dẫn deploy (892 dòng)
-  - `docs/CI_CD_WORKFLOWS.md` — Chi tiết 11 workflows
+  - `docs/FINAL_REPORT.md` — Báo cáo tổng kết (455 tests, 9 workflows)
+  - `docs/DEPLOYMENT_GUIDE.md` — Hướng dẫn deploy
+  - `docs/CI_CD_WORKFLOWS.md` — Chi tiết 9 workflows
   - `docs/DEMO.md` — Kịch bản demo cho thầy
   
   **Acceptance Criteria:**
@@ -454,7 +452,7 @@
 - **Description**:
   Chuẩn bị demo cho thầy, bao gồm:
   1. Kiến trúc hệ thống (Client-Server)
-  2. CI/CD Pipeline demo (push code → 11 workflows chạy)
+  2. CI/CD Pipeline demo (push code → 9 workflows chạy)
   3. Test results (451 xUnit, 19 E2E, 74 Postman)
   4. Allure Report demo
   5. SonarCloud Quality Gate

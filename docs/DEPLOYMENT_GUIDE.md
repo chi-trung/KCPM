@@ -253,8 +253,8 @@ sequenceDiagram
     CI->>CI: dotnet test (unit tests)
     CI->>CI: Generate coverage + Allure
     alt Tests PASS ✅
-        CI->>CI: Trigger "Deploy to Render" workflow
-        CI->>RD: POST Deploy Hook URL (HTTP 202)
+        CI->>CI: Trigger "Deploy Server" workflow
+        CI->>CI: SSH deploy or Docker Compose
         RD->>RD: Pull latest code from GitHub
         RD->>RD: Docker build (multi-stage)
         RD->>RD: Start container (port 8080)
@@ -357,7 +357,7 @@ erDiagram
 
 ## 🔄 4. CI/CD Pipeline — GitHub Actions
 
-### Tổng quan 11 Workflows
+### Tổng quan 9 Workflows
 
 ```mermaid
 graph LR
@@ -370,7 +370,6 @@ graph LR
 
     subgraph "🟢 Chuỗi phụ thuộc"
         BT -->|success| ALP["Allure Pages"]
-        BT -->|success| DR["Deploy to Render"]
     end
 
     subgraph "🟡 Scheduled"
@@ -382,7 +381,6 @@ graph LR
 
     subgraph "🔴 Manual only"
         CJI["Create Jira Issues"]
-        PWR["Postman Weekly Report"]
     end
 
     subgraph "🟣 PR Guard"
@@ -406,7 +404,7 @@ graph LR
 3. Tạo Allure test results
 4. Publish coverage badges lên `gh-pages/badges/`
 5. Log kết quả lên Jira
-6. Trigger workflows phụ thuộc (Allure Pages, Deploy Render)
+6. Trigger workflows phụ thuộc (Allure Pages)
 
 **Flow chi tiết:**
 ```
@@ -551,25 +549,9 @@ https://chi-trung.github.io/KCPM/
 
 ---
 
-### Workflow #7: `deploy-render.yml` — Deploy to Render
-
-```
-📌 Trigger:  Sau Backend Tests thành công | manual
-🎯 Target:   https://kcpm-backend.onrender.com
-```
-
-**Steps:**
-```
-1. Check RENDER_DEPLOY_HOOK_URL secret
-2. POST Deploy Hook → Render starts rebuild (HTTP 202)
-3. Wait 120s for Docker build
-4. Health check: 5 retries × 30s → /api/health
-5. Write deployment summary
-```
-
 ---
 
-### Workflow #8: `health-check.yml` — Deployment Health Check
+### Workflow #7: `health-check.yml` — Deployment Health Check
 
 ```
 📌 Trigger:  schedule mỗi 6 giờ | manual
@@ -587,7 +569,7 @@ https://chi-trung.github.io/KCPM/
 
 ---
 
-### Workflow #9: `jira-key-enforcement.yml` — Jira Key Enforcement
+### Workflow #8: `jira-key-enforcement.yml` — Jira Key Enforcement
 
 ```
 📌 Trigger:  PR events (opened, edited, synchronize, reopened)
@@ -601,7 +583,7 @@ https://chi-trung.github.io/KCPM/
 
 ---
 
-### Workflow #10: `create-jira-issues.yml` — Create Jira Issues
+### Workflow #9: `create-jira-issues.yml` — Create Jira Issues
 
 ```
 📌 Trigger:  manual only
@@ -609,13 +591,6 @@ https://chi-trung.github.io/KCPM/
 ```
 
 ---
-
-### Workflow #11: `postman-weekly-report.yml` — Postman Weekly Report
-
-```
-📌 Trigger:  manual only
-🎯 Mục đích: Chạy full Postman collection + upload evidence
-```
 
 ---
 
@@ -631,10 +606,8 @@ graph TD
     PUSH --> DS["CI CD Deploy Server"]
 
     BT -->|"✅ success"| ALP["Allure Pages Report"]
-    BT -->|"✅ success"| DR["Deploy to Render"]
 
     ALP --> GHP["📊 GitHub Pages<br>Allure Report Updated"]
-    DR --> RD["🚀 Render.com<br>Backend Redeployed"]
     PUSH --> VC["🖥️ Vercel<br>Frontend Redeployed"]
 
     FE -->|"artifacts"| ALP
@@ -682,7 +655,6 @@ t=15min  All deployments complete ✅
 | Secret | Workflow(s) | Mô tả | Bắt buộc? |
 |--------|------------|-------|-----------|
 | **`SONAR_TOKEN`** | SonarCloud | SonarCloud authentication token | ✅ Cho static analysis |
-| **`RENDER_DEPLOY_HOOK_URL`** | Deploy to Render | Render.com Deploy Hook URL | ✅ Cho auto deploy backend |
 | **`JIRA_BASE_URL`** | Postman Smoke, Backend Tests, Frontend E2E, Allure Pages | VD: `https://ut-team-36.atlassian.net` | ✅ Cho Jira integration |
 | **`JIRA_API_EMAIL`** | (same as above) | Email tài khoản Atlassian | ✅ Cho Jira integration |
 | **`JIRA_API_TOKEN`** | (same as above) | Jira API token | ✅ Cho Jira integration |
@@ -736,12 +708,10 @@ KCPM/
 │       ├── sonar.yml                   # SonarCloud analysis
 │       ├── postman-smoke.yml           # API tests (Newman)
 │       ├── allure-gh-pages.yml         # Merged Allure report
-│       ├── deploy-render.yml           # Deploy backend to Render
 │       ├── deploy-server.yml           # Deploy to self-hosted server
 │       ├── health-check.yml            # Uptime monitor
 │       ├── jira-key-enforcement.yml    # PR/commit Jira key check
-│       ├── create-jira-issues.yml      # Create Jira issues
-│       └── postman-weekly-report.yml   # Weekly test report
+│       └── create-jira-issues.yml      # Create Jira issues
 │
 ├── Waste-Recycling-Platform/
 │   ├── backend/

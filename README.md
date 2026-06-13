@@ -7,7 +7,7 @@
 [![Postman Smoke](https://github.com/chi-trung/KCPM/actions/workflows/postman-smoke.yml/badge.svg)](https://github.com/chi-trung/KCPM/actions/workflows/postman-smoke.yml)
 [![Allure Report](https://github.com/chi-trung/KCPM/actions/workflows/allure-gh-pages.yml/badge.svg)](https://github.com/chi-trung/KCPM/actions/workflows/allure-gh-pages.yml)
 [![SonarCloud](https://github.com/chi-trung/KCPM/actions/workflows/sonar.yml/badge.svg)](https://github.com/chi-trung/KCPM/actions/workflows/sonar.yml)
-[![Deploy to Render](https://github.com/chi-trung/KCPM/actions/workflows/deploy-render.yml/badge.svg)](https://github.com/chi-trung/KCPM/actions/workflows/deploy-render.yml)
+[![CI CD Deploy](https://github.com/chi-trung/KCPM/actions/workflows/deploy-server.yml/badge.svg)](https://github.com/chi-trung/KCPM/actions/workflows/deploy-server.yml)
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=chi-trung_KCPM&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=chi-trung_KCPM)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=chi-trung_KCPM&metric=bugs)](https://sonarcloud.io/summary/new_code?id=chi-trung_KCPM)
@@ -112,11 +112,12 @@ KCPM/
 │   ├── backend-tests.yml       # xUnit tests + Jira logging
 │   ├── frontend-e2e.yml        # CodeceptJS E2E + Jira logging
 │   ├── postman-smoke.yml       # Newman API tests + Jira logging
-│   ├── postman-weekly-report.yml  # Weekly full Postman run
 │   ├── allure-gh-pages.yml     # Allure report deploy (auto-triggered)
 │   ├── sonar.yml               # SonarCloud analysis
-│   ├── deploy-server.yml       # Production deploy (Docker)
-│   └── deploy-render.yml       # Auto-deploy to Render.com
+│   ├── deploy-server.yml       # Production deploy (Docker + SSH)
+│   ├── health-check.yml        # Keep services alive (every 6h)
+│   ├── jira-key-enforcement.yml # PR Jira key validation
+│   └── create-jira-issues.yml  # Jira automation
 ├── Waste-Recycling-Platform/
 │   ├── backend/                # ASP.NET Core API
 │   ├── frontend/               # Next.js app

@@ -152,7 +152,7 @@
 
 ---
 
-## 📊 7. CI/CD Pipeline (11 Workflows)
+## 📊 7. CI/CD Pipeline (9 Workflows)
 
 | # | Workflow | File | Trigger | Chức năng |
 |---|---------|------|---------|----------|
@@ -162,11 +162,9 @@
 | 4 | **Postman Smoke** | `postman-smoke.yml` | manual/PR/schedule | Newman → Docker → API tests → Jira |
 | 5 | **Allure Pages Report** | `allure-gh-pages.yml` | after Backend Tests | Merged report → GitHub Pages |
 | 6 | **CI CD Deploy Server** | `deploy-server.yml` | push main | Quality gate → SSH deploy |
-| 7 | **Deploy to Render** | `deploy-render.yml` | after Backend Tests | Deploy Hook → Health check |
-| 8 | **Health Check** | `health-check.yml` | every 6h / manual | Monitor uptime + keep Render warm |
-| 9 | **Jira Key Enforcement** | `jira-key-enforcement.yml` | PR events | Validate PR title + commit messages |
-| 10 | **Create Jira Issues** | `create-jira-issues.yml` | manual | Auto-create Jira issues from test plan |
-| 11 | **Postman Weekly Report** | `postman-weekly-report.yml` | manual | Full collection run + evidence |
+| 7 | **Health Check** | `health-check.yml` | every 6h / manual | Monitor uptime + keep Render warm |
+| 8 | **Jira Key Enforcement** | `jira-key-enforcement.yml` | PR events | Validate PR title + commit messages |
+| 9 | **Create Jira Issues** | `create-jira-issues.yml` | manual | Auto-create Jira issues from test plan |
 
 > Chi tiết đầy đủ: [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) | [CI_CD_WORKFLOWS.md](./CI_CD_WORKFLOWS.md)
 
