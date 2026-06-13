@@ -2,7 +2,7 @@
 
 > **Conversation ID**: `69a3cfb5-7077-4e4f-b638-8edd85d6ccc3`  
 > **Ngày**: 2026-06-11 → 2026-06-13  
-> **Tổng thời gian**: ~7 sessions
+> **Tổng thời gian**: ~8 sessions
 
 ---
 
@@ -497,3 +497,63 @@ edb073a fix(cors): use SetIsOriginAllowed to support all *.vercel.app subdomains
 | Frontend E2E | ✅ Success |
 | Deploy to Render | ✅ Success |
 | Allure Pages | ✅ Success |
+
+---
+
+## Session 8: Task Completion + Workflow Cleanup (2026-06-13 21:00+)
+
+### Yeu cau
+1. Lam cac task cua Nguyen Chi Trung (KIEM-30, KIEM-37, KIEM-65)
+2. Audit tat ca workflows - go redundant
+3. Fix docs sai sot, gom 2 thu muc docs
+4. Cap nhat history-chat
+
+### Task Completion
+
+| KIEM | Task | Branch | PR | Fix |
+|------|------|--------|----|-----|
+| KIEM-37 | Remove hardcoded password | `bugfix/KIEM-37-remove-hardcoded-password` | #61 | Replace `BCrypt.HashPassword("password")` with env var; update JWT key in appsettings.json |
+| KIEM-30 | Report service area filter | `bugfix/KIEM-30-report-service-area` | #62 | Filter `GET /api/reports/all` by Enterprise's ServiceArea when caller is Enterprise |
+| KIEM-65 | Test report WasteCategory + Notifications | `feature/KIEM-65-test-report` | #63 | Created `docs/TEST_REPORT_CATEGORY_NOTIFICATIONS.md` (26 test cases, EP/BVA/Error Guessing) |
+
+### Workflow Audit & Cleanup
+
+**Removed (redundant):**
+- `deploy-render.yml` - duplicated `deploy-server.yml` (cung trigger sau Backend Tests, nhung deploy-server co quality gate day du hon)
+- `postman-weekly-report.yml` - duplicated `postman-smoke.yml` (cung Newman collection, chua bao gio chay)
+
+**Kept (9 workflows):**
+1. `backend-tests.yml` - core test pipeline
+2. `frontend-e2e.yml` - CodeceptJS E2E
+3. `sonar.yml` - SonarCloud analysis
+4. `postman-smoke.yml` - Newman API tests
+5. `allure-gh-pages.yml` - Allure report
+6. `deploy-server.yml` - main deployment
+7. `health-check.yml` - uptime monitor
+8. `jira-key-enforcement.yml` - PR validation
+9. `create-jira-issues.yml` - Jira automation
+
+### Docs Cleanup
+
+**Removed (stubs/duplicates):**
+- `Waste-Recycling-Platform/docs/ARCHITECTURE.md` (37 bytes stub)
+- `Waste-Recycling-Platform/docs/README.md` (74 bytes stub)
+- `Waste-Recycling-Platform/docs/TEAM_WORKFLOW_GUIDE.md` (duplicate of `docs/TEAM_WORKFLOW_GUIDE.md`)
+- `docs/CI_CD_WORKFLOW.md` (superseded by `CI_CD_WORKFLOWS.md`)
+- `docs/CI_CD_PIPELINE_SIMPLIFIED.md` (superseded by `CI_CD_WORKFLOWS.md`)
+
+**Updated (removed deleted workflow refs):**
+- `docs/CI_CD_WORKFLOWS.md` - 11 workflows -> 9
+- `docs/FINAL_REPORT.md` - updated table
+- `docs/DEPLOYMENT_GUIDE.md` - removed sections + diagrams
+- `README.md` - updated badge + file tree
+- `jira.md` - updated workflow list
+
+### Commits
+
+| Hash | Message |
+|------|---------|
+| a54d799 | fix(KIEM-37): remove hardcoded password and JWT secret |
+| 2f854e1 | fix(KIEM-30): filter report list by Enterprise service area |
+| 00e66c1 | docs(KIEM-65): add test report for WasteCategory + Notifications |
+| (pending) | chore: workflow cleanup + docs consolidation |

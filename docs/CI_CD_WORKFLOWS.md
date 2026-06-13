@@ -1,13 +1,13 @@
 # 📋 KCPM — Tài Liệu Quy Trình CI/CD Chi Tiết
 
 > **Môn**: Kiểm Chứng Phần Mềm | **Team**: UIT Team 36  
-> **Cập nhật lần cuối**: 2026-06-12
+> **Cập nhật lần cuối**: 2026-06-13
 
 ---
 
 ## 📊 Tổng Quan Pipeline
 
-Project KCPM sử dụng **11 GitHub Actions workflows** để tự động hóa toàn bộ quy trình kiểm thử, triển khai, và báo cáo.
+Project KCPM sử dụng **9 GitHub Actions workflows** để tự động hóa toàn bộ quy trình kiểm thử, triển khai, và báo cáo.
 
 ```mermaid
 graph TD
@@ -18,10 +18,8 @@ graph TD
     A --> F[Postman Smoke]
     
     B -->|success| G[Allure Pages Report]
-    B -->|success| H[Deploy to Render]
     
     G --> I[GitHub Pages<br>Allure Report]
-    H --> J[Render.com<br>Production Backend]
     
     K[Schedule: mỗi 6h] --> L[Health Check]
     M[Schedule: 21:00 UTC daily] --> B
@@ -29,7 +27,6 @@ graph TD
 
     N[Manual trigger] --> O[Create Jira Issues]
     P[PR events] --> Q[Jira Key Enforcement]
-    R[Manual trigger] --> S[Postman Weekly Report]
 ```
 
 ---
@@ -295,26 +292,9 @@ graph TD
 
 ---
 
-## 🌐 Workflow #7: Deploy to Render (`deploy-render.yml`)
-
-### Thông tin cơ bản
-| Thuộc tính | Giá trị |
-|-----------|---------|
-| **Trigger** | Sau `Backend Tests` thành công, `workflow_dispatch` |
-| **Target** | https://kcpm-backend.onrender.com |
-
-### Steps
-| Step # | Step Name | Mô tả |
-|--------|-----------|-------|
-| 1 | Check Deploy Hook | Kiểm tra `RENDER_DEPLOY_HOOK_URL` secret |
-| 2 | **Trigger Render Deploy** | `curl -X POST` Deploy Hook URL |
-| 3 | Wait | 120s cho Render build |
-| 4 | **Health Check** | 5 retries × 30s → `/api/health` |
-| 5 | Summary | Deployment bảng tổng kết |
-
 ---
 
-## 🏥 Workflow #8: Health Check (`health-check.yml`)
+## 🏥 Workflow #7: Health Check (`health-check.yml`)
 
 ### Thông tin cơ bản
 | Thuộc tính | Giá trị |
@@ -333,7 +313,7 @@ graph TD
 
 ---
 
-## 🔑 Workflow #9: Jira Key Enforcement (`jira-key-enforcement.yml`)
+## 🔑 Workflow #8: Jira Key Enforcement (`jira-key-enforcement.yml`)
 
 ### Thông tin cơ bản
 | Thuộc tính | Giá trị |
@@ -355,7 +335,7 @@ graph TD
 
 ---
 
-## 📋 Workflow #10: Create Jira Issues (`create-jira-issues.yml`)
+## 📋 Workflow #9: Create Jira Issues (`create-jira-issues.yml`)
 
 | Thuộc tính | Giá trị |
 |-----------|---------|
@@ -367,15 +347,6 @@ Tạo Jira issues tự động từ test plan definition trong project.
 
 ---
 
-## 📊 Workflow #11: Postman Weekly Report (`postman-weekly-report.yml`)
-
-| Thuộc tính | Giá trị |
-|-----------|---------|
-| **Trigger** | `workflow_dispatch` (manual only) |
-| **Scope** | smoke hoặc all (full collection) |
-
-Giống Postman Smoke nhưng chạy **full collection** + upload artifacts cho weekly report.
-
 ---
 
 ## 🔗 Chuỗi Phụ Thuộc (Dependency Chain)
@@ -383,7 +354,6 @@ Giống Postman Smoke nhưng chạy **full collection** + upload artifacts cho w
 ```
 push/PR to main
     ├── Backend Tests ──────→ [success] ──→ Allure Pages Report
-    │                                  └──→ Deploy to Render
     ├── Frontend E2E ────────────────────→ (artifacts merged vào Allure)
     ├── SonarCloud Analysis
     ├── CI CD Deploy Server (quality-gate → deploy)
@@ -440,7 +410,7 @@ PR events:
 | `JIRA_BASE_URL` | Jira API base URL |
 | `JIRA_API_EMAIL` | Jira API email |
 | `JIRA_API_TOKEN` | Jira API token |
-| `RENDER_DEPLOY_HOOK_URL` | Render.com deploy hook |
+
 | `DEPLOY_HOST` | SSH deploy target host |
 | `DEPLOY_USER` | SSH deploy username |
 | `DEPLOY_SSH_KEY` | SSH deploy private key |
