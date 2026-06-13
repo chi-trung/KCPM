@@ -10,15 +10,16 @@ on:
       action:
         description: 'Action to perform'
         required: true
-        default: 'assign_all'
+        default: 'post_all_evidence'
         type: choice
         options:
-          - create_issues
+          - post_all_evidence
           - evidence
           - all_evidence
           - assign_all
+          - cleanup_duplicates
+          - create_issues
           - distribute_tasks
-          - both
 
 jobs:
   jira_automation:
@@ -37,19 +38,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests
 
-      - name: Create Jira Issues
-        if: ${{ github.event.inputs.action == 'create_issues' || github.event.inputs.action == 'both' }}
-        env:
-          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-          JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-          JIRA_PROJECT_KEY: ${{ secrets.JIRA_PROJECT_KEY }}
-          EPIC_ISSUE_KEY: ${{ github.event.inputs.epic_issue_key }}
-        run: |
-          python Waste-Recycling-Platform/scripts/create_jira_issues.py
+      # ── SAFE actions (evidence only, no new issues created) ──
 
-      - name: Post Sprint Evidence to Jira
-        if: ${{ github.event.inputs.action == 'evidence' || github.event.inputs.action == 'both' }}
+      - name: Post Sprint Evidence (KIEM-40 to KIEM-65)
+        if: ${{ github.event.inputs.action == 'evidence' || github.event.inputs.action == 'post_all_evidence' }}
         env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
@@ -58,18 +50,8 @@ jobs:
         run: |
           python scripts/jira_log_sprint_evidence.py
 
-      - name: Create & Distribute Remaining Tasks
-        if: ${{ github.event.inputs.action == 'distribute_tasks' || github.event.inputs.action == 'both' }}
-        env:
-          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-          JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-          JIRA_PROJECT_KEY: ${{ secrets.JIRA_PROJECT_KEY }}
-        run: |
-          python scripts/create_remaining_tasks.py
-
-      - name: Post ALL Evidence (Old Issues KIEM-4 to KIEM-31)
-        if: ${{ github.event.inputs.action == 'all_evidence' || github.event.inputs.action == 'both' }}
+      - name: Post ALL Evidence (KIEM-4 to KIEM-39)
+        if: ${{ github.event.inputs.action == 'all_evidence' || github.event.inputs.action == 'post_all_evidence' }}
         env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
@@ -79,7 +61,7 @@ jobs:
           python scripts/jira_log_all_evidence.py
 
       - name: Assign ALL Unassigned Issues
-        if: ${{ github.event.inputs.action == 'assign_all' || github.event.inputs.action == 'both' }}
+        if: ${{ github.event.inputs.action == 'assign_all' || github.event.inputs.action == 'post_all_evidence' }}
         env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
@@ -87,3 +69,36 @@ jobs:
           JIRA_PROJECT_KEY: ${{ secrets.JIRA_PROJECT_KEY }}
         run: |
           python scripts/jira_assign_all.py
+
+      # ── DANGEROUS actions (create new issues — use with caution!) ──
+
+      - name: "⚠️ Create Jira Issues (CREATES NEW ISSUES)"
+        if: ${{ github.event.inputs.action == 'create_issues' }}
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_PROJECT_KEY: ${{ secrets.JIRA_PROJECT_KEY }}
+          EPIC_ISSUE_KEY: ${{ github.event.inputs.epic_issue_key }}
+        run: |
+          python Waste-Recycling-Platform/scripts/create_jira_issues.py
+
+      - name: "⚠️ Distribute Remaining Tasks (CREATES NEW ISSUES)"
+        if: ${{ github.event.inputs.action == 'distribute_tasks' }}
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_PROJECT_KEY: ${{ secrets.JIRA_PROJECT_KEY }}
+        run: |
+          python scripts/create_remaining_tasks.py
+
+      - name: "🧹 Cleanup Duplicate Issues (KIEM-74+)"
+        if: ${{ github.event.inputs.action == 'cleanup_duplicates' }}
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_PROJECT_KEY: ${{ secrets.JIRA_PROJECT_KEY }}
+        run: |
+          python scripts/jira_cleanup_duplicates.py
