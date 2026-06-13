@@ -10,11 +10,12 @@ on:
       action:
         description: 'Action to perform'
         required: true
-        default: 'evidence'
+        default: 'all_evidence'
         type: choice
         options:
           - create_issues
           - evidence
+          - all_evidence
           - distribute_tasks
           - both
 
@@ -65,3 +66,13 @@ jobs:
           JIRA_PROJECT_KEY: ${{ secrets.JIRA_PROJECT_KEY }}
         run: |
           python scripts/create_remaining_tasks.py
+
+      - name: Post ALL Evidence (Old Issues KIEM-4 to KIEM-31)
+        if: ${{ github.event.inputs.action == 'all_evidence' || github.event.inputs.action == 'both' }}
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_PROJECT_KEY: ${{ secrets.JIRA_PROJECT_KEY }}
+        run: |
+          python scripts/jira_log_all_evidence.py
