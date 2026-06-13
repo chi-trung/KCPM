@@ -616,3 +616,32 @@ Bổ sung minh chứng cho tasks thiếu, phát triển Jira board chuyên nghi�
 |------|---------|
 | 6c394d2 | add missing evidence for KIEM-60/61/65, fix 9-workflow refs |
 | 9d6c133 | fix Jira workflow, add cleanup script |
+
+---
+
+## Session 11: Jira Automation — Live CI Logging Expansion (2026-06-14 03h16)
+
+### Yêu cầu
+User yêu cầu Jira log phải lấy từ kết quả CI output thật, không phải text tĩnh ghi tay.
+
+### Phân tích hệ thống hiện tại
+| Category | Script | Data Source | Status |
+|----------|--------|------------|--------|
+| **Live CI logs** | `jira_log_test_execution.py` | Real TRX test output | ✅ Automated |
+| **Static evidence** | `jira_log_all_evidence.py` | Hardcoded descriptions | ✅ OK (evidence IS static) |
+| **Static evidence** | `jira_log_sprint_evidence.py` | Hardcoded descriptions | ✅ OK (evidence IS static) |
+
+### Kết luận
+- Live CI logging (Category 1) ĐÃ automated — đọc từ `.trx` test results thật
+- Static evidence (Category 2) là phù hợp — mô tả kỹ thuật/files/PRs là dữ liệu tĩnh by nature
+
+### Cải thiện
+- Mở rộng `ISSUE_MAP` từ **20 issues → 30 issues** (thêm Sprint-2/3 tasks)
+- Giờ mỗi push to main, live CI results tự động log lên 30+ Jira issues
+
+### Commits
+
+| Hash | Message |
+|------|---------|
+| d26cf1a | expand live CI Jira logging to 30 issues (add Sprint-2/3 tasks to ISSUE_MAP) |
+
