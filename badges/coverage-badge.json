@@ -1,6 +1,6 @@
 {
+  "schemaVersion": 1,
   "color": "red",
-  "label": "branch coverage",
   "message": "48.2%",
-  "schemaVersion": 1
+  "label": "branch coverage"
 }
