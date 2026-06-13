@@ -14,6 +14,7 @@ on:
         type: choice
         options:
           - post_all_evidence
+          - audit_board
           - evidence
           - all_evidence
           - assign_all
@@ -102,3 +103,13 @@ jobs:
           JIRA_PROJECT_KEY: ${{ secrets.JIRA_PROJECT_KEY }}
         run: |
           python scripts/jira_cleanup_duplicates.py
+
+      - name: "📊 Audit Board (read-only report)"
+        if: ${{ github.event.inputs.action == 'audit_board' }}
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_PROJECT_KEY: ${{ secrets.JIRA_PROJECT_KEY }}
+        run: |
+          python scripts/jira_audit.py
