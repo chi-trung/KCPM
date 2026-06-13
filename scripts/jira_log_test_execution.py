@@ -118,7 +118,7 @@ ISSUE_MAP = {
         "KIEM-22",  # AuditLog & Error Path (Thanh Duy)
         "KIEM-23",  # Search, Pagination & Filters (11A6_03_Đăng)
         # Sprint tasks — CI/CD & Infrastructure (Nguyễn Chí Trung)
-        "KIEM-40",  # [Sprint-1] CI/CD Pipeline (11 workflows)
+        "KIEM-40",  # [Sprint-1] CI/CD Pipeline (9 workflows)
         "KIEM-45",  # [Sprint-2] Auth Tests (EP + Error Guessing)
         "KIEM-50",  # [Sprint-2] E2E Tests (19 scenarios)
         "KIEM-53",  # [Sprint-3] Fix SonarCloud Quality Gate
