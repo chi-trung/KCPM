@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build --no-lint",
-    "start": "node .next/standalone/server.js",
+    "start": "next start",
     "e2e": "codeceptjs run --config codecept.conf.js",
     "e2e:ci": "npm run build && start-server-and-test start http://127.0.0.1:3000 e2e"
   },
