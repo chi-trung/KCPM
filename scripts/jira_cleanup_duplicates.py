@@ -2,12 +2,10 @@
 """
 jira_cleanup_duplicates.py
 ---------------------------
-Close all duplicate Jira issues by transitioning them to Done and 
-prefixing titles with [DUPLICATE].
+DELETE all duplicate Jira issues (KIEM-75+).
 
-Duplicate ranges:
-  - KIEM-74 to KIEM-83 (duplicates of KIEM-63 to KIEM-72)
-  - KIEM-84 to KIEM-135+ (duplicates created by accidental re-runs)
+These were accidentally created by the "both" workflow action.
+Valid issues: KIEM-3 to KIEM-73 (original), everything else is a duplicate.
 
 Run via: .github/workflows/create-jira-issues.yml (action=cleanup_duplicates)
 """
@@ -47,18 +45,14 @@ def jira(method, path, body=None):
         return {"error": str(e)}
 
 
-# Known valid issue range (non-duplicates)
-VALID_ISSUES = set(range(3, 74))  # KIEM-3 to KIEM-73 are valid
-# KIEM-74+ are potential duplicates
-
 def get_all_issues():
-    """Get ALL issues in KIEM project."""
+    """Get ALL issues in KIEM project using the new /search/jql endpoint."""
     from urllib.parse import quote
     jql = quote("project = KIEM ORDER BY key ASC")
     all_issues = []
     start = 0
     while True:
-        resp = jira("GET", f"search?jql={jql}&maxResults=100&startAt={start}&fields=key,summary,status")
+        resp = jira("GET", f"search/jql?jql={jql}&maxResults=100&startAt={start}&fields=key,summary,status")
         if "issues" not in resp:
             print(f"  Search failed: {resp}")
             break
@@ -70,48 +64,14 @@ def get_all_issues():
     return all_issues
 
 
-def get_transitions(issue_key):
-    """Get available transitions for an issue."""
-    resp = jira("GET", f"issue/{issue_key}/transitions")
-    if "transitions" in resp:
-        return {t["name"]: t["id"] for t in resp["transitions"]}
-    return {}
-
-
-def transition_to_done(issue_key):
-    """Transition an issue to Done status."""
-    transitions = get_transitions(issue_key)
-    
-    # Try direct "Done" transition
-    if "Done" in transitions:
-        result = jira("POST", f"issue/{issue_key}/transitions", {"transition": {"id": transitions["Done"]}})
-        return "error" not in result
-    
-    # Try "In Progress" first, then "Done"
-    if "In Progress" in transitions:
-        jira("POST", f"issue/{issue_key}/transitions", {"transition": {"id": transitions["In Progress"]}})
-        # Now try Done again
-        transitions2 = get_transitions(issue_key)
-        if "Done" in transitions2:
-            result = jira("POST", f"issue/{issue_key}/transitions", {"transition": {"id": transitions2["Done"]}})
-            return "error" not in result
-    
-    return False
-
-
-def mark_as_duplicate(issue_key, summary):
-    """Prefix title with [DUPLICATE] and transition to Done."""
-    if not summary.startswith("[DUPLICATE]"):
-        new_summary = f"[DUPLICATE] {summary}"
-        jira("PUT", f"issue/{issue_key}", {"fields": {"summary": new_summary}})
-        print(f"  Renamed: {new_summary[:80]}")
-    
-    if transition_to_done(issue_key):
-        print(f"  ✅ {issue_key} → Done")
-        return True
-    else:
-        print(f"  ⚠️ {issue_key} — could not transition to Done")
+def delete_issue(issue_key):
+    """Delete an issue permanently."""
+    result = jira("DELETE", f"issue/{issue_key}")
+    if "error" in result:
+        print(f"  ❌ DELETE {issue_key} failed: {result.get('error')} - {result.get('detail', '')[:100]}")
         return False
+    print(f"  🗑️ DELETED {issue_key}")
+    return True
 
 
 def main():
@@ -130,38 +90,44 @@ def main():
     all_issues = get_all_issues()
     print(f"Found {len(all_issues)} total issues")
 
+    # Valid issues: KIEM-3 to KIEM-73
+    VALID_MAX = 73
+
     # Find duplicates (KIEM-74+)
     duplicates = []
     for issue in all_issues:
         key = issue["key"]
-        num = int(key.replace("KIEM-", ""))
-        summary = issue["fields"]["summary"]
-        status = issue["fields"]["status"]["name"]
-        
-        if num >= 74 and status != "Done":
-            duplicates.append((key, summary, status))
-        elif num >= 74 and status == "Done" and not summary.startswith("[DUPLICATE]"):
-            # Already done but not marked — just rename
-            duplicates.append((key, summary, status))
+        try:
+            num = int(key.replace("KIEM-", ""))
+        except ValueError:
+            continue
+        if num > VALID_MAX:
+            summary = issue["fields"]["summary"]
+            status = issue["fields"]["status"]["name"]
+            duplicates.append((key, num, summary, status))
 
-    print(f"\nFound {len(duplicates)} duplicate issues to process")
+    print(f"\nFound {len(duplicates)} duplicate issues (KIEM-{VALID_MAX + 1}+)")
 
-    # Process duplicates
-    success = 0
-    for key, summary, status in duplicates:
-        print(f"\n  Processing {key} [{status}]: {summary[:60]}...")
-        if status == "Done":
-            # Just rename
-            if not summary.startswith("[DUPLICATE]"):
-                jira("PUT", f"issue/{key}", {"fields": {"summary": f"[DUPLICATE] {summary}"}})
-                print(f"  Renamed to [DUPLICATE]")
-            success += 1
+    if not duplicates:
+        print("No duplicates to delete!")
+        return
+
+    # Try to DELETE each duplicate
+    deleted = 0
+    failed = 0
+    for key, num, summary, status in duplicates:
+        print(f"\n  [{key}] [{status}] {summary[:60]}...")
+        if delete_issue(key):
+            deleted += 1
         else:
-            if mark_as_duplicate(key, summary):
-                success += 1
+            failed += 1
 
     print(f"\n{'='*60}")
-    print(f"Processed {success}/{len(duplicates)} duplicates")
+    print(f"Results: {deleted} deleted, {failed} failed, {len(duplicates)} total")
+
+    if failed > 0:
+        print(f"\n⚠️ {failed} issues could not be deleted (may need admin permission).")
+        print("Those issues have been left as-is. Manual deletion may be required.")
 
 
 if __name__ == "__main__":

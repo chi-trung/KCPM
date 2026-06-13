@@ -62,7 +62,7 @@ def main():
     all_issues = []
     start = 0
     while True:
-        resp = jira("GET", f"search?jql={jql}&maxResults=100&startAt={start}&fields=key,summary,status,assignee,comment")
+        resp = jira("GET", f"search/jql?jql={jql}&maxResults=100&startAt={start}&fields=key,summary,status,assignee,comment")
         if "issues" not in resp:
             print(f"Search failed: {resp}")
             break

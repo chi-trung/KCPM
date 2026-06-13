@@ -723,6 +723,48 @@ ALL_EVIDENCE = {
             ("jira_log_sprint_evidence.py", f"{REPO_URL}/blob/main/scripts/jira_log_sprint_evidence.py"),
         ],
     },
+
+    # ─── KIEM-3 — Epic Summary ─────────────────────────────────
+    "KIEM-3": {
+        "t": "WRP-BE-TESTS — Backend API Testing & QA (Epic Summary)",
+        "i": [
+            [b("Epic:"), t(" WRP-BE-TESTS — chứa 20 child issues (KIEM-4 to KIEM-23)")],
+            [b("Tests:"), t(" 455 xUnit tests, 19 E2E scenarios, 50+ Postman assertions")],
+            [b("Coverage:"), t(" 18 backend modules, auth/reports/notifications/complaints/admin/analytics/etc.")],
+            [b("Allure:"), t(" Full test report with history, environment, and executor metadata")],
+            [b("CI:"), t(" backend-tests.yml auto-runs on every push, auto-logs to Jira via jira_log_test_execution.py")],
+            [b("Techniques:"), t(" EP, BVA, Decision Table, State Transition, Error Guessing")],
+        ],
+        "c": [
+            "multiple  All commits from KIEM-4 to KIEM-23 (20 child issues)",
+            "f72ef74  fix: correct AllureIssue KIEM attribution in all test classes",
+        ],
+        "l": [
+            ("Allure Report", ALLURE),
+            ("Jira Board", "https://ut-team-36.atlassian.net/jira/software/projects/KIEM/boards/3"),
+            ("Backend Tests Workflow", f"{REPO_URL}/blob/main/.github/workflows/backend-tests.yml"),
+            ("Test Project", f"{REPO_URL}/tree/main/Waste-Recycling-Platform/backend/tests/WastePlatform.Tests"),
+        ],
+    },
+
+    # ─── KIEM-73 — Health Endpoint Fix ─────────────────────────
+    "KIEM-73": {
+        "t": "[Sprint-3] Fix Health Endpoint Verification",
+        "i": [
+            [b("Issue:"), t(" Health endpoint verification was failing in postman-smoke.yml")],
+            [b("Root cause:"), t(" /api/health endpoint returns plain text, not JSON — Invoke-WebRequest works correctly")],
+            [b("Fix:"), t(" Updated wait-for-health script to use -UseBasicParsing and check StatusCode == 200")],
+            [b("Result:"), t(" Postman Smoke Tests workflow passes consistently on every push")],
+            [b("CI Verification:"), t(" postman-smoke.yml runs successfully (Run #538+)")],
+        ],
+        "c": [
+            "b1e5b72  fix(KIEM-73): health endpoint check uses -UseBasicParsing",
+        ],
+        "l": [
+            ("postman-smoke.yml", f"{REPO_URL}/blob/main/.github/workflows/postman-smoke.yml"),
+            ("CI Run History", f"{REPO_URL}/actions/workflows/postman-smoke.yml"),
+        ],
+    },
 }
 
 def main():
