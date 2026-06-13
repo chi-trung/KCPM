@@ -173,16 +173,16 @@
 ### CI Dashboard Output (mỗi run):
 
 ```
-✅ Backend Tests — Run #447
+✅ Backend Tests — Run #484
 ┌────────────────────────────────┐
 │ Status:        PASSED          │
-│ ✅ Passed:     245             │
+│ ✅ Passed:     451             │
 │ ❌ Failed:     0               │
-│ 📊 Total:      245             │
+│ 📊 Total:      451             │
 │ 🎯 Pass Rate:  100%            │
-│ 📈 Line Coverage:   XX.X%     │  ← NEW
-│ 🌿 Branch Coverage: XX.X%     │  ← NEW
-│ 🔧 Method Coverage: XX.X%     │  ← NEW
+│ 📈 Line Coverage:   XX.X%     │
+│ 🌿 Branch Coverage: XX.X%     │
+│ 🔧 Method Coverage: XX.X%     │
 └────────────────────────────────┘
 ```
 
