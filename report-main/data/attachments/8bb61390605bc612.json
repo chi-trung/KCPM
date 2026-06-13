@@ -1,0 +1,15 @@
+{
+  "taskId": "1f1897ed-664c-4515-8778-3a0abaf4eb32",
+  "persistedImages": [
+    {
+      "Id": "11f41984-5b6c-4911-b5ad-d2e09b985e9a",
+      "TaskId": "1f1897ed-664c-4515-8778-3a0abaf4eb32",
+      "ImageUrl": "https://example.com/img2.jpg"
+    },
+    {
+      "Id": "6f77a4d1-3dd6-4877-8436-5d4a1f5c2c29",
+      "TaskId": "1f1897ed-664c-4515-8778-3a0abaf4eb32",
+      "ImageUrl": "https://example.com/img1.jpg"
+    }
+  ]
+}
