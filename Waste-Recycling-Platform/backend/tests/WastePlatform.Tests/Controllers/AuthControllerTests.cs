@@ -297,9 +297,9 @@ public class AuthControllerTests
     /// </summary>
     [Fact]
     [AllureDescription("EP: Register with Collector role should succeed")]
-    public async Task Register_WithCollectorRole_ShouldReturnOk()
+    public async Task Register_WithCollectorRole_ShouldReturnConflict()
     {
-        // Arrange
+        // Arrange — Collector role NOT allowed for self-registration (Admin creates collectors)
         await using var context = CreateContext();
         var jwtServiceMock = new Mock<IJwtService>();
         jwtServiceMock.Setup(x => x.GenerateToken(It.IsAny<User>())).Returns("collector-token");
@@ -312,17 +312,50 @@ public class AuthControllerTests
             Email = "collector@example.com",
             Password = "CollectorPass123!",
             FullName = "New Collector",
-            Role = UserRole.Collector  // Different role EP
+            Role = UserRole.Collector  // Invalid EP — self-registration not allowed
+        };
+
+        // Act
+        var result = await controller.Register(cmd);
+
+        // Assert — Collector self-registration is restricted
+        AllureAttachmentHelper.AttachJson("collector-register-command", cmd);
+        result.Should().BeOfType<ConflictObjectResult>(
+            "Collector role should not be self-registerable (EP: invalid partition)");
+    }
+
+    /// <summary>
+    /// EP: Register with Enterprise role (valid partition)
+    /// Kỹ thuật: Equivalence Partitioning (Ch.4)
+    /// </summary>
+    [Fact]
+    [AllureDescription("EP: Register with Enterprise role should succeed")]
+    public async Task Register_WithEnterpriseRole_ShouldReturnOk()
+    {
+        // Arrange
+        await using var context = CreateContext();
+        var jwtServiceMock = new Mock<IJwtService>();
+        jwtServiceMock.Setup(x => x.GenerateToken(It.IsAny<User>())).Returns("enterprise-token");
+
+        var authService = new AuthService(context, jwtServiceMock.Object);
+        var controller = new AuthController(authService);
+
+        var cmd = new RegisterCommand
+        {
+            Email = "enterprise@example.com",
+            Password = "EnterprisePass123!",
+            FullName = "New Enterprise",
+            Role = UserRole.Enterprise  // Valid EP — Enterprise can self-register
         };
 
         // Act
         var result = await controller.Register(cmd);
 
         // Assert
-        AllureAttachmentHelper.AttachJson("collector-register-command", cmd);
+        AllureAttachmentHelper.AttachJson("enterprise-register-command", cmd);
         var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
         var response = okResult.Value.Should().BeOfType<AuthResponseDto>().Subject;
-        response.User.Role.Should().Be("collector");
+        response.User.Role.Should().Be("enterprise");
     }
 
     private static WastePlatformDbContext CreateContext()
