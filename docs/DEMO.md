@@ -21,20 +21,16 @@
 │  └────┬─────┘  └──────────┘  └──────────┘  └─────────┘ │
 │       │                                                  │
 │       ▼ (nếu PASS)                                       │
-│  ┌──────────┐  ┌──────────┐                              │
-│  │ Deploy   │  │ Allure   │                              │
-│  │ Render   │  │ Pages    │                              │
-│  └──────────┘  └──────────┘                              │
+│  ┌──────────┐                                            │
+│  │ Allure   │                                            │
+│  │ Pages    │                                            │
+│  └──────────┘                                            │
 │                                                          │
 │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌─────────┐ │
 │  │ Health   │  │ Jira Key │  │ Postman  │  │ Create  │ │
 │  │ Check    │  │Enforce   │  │ Smoke    │  │ Jira    │ │
 │  │ (6h)     │  │ (PR)     │  │ (API)    │  │ Issues  │ │
 │  └──────────┘  └──────────┘  └──────────┘  └─────────┘ │
-│                               ┌──────────┐              │
-│                               │ Postman  │              │
-│                               │ Weekly   │              │
-│                               └──────────┘              │
 └─────────────────────────────────────────────────────────┘
          │
          ▼
@@ -48,7 +44,7 @@
 
 ---
 
-## 📋 Bảng Tóm Tắt 11 Workflows
+## 📋 Bảng Tóm Tắt 9 Workflows
 
 | # | Tên Workflow | File YAML | Khi nào chạy? | Làm gì? | Output? |
 |---|-------------|-----------|---------------|---------|---------|
@@ -58,11 +54,9 @@
 | 4 | Postman Smoke | `postman-smoke.yml` | PR / Hàng ngày 21h / Manual | Chạy API tests qua Newman + Docker | JUnit XML, Allure, Jira comments |
 | 5 | Allure Pages | `allure-gh-pages.yml` | Sau Backend Tests pass | Merge 3 nguồn test → 1 report đẹp | GitHub Pages report |
 | 6 | Deploy Server | `deploy-server.yml` | Push main | Quality gate → SSH deploy lên server | Server production updated |
-| 7 | Deploy Render | `deploy-render.yml` | Sau Backend Tests pass | Gọi Deploy Hook → Render build Docker | Backend live trên render.com |
-| 8 | Health Check | `health-check.yml` | Mỗi 6 giờ | Ping 4 services kiểm tra còn sống | Step Summary ✅/❌ |
-| 9 | Jira Key | `jira-key-enforcement.yml` | Mở/sửa PR | Kiểm tra PR title + commits có Jira key | Block merge nếu thiếu |
-| 10 | Create Jira | `create-jira-issues.yml` | Bấm tay (manual) | Tạo issues trên Jira tự động | Jira issues created |
-| 11 | Postman Weekly | `postman-weekly-report.yml` | Bấm tay (manual) | Chạy full Postman collection | Weekly evidence report |
+| 7 | Health Check | `health-check.yml` | Mỗi 6 giờ | Ping 4 services kiểm tra còn sống | Step Summary ✅/❌ |
+| 8 | Jira Key | `jira-key-enforcement.yml` | Mở/sửa PR | Kiểm tra PR title + commits có Jira key | Block merge nếu thiếu |
+| 9 | Create Jira | `create-jira-issues.yml` | Bấm tay (manual) | Tạo issues trên Jira tự động | Jira issues created |
 
 ---
 
@@ -143,7 +137,6 @@ Step 15: Upload Allure results
 
 **Sau khi workflow này PASS → tự động trigger:**
 - Workflow #5 (Allure Pages Report)
-- Workflow #7 (Deploy to Render)
 
 ---
 
@@ -407,40 +400,9 @@ https://chi-trung.github.io/KCPM/
 
 ---
 
-### ☁️ Workflow #7: Deploy to Render (`deploy-render.yml`)
-
-```
-📌 Trigger:  Sau "Backend Tests" PASS | bấm tay
-🎯 Target:   https://kcpm-backend.onrender.com
-```
-
-```
-Step 1: Kiểm tra RENDER_DEPLOY_HOOK_URL secret
-
-Step 2: 🚀 GỌI DEPLOY HOOK
-   └─ curl -X POST $RENDER_DEPLOY_HOOK_URL
-   └─ Render nhận request → bắt đầu build
-   └─ Response: HTTP 202 Accepted
-
-Step 3: ⏳ CHỜ BUILD
-   └─ sleep 120 giây (Render cần thời gian Docker build)
-
-Step 4: ✅ HEALTH CHECK
-   └─ 5 lần retry × 30 giây timeout
-   └─ GET https://kcpm-backend.onrender.com/api/health
-   └─ Chờ response: {"status":"ok"}
-
-Step 5: 📝 SUMMARY
-   └─ Ghi bảng tổng kết:
-      | Service  | URL                                    | Status |
-      | Backend  | https://kcpm-backend.onrender.com      | ✅     |
-      | Swagger  | .../swagger                            | ✅     |
-      | Frontend | https://kcpm.vercel.app                | ✅     |
-```
-
 ---
 
-### 🏥 Workflow #8: Health Check (`health-check.yml`)
+### 🏥 Workflow #7: Health Check (`health-check.yml`)
 
 ```
 📌 Trigger:  Mỗi 6 giờ tự động | bấm tay
@@ -467,7 +429,7 @@ Output: Step Summary hiện bảng ✅/❌ cho từng service
 
 ---
 
-### 🔑 Workflow #9: Jira Key Enforcement (`jira-key-enforcement.yml`)
+### 🔑 Workflow #8: Jira Key Enforcement (`jira-key-enforcement.yml`)
 
 ```
 📌 Trigger:  Mở PR / Sửa PR / Thêm commit vào PR
@@ -495,7 +457,7 @@ Ví dụ output khi FAIL:
 
 ---
 
-### 📋 Workflow #10: Create Jira Issues (`create-jira-issues.yml`)
+### 📋 Workflow #9: Create Jira Issues (`create-jira-issues.yml`)
 
 ```
 📌 Trigger:  Bấm tay (manual only)
@@ -513,21 +475,6 @@ Step 4: Chạy scripts/create_jira_issues.py
 ```
 
 ---
-
-### 📊 Workflow #11: Postman Weekly Report (`postman-weekly-report.yml`)
-
-```
-📌 Trigger:  Bấm tay (manual only)
-🎯 Mục đích: Chạy FULL Postman collection + tạo evidence hàng tuần
-```
-
-```
-Giống Postman Smoke (#4) nhưng:
-  • Chạy TẤT CẢ folders (không chỉ Smoke)
-  • Upload evidence artifact đầy đủ
-  • Log kết quả lên Jira
-  • Dùng cho báo cáo weekly
-```
 
 ---
 
@@ -547,8 +494,7 @@ Giống Postman Smoke (#4) nhưng:
 │  Vercel auto-deploy ───┼── Frontend live (~1 phút)          │
 │                        │                                     │
 │  Sau ① PASS (~5 phút): │                                    │
-│  ├── ⑤ Allure Pages ──┼── Report published (~10 phút)      │
-│  └── ⑦ Deploy Render ─┼── Backend live (~12 phút)          │
+│  └── ⑤ Allure Pages ──┼── Report published (~10 phút)      │
 │                                                              │
 │  TỔNG THỜI GIAN: ~15 phút từ push → production              │
 └─────────────────────────────────────────────────────────────┘
@@ -575,8 +521,7 @@ Giống Postman Smoke (#4) nhưng:
 ┌─────────────────────────────────────────────────────────────┐
 │                    BẤM TAY (MANUAL)                           │
 │                                                              │
-│  ⑩ Create Jira Issues                                       │
-│  ⑪ Postman Weekly Report                                    │
+│  ⑨ Create Jira Issues                                       │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -605,20 +550,14 @@ t = 6 min   🟢 Backend Tests: 245+ tests PASSED ✅
                │   ├── Coverage badges pushed to gh-pages
                │   ├── Jira comment: "245 passed, 0 failed"
                │   └── Triggers:
-               │       ├── ⑤ Allure Pages Report
-               │       └── ⑦ Deploy to Render
+               │       └── ⑤ Allure Pages Report
                │
-t = 7 min   ⑦ Deploy Render: POST Deploy Hook → Render starts build
+               t = 10 min  ④ CI CD Deploy: Quality gate pass → SSH deploy ✅
                │
-t = 10 min  ④ CI CD Deploy: Quality gate pass → SSH deploy ✅
-               │
-t = 12 min  🟢 Render: Docker build complete → Backend LIVE ✅
-               ⑦ Health check: /api/health → 200 OK ✅
-               │
-t = 15 min  🟢 Allure Pages: Report published ✅
+               t = 12 min  🟢 Allure Pages: Report published ✅
                └── Live: chi-trung.github.io/KCPM/report-main/
 
-t = 15 min  ✅ TẤT CẢ HOÀN TẤT
+t = 12 min  ✅ TẤT CẢ HOÀN TẤT
                • Frontend: kcpm.vercel.app ✅
                • Backend: kcpm-backend.onrender.com ✅
                • Report: chi-trung.github.io/KCPM ✅
@@ -633,8 +572,7 @@ t = 15 min  ✅ TẤT CẢ HOÀN TẤT
 | Secret | Dùng cho workflow | Lấy từ đâu |
 |--------|------------------|-------------|
 | `SONAR_TOKEN` | #3 SonarCloud | sonarcloud.io → My Account → Security |
-| `RENDER_DEPLOY_HOOK_URL` | #7 Deploy Render | Render Dashboard → Settings → Deploy Hook |
-| `JIRA_BASE_URL` | #1,2,4,5,11 | `https://ut-team-36.atlassian.net` |
+| `JIRA_BASE_URL` | #1,2,4,5 | `https://ut-team-36.atlassian.net` |
 | `JIRA_API_EMAIL` | #1,2,4,5,11 | Email tài khoản Atlassian |
 | `JIRA_API_TOKEN` | #1,2,4,5,11 | Atlassian → Account → API tokens |
 | `DEPLOY_HOST` | #6 Deploy Server | IP server SSH |
@@ -646,7 +584,7 @@ t = 15 min  ✅ TẤT CẢ HOÀN TẤT
 ## 🗣️ Script Nói Cho Thầy
 
 ### Mở đầu:
-> "Thưa thầy, hệ thống CI/CD của nhóm em gồm **11 GitHub Actions workflows** tự động hóa toàn bộ quy trình kiểm thử, triển khai, và báo cáo."
+> "Thưa thầy, hệ thống CI/CD của nhóm em gồm **9 GitHub Actions workflows** tự động hóa toàn bộ quy trình kiểm thử, triển khai, và báo cáo."
 
 ### Giải thích luồng chính:
 > "Khi developer push code lên nhánh main, GitHub Actions **tự động** chạy 4 workflows đồng thời:
@@ -656,8 +594,7 @@ t = 15 min  ✅ TẤT CẢ HOÀN TẤT
 > 4. **CI/CD Deploy Server** — chạy quality gate (3 loại test phải pass) rồi mới deploy"
 
 ### Giải thích chuỗi phụ thuộc:
-> "Sau khi Backend Tests **pass**, tự động trigger thêm 2 workflows:
-> - **Deploy to Render** — gọi deploy hook, Render build Docker image, start container, health check
+> "Sau khi Backend Tests **pass**, tự động trigger:
 > - **Allure Pages** — thu thập kết quả từ **3 nguồn** (xUnit + Postman + E2E), merge thành 1 report đẹp, deploy lên GitHub Pages"
 
 ### Giải thích schedule:
