@@ -46,6 +46,22 @@ jobs:
           CODECEPT_BASE_URL: http://127.0.0.1:3000
         run: npm run e2e:ci
 
+      - name: Debug - list allure-results after E2E
+        if: always()
+        run: |
+          echo "=== Checking allure-results ==="
+          if [ -d ./allure-results ]; then
+            echo "Directory exists. Contents:"
+            ls -la ./allure-results/
+            echo "JSON result files:"
+            find ./allure-results -name "*-result.json" | head -20
+            echo "Total JSON files: $(find ./allure-results -name '*.json' | wc -l)"
+          else
+            echo "::warning::allure-results directory does NOT exist"
+            echo "Listing working directory contents:"
+            ls -la
+          fi
+
       - name: Write Allure executor metadata for E2E
         if: always()
         run: |
