@@ -2,10 +2,10 @@
 # Dự án: Waste Recycling Platform (WRP)
 # Môn học: Kiểm thử Phần mềm — Chương 6: Quản lý Kiểm thử
 
-**Phiên bản:** 2.0  
+**Phiên bản:** 3.0  
 **Ngày lập:** 12/06/2026  
 **Nhóm:** 11A6 — KiemChungPhanMem (KCPM)  
-**Giảng viên hướng dẫn:** Thầy Bảo  
+**Giảng viên hướng dẫn:** Thầy Chiến  
 
 ---
 
@@ -69,10 +69,10 @@ Theo giáo trình Chương 2 — **Các mức kiểm thử**:
 
 | Mức | Tool | Số lượng tests | Coverage target |
 |-----|------|----------------|-----------------|
-| Unit | xUnit (.NET) | 245 tests | ≥ 85% branch |
-| Integration | xUnit + InMemory | ~60 tests | ≥ 70% |
-| E2E | CodeceptJS | 8 scenarios | Critical paths |
-| API | Postman | ~20 requests | Auth + Security |
+| Unit | xUnit (.NET) | **451 tests** (57 files) | ≥ 85% branch |
+| Integration | xUnit + InMemory | ~120 tests (included in 451) | ≥ 70% |
+| E2E | CodeceptJS + Playwright | **19 scenarios** (5 files) | Critical paths |
+| API | Postman/Newman | **74 requests** (128 assertions) | Auth + Security + CRUD |
 
 ---
 
@@ -165,7 +165,8 @@ Theo giáo trình Chương 7:
 | Môi trường | URL | Mục đích |
 |-----------|-----|---------|
 | **CI/CD (GitHub Actions)** | windows-latest runner | Automated tests |
-| **Staging (render.com)** | https://wrp-api.onrender.com | Integration tests |
+| **Production (Render.com)** | https://kcpm-backend.onrender.com | Integration + E2E tests |
+| **Frontend (Vercel)** | https://kcpm.vercel.app | E2E browser tests |
 | **Local** | localhost:8080 / localhost:3000 | Dev & debug |
 
 **Test data:**
@@ -176,12 +177,11 @@ Theo giáo trình Chương 7:
 
 ## 9. Lịch trình Kiểm thử (Test Schedule)
 
-| Giai đoạn | Hoạt động | Thời gian |
-|----------|-----------|----------|
-| Sprint 1 | Unit tests (Auth, Reports) | Tuần 1-2 |
-| Sprint 2 | Integration + API tests | Tuần 3-4 |
-| Sprint 3 | E2E + Bug regression | Tuần 5-6 |
-| Sprint 4 | BVA + Decision Table + Bug fix | Tuần 7 (hiện tại) |
+| Giai đoạn | Hoạt động | Thời gian | Tasks | Status |
+|----------|-----------|----------|-------|--------|
+| Sprint 1 | Infrastructure, CI/CD, Test Planning, Deploy | Tuần 1-2 | 5 tasks | ✅ DONE |
+| Sprint 2 | Test Development (xUnit, E2E, Postman) | Tuần 3-5 | 10 tasks | ✅ DONE |
+| Sprint 3 | Quality Assurance, Bug Fix, Final Report | Tuần 6-7 | 8 tasks | 🔄 IN PROGRESS |
 
 ---
 
@@ -189,15 +189,18 @@ Theo giáo trình Chương 7:
 
 Theo giáo trình Chương 6 — **Khi nào dừng kiểm thử**:
 
-- ✅ Tất cả 68 test cases đã chạy
-- ✅ Pass rate ≥ 95% (65/68 = 95.6%)  
+- ✅ Tất cả **600+ test cases** đã chạy (451 xUnit + 19 E2E + 74 Postman + 68 manual)
+- ✅ Pass rate **100%** cho automated tests (451/451 xUnit pass)
 - ✅ Không có Critical/High bug chưa fix
-- ✅ Coverage ≥ 85% statements (CI report)
-- ✅ Jira: tất cả 19 KIEM test issues được log
+- ✅ SonarCloud Quality Gate: **0 vulnerabilities** (security_rating = A)
+- ✅ Jira: tất cả **36 KIEM issues** được CI auto-log
+- ✅ Allure Report: 3 suites (Backend, API, E2E)
 
-**Bug exceptions:**  
-- KIEM-26 (F = Bug open) — đang fix
-- KIEM-29 (F = Bug open) — đang fix
+**Bug fix status:**
+- KIEM-26: Missing mandatory image validation → ✅ **DONE**
+- KIEM-27: PUT /notifications returns 200 for 404 → ✅ **DONE**
+- KIEM-28: Include taskId in accept response → 📋 TO DO (assigned Minh Phụng)
+- KIEM-29: Missing max 5 images validation → ✅ **DONE**
 
 ---
 
@@ -205,12 +208,12 @@ Theo giáo trình Chương 6 — **Khi nào dừng kiểm thử**:
 
 Theo giáo trình Chương 5 — **Lỗi phần mềm**:
 
-| Defect ID | Mô tả | Severity | Status | Assigned |
-|-----------|-------|----------|--------|---------|
-| KIEM-26 | Missing mandatory image validation in Create Report | High | In Progress | Nguyễn Hoàng Phụng |
-| KIEM-27 | PUT /notifications/{id}/read returns 200 for 404 | Medium | Done ✅ | Nguyễn Hoàng Phụng |
-| KIEM-28 | Include taskId in report accept response | Low | To Do | Minh Phụng |
-| KIEM-29 | Missing maximum 5 images validation constraint | High | To Do | Thanh Duy |
+| Defect ID | Mô tả | Severity | Status | Assigned | Fix Commit |
+|-----------|-------|----------|--------|----------|------------|
+| KIEM-26 | Missing mandatory image validation in Create Report | High | ✅ Done | Nguyễn Hoàng Phụng | `1d50e4c` |
+| KIEM-27 | PUT /notifications/{id}/read returns 200 for 404 | Medium | ✅ Done | Nguyễn Hoàng Phụng | — |
+| KIEM-28 | Include taskId in report accept response | Low | 📋 To Do | Minh Phụng | — |
+| KIEM-29 | Missing maximum 5 images validation constraint | High | ✅ Done | Thanh Duy | `1d50e4c` |
 
 ---
 
@@ -218,13 +221,17 @@ Theo giáo trình Chương 5 — **Lỗi phần mềm**:
 
 | Metric | Giá trị hiện tại | Target |
 |--------|-----------------|--------|
-| Total Test Cases | 68 | ≥ 60 |
-| Pass Rate | 95.6% (65/68) | ≥ 95% |
-| Bug Detection Rate | 4 bugs found | N/A |
-| KIEM Issues Covered | 19/19 (100%) | 100% |
-| Kỹ thuật sử dụng | EP, BVA, ST, DT, EG, White-box | ≥ 5 kỹ thuật |
+| Total Automated Tests | **451 xUnit + 19 E2E + 74 Postman = 544** | ≥ 200 |
+| Manual Test Cases | **68 (13 functions)** | ≥ 60 |
+| Pass Rate (Automated) | **100%** (451/451 + 19/19 + 74/74) | ≥ 95% |
+| Pass Rate (Manual) | **95.6%** (65/68) | ≥ 95% |
+| Bug Detection Rate | **4 bugs found, 3 fixed** | N/A |
+| KIEM Issues Covered | **36/36 (100%)** | 100% |
+| CI Workflows | **11 workflows** (auto-trigger on push) | ≥ 5 |
+| SonarCloud Vulnerabilities | **0 open** | 0 |
+| Kỹ thuật sử dụng | EP, BVA, ST, DT, EG, White-box, Static | ≥ 5 kỹ thuật |
 
 ---
 
 *Document này được tạo theo chuẩn giáo trình Kiểm thử Phần mềm Chương 6: Quản lý Kiểm thử.*  
-*Cập nhật: 12/06/2026 — Nhóm 11A6 KCPM*
+*Cập nhật: 13/06/2026 — Nhóm 11A6 KCPM (Session 10: Sprint Plan + Jira Issues)*
