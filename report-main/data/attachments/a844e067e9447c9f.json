@@ -1,0 +1,24 @@
+{
+  "Id": "cd98e28f-b8e8-41ac-8df1-a3e88c05bec4",
+  "ReportId": "7334a0c2-3172-4e90-8c07-80c77a399c1c",
+  "EnterpriseId": "8dac9e8c-367d-4e37-914c-08b207b01eb1",
+  "CollectorId": null,
+  "Status": 0,
+  "CollectedWeightKg": null,
+  "Notes": null,
+  "AssignedAt": "2026-06-13T14:53:21.8458466Z",
+  "CompletedAt": null,
+  "statusLogs": [],
+  "images": [
+    {
+      "Id": "f509f0ac-5e0f-48ec-8f25-b3373b3be3f1",
+      "TaskId": "cd98e28f-b8e8-41ac-8df1-a3e88c05bec4",
+      "ImageUrl": "https://example.com/img1.jpg"
+    },
+    {
+      "Id": "f0c0d355-dff2-482e-8cf7-8ce38721f4f0",
+      "TaskId": "cd98e28f-b8e8-41ac-8df1-a3e88c05bec4",
+      "ImageUrl": "https://example.com/img2.jpg"
+    }
+  ]
+}
