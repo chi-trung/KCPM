@@ -403,3 +403,54 @@ edb073a fix(cors): use SetIsOriginAllowed to support all *.vercel.app subdomains
 | `FINAL_REPORT.md` | 451 tests, bug status |
 | `TRACEABILITY_MATRIX.md` | Bug status update |
 | `NEXT_STEPS.md` | Phase 2 done |
+
+---
+
+## Session 10: Jira Sprint Plan & Team Workflow (2026-06-13)
+
+### Công việc thực hiện
+
+1. **Tạo Sprint Plan (3 sprints, 23 tasks)**:
+   - Sprint 1: Infrastructure & Test Planning (5 tasks)
+   - Sprint 2: Test Development & Execution (10 tasks)
+   - Sprint 3: Quality Assurance & Final Report (8 tasks)
+
+2. **Tạo Jira Issues tự động (KIEM-40 → KIEM-62)**:
+   - Script: `scripts/create_jira_issues.py`
+   - Workflow: `create-jira-issues.yml`
+   - Auto-assign cho 5 thành viên
+   - Auto-transition completed tasks → DONE
+
+3. **Tạo Team Workflow Guide**:
+   - Git branching convention (feature/bugfix/hotfix)
+   - PR process (team lead review)
+   - Commit message format (feat/fix/test/docs prefix)
+   - Hướng dẫn chi tiết cho từng thành viên
+
+### Task Distribution
+
+| Member | Tasks |
+|--------|-------|
+| Nguyễn Chí Trung | 9 tasks (CI/CD, Deploy, Auth, E2E, SonarCloud, Report, Demo) |
+| Minh Phụng | 4 tasks (Postman, Reports, CollectorTask, KIEM-28 fix) |
+| Nguyễn Hoàng Phụng | 4 tasks (Notifications, Category, E2E Allure, Traceability) |
+| Thanh Duy | 3 tasks (Complaints, CollectionTask, KIEM-29 fix) |
+| 11A6_03_Đăng | 3 tasks (Admin, Citizen, Manual Tests) |
+
+### Files tạo mới/sửa
+
+| File | Mô tả |
+|------|-------|
+| `jira.md` | Sprint plan (23 tasks) |
+| `scripts/create_jira_issues.py` | Batch Jira issue creator |
+| `docs/TEAM_WORKFLOW_GUIDE.md` | Git workflow + member guides |
+| `create-jira-issues.yml` | Fix script path |
+
+### Jira Board Status (sau Session 10)
+
+| Column | Count |
+|--------|-------|
+| TO DO | 9 (including KIEM-57, KIEM-58) |
+| IN PROGRESS | 0 |
+| DONE | 27 |
+| **TOTAL** | **36** |
