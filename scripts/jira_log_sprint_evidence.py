@@ -115,9 +115,9 @@ def build_evidence_doc(title, evidence_items, commits=None, links=None):
 SPRINT_EVIDENCE = {
     # ═══════════════ SPRINT 1 ═══════════════
     "KIEM-40": {
-        "title": "Sprint-1: CI/CD Pipeline (11 GitHub Actions Workflows)",
+        "title": "Sprint-1: CI/CD Pipeline (9 GitHub Actions Workflows)",
         "evidence": [
-            [bold("11 workflows"), text(" configured and running on every push to main")],
+            [bold("9 workflows"), text(" configured and running on every push to main")],
             [bold("Workflows: "), text("backend-tests, frontend-e2e, sonar, deploy-server, allure-gh-pages, postman-smoke, health-check, jira-key-enforcement, create-jira-issues")],
             [bold("Auto-trigger: "), text("push to main + PR to main")],
             [bold("Auto-log Jira: "), text("CI posts test results as comments on 21 KIEM issues")],
@@ -126,15 +126,17 @@ SPRINT_EVIDENCE = {
         "commits": [
             "4d08164 feat(jira): add sprint plan, team workflow guide",
             "aa4acba feat(KIEM-40): add Sprint tasks to CI Jira auto-log ISSUE_MAP",
+            "579ef43 chore(KIEM-43): workflow cleanup + docs consolidation (11→9)",
         ],
         "links": [
-            ("GitHub Actions (11 workflows)", f"{REPO_URL}/actions"),
+            ("GitHub Actions (9 workflows)", f"{REPO_URL}/actions"),
             ("backend-tests.yml", f"{REPO_URL}/blob/main/.github/workflows/backend-tests.yml"),
             ("frontend-e2e.yml", f"{REPO_URL}/blob/main/.github/workflows/frontend-e2e.yml"),
             ("sonar.yml", f"{REPO_URL}/blob/main/.github/workflows/sonar.yml"),
             ("deploy-server.yml", f"{REPO_URL}/blob/main/.github/workflows/deploy-server.yml"),
             ("allure-gh-pages.yml", f"{REPO_URL}/blob/main/.github/workflows/allure-gh-pages.yml"),
             ("postman-smoke.yml", f"{REPO_URL}/blob/main/.github/workflows/postman-smoke.yml"),
+            ("CI_CD_WORKFLOWS.md", f"{REPO_URL}/blob/main/docs/CI_CD_WORKFLOWS.md"),
             ("Allure Report", ALLURE_URL),
         ],
     },
@@ -425,9 +427,9 @@ SPRINT_EVIDENCE = {
         "evidence": [
             [bold("FINAL_REPORT.md v6.0: "), text("280 lines, test dashboard, CI metrics")],
             [bold("DEPLOYMENT_GUIDE.md: "), text("892 lines, full deployment instructions")],
-            [bold("CI_CD_WORKFLOWS.md: "), text("Detailed description of all 11 workflows")],
+            [bold("CI_CD_WORKFLOWS.md: "), text("Detailed description of all 9 workflows")],
             [bold("DEMO.md: "), text("696 lines demo script for presentation")],
-            [bold("Test counts: "), text("451 xUnit + 19 E2E + 74 Postman + 68 Manual = 612 total")],
+            [bold("Test counts: "), text("455 xUnit + 19 E2E + 74 Postman + 68 Manual = 616 total")],
         ],
         "commits": [
             "242954d feat(KIEM-42,KIEM-43): update Final Report v6.0 & Traceability Matrix",
@@ -437,6 +439,37 @@ SPRINT_EVIDENCE = {
             ("DEPLOYMENT_GUIDE.md", f"{REPO_URL}/blob/main/docs/DEPLOYMENT_GUIDE.md"),
             ("CI_CD_WORKFLOWS.md", f"{REPO_URL}/blob/main/docs/CI_CD_WORKFLOWS.md"),
             ("DEMO.md", f"{REPO_URL}/blob/main/docs/DEMO.md"),
+        ],
+    },
+    "KIEM-60": {
+        "title": "Sprint-3: Manual Test Cases (Excel — 68 TCs, 13 Functions)",
+        "evidence": [
+            [bold("UnitestKCPM.xlsx: "), text("68 test cases covering 13 functions")],
+            [bold("Techniques: "), text("EP, BVA, Decision Table, State Transition, Error Guessing")],
+            [bold("Each TC has: "), text("ID, Description, Steps, Expected, Actual, Status")],
+            [bold("Pass rate: "), text("≥ 95% with screenshots evidence")],
+        ],
+        "commits": ["Manual test cases documented in UnitestKCPM.xlsx"],
+        "links": [
+            ("Allure Report", ALLURE_URL),
+            ("TEST_PLAN.md", f"{REPO_URL}/blob/main/docs/TEST_PLAN.md"),
+        ],
+    },
+    "KIEM-61": {
+        "title": "Sprint-3: Traceability Matrix Update",
+        "evidence": [
+            [bold("TRACEABILITY_MATRIX.md: "), text("Complete mapping for all modules")],
+            [bold("Coverage: "), text("Requirement → Jira Issue → Test Case → CI Evidence")],
+            [bold("Bug tracking: "), text("KIEM-26, 27, 28, 29, 30 status updates included")],
+            [bold("Test technique mapping: "), text("Ch.4 techniques mapped to each module")],
+            [bold("Allure links: "), text("Direct links to Allure suites for each module")],
+        ],
+        "commits": [
+            "242954d feat(KIEM-42,KIEM-43): update Final Report v6.0 & Traceability Matrix",
+        ],
+        "links": [
+            ("TRACEABILITY_MATRIX.md", f"{REPO_URL}/blob/main/docs/TRACEABILITY_MATRIX.md"),
+            ("Jira Board", JIRA_BOARD),
         ],
     },
     "KIEM-62": {
@@ -454,6 +487,24 @@ SPRINT_EVIDENCE = {
             ("DEMO.md", f"{REPO_URL}/blob/main/docs/DEMO.md"),
             ("Allure Report", ALLURE_URL),
             ("Production App", "https://kcpm.vercel.app"),
+        ],
+    },
+    "KIEM-65": {
+        "title": "Sprint-3: Test Report — WasteCategory + Notifications Module",
+        "evidence": [
+            [bold("Document: "), text("docs/TEST_REPORT_CATEGORY_NOTIFICATIONS.md")],
+            [bold("WasteCategory tests: "), text("EP partitions for CRUD operations, 5-category coverage")],
+            [bold("Notifications tests: "), text("Valid/invalid notification IDs, mark-as-read, SignalR")],
+            [bold("Techniques: "), text("EP, Error Guessing")],
+            [bold("Traceability: "), text("KIEM-6 (Notifications), KIEM-12 (WasteCategory)")],
+        ],
+        "commits": [
+            "00e66c1 docs(KIEM-65): add test report for WasteCategory + Notifications modules",
+        ],
+        "links": [
+            ("TEST_REPORT_CATEGORY_NOTIFICATIONS.md", f"{REPO_URL}/blob/main/docs/TEST_REPORT_CATEGORY_NOTIFICATIONS.md"),
+            ("PR #63", f"{REPO_URL}/pull/63"),
+            ("Allure Report", ALLURE_URL),
         ],
     },
 }
