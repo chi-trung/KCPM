@@ -317,3 +317,42 @@ edb073a fix(cors): use SetIsOriginAllowed to support all *.vercel.app subdomains
 | Enterprise | ecofriendly@gmail.com | password |
 | Collector | collector1@gmail.com | password |
 | Collector | collector2@gmail.com | password |
+
+---
+
+## Session 8: Demo Preparation (2026-06-13)
+
+### Yêu cầu
+- Tạo kịch bản demo chi tiết cho buổi học
+- Giải thích cụ thể 11 workflows: khi push → job nào làm gì → lấy gì → đưa cái nào
+
+### Công việc thực hiện
+
+1. **Tạo `docs/DEMO.md`** (696 dòng):
+   - Sơ đồ ASCII tổng quan 11 workflows
+   - Bảng tóm tắt: Trigger / Làm gì / Output
+   - Chi tiết step-by-step từng workflow (#1 → #11)
+   - Chuỗi phụ thuộc: Push main → 4 workflows đồng thời → Backend Tests pass → trigger Deploy Render + Allure Pages
+   - Timeline: t=0s push → t=15min tất cả live
+   - GitHub Secrets reference
+   - Script nói cho thầy (câu nói sẵn)
+   - Demo links + tài khoản demo
+
+2. **Kịch bản demo cho thầy**:
+   - Phần 1: App live (login 4 roles)
+   - Phần 2: CI/CD 11 workflows (GitHub Actions tab)
+   - Phần 3: Allure Report (3 suites merged)
+   - Phần 4: Kỹ thuật kiểm thử (EP, BVA, DT, ST, EG)
+   - Phần 5: Jira traceability
+   - Phần 6: Tài liệu backup
+
+### Files đã tạo
+
+| File | Dòng | Mô tả |
+|------|------|-------|
+| `docs/DEMO.md` | 696 | Kịch bản demo + chi tiết 11 workflows |
+
+### Git Commits (Session 8)
+```
+4468312 docs: add comprehensive DEMO.md with 11 workflows deep-dive and presentation script
+```
