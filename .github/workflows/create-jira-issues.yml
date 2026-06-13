@@ -7,9 +7,18 @@ on:
         description: 'Optional existing Epic issue key to link tasks to'
         required: false
         default: ''
+      action:
+        description: 'Action to perform'
+        required: true
+        default: 'evidence'
+        type: choice
+        options:
+          - create_issues
+          - evidence
+          - both
 
 jobs:
-  create_issues:
+  jira_automation:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -25,7 +34,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests
 
-      - name: Run Jira import script
+      - name: Create Jira Issues
+        if: ${{ github.event.inputs.action == 'create_issues' || github.event.inputs.action == 'both' }}
         env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
@@ -34,3 +44,14 @@ jobs:
           EPIC_ISSUE_KEY: ${{ github.event.inputs.epic_issue_key }}
         run: |
           python Waste-Recycling-Platform/scripts/create_jira_issues.py
+
+      - name: Post Sprint Evidence to Jira
+        if: ${{ github.event.inputs.action == 'evidence' || github.event.inputs.action == 'both' }}
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_API_EMAIL: ${{ secrets.JIRA_API_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_PROJECT_KEY: ${{ secrets.JIRA_PROJECT_KEY }}
+        run: |
+          python scripts/jira_log_sprint_evidence.py
+
