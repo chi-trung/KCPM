@@ -4,6 +4,27 @@
 
 ---
 
+## 🌐 Live Demo
+
+| Service | URL | Status |
+|---------|-----|--------|
+| **Frontend** | https://kcpm.vercel.app | ✅ Live |
+| **Backend API** | https://kcpm-backend.onrender.com/api | ✅ Live |
+| **Swagger UI** | https://kcpm-backend.onrender.com/swagger | ✅ Live |
+| **Allure Report** | https://chi-trung.github.io/KCPM/report-main/ | ✅ Live |
+| **SonarCloud** | https://sonarcloud.io/summary/overall?id=chi-trung_KCPM | ✅ Live |
+
+### Demo Accounts
+
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@gmail.com | password |
+| Citizen | nguyenvana@gmail.com | password |
+| Enterprise | greenlife@gmail.com | password |
+| Collector | collector1@gmail.com | password |
+
+---
+
 ## ✨ Key Features
 
 - 📸 **Citizens** report waste with GPS location, photos & optional AI classification
@@ -416,13 +437,23 @@ Nginx routes:
 - `/` → `frontend:3000`
 - `/api/*` → `backend:5000`
 
-### CI/CD (GitHub Actions)
+### CI/CD (GitHub Actions — 11 Workflows)
 
-| Workflow | Trigger | Action |
-|---|---|---|
-| `backend-ci.yml` | Push / PR | `dotnet test` + `dotnet build` |
-| `frontend-ci.yml` | Push / PR | `npm test` + `npm run build` |
-| `deploy.yml` | Merge to `main` | `docker compose up` on server |
+| # | Workflow | Trigger | Action |
+|---|---------|---------|--------|
+| 1 | `backend-tests.yml` | Push / PR / Schedule | xUnit → Allure → Coverage → Jira log |
+| 2 | `frontend-e2e.yml` | Push / PR | CodeceptJS + Playwright E2E tests |
+| 3 | `sonar.yml` | Push / PR | SonarCloud static analysis |
+| 4 | `postman-smoke.yml` | PR / Schedule / Manual | Newman API tests → Docker → Jira |
+| 5 | `allure-gh-pages.yml` | After Backend Tests | Merged Allure report → GitHub Pages |
+| 6 | `deploy-server.yml` | Push to main | Quality gate → SSH deploy |
+| 7 | `deploy-render.yml` | After Backend Tests | Deploy Hook → Render.com |
+| 8 | `health-check.yml` | Every 6h / Manual | Monitor uptime |
+| 9 | `jira-key-enforcement.yml` | PR events | Validate Jira keys in PR/commits |
+| 10 | `create-jira-issues.yml` | Manual | Create Jira issues from test plan |
+| 11 | `postman-weekly-report.yml` | Manual | Full Postman collection + evidence |
+
+> 📚 Full documentation: [DEPLOYMENT_GUIDE.md](../docs/DEPLOYMENT_GUIDE.md) | [CI_CD_WORKFLOWS.md](../docs/CI_CD_WORKFLOWS.md)
 
 ---
 
