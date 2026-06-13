@@ -41,7 +41,7 @@ def jira(method, path, body=None):
 
 
 # ── Team members ──
-MEMBER_ORDER = ["chi_trung", "minh_phung", "hoang_phung", "thanh_duy", "dang"]
+MEMBER_ORDER = ["trungnc", "phungm", "phungnh", "duyyt", "dang"]
 MEMBERS = {}
 
 
@@ -55,10 +55,10 @@ def find_members():
 
     # Map known names to keys
     name_map = {
-        "chi_trung": ["trung", "chi"],
-        "minh_phung": ["minh ph"],
-        "hoang_phung": ["hoang", "hoàng ph"],
-        "thanh_duy": ["duy", "thanh d"],
+        "trungnc": ["trung", "chi"],
+        "phungm": ["minh ph"],
+        "phungnh": ["hoang", "hoàng ph"],
+        "duyyt": ["duy", "thanh d"],
         "dang": ["đăng", "dang", "11a6"],
     }
 
@@ -79,7 +79,8 @@ def find_members():
             print(f"  WARNING: Not found: {key}")
 
     if not MEMBERS:
-        print("\n  All assignable users:")
+        print("
+  All assignable users:")
         for user in resp:
             print(f"    {user.get('displayName', '?')} ({user.get('accountId', '?')[:12]}...)")
 
@@ -144,7 +145,8 @@ def main():
     print(f"Authenticated as: {me.get('displayName','?')}")
 
     # Step 1: Find team members
-    print("\n=== Step 1: Find team members ===")
+    print("
+=== Step 1: Find team members ===")
     find_members()
     print(f"Found {len(MEMBERS)}/5 members")
 
@@ -153,9 +155,11 @@ def main():
         sys.exit(1)
 
     # Step 2: Find all unassigned issues
-    print("\n=== Step 2: Find unassigned issues ===")
+    print("
+=== Step 2: Find unassigned issues ===")
     unassigned = find_unassigned()
-    print(f"\nFound {len(unassigned)} unassigned issues")
+    print(f"
+Found {len(unassigned)} unassigned issues")
 
     if not unassigned:
         print("No unassigned issues found. All issues already assigned!")
@@ -163,7 +167,8 @@ def main():
 
     # Step 3: Distribute evenly using round-robin
     available = [k for k in MEMBER_ORDER if k in MEMBERS]
-    print(f"\n=== Step 3: Assign {len(unassigned)} issues to {len(available)} members ===")
+    print(f"
+=== Step 3: Assign {len(unassigned)} issues to {len(available)} members ===")
     ok = 0
     distribution = {k: [] for k in available}
 
@@ -174,9 +179,11 @@ def main():
             ok += 1
 
     # Summary
-    print(f"\n{'='*60}")
+    print(f"
+{'='*60}")
     print(f"Assigned {ok}/{len(unassigned)} issues")
-    print("\nDistribution:")
+    print("
+Distribution:")
     for member in available:
         keys = distribution.get(member, [])
         print(f"  {member}: {len(keys)} issues: {', '.join(keys)}")
