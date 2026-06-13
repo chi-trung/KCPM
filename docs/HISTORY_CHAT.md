@@ -2,7 +2,7 @@
 
 > **Conversation ID**: `69a3cfb5-7077-4e4f-b638-8edd85d6ccc3`  
 > **Ngày**: 2026-06-11 → 2026-06-13  
-> **Tổng thời gian**: ~8 sessions
+> **Tổng thời gian**: ~9 sessions
 
 ---
 
@@ -557,3 +557,36 @@ edb073a fix(cors): use SetIsOriginAllowed to support all *.vercel.app subdomains
 | 2f854e1 | fix(KIEM-30): filter report list by Enterprise service area |
 | 00e66c1 | docs(KIEM-65): add test report for WasteCategory + Notifications |
 | (pending) | chore: workflow cleanup + docs consolidation |
+
+---
+
+## Session 9: Jira Board Audit & Synchronization (2026-06-13 21h42)
+
+### Yêu cầu
+User phát hiện Jira board bất hợp lí: bug assigned cho 1 thành viên nhưng commits do người khác (chi-trung).
+
+### Phân tích
+Cross-referenced tất cả git commits (có KIEM key) với Jira assignments → phát hiện 3 issues có evidence sai.
+
+### Evidence Fixes
+| KIEM | Trước (Sai) | Sau (Đúng) |
+|------|-------------|------------|
+| KIEM-30 | "SonarCloud false positive on V6__sample_data.sql" | "Report list shows reports outside Enterprise ServiceArea" (PR #62) |
+| KIEM-37 | "Jira Key Enforcement Workflow" | "Remove hardcoded password and JWT secret" (PR #61) |
+
+### Jira Status Transitions (To Do → Done)
+| Issue | Description |
+|-------|-------------|
+| KIEM-29 | Max 5 Images Validation (BVA) |
+| KIEM-33 | SonarCloud Insecure HTTP URL |
+| KIEM-34 | SonarCloud Analysis Workflow |
+| KIEM-35 | Bcrypt False Positive |
+| KIEM-36 | Insecure HTTP URL Fix |
+| KIEM-38 | Weak MD5 Algorithm Fix |
+
+### Commits
+
+| Hash | Message |
+|------|---------|
+| ae37716 | fix: correct evidence for KIEM-30 and KIEM-37 in jira_log_all_evidence.py |
+
