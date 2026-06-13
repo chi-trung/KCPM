@@ -454,3 +454,46 @@ edb073a fix(cors): use SetIsOriginAllowed to support all *.vercel.app subdomains
 | IN PROGRESS | 0 |
 | DONE | 27 |
 | **TOTAL** | **36** |
+
+---
+
+## Session 11: Git Workflow Execution + Jira Evidence (2026-06-13)
+
+### Công việc thực hiện
+
+1. **Thực thi quy trình Git chuẩn cho 9 tasks của Team Leader**:
+   - Mỗi task: tạo branch → commit → push → PR → review → merge → CI chạy → Jira log
+   - 6 PRs tạo và merge: #49, #50, #51, #52, #53, #54
+
+2. **Thêm 4 EP + Error Guessing tests cho Auth module (KIEM-45)**:
+   - EP: empty email, Collector role (invalid), Enterprise role (valid)
+   - Error Guessing: non-existent email, no auth context
+   - Fix bug: Collector role returns Conflict (not Ok) — PR #54
+
+3. **Tạo Jira Evidence Script**:
+   - `scripts/jira_log_sprint_evidence.py` — post chi tiết minh chứng cho 20 Sprint issues
+   - Mỗi issue có: description, commits, file links, test results, Allure links
+   - Chạy via `create-jira-issues.yml` workflow (action=evidence)
+
+4. **Cập nhật Test Plan v3.0, Final Report v6.0, Traceability Matrix**
+
+### PRs Created & Merged
+
+| PR | Title | Branch |
+|----|-------|--------|
+| #49 | KIEM-40: Add Sprint tasks to CI Jira auto-log ISSUE_MAP | feature/KIEM-40-cicd-pipeline-jira-integration |
+| #50 | KIEM-41: Update Test Plan v3.0 with verified metrics | feature/KIEM-41-test-plan-strategy |
+| #51 | KIEM-42,KIEM-43: Deploy Production & Traceability Matrix | feature/KIEM-42-deploy-production |
+| #52 | KIEM-45: Add EP + Error Guessing tests for Auth module | feature/KIEM-45-auth-unit-tests |
+| #53 | KIEM-40: Add Sprint evidence logging for all Jira issues | feature/KIEM-40-sprint-evidence-logs |
+| #54 | KIEM-45: Fix Auth EP test - Collector role returns Conflict | bugfix/KIEM-45-fix-collector-test |
+
+### CI Results (commit 5901f67)
+
+| Workflow | Status |
+|----------|--------|
+| Backend Tests | ✅ Success (455 tests) |
+| SonarCloud Analysis | ✅ Success |
+| Frontend E2E | ✅ Success |
+| Deploy to Render | ✅ Success |
+| Allure Pages | ✅ Success |
