@@ -99,7 +99,9 @@ TIMESTAMP    = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 #   e2e (CodeceptJS)     => frontend/browser test issues (Collector E2E)
 ISSUE_MAP = {
     # xUnit backend tests — all WRP-BE-TESTS-001 through WRP-BE-TESTS-020
+    # + Sprint-2/3 task issues that are verified by backend test runs
     "backend": [
+        # ── Original test module issues ──
         "KIEM-4",   # Auth Module (Nguyễn Chí Trung)
         "KIEM-5",   # Reports Module (Minh Phụng)
         "KIEM-6",   # Notifications Module (Nguyễn Hoàng Phụng)
@@ -117,11 +119,21 @@ ISSUE_MAP = {
         "KIEM-20",  # File Uploads & Storage (Minh Phụng)
         "KIEM-22",  # AuditLog & Error Path (Thanh Duy)
         "KIEM-23",  # Search, Pagination & Filters (11A6_03_Đăng)
-        # Sprint tasks — CI/CD & Infrastructure (Nguyễn Chí Trung)
+        # ── Sprint-1 infrastructure ──
         "KIEM-40",  # [Sprint-1] CI/CD Pipeline (9 workflows)
+        # ── Sprint-2 task issues (verified by same xUnit run) ──
         "KIEM-45",  # [Sprint-2] Auth Tests (EP + Error Guessing)
-        "KIEM-50",  # [Sprint-2] E2E Tests (19 scenarios)
-        "KIEM-53",  # [Sprint-3] Fix SonarCloud Quality Gate
+        "KIEM-46",  # [Sprint-2] Reports Tests (BVA + State Transition)
+        "KIEM-47",  # [Sprint-2] Notifications Tests
+        "KIEM-48",  # [Sprint-2] Complaints Tests (Decision Table)
+        "KIEM-49",  # [Sprint-2] Admin + Analytics Tests
+        "KIEM-51",  # [Sprint-2] WasteCategory + Security Tests
+        "KIEM-52",  # [Sprint-2] CollectorTask + File Uploads Tests
+        "KIEM-53",  # [Sprint-2] CollectionTask + Audit Tests
+        "KIEM-54",  # [Sprint-2] Citizen + Search/Pagination Tests
+        # ── Sprint-3 bug fix issues (verified by regression tests) ──
+        "KIEM-55",  # [Sprint-3] SonarCloud Quality Gate fix
+        "KIEM-56",  # [Sprint-3] Max 5 Images BVA fix
     ],
 
     # Postman API tests — auth, security, role-based access
