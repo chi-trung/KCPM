@@ -21,12 +21,17 @@ using Xunit;
 namespace WastePlatform.Tests.Controllers
 {
     [AllureEpic("KIEM-5: Reports Module Testing")]
-    [AllureFeature("Report Input Validation - BVA & EP")]
+    [AllureFeature("Report Controller")]
+    [Allure.Net.Commons.Attributes.AllureLabel("story", "Create, retrieve and manage waste reports")]
     [Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
     [Allure.Net.Commons.Attributes.AllureLabel("suite", "Controllers")]
-    [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "ValidationBvaEpTests")]
-    [AllureOwner("QA Team")]
+    [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "ReportControllerTests")]
+    [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Controllers")]
+    [AllureOwner("Nguyen Minh Phung")]
     [AllureSeverity(SeverityLevel.critical)]
+    [Allure.Net.Commons.Attributes.AllureTag("api")]
+    [Allure.Net.Commons.Attributes.AllureTag("reports")]
+    [Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-5")]
     public class ValidationBvaEpTests
     {
         private readonly Mock<INotificationService> _mockNotificationService;
