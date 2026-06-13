@@ -198,11 +198,25 @@ using (var scope = app.Services.CreateScope())
         }
 
         // ── Auto-seed: Sample user accounts ─────────────────────────
-        if (!db.Users.Any())
+        // Check if seed accounts already exist (by looking for admin with Admin role)
+        var adminExists = db.Users.Any(u => u.Email == "admin@gmail.com" && u.Role == UserRole.Admin);
+        if (!adminExists)
         {
             Console.WriteLine("🌱 Seeding sample user accounts...");
             // BCrypt hash for "password" (cost=11)
             var passwordHash = BCrypt.Net.BCrypt.HashPassword("password");
+
+            // Clean up any existing seed emails that may have been registered with wrong roles
+            var seedEmails = new[] { "admin@gmail.com", "nguyenvana@gmail.com", "lethib@gmail.com",
+                "tranvanc@gmail.com", "greenlife@gmail.com", "ecofriendly@gmail.com",
+                "collector1@gmail.com", "collector2@gmail.com" };
+            var existingSeedUsers = db.Users.Where(u => seedEmails.Contains(u.Email)).ToList();
+            if (existingSeedUsers.Any())
+            {
+                Console.WriteLine($"🧹 Removing {existingSeedUsers.Count} incorrectly registered seed accounts...");
+                db.Users.RemoveRange(existingSeedUsers);
+                db.SaveChanges();
+            }
 
             // Admin
             var admin = User.Create("admin@gmail.com", passwordHash, "System Administrator", UserRole.Admin);
