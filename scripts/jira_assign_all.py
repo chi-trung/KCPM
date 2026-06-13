@@ -41,7 +41,7 @@ def jira(method, path, body=None):
 
 
 # ── Team members ──
-MEMBER_ORDER = ["chi_trung", "minh_phung", "hoang_phung", "thanh_duy", "dang"]
+MEMBER_ORDER = ["trungnc", "phungm", "phungnh", "duyyt", "dang"]
 MEMBERS = {}
 
 
@@ -55,10 +55,10 @@ def find_members():
 
     # Map known names to keys
     name_map = {
-        "chi_trung": ["trung", "chi"],
-        "minh_phung": ["minh ph"],
-        "hoang_phung": ["hoang", "hoàng ph"],
-        "thanh_duy": ["duy", "thanh d"],
+        "trungnc": ["trung", "chi"],
+        "phungm": ["minh ph"],
+        "phungnh": ["hoang", "hoàng ph"],
+        "duyyt": ["duy", "thanh d"],
         "dang": ["đăng", "dang", "11a6"],
     }
 
