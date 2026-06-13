@@ -2,7 +2,7 @@
 # Nhóm 11A6 — KiemChungPhanMem (KCPM)
 
 **Ngày báo cáo:** 13/06/2026  
-**Phiên bản:** 5.0  
+**Phiên bản:** 6.0  
 **Nhóm trưởng:** Nguyễn Chí Trung  
 **Giảng viên:** Thầy Bảo
 
@@ -20,7 +20,7 @@
 | **Swagger** | https://kcpm-backend.onrender.com/swagger |
 | **Source Control** | GitHub (chi-trung/KCPM) |
 | **CI/CD** | GitHub Actions (11 workflows) |
-| **Project Management** | Jira (KIEM project, 29 issues) |
+| **Project Management** | Jira (KIEM project, **36 issues**, 3 sprints) |
 | **Quality Gate** | SonarCloud + Allure Reports |
 
 ---

@@ -1,6 +1,6 @@
 # Ma trận Truy vết (Traceability Matrix) — Waste Recycling Platform
 
-**Cập nhật lần cuối**: 2026-06-12 17h14 (Session: áp dụng giáo trình Ch.4 — BVA/DT/ST techniques)  
+**Cập nhật lần cuối**: 2026-06-13 16h30 (Session 10: Sprint Plan + Jira Issues KIEM-40→62)  
 **Allure Report**: https://chi-trung.github.io/KCPM/report-main/  
 **Jira Board**: https://ut-team-36.atlassian.net/jira/software/projects/KIEM/boards/3  
 **CI/CD**: https://github.com/chi-trung/KCPM/actions
