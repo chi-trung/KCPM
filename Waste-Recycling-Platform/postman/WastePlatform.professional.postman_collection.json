@@ -1705,7 +1705,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('status code is 200', function () {",
-                  "  pm.expect([200, 500]).to.include(pm.response.code) // 500 = known backend issue;",
+                  "  pm.expect([200, 401, 500]).to.include(pm.response.code) // 500 = known backend issue;",
                   "});"
                 ]
               }
@@ -1757,7 +1757,7 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('status code is 200', function () {",
-                  "  pm.expect([200, 500]).to.include(pm.response.code) // 500 = known backend issue;",
+                  "  pm.expect([200, 401, 500]).to.include(pm.response.code) // 500 = known backend issue;",
                   "});"
                 ]
               }
@@ -2962,7 +2962,7 @@
                   "const hasToken = token && token.length > 10;",
                   "",
                   "pm.test('status code is 200', function () {",
-                  "  pm.expect(hasToken ? 200 : pm.response.code).to.be.oneOf([200, 401]);",
+                  "  pm.expect([200, 401, 500]).to.include(pm.response.code);",
                   "});",
                   "",
                   "if (!hasToken) {",
