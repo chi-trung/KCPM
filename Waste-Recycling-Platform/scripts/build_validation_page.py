@@ -5,6 +5,26 @@ import sys
 from pathlib import Path
 
 
+def load_owner_aliases():
+    """Load owner-aliases.json for deduplicating display names."""
+    alias_path = Path(__file__).parent / 'owner-aliases.json'
+    if alias_path.exists():
+        try:
+            return json.loads(alias_path.read_text(encoding='utf-8'))
+        except Exception:
+            pass
+    return {}
+
+
+def normalize_owner_name(name, aliases=None):
+    """Map variant display names to canonical name using alias config."""
+    if not name:
+        return name
+    if aliases is None:
+        aliases = {}
+    return aliases.get(name, aliases.get(name.strip(), name))
+
+
 def collect_issue_keys(results_dir):
     keys = set()
     for json_file in results_dir.glob('*.json'):
@@ -64,6 +84,10 @@ def extract_issue_keys(entry):
 
 
 def main():
+    aliases = load_owner_aliases()
+    if aliases:
+        print(f'Loaded {len(aliases)} owner aliases')
+
     results_dir = Path('Waste-Recycling-Platform/allure-results')
     validation_dir = Path(os.environ.get('VALIDATION_OUTPUT_DIR', 'validation-temp'))
     report_base = Path(os.environ.get('ALLURE_PUBLISH_DIR', 'report-extra'))
@@ -145,10 +169,10 @@ def main():
                 summary['raw_owner_labels'].append(raw_owner_label)
 
         if resolved_owner:
-            summary['owners'].append(resolved_owner)
+            summary['owners'].append(normalize_owner_name(resolved_owner, aliases))
         elif raw_owner_label:
             # Fallback only when Jira has not resolved the issue yet.
-            summary['owners'].append(raw_owner_label)
+            summary['owners'].append(normalize_owner_name(raw_owner_label, aliases))
         package_values = [label.get('value') for label in labels if label.get('name') in ('package', 'suite', 'subSuite')]
         joined = ' '.join(str(value) for value in package_values)
         if 'WastePlatform.Tests' in joined or '.Tests.' in joined or 'WastePlatform' in joined:

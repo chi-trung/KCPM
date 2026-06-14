@@ -12,6 +12,27 @@ import os
 import re
 import shutil
 import subprocess
+from pathlib import Path
+
+
+def load_owner_aliases():
+    """Load owner-aliases.json for deduplicating display names."""
+    alias_path = Path(__file__).parent / 'owner-aliases.json'
+    if alias_path.exists():
+        try:
+            return json.loads(alias_path.read_text(encoding='utf-8'))
+        except Exception:
+            pass
+    return {}
+
+
+def normalize_owner_name(name, aliases=None):
+    """Map variant display names to canonical name using alias config."""
+    if not name:
+        return name
+    if aliases is None:
+        aliases = {}
+    return aliases.get(name, aliases.get(name.strip(), name))
 
 RESULTS_DIR = os.path.join('Waste-Recycling-Platform', 'allure-results')
 BASE_RESULTS_TEMP = 'owner-results-temp'
@@ -60,6 +81,9 @@ if not os.path.isdir(RESULTS_DIR):
     raise SystemExit(0)
 
 owners = set()
+aliases = load_owner_aliases()
+if aliases:
+    print(f'Loaded {len(aliases)} owner aliases')
 
 # load jira-owner-map if present
 jira_map = {}
@@ -128,8 +152,7 @@ for fname in os.listdir(RESULTS_DIR):
         if not isinstance(label, dict):
             continue
         if label.get('name') == 'owner' and label.get('value'):
-            owners.add(label.get('value'))
-
+            owners.add(normalize_owner_name(label.get('value'), aliases))
     # fallback: look for issue labels/links and map via jira_map
     issue_keys = set()
     for label in labels:
@@ -144,7 +167,7 @@ for fname in os.listdir(RESULTS_DIR):
     for k in issue_keys:
         info = jira_map.get(k)
         if info and info.get('displayName'):
-            owners.add(info.get('displayName'))
+            owners.add(normalize_owner_name(info.get('displayName'), aliases))
 
 if not owners:
     print('Skipping owner reports: no owners discovered')
@@ -191,11 +214,13 @@ for owner in owners:
             continue
 
         matched = False
-        # 1) direct owner label match
+        # 1) direct owner label match (normalize to handle aliases)
         for label in data.get('labels') or []:
-            if isinstance(label, dict) and label.get('name') == 'owner' and label.get('value') == owner:
-                matched = True
-                break
+            if isinstance(label, dict) and label.get('name') == 'owner':
+                label_owner = normalize_owner_name(label.get('value'), aliases)
+                if label_owner == owner:
+                    matched = True
+                    break
 
         # 2) map via issue keys -> jira_map
         if not matched:
@@ -211,7 +236,7 @@ for owner in owners:
                         issue_keys.add(name)
             for k in issue_keys:
                 info = jira_map.get(k)
-                if info and info.get('displayName') == owner:
+                if info and normalize_owner_name(info.get('displayName'), aliases) == owner:
                     matched = True
                     break
 

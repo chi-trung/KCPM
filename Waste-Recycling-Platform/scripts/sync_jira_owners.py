@@ -11,9 +11,30 @@ import base64
 import json
 import os
 import sys
+from pathlib import Path
 from urllib.parse import urlparse
 import urllib.request
 import urllib.error
+
+
+def load_owner_aliases():
+    """Load owner-aliases.json for deduplicating display names."""
+    alias_path = Path(__file__).parent / 'owner-aliases.json'
+    if alias_path.exists():
+        try:
+            return json.loads(alias_path.read_text(encoding='utf-8'))
+        except Exception:
+            pass
+    return {}
+
+
+def normalize_owner_name(name, aliases=None):
+    """Map variant display names to canonical name using alias config."""
+    if not name:
+        return name
+    if aliases is None:
+        aliases = {}
+    return aliases.get(name, aliases.get(name.strip(), name))
 
 RESULTS_DIRS = [
     os.path.join('Waste-Recycling-Platform', 'allure-results'),
@@ -234,19 +255,24 @@ def fetch_board_issues(base_url, auth_header, board_id):
     return board_issues
 
 
-def build_owner_entry(assignee):
+def build_owner_entry(assignee, aliases=None):
     if not assignee:
         return {'displayName': None, 'accountId': None, 'email': None, 'unassigned': True}
+    display_name = normalize_owner_name(assignee.get('displayName'), aliases)
     return {
-        'displayName': assignee.get('displayName'),
+        'displayName': display_name,
         'accountId': assignee.get('accountId'),
         'email': assignee.get('emailAddress'),
-        'unassigned': not bool(assignee.get('displayName')),
+        'unassigned': not bool(display_name),
     }
     
 
 
 def main():
+    aliases = load_owner_aliases()
+    if aliases:
+        print(f'Loaded {len(aliases)} owner aliases')
+
     keys = discover_all_keys()
     print('Found issue keys in results:', keys)
     if not keys:
@@ -267,7 +293,7 @@ def main():
         owner_map = {}
         for key in sorted(keys):
             fallback = local_map.get(key) if isinstance(local_map, dict) else None
-            owner_map[key] = build_owner_entry(fallback)
+            owner_map[key] = build_owner_entry(fallback, aliases)
         for alias, entry in (local_map or {}).items():
             if alias not in owner_map and isinstance(entry, dict):
                 owner_map[alias] = build_owner_entry(entry)
@@ -291,7 +317,7 @@ def main():
         if not key or key not in keys:
             continue
         fields = issue.get('fields') or {}
-        owner_map[key] = build_owner_entry(fields.get('assignee'))
+        owner_map[key] = build_owner_entry(fields.get('assignee'), aliases)
 
     for key in sorted(keys):
         if key in owner_map and not owner_map[key].get('unassigned'):
@@ -300,15 +326,15 @@ def main():
         data = query_jira_issue(normalized_base, auth_header, key)
         if not data:
             fallback = local_map.get(key) if isinstance(local_map, dict) else None
-            owner_map[key] = build_owner_entry(fallback) if fallback else build_owner_entry(None)
+            owner_map[key] = build_owner_entry(fallback, aliases) if fallback else build_owner_entry(None, aliases)
             continue
         fields = data.get('fields') or {}
         assignee = fields.get('assignee')
         if not assignee:
             fallback = local_map.get(key) if isinstance(local_map, dict) else None
-            owner_map[key] = build_owner_entry(fallback) if fallback else build_owner_entry(None)
+            owner_map[key] = build_owner_entry(fallback, aliases) if fallback else build_owner_entry(None, aliases)
         else:
-            owner_map[key] = build_owner_entry(assignee)
+            owner_map[key] = build_owner_entry(assignee, aliases)
 
     # Backfill any missing local aliases so manual labels like `auth` can still resolve.
     if isinstance(local_map, dict):

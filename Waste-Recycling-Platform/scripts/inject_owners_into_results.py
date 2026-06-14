@@ -8,6 +8,7 @@ import json
 import os
 import re
 import sys
+from pathlib import Path
 
 RESULTS_DIR = os.path.join('Waste-Recycling-Platform', 'allure-results')
 JIRA_MAP_PATHS = [
@@ -20,6 +21,26 @@ LOCAL_MAP_PATHS = [
     os.path.join('Waste-Recycling-Platform', 'scripts', 'local-owner-map.json'),
     'local-owner-map.json',
 ]
+
+
+def load_owner_aliases():
+    """Load owner-aliases.json for deduplicating display names."""
+    alias_path = Path(__file__).parent / 'owner-aliases.json'
+    if alias_path.exists():
+        try:
+            return json.loads(alias_path.read_text(encoding='utf-8'))
+        except Exception:
+            pass
+    return {}
+
+
+def normalize_owner_name(name, aliases=None):
+    """Map variant display names to canonical name using alias config."""
+    if not name:
+        return name
+    if aliases is None:
+        aliases = {}
+    return aliases.get(name, aliases.get(name.strip(), name))
 
 
 def load_jira_map():
@@ -87,6 +108,10 @@ def main():
 
     modified = 0
     owners = set()
+    aliases = load_owner_aliases()
+    if aliases:
+        print(f'Loaded {len(aliases)} owner aliases')
+
     for fname in os.listdir(RESULTS_DIR):
         if not fname.lower().endswith('.json'):
             continue
@@ -135,6 +160,7 @@ def main():
                 continue
 
             resolved_owner = next((a for a in sorted(set(a.strip() for a in assigned if a and a.strip()))), None)
+            resolved_owner = normalize_owner_name(resolved_owner, aliases)
             if not resolved_owner:
                 continue
 
