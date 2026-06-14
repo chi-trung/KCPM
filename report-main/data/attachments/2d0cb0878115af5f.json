@@ -1,0 +1,19 @@
+{
+  "CitizenId": "1aab3ba2-9314-484f-b647-974d1d0d93c8",
+  "WasteCategoryId": 1,
+  "Latitude": 10.7769,
+  "Longitude": 106.7009,
+  "Description": "R\u00E1c th\u1EA3i sinh ho\u1EA1t t\u1EA1i v\u1EC9a h\u00E8",
+  "Address": "123 Nguy\u1EC5n Tr\u00E3i, P.1, Q.1",
+  "AiSuggestion": null,
+  "Images": [
+    {
+      "ContentType": "image/jpeg",
+      "ContentDisposition": null,
+      "Headers": null,
+      "Length": 1024,
+      "Name": null,
+      "FileName": "report.jpg"
+    }
+  ]
+}
