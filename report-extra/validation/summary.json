@@ -9,13 +9,13 @@
       "unassigned": false
     },
     "KIEM-19": {
-      "displayName": "Nguyễn Chí Trung ",
+      "displayName": "Nguyễn Chí Trung",
       "accountId": "712020:03652eda-598e-49f0-bc97-e8f983de4296",
       "email": "trungnc7062@ut.edu.vn",
       "unassigned": false
     },
     "KIEM-14": {
-      "displayName": "Nguyễn Chí Trung ",
+      "displayName": "Nguyễn Chí Trung",
       "accountId": "712020:03652eda-598e-49f0-bc97-e8f983de4296",
       "email": "trungnc7062@ut.edu.vn",
       "unassigned": false
@@ -33,7 +33,7 @@
       "unassigned": false
     },
     "KIEM-16": {
-      "displayName": "Nguyễn Chí Trung ",
+      "displayName": "Nguyễn Chí Trung",
       "accountId": "712020:03652eda-598e-49f0-bc97-e8f983de4296",
       "email": "trungnc7062@ut.edu.vn",
       "unassigned": false
@@ -51,7 +51,7 @@
       "unassigned": false
     },
     "KIEM-17": {
-      "displayName": "Nguyễn Chí Trung ",
+      "displayName": "Nguyễn Chí Trung",
       "accountId": "712020:03652eda-598e-49f0-bc97-e8f983de4296",
       "email": "trungnc7062@ut.edu.vn",
       "unassigned": false
@@ -68,7 +68,6 @@
     "11A6_03_Đăng",
     "Minh Phụng",
     "Nguyễn Chí Trung",
-    "Nguyễn Chí Trung ",
     "Nguyễn Hoàng Phụng-CN2303E",
     "Thanh Duy"
   ],
@@ -474,14 +473,12 @@
     "11a6-03-ng",
     "minh-ph-ng",
     "nguy-n-ch-trung",
-    "nguy-n-ch-trung",
     "nguy-n-ho-ng-ph-ng-cn2303e",
     "thanh-duy"
   ],
   "owner_folders": [
     "report-extra/owners/11a6-03-ng",
     "report-extra/owners/minh-ph-ng",
-    "report-extra/owners/nguy-n-ch-trung",
     "report-extra/owners/nguy-n-ch-trung",
     "report-extra/owners/nguy-n-ho-ng-ph-ng-cn2303e",
     "report-extra/owners/thanh-duy"
