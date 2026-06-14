@@ -1,0 +1,21 @@
+{
+  "week": 24,
+  "year": 2026,
+  "timestamp": "2026-06-14T06:59:28.377273+00:00",
+  "backend": {
+    "passed": 0,
+    "failed": 0,
+    "total": 0,
+    "duration": "N/A"
+  },
+  "postman": {
+    "passed": 81,
+    "failed": 0,
+    "total": 81,
+    "duration": "3s"
+  },
+  "owners": [],
+  "total_tests": 81,
+  "total_passed": 81,
+  "total_failed": 0
+}

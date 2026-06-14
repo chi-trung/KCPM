@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KCPM Weekly Report — Week 24, 2026</title>
+  <meta name="description" content="Weekly test execution report for Waste Recycling Platform — Week 24, 2026" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0b0f1a;
+      --surface: rgba(255,255,255,0.04);
+      --surface-hover: rgba(255,255,255,0.07);
+      --border: rgba(255,255,255,0.08);
+      --text: #e8edf5;
+      --text-secondary: #8896ab;
+      --accent: #7dd3fc;
+      --accent2: #a78bfa;
+      --green: #34d399;
+      --red: #f87171;
+      --radius: 16px;
+      --radius-sm: 12px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      min-height: 100vh;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px; left: -100px;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(125,211,252,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container {
+      position: relative; z-index: 1;
+      max-width: 900px; margin: 0 auto;
+      padding: 48px 24px 64px;
+    }
+    .header { margin-bottom: 40px; }
+    .header-top { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+    .logo {
+      width: 44px; height: 44px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: grid; place-items: center;
+      font-weight: 800; font-size: 15px; color: var(--bg);
+      flex-shrink: 0;
+    }
+    h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.03em; }
+    .subtitle { color: var(--text-secondary); font-size: 14px; margin-top: 6px; margin-left: 58px; }
+    .section-title {
+      text-transform: uppercase; letter-spacing: 0.08em;
+      font-size: 12px; font-weight: 600;
+      color: var(--text-secondary);
+      margin: 32px 0 16px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    .stat-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 28px; font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+    .stat-label {
+      font-size: 12px; color: var(--text-secondary);
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .stat-value.green { color: var(--green); }
+    .stat-value.red { color: var(--red); }
+    .stat-value.accent { color: var(--accent); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      color: var(--text-secondary);
+      font-weight: 600; font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 13px; font-weight: 600;
+    }
+    .badge-pass { background: rgba(52,211,153,0.15); color: var(--green); }
+    .badge-fail { background: rgba(248,113,113,0.15); color: var(--red); }
+    .badge-warn { background: rgba(251,191,36,0.15); color: #fbbf24; }
+    .avatar {
+      display: inline-flex;
+      align-items: center; justify-content: center;
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      font-size: 11px; font-weight: 700;
+      color: var(--bg);
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    .link { color: var(--accent); font-weight: 500; }
+    .meta {
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+    .meta a { color: var(--accent); }
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--text-secondary); font-size: 13px;
+      margin-bottom: 24px;
+    }
+    .back-link:hover { color: var(--accent); text-decoration: none; }
+    @media (max-width: 640px) {
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+      h1 { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <a href="../../" class="back-link">← Back to Dashboard</a>
+
+  <div class="header">
+    <div class="header-top">
+      <div class="logo">W24</div>
+      <h1>Weekly Test Report</h1>
+    </div>
+    <div class="subtitle">
+      Waste Recycling Platform — Week 24, 2026 — 2026-06-14 06:59 UTC
+    </div>
+  </div>
+
+  <div class="section-title">Executive Summary</div>
+  <div class="stat-grid">
+    <div class="stat-item">
+      <div class="stat-value accent">81</div>
+      <div class="stat-label">Total Tests</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value green">81</div>
+      <div class="stat-label">Passed</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value green">0</div>
+      <div class="stat-label">Failed</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value accent">100.0%</div>
+      <div class="stat-label">Pass Rate</div>
+    </div>
+  </div>
+
+  <div class="section-title">Backend Tests (xUnit .NET)</div>
+  <div class="card">
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Status</td><td><span class="badge badge-warn">⚠️ NO DATA</span></td></tr>
+      <tr><td>Tests</td><td>0 passed / 0 failed / 0 total</td></tr>
+      <tr><td>Pass Rate</td><td>N/A</td></tr>
+      <tr><td>Duration</td><td>N/A</td></tr>
+    </table>
+  </div>
+
+  <div class="section-title">Postman API Tests (Newman)</div>
+  <div class="card">
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Status</td><td><span class="badge badge-pass">✅ ALL PASSED</span></td></tr>
+      <tr><td>Assertions</td><td>81 passed / 0 failed / 81 total</td></tr>
+      <tr><td>Pass Rate</td><td>100.0%</td></tr>
+      <tr><td>Duration</td><td>3s</td></tr>
+    </table>
+  </div>
+
+  <div class="section-title">Team Members</div>
+  <div class="card">
+    <table>
+      <tr><th>Member</th><th>Individual Report</th></tr>
+      <tr><td colspan="2">No owners synced yet</td></tr>
+    </table>
+  </div>
+
+  <div class="section-title">Links</div>
+  <div class="card">
+    <table>
+      <tr><td>📊 Full Allure Report</td><td><a href="https://chi-trung.github.io/KCPM/report-main/">View Report →</a></td></tr>
+      <tr><td>🔧 GitHub Actions Run</td><td><a href="https://github.com/chi-trung/KCPM/actions/runs/27491271084">Run #4 →</a></td></tr>
+      <tr><td>🎯 Jira Board</td><td><a href="https://ut-team-36.atlassian.net/jira/software/projects/KIEM/boards/3">KCPM Board →</a></td></tr>
+      <tr><td>🏠 Dashboard</td><td><a href="https://chi-trung.github.io/KCPM/">KCPM Dashboard →</a></td></tr>
+    </table>
+  </div>
+
+  <div class="meta">
+    <p>Auto-generated by CI • <a href="https://github.com/chi-trung/KCPM/actions/runs/27491271084">Run #4</a> •
+       Branch: main • Commit: 31ea2b3</p>
+  </div>
+
+</div>
+</body>
+</html>
