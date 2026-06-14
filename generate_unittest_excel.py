@@ -1240,6 +1240,23 @@ def build_function_sheet(wb, func: dict, sheet_name: str):
                 elif val == "F":
                     cell.fill = header_fill(LIGHT_RED)
 
+    last_data_row = res_start + 3  # Result section has 4 rows (Type, P/F, Date, Defect)
+
+    # ── Comprehensive border pass ────────────────────────────────────
+    # Ensure ALL cells in the grid have thin borders, including empty
+    # cells and merged-range cells that were missed by individual styling.
+
+    # 1. Metadata area (rows 2-5, columns A to fn_col+6)
+    apply_border(ws, 2, 5, 1, fn_col + 6)
+
+    # 2. Summary row (row 6, columns A to N — full width including N/A/B and Total)
+    apply_border(ws, 6, 6, 1, 14)
+
+    # 3. Main data grid (row 9 to last result row)
+    #    Extend to max(LAST_COL, 14) so borders align with summary row above
+    grid_last_col = max(LAST_COL, 14)
+    apply_border(ws, 9, last_data_row, 1, grid_last_col)
+
 
 # ─── Build Sheet1 (tổng hợp) ────────────────────────────────────────
 
