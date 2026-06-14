@@ -22,7 +22,16 @@ def read_summary(summary_path: Path) -> dict:
 
 
 def badge(label: str, value: str, tone: str = 'neutral') -> str:
-    return f'<span class="badge {tone}"><strong>{label}</strong><em>{value}</em></span>'
+    icons = {
+        'xUnit': '🧪',
+        'Postman': '📬',
+        'History': '📊',
+        'Categories': '🏷️',
+        'Injected': '💉',
+        'Jira': '🎯',
+    }
+    icon = icons.get(label, '•')
+    return f'<span class="badge {tone}"><span class="badge-icon">{icon}</span><strong>{label}</strong><em>{value}</em></span>'
 
 
 def slugify(value: str) -> str:
@@ -38,36 +47,49 @@ def build_owner_cards(owners: list, owner_base: str, published_root: Path) -> st
     if not owners:
         return '<div class="empty">No owners synced yet.</div>'
     cards = []
-    for owner in owners:
+    colors = ['#7dd3fc', '#a78bfa', '#34d399', '#fb923c', '#f472b6', '#facc15']
+    for i, owner in enumerate(owners):
         owner_safe = slugify(owner)
         owner_dir = published_root / 'report-extra' / 'owners' / owner_safe
+        color = colors[i % len(colors)]
+        initials = ''.join([w[0].upper() for w in owner.replace('_', ' ').split() if w][:2])
         if owner_dir.exists():
             href = f'{owner_base}report-extra/owners/{owner_safe}/'
             cards.append(
-                f'<a class="member-item link" href="{href}">{owner}</a>'
+                f'<a class="member-card link" href="{href}">'
+                f'<div class="member-avatar" style="background:{color}">{initials}</div>'
+                f'<span class="member-name">{owner}</span>'
+                f'<svg class="member-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>'
+                f'</a>'
             )
         else:
             cards.append(
-                f'<div class="member-item muted">{owner}</div>'
+                f'<div class="member-card muted">'
+                f'<div class="member-avatar" style="background:{color};opacity:.4">{initials}</div>'
+                f'<span class="member-name">{owner}</span>'
+                f'</div>'
             )
     return ''.join(cards)
 
 
 def build_suite_cards(report_url: str) -> str:
     suites = [
-        ('Postman API Test', 'API report', 'API'),
-        ('xUnit Backend Test', 'Backend report', 'BE'),
-        ('E2E Frontend Test', 'E2E report', 'E2E'),
+        ('Postman API Test', 'API integration tests', 'API', '📬', '#7dd3fc'),
+        ('xUnit Backend Test', 'Unit & integration tests', 'BE', '🧪', '#a78bfa'),
+        ('E2E Frontend Test', 'End-to-end UI tests', 'E2E', '🌐', '#34d399'),
     ]
     cards = []
-    for title, subtitle, icon in suites:
+    for title, subtitle, abbr, icon, color in suites:
         cards.append(
             f'<a class="suite-card" href="{report_url}">'
-            f'<div class="suite-icon">{icon}</div>'
-            f'<div class="suite-copy">'
+            f'<div class="suite-icon" style="background:linear-gradient(135deg, {color}22, {color}11);border-color:{color}33;color:{color}">'
+            f'<span class="suite-emoji">{icon}</span>'
+            f'</div>'
+            f'<div class="suite-body">'
             f'<div class="suite-title">{title}</div>'
             f'<div class="suite-sub">{subtitle}</div>'
             f'</div>'
+            f'<svg class="suite-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>'
             f'</a>'
         )
     return ''.join(cards)
@@ -129,190 +151,337 @@ def main() -> None:
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>KCPM Test Dashboard</title>
+  <meta name="description" content="Quality Gate Report for Waste Recycling Platform — KCPM project test dashboard with Allure reports." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {{
-      --bg: #050b16;
-      --bg2: #0a1322;
-      --panel: rgba(12, 19, 34, 0.92);
-      --panel-soft: rgba(255, 255, 255, 0.035);
-      --line: rgba(255, 255, 255, 0.08);
-      --text: #ecf3ff;
-      --muted: #95a7c3;
+      --bg: #0b0f1a;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface-hover: rgba(255, 255, 255, 0.07);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(125, 211, 252, 0.3);
+      --text: #e8edf5;
+      --text-secondary: #8896ab;
       --accent: #7dd3fc;
       --accent2: #a78bfa;
-      --shadow: 0 20px 60px rgba(0, 0, 0, 0.42);
-      --radius: 20px;
+      --green: #34d399;
+      --radius: 16px;
+      --radius-sm: 12px;
     }}
-    * {{ box-sizing: border-box; }}
+
+    * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+
     body {{
-      margin: 0;
-      font-family: Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
       color: var(--text);
-      background: radial-gradient(circle at top left, rgba(125, 211, 252, 0.18), transparent 28%),
-                  radial-gradient(circle at top right, rgba(167, 139, 250, 0.13), transparent 24%),
-                  linear-gradient(160deg, var(--bg), var(--bg2));
+      background: var(--bg);
       min-height: 100vh;
+      overflow-x: hidden;
     }}
+
+    /* Ambient glow background */
+    body::before {{
+      content: '';
+      position: fixed;
+      top: -200px;
+      left: -100px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(125, 211, 252, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }}
+    body::after {{
+      content: '';
+      position: fixed;
+      top: -100px;
+      right: -100px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(167, 139, 250, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }}
+
     a {{ color: inherit; text-decoration: none; }}
-    .wrap {{
-      max-width: 1180px;
+
+    .container {{
+      position: relative;
+      z-index: 1;
+      max-width: 960px;
       margin: 0 auto;
-      padding: 34px 20px 42px;
+      padding: 48px 24px 64px;
     }}
-    .header {{ margin-bottom: 22px; }}
-    h1 {{
-      margin: 0;
-      font-size: clamp(34px, 5vw, 58px);
-      line-height: 1;
-      letter-spacing: -0.03em;
+
+    /* ── Header ── */
+    .header {{
+      margin-bottom: 40px;
     }}
-    .meta {{
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 13px;
+    .header-top {{
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 8px;
     }}
-    .section-title {{
-      margin: 32px 0 14px;
-      color: var(--muted);
-      font-size: 12px;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-    }}
-    .suite-grid {{
+    .logo {{
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 16px;
+      place-items: center;
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--bg);
+      flex-shrink: 0;
+    }}
+    h1 {{
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+    }}
+    .subtitle {{
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-top: 6px;
+      margin-left: 58px;
+    }}
+
+    /* ── Badges ── */
+    .badges {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+    }}
+    .badge {{
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      transition: border-color .2s;
+    }}
+    .badge:hover {{ border-color: var(--border-hover); }}
+    .badge-icon {{ font-size: 13px; }}
+    .badge.ok {{ border-color: rgba(52, 211, 153, 0.25); }}
+    .badge.ok strong {{ color: var(--green); }}
+    .badge.warn {{ border-color: rgba(251, 191, 36, 0.25); }}
+    .badge.warn strong {{ color: #fbbf24; }}
+    .badge.info {{ border-color: rgba(125, 211, 252, 0.25); }}
+    .badge.info strong {{ color: var(--accent); }}
+    .badge strong {{ font-weight: 600; }}
+    .badge em {{ font-style: normal; opacity: 0.6; }}
+
+    /* ── Section titles ── */
+    .section-label {{
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }}
+
+    /* ── Suite Cards ── */
+    .suites {{
+      margin-bottom: 32px;
+    }}
+    .suite-list {{
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }}
     .suite-card {{
       display: flex;
       align-items: center;
       gap: 16px;
-      padding: 18px 18px 18px 20px;
+      padding: 16px 20px;
       border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-      min-height: 110px;
-      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      transition: all .2s ease;
+      cursor: pointer;
     }}
     .suite-card:hover {{
-      transform: translateY(-2px);
-      border-color: rgba(125, 211, 252, 0.28);
-      background: rgba(255,255,255,0.06);
+      background: var(--surface-hover);
+      border-color: var(--border-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
     }}
     .suite-icon {{
-      width: 42px;
-      height: 42px;
-      flex: 0 0 42px;
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+      border-radius: var(--radius-sm);
+      border: 1px solid;
       display: grid;
       place-items: center;
-      border-radius: 13px;
-      background: rgba(255,255,255,0.06);
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
+      font-size: 20px;
     }}
-    .suite-copy {{ min-width: 0; }}
+    .suite-body {{ flex: 1; min-width: 0; }}
     .suite-title {{
-      font-size: 16px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
     }}
     .suite-sub {{
-      margin-top: 5px;
-      color: var(--muted);
+      color: var(--text-secondary);
       font-size: 13px;
+      margin-top: 2px;
     }}
-    .member-list {{
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-      max-width: 320px;
+    .suite-arrow {{
+      width: 18px;
+      height: 18px;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+      opacity: 0;
+      transform: translateX(-4px);
+      transition: all .2s;
     }}
-    .member-item {{
-      padding: 14px 16px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: var(--panel-soft);
-      font-weight: 700;
-      letter-spacing: -0.01em;
+    .suite-card:hover .suite-arrow {{
+      opacity: 1;
+      transform: translateX(0);
     }}
-    .member-item.link {{
-      display: block;
-      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+
+    /* ── CTA Button ── */
+    .cta-wrap {{
+      margin-bottom: 48px;
     }}
-    .member-item.link:hover {{
-      transform: translateY(-2px);
-      border-color: rgba(125, 211, 252, 0.28);
-      background: rgba(255, 255, 255, 0.06);
-    }}
-    .member-item.muted {{ opacity: 0.5; }}
-    .empty {{
-      color: var(--muted);
-      padding: 12px 0;
-    }}
-    .badges {{ display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }}
-    .badge {{
-      display: inline-flex;
-      gap: 6px;
-      align-items: center;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      border: 1px solid var(--line);
-      background: var(--panel-soft);
-    }}
-    .badge.ok {{ border-color: rgba(74, 222, 128, 0.3); color: #4ade80; }}
-    .badge.warn {{ border-color: rgba(251, 191, 36, 0.3); color: #fbbf24; }}
-    .badge.info {{ border-color: rgba(125, 211, 252, 0.3); color: var(--accent); }}
-    .badge strong {{ font-weight: 600; }}
-    .badge em {{ font-style: normal; opacity: 0.8; }}
     .cta {{
-      display: inline-block;
-      margin-top: 24px;
-      padding: 14px 28px;
-      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: var(--radius-sm);
       background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #050b16;
-      font-weight: 800;
-      font-size: 15px;
-      letter-spacing: -0.01em;
-      transition: transform .18s ease, box-shadow .18s ease;
-      box-shadow: 0 4px 24px rgba(125, 211, 252, 0.25);
+      color: var(--bg);
+      font-weight: 700;
+      font-size: 14px;
+      transition: all .2s ease;
+      box-shadow: 0 4px 20px rgba(125, 211, 252, 0.2);
     }}
     .cta:hover {{
-      transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(125, 211, 252, 0.38);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 30px rgba(125, 211, 252, 0.3);
     }}
-    footer {{
-      margin-top: 48px;
-      color: var(--muted);
+
+    /* ── Team Members ── */
+    .team {{
+      margin-bottom: 48px;
+    }}
+    .member-grid {{
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 10px;
+    }}
+    .member-card {{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      transition: all .2s ease;
+    }}
+    .member-card.link {{
+      cursor: pointer;
+    }}
+    .member-card.link:hover {{
+      background: var(--surface-hover);
+      border-color: var(--border-hover);
+      transform: translateY(-1px);
+    }}
+    .member-card.muted {{ opacity: 0.45; }}
+    .member-avatar {{
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
       font-size: 12px;
-      border-top: 1px solid var(--line);
-      padding-top: 16px;
+      color: var(--bg);
+      flex-shrink: 0;
+    }}
+    .member-name {{
+      font-weight: 600;
+      font-size: 14px;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }}
+    .member-arrow {{
+      width: 16px;
+      height: 16px;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+      opacity: 0;
+      transition: opacity .2s;
+    }}
+    .member-card.link:hover .member-arrow {{ opacity: 1; }}
+
+    /* ── Footer ── */
+    footer {{
+      color: var(--text-secondary);
+      font-size: 12px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }}
+    footer a {{
+      color: var(--accent);
+      transition: opacity .2s;
+    }}
+    footer a:hover {{ opacity: 0.8; }}
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {{
+      .container {{ padding: 32px 16px 48px; }}
+      h1 {{ font-size: 24px; }}
+      .subtitle {{ margin-left: 0; margin-top: 10px; }}
+      .header-top {{ flex-wrap: wrap; }}
+      .member-grid {{ grid-template-columns: 1fr; }}
     }}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="header">
-      <h1>KCPM<br>Test Dashboard</h1>
-      <div class="meta">Waste Recycling Platform &mdash; Quality Gate Report &mdash; {generated_at}</div>
+  <div class="container">
+    <header class="header">
+      <div class="header-top">
+        <div class="logo">QA</div>
+        <h1>KCPM Test Dashboard</h1>
+      </div>
+      <div class="subtitle">Waste Recycling Platform &mdash; Quality Gate Report &mdash; {generated_at}</div>
       {f'<div class="badges">{badges_html}</div>' if badges_html else ''}
+    </header>
+
+    <section class="suites">
+      <div class="section-label">Test Suites</div>
+      <div class="suite-list">
+        {suite_cards_html}
+      </div>
+    </section>
+
+    <div class="cta-wrap">
+      <a class="cta" href="{report_url}">Open Full Allure Report &rarr;</a>
     </div>
 
-    <div class="section-title">Test Suites</div>
-    <div class="suite-grid">
-      {suite_cards_html}
-    </div>
-
-    <a class="cta" href="{report_url}">Open Full Allure Report &rarr;</a>
-
-    {f"""<div class="section-title">Team Members</div>
-    <div class="member-list">{owner_cards_html}</div>""" if owners else ''}
+    {f"""<section class="team">
+      <div class="section-label">Team Members</div>
+      <div class="member-grid">{owner_cards_html}</div>
+    </section>""" if owners else ''}
 
     <footer>
-      Auto-generated by CI &bull; <a href="{report_url}" style="color:var(--accent)">View Allure Report</a>
+      Auto-generated by CI &bull; <a href="{report_url}">View Allure Report</a>
     </footer>
   </div>
 </body>
