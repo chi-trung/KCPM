@@ -30,9 +30,10 @@ def normalize_owner_name(name, aliases=None):
     """Map variant display names to canonical name using alias config."""
     if not name:
         return name
+    name = name.strip()
     if aliases is None:
         aliases = {}
-    return aliases.get(name, aliases.get(name.strip(), name))
+    return aliases.get(name, name).strip()
 
 RESULTS_DIR = os.path.join('Waste-Recycling-Platform', 'allure-results')
 BASE_RESULTS_TEMP = 'owner-results-temp'
