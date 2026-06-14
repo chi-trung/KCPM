@@ -125,7 +125,12 @@ jobs:
             $scope = 'smoke'
           }
 
-          if ('${{ github.event_name }}' -ne 'workflow_dispatch') {
+          # Schedule (daily cron) runs full collection for complete Allure reports
+          if ('${{ github.event_name }}' -eq 'schedule') {
+            $scope = 'all'
+          }
+          # PR events stay smoke (fast gate)
+          elseif ('${{ github.event_name }}' -ne 'workflow_dispatch') {
             $scope = 'smoke'
           }
 
@@ -186,6 +191,7 @@ jobs:
             '--env-var', 'enterpriseToken=${{ steps.prelogin.outputs.enterpriseToken }}',
             '--env-var', 'adminToken=${{ steps.prelogin.outputs.adminToken }}',
             '--env-var', 'collectorToken=${{ steps.prelogin.outputs.collectorToken }}',
+            '--env-var', 'managementToken=${{ steps.prelogin.outputs.adminToken }}',
             '--reporters', 'cli,junit,json,allure',
             '--reporter-junit-export', './TestResults/postman-junit.xml',
             '--reporter-json-export', './TestResults/postman-report.json',
