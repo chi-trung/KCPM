@@ -114,7 +114,7 @@ jobs:
           }
 
       - name: Install Newman
-        run: npm install -g newman newman-reporter-junitfull newman-reporter-allure@1.4.0
+        run: npm install -g newman newman-reporter-junitfull newman-reporter-allure
 
       - name: Decide Postman run scope
         id: postman_scope
