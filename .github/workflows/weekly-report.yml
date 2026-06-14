@@ -1,0 +1,216 @@
+name: Weekly Test Report
+
+on:
+  schedule:
+    # Every Monday 8:00 AM Vietnam time (UTC+7) = 1:00 AM UTC
+    - cron: '0 1 * * 1'
+  workflow_dispatch:
+    inputs:
+      force_run:
+        description: 'Force run even if not Monday'
+        required: false
+        default: 'true'
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weekly-report-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  weekly-test-and-report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # ── Docker + Backend ──────────────────────────────────────────────
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and cache Backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./Waste-Recycling-Platform
+          file: ./Waste-Recycling-Platform/backend/Dockerfile
+          push: false
+          load: true
+          tags: waste-backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Start Backend with Docker Compose
+        run: |
+          docker compose -f ./Waste-Recycling-Platform/docker-compose.yml up -d --build db backend
+          echo "Waiting for API to be ready..."
+          for i in $(seq 1 60); do
+            if curl -s http://localhost:8080/api/health | grep -q "Healthy"; then
+              echo "API ready after $i attempts"
+              break
+            fi
+            if [ "$i" = "60" ]; then echo "API failed to start"; exit 1; fi
+            sleep 5
+          done
+
+      # ── Backend xUnit Tests ──────────────────────────────────────────
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Run Backend Tests (xUnit)
+        continue-on-error: true
+        run: |
+          dotnet test ./Waste-Recycling-Platform/backend/tests/WastePlatform.Tests/WastePlatform.Tests.csproj \
+            --configuration Release \
+            --logger "trx;LogFileName=backend-tests.trx" \
+            --results-directory ./TestResults \
+            --no-restore || true
+
+      # ── Postman API Tests ────────────────────────────────────────────
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Newman
+        run: npm install -g newman newman-reporter-allure
+
+      - name: Run Postman Tests via Newman
+        continue-on-error: true
+        run: |
+          mkdir -p TestResults
+          newman run ./Waste-Recycling-Platform/postman/WastePlatform.professional.postman_collection.json \
+            -e ./Waste-Recycling-Platform/postman/WastePlatform.professional.postman_environment.json \
+            --env-var baseUrl=http://localhost:8080 \
+            --reporters cli,json \
+            --reporter-json-export ./TestResults/postman-report.json || true
+
+      # ── Sync Jira owners ─────────────────────────────────────────────
+      - name: Sync Jira Owners
+        env:
+          JIRA_BASE_URL:    ${{ secrets.JIRA_BASE_URL }}
+          JIRA_EMAIL:       ${{ secrets.JIRA_API_EMAIL }}
+          JIRA_API_TOKEN:   ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_PROJECT_KEY: KIEM
+        run: python3 Waste-Recycling-Platform/scripts/sync_jira_owners.py || true
+
+      # ── Generate weekly report ───────────────────────────────────────
+      - name: Generate weekly report
+        env:
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+          GITHUB_SHA: ${{ github.sha }}
+          ALLURE_REPORT_URL: https://chi-trung.github.io/KCPM/report-main/
+          WEEKLY_OUTPUT_DIR: site-output/reports/weekly
+        run: |
+          mkdir -p site-output/reports/weekly
+          python3 Waste-Recycling-Platform/scripts/generate_weekly_report.py
+
+      # ── Deploy to GitHub Pages ───────────────────────────────────────
+      - name: Deploy weekly report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: site-output
+          keep_files: true
+
+      # ── Trigger Allure report refresh ────────────────────────────────
+      - name: Trigger Allure Pages workflow
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'allure-gh-pages.yml',
+              ref: 'main',
+              inputs: {
+                report_mode: 'both',
+                export_format: 'html',
+                selected_owner: 'all'
+              }
+            });
+            console.log('Triggered Allure Pages workflow');
+
+      # ── Log to Jira ──────────────────────────────────────────────────
+      - name: Log weekly report to Jira
+        if: always()
+        env:
+          JIRA_BASE_URL:    ${{ secrets.JIRA_BASE_URL }}
+          JIRA_EMAIL:       ${{ secrets.JIRA_API_EMAIL }}
+          JIRA_API_TOKEN:   ${{ secrets.JIRA_API_TOKEN }}
+          JIRA_PROJECT_KEY: KIEM
+          TEST_TYPE:        backend
+          ALLURE_REPORT_URL: https://chi-trung.github.io/KCPM/report-main/
+          GITHUB_RUN_ID:    ${{ github.run_id }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          GITHUB_REF_NAME:  ${{ github.ref_name }}
+          GITHUB_SHA:       ${{ github.sha }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_WORKFLOW:  ${{ github.workflow }}
+        run: |
+          # Parse TRX
+          TRX=$(find . -name "*.trx" -type f | head -1)
+          if [ -n "$TRX" ]; then
+            PASSED=$(python3 -c "
+          import xml.etree.ElementTree as ET
+          tree = ET.parse('$TRX')
+          ns = {'t': 'http://microsoft.com/schemas/VisualStudio/TeamTest/2010'}
+          c = tree.getroot().find('.//t:ResultSummary/t:Counters', ns)
+          print(c.get('passed', '0') if c is not None else '0')")
+            FAILED=$(python3 -c "
+          import xml.etree.ElementTree as ET
+          tree = ET.parse('$TRX')
+          ns = {'t': 'http://microsoft.com/schemas/VisualStudio/TeamTest/2010'}
+          c = tree.getroot().find('.//t:ResultSummary/t:Counters', ns)
+          print(c.get('failed', '0') if c is not None else '0')")
+            TOTAL=$(python3 -c "
+          import xml.etree.ElementTree as ET
+          tree = ET.parse('$TRX')
+          ns = {'t': 'http://microsoft.com/schemas/VisualStudio/TeamTest/2010'}
+          c = tree.getroot().find('.//t:ResultSummary/t:Counters', ns)
+          print(c.get('total', '0') if c is not None else '0')")
+            export PASSED FAILED TOTAL
+          fi
+          python3 scripts/jira_log_test_execution.py || true
+
+      # ── Cleanup ──────────────────────────────────────────────────────
+      - name: Stop Docker containers
+        if: always()
+        run: docker compose -f ./Waste-Recycling-Platform/docker-compose.yml down -v || true
+
+      - name: Upload weekly report artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-report-${{ github.run_number }}
+          path: |
+            site-output/reports/weekly/
+            TestResults/
+          retention-days: 90
+
+      - name: Write step summary
+        if: always()
+        run: |
+          WEEK=$(date -u +%V)
+          YEAR=$(date -u +%Y)
+          cat <<EOF >> $GITHUB_STEP_SUMMARY
+          ## 📅 Weekly Test Report — Week $WEEK, $YEAR
+
+          | Item | Link |
+          |------|------|
+          | 📊 Weekly Report | [View →](https://chi-trung.github.io/KCPM/reports/weekly/) |
+          | 📈 Allure Report | [View →](https://chi-trung.github.io/KCPM/report-main/) |
+          | 🏠 Dashboard | [View →](https://chi-trung.github.io/KCPM/) |
+
+          > Generated at $(date -u '+%Y-%m-%d %H:%M UTC')
+          EOF

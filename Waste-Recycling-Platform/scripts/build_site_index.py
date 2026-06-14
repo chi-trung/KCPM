@@ -353,6 +353,9 @@ def main() -> None:
     /* ── CTA Button ── */
     .cta-wrap {{
       margin-bottom: 48px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
     }}
     .cta {{
       display: inline-flex;
@@ -370,6 +373,17 @@ def main() -> None:
     .cta:hover {{
       transform: translateY(-1px);
       box-shadow: 0 8px 30px rgba(125, 211, 252, 0.3);
+      text-decoration: none;
+    }}
+    .cta-secondary {{
+      background: var(--surface);
+      color: var(--accent);
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }}
+    .cta-secondary:hover {{
+      background: var(--surface-hover);
+      box-shadow: 0 4px 20px rgba(125, 211, 252, 0.1);
     }}
 
     /* ── Team Members ── */
@@ -473,6 +487,7 @@ def main() -> None:
 
     <div class="cta-wrap">
       <a class="cta" href="{report_url}">Open Full Allure Report &rarr;</a>
+      <a class="cta cta-secondary" href="{root_url}reports/weekly/">📅 Weekly Report &rarr;</a>
     </div>
 
     {f"""<section class="team">
