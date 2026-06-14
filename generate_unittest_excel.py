@@ -37,6 +37,9 @@ YELLOW      = "FFF2CC"   # UTCID header
 GRAY_BG     = "F2F2F2"   # metadata rows
 WHITE       = "FFFFFF"
 
+# ─── Font chuẩn (Calibri hỗ trợ tiếng Việt tốt) ────────────────────
+FONT_NAME = "Calibri"
+
 # ─── Helper styles ─────────────────────────────────────────────────
 
 def _side(color="000000"):
@@ -49,14 +52,14 @@ THIN = Border(
 def header_fill(hex_color):
     return PatternFill("solid", fgColor=hex_color)
 
-def font_white_bold(sz=10):
-    return Font(name="MS PGothic", bold=True, color="FFFFFF", size=sz)
+def font_white_bold(sz=11):
+    return Font(name=FONT_NAME, bold=True, color="FFFFFF", size=sz)
 
-def font_bold(sz=10, color="000000"):
-    return Font(name="MS PGothic", bold=True, color=color, size=sz)
+def font_bold(sz=11, color="000000"):
+    return Font(name=FONT_NAME, bold=True, color=color, size=sz)
 
-def font_normal(sz=10):
-    return Font(name="MS PGothic", size=sz)
+def font_normal(sz=11):
+    return Font(name=FONT_NAME, size=sz)
 
 def center():
     return Alignment(horizontal="center", vertical="center", wrap_text=True)
@@ -899,18 +902,18 @@ def build_function_sheet(wb, func: dict, sheet_name: str):
     LAST_COL       = DATA_START_COL + n_utcid - 1
 
     # ── Column widths ────────────────────────────────────────────────
-    ws.column_dimensions["A"].width = 12
-    ws.column_dimensions["B"].width = 18
-    ws.column_dimensions["C"].width = 18
-    ws.column_dimensions["D"].width = 32
+    ws.column_dimensions["A"].width = 16
+    ws.column_dimensions["B"].width = 22
+    ws.column_dimensions["C"].width = 22
+    ws.column_dimensions["D"].width = 38
     for ci in range(DATA_START_COL, LAST_COL + 1):
-        ws.column_dimensions[get_column_letter(ci)].width = 11
+        ws.column_dimensions[get_column_letter(ci)].width = 13
 
     # ── ROW 1: empty / title bar ─────────────────────────────────────
-    ws.row_dimensions[1].height = 6
+    ws.row_dimensions[1].height = 8
 
     # ── ROW 2: Function Code + Function Name ─────────────────────────
-    ws.row_dimensions[2].height = 20
+    ws.row_dimensions[2].height = 26
     ws["A2"] = "Function Code"
     ws["A2"].font  = font_bold(10)
     ws["A2"].fill  = header_fill(GRAY_BG)
@@ -938,7 +941,7 @@ def build_function_sheet(wb, func: dict, sheet_name: str):
     ws[f"{get_column_letter(fn_col)}2"].border = THIN
 
     # ── ROW 3: Created By / Executed By ─────────────────────────────
-    ws.row_dimensions[3].height = 18
+    ws.row_dimensions[3].height = 24
     ws["A3"] = "Created By"
     ws["A3"].font  = font_bold(10); ws["A3"].fill = header_fill(GRAY_BG)
     ws["A3"].alignment = left(); ws["A3"].border = THIN
@@ -958,7 +961,7 @@ def build_function_sheet(wb, func: dict, sheet_name: str):
     ws[f"{get_column_letter(fn_col)}3"].alignment = left(); ws[f"{get_column_letter(fn_col)}3"].border = THIN
 
     # ── ROW 4: Lines of code / Lack of test cases ────────────────────
-    ws.row_dimensions[4].height = 18
+    ws.row_dimensions[4].height = 24
     ws["A4"] = "Lines of code"
     ws["A4"].font  = font_bold(10); ws["A4"].fill = header_fill(GRAY_BG)
     ws["A4"].alignment = left(); ws["A4"].border = THIN
@@ -979,7 +982,7 @@ def build_function_sheet(wb, func: dict, sheet_name: str):
     ws[f"{get_column_letter(fn_col)}4"].alignment = center(); ws[f"{get_column_letter(fn_col)}4"].border = THIN
 
     # ── ROW 5: Test requirement ──────────────────────────────────────
-    ws.row_dimensions[5].height = 40
+    ws.row_dimensions[5].height = 50
     ws["A5"] = "Test requirement"
     ws["A5"].font  = font_bold(10); ws["A5"].fill = header_fill(GRAY_BG)
     ws["A5"].alignment = left(); ws["A5"].border = THIN
@@ -988,7 +991,7 @@ def build_function_sheet(wb, func: dict, sheet_name: str):
     ws["B5"].font = font_normal(); ws["B5"].alignment = left(); ws["B5"].border = THIN
 
     # ── ROW 6: Summary headers ───────────────────────────────────────
-    ws.row_dimensions[6].height = 18
+    ws.row_dimensions[6].height = 24
     n_pass = sum(1 for r in func["results"] if r["pf"] == "P")
     n_fail = sum(1 for r in func["results"] if r["pf"] == "F")
     n_test = len(func["results"])
@@ -1023,13 +1026,13 @@ def build_function_sheet(wb, func: dict, sheet_name: str):
     ws["N6"] = n_test; ws["N6"].alignment = center(); ws["N6"].border = THIN
 
     # ROW 7: values (already embedded in row 6)
-    ws.row_dimensions[7].height = 10
+    ws.row_dimensions[7].height = 14
 
     # ── ROW 8: empty ─────────────────────────────────────────────────
-    ws.row_dimensions[8].height = 6
+    ws.row_dimensions[8].height = 8
 
     # ── ROW 9: UTCID header row ──────────────────────────────────────
-    ws.row_dimensions[9].height = 22
+    ws.row_dimensions[9].height = 28
     ws["A9"] = "Condition"
     ws["A9"].font = font_white_bold(); ws["A9"].fill = header_fill(DARK_BLUE)
     ws["A9"].alignment = center(); ws["A9"].border = THIN
@@ -1060,7 +1063,7 @@ def build_function_sheet(wb, func: dict, sheet_name: str):
         items = cond_group["items"]
 
         for item_idx, item in enumerate(items):
-            ws.row_dimensions[current_row].height = 20
+            ws.row_dimensions[current_row].height = 26
             # Col D = label/value
             ws[f"D{current_row}"] = item["label"]
             ws[f"D{current_row}"].font = font_normal()
@@ -1075,7 +1078,7 @@ def build_function_sheet(wb, func: dict, sheet_name: str):
                 cell.alignment = center()
                 if ui in item["marks"]:
                     cell.value = "O"
-                    cell.font  = Font(name="MS PGothic", bold=True, size=11)
+                    cell.font  = Font(name=FONT_NAME, bold=True, size=12)
 
             current_row += 1
 
@@ -1087,7 +1090,7 @@ def build_function_sheet(wb, func: dict, sheet_name: str):
         # Merge col B (Precondition group name)
         ws.merge_cells(f"B{group_start}:B{current_row-1}")
         ws[f"B{group_start}"] = cond_group["group"]
-        ws[f"B{group_start}"].font = Font(name="MS PGothic", bold=True, size=10)
+        ws[f"B{group_start}"].font = Font(name=FONT_NAME, bold=True, size=11)
         ws[f"B{group_start}"].alignment = center()
         ws[f"B{group_start}"].border = THIN
 
@@ -1118,7 +1121,7 @@ def build_function_sheet(wb, func: dict, sheet_name: str):
     current_row += 1
 
     for ret in func["returns"]:
-        ws.row_dimensions[current_row].height = 18
+        ws.row_dimensions[current_row].height = 24
         ws.merge_cells(f"C{current_row}:D{current_row}")
         ws[f"C{current_row}"] = ret["code"]
         ws[f"C{current_row}"].font = font_normal()
@@ -1131,7 +1134,7 @@ def build_function_sheet(wb, func: dict, sheet_name: str):
             cell.border = THIN; cell.alignment = center()
             if ui in ret["marks"]:
                 cell.value = "O"
-                cell.font  = Font(name="MS PGothic", bold=True, size=11)
+                cell.font  = Font(name=FONT_NAME, bold=True, size=12)
 
         current_row += 1
 
@@ -1146,7 +1149,7 @@ def build_function_sheet(wb, func: dict, sheet_name: str):
     current_row += 1
 
     for exc in func["exceptions"]:
-        ws.row_dimensions[current_row].height = 22
+        ws.row_dimensions[current_row].height = 28
         ws.merge_cells(f"C{current_row}:D{current_row}")
         ws[f"C{current_row}"] = exc["msg"]
         ws[f"C{current_row}"].font = font_normal()
@@ -1159,7 +1162,7 @@ def build_function_sheet(wb, func: dict, sheet_name: str):
             cell.border = THIN; cell.alignment = center()
             if ui in exc["marks"]:
                 cell.value = "O"
-                cell.font  = Font(name="MS PGothic", bold=True, size=11)
+                cell.font  = Font(name=FONT_NAME, bold=True, size=12)
 
         current_row += 1
 
@@ -1174,7 +1177,7 @@ def build_function_sheet(wb, func: dict, sheet_name: str):
     current_row += 1
 
     for log in func["logs"]:
-        ws.row_dimensions[current_row].height = 22
+        ws.row_dimensions[current_row].height = 28
         msg = log.get("msg", log.get("label", ""))
         ws.merge_cells(f"C{current_row}:D{current_row}")
         ws[f"C{current_row}"] = f'"{msg}"'
@@ -1188,7 +1191,7 @@ def build_function_sheet(wb, func: dict, sheet_name: str):
             cell.border = THIN; cell.alignment = center()
             if ui in log["marks"]:
                 cell.value = "O"
-                cell.font  = Font(name="MS PGothic", bold=True, size=11)
+                cell.font  = Font(name=FONT_NAME, bold=True, size=12)
 
         current_row += 1
 
@@ -1210,18 +1213,18 @@ def build_function_sheet(wb, func: dict, sheet_name: str):
 
     for ri, (label, vals) in enumerate(result_rows):
         row = res_start + ri
-        ws.row_dimensions[row].height = 20
+        ws.row_dimensions[row].height = 26
 
         ws.merge_cells(f"B{row}:D{row}")
         ws[f"B{row}"] = label
-        ws[f"B{row}"].font = font_bold(9)
+        ws[f"B{row}"].font = font_bold(10)
         ws[f"B{row}"].alignment = left(); ws[f"B{row}"].border = THIN
 
         for ui, val in enumerate(vals[:n_utcid]):
             col_ltr = get_column_letter(DATA_START_COL + ui)
             cell = ws[f"{col_ltr}{row}"]
             cell.value = val
-            cell.font  = Font(name="MS PGothic", bold=(ri == 0 or ri == 1), size=10)
+            cell.font  = Font(name=FONT_NAME, bold=(ri == 0 or ri == 1), size=11)
             cell.alignment = center()
             cell.border = THIN
 
@@ -1240,7 +1243,7 @@ def build_sheet1(wb, functions):
     ws.title = "Sheet1"
 
     # Column widths
-    col_widths = [6, 18, 30, 35, 12, 12, 14, 20, 12, 12, 20, 20]
+    col_widths = [8, 22, 35, 40, 14, 14, 18, 24, 14, 14, 24, 24]
     for ci, w in enumerate(col_widths, start=1):
         ws.column_dimensions[get_column_letter(ci)].width = w
 
@@ -1251,7 +1254,7 @@ def build_sheet1(wb, functions):
         "Người thực thi", "Kỹ thuật test", "Jira Ticket",
         "Loại (N/A/B)", "Ghi chú / Log message", "Quyền hạn"
     ]
-    ws.row_dimensions[1].height = 28
+    ws.row_dimensions[1].height = 34
     for ci, h in enumerate(headers, start=1):
         cell = ws.cell(row=1, column=ci, value=h)
         cell.font  = font_white_bold(11)
@@ -1292,7 +1295,7 @@ def build_sheet1(wb, functions):
         role = ROLE_MAP.get(func["code"], "")
 
         for ui, utcid in enumerate(func["utcids"]):
-            ws.row_dimensions[current_row].height = 50
+            ws.row_dimensions[current_row].height = 60
             result = func["results"][ui]
 
             # Collect condition labels for this UTC
@@ -1331,7 +1334,7 @@ def build_sheet1(wb, functions):
 
             for ci, val in enumerate(row_data, start=1):
                 cell = ws.cell(row=current_row, column=ci, value=val)
-                cell.font      = font_normal(9)
+                cell.font      = font_normal(10)
                 cell.alignment = Alignment(
                     horizontal="left", vertical="top", wrap_text=True
                 )
@@ -1345,7 +1348,7 @@ def build_sheet1(wb, functions):
 
                 # Color result cell
                 if ci == 5:
-                    cell.font = font_bold(9, "006400" if result["pf"] == "P" else "8B0000")
+                    cell.font = font_bold(10, "006400" if result["pf"] == "P" else "8B0000")
 
             current_row += 1
 
@@ -1367,15 +1370,21 @@ def main():
         build_function_sheet(wb, func, sheet_name)
 
     out_path = r"C:\Users\Gnurt\Desktop\KCPM\UnitestKCPM.xlsx"
-    wb.save(out_path)
+    try:
+        wb.save(out_path)
+    except PermissionError:
+        # File is open in Excel, save with suffix
+        out_path = r"C:\Users\Gnurt\Desktop\KCPM\UnitestKCPM_new.xlsx"
+        wb.save(out_path)
+        print(f"[WARNING] File goc dang mo, da luu: {out_path}")
 
     total_tc = sum(len(f["utcids"]) for f in FUNCTIONS)
     total_pass = sum(sum(1 for r in f["results"] if r["pf"] == "P") for f in FUNCTIONS)
     total_fail = total_tc - total_pass
-    print(f"✅ Generated: {out_path}")
+    print(f"[OK] Generated: {out_path}")
     print(f"   Sheets: Sheet1 + {len(FUNCTIONS)} Function sheets")
     print(f"   Total test cases: {total_tc} | Passed: {total_pass} | Failed: {total_fail}")
-    print(f"   Thành viên: Nguyễn Chí Trung, Minh Phụng, Nguyễn Hoàng Phụng, 11A6_03_Đăng, Thanh Duy")
+    print(f"   Members: Nguyen Chi Trung, Minh Phung, Nguyen Hoang Phung, 11A6_03_Dang, Thanh Duy")
 
 
 if __name__ == "__main__":
