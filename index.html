@@ -4,190 +4,337 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>KCPM Test Dashboard</title>
+  <meta name="description" content="Quality Gate Report for Waste Recycling Platform — KCPM project test dashboard with Allure reports." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #050b16;
-      --bg2: #0a1322;
-      --panel: rgba(12, 19, 34, 0.92);
-      --panel-soft: rgba(255, 255, 255, 0.035);
-      --line: rgba(255, 255, 255, 0.08);
-      --text: #ecf3ff;
-      --muted: #95a7c3;
+      --bg: #0b0f1a;
+      --surface: rgba(255, 255, 255, 0.04);
+      --surface-hover: rgba(255, 255, 255, 0.07);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(125, 211, 252, 0.3);
+      --text: #e8edf5;
+      --text-secondary: #8896ab;
       --accent: #7dd3fc;
       --accent2: #a78bfa;
-      --shadow: 0 20px 60px rgba(0, 0, 0, 0.42);
-      --radius: 20px;
+      --green: #34d399;
+      --radius: 16px;
+      --radius-sm: 12px;
     }
-    * { box-sizing: border-box; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      margin: 0;
-      font-family: Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
       color: var(--text);
-      background: radial-gradient(circle at top left, rgba(125, 211, 252, 0.18), transparent 28%),
-                  radial-gradient(circle at top right, rgba(167, 139, 250, 0.13), transparent 24%),
-                  linear-gradient(160deg, var(--bg), var(--bg2));
+      background: var(--bg);
       min-height: 100vh;
+      overflow-x: hidden;
     }
+
+    /* Ambient glow background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px;
+      left: -100px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(125, 211, 252, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      top: -100px;
+      right: -100px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(167, 139, 250, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
     a { color: inherit; text-decoration: none; }
-    .wrap {
-      max-width: 1180px;
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 960px;
       margin: 0 auto;
-      padding: 34px 20px 42px;
+      padding: 48px 24px 64px;
     }
-    .header { margin-bottom: 22px; }
-    h1 {
-      margin: 0;
-      font-size: clamp(34px, 5vw, 58px);
-      line-height: 1;
-      letter-spacing: -0.03em;
+
+    /* ── Header ── */
+    .header {
+      margin-bottom: 40px;
     }
-    .meta {
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 13px;
+    .header-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 8px;
     }
-    .section-title {
-      margin: 32px 0 14px;
-      color: var(--muted);
-      font-size: 12px;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-    }
-    .suite-grid {
+    .logo {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 16px;
+      place-items: center;
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--bg);
+      flex-shrink: 0;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+    }
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-top: 6px;
+      margin-left: 58px;
+    }
+
+    /* ── Badges ── */
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 20px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      transition: border-color .2s;
+    }
+    .badge:hover { border-color: var(--border-hover); }
+    .badge-icon { font-size: 13px; }
+    .badge.ok { border-color: rgba(52, 211, 153, 0.25); }
+    .badge.ok strong { color: var(--green); }
+    .badge.warn { border-color: rgba(251, 191, 36, 0.25); }
+    .badge.warn strong { color: #fbbf24; }
+    .badge.info { border-color: rgba(125, 211, 252, 0.25); }
+    .badge.info strong { color: var(--accent); }
+    .badge strong { font-weight: 600; }
+    .badge em { font-style: normal; opacity: 0.6; }
+
+    /* ── Section titles ── */
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
+    /* ── Suite Cards ── */
+    .suites {
+      margin-bottom: 32px;
+    }
+    .suite-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
     .suite-card {
       display: flex;
       align-items: center;
       gap: 16px;
-      padding: 18px 18px 18px 20px;
+      padding: 16px 20px;
       border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-      min-height: 110px;
-      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      transition: all .2s ease;
+      cursor: pointer;
     }
     .suite-card:hover {
-      transform: translateY(-2px);
-      border-color: rgba(125, 211, 252, 0.28);
-      background: rgba(255,255,255,0.06);
+      background: var(--surface-hover);
+      border-color: var(--border-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
     }
     .suite-icon {
-      width: 42px;
-      height: 42px;
-      flex: 0 0 42px;
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+      border-radius: var(--radius-sm);
+      border: 1px solid;
       display: grid;
       place-items: center;
-      border-radius: 13px;
-      background: rgba(255,255,255,0.06);
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
+      font-size: 20px;
     }
-    .suite-copy { min-width: 0; }
+    .suite-body { flex: 1; min-width: 0; }
     .suite-title {
-      font-size: 16px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
     }
     .suite-sub {
-      margin-top: 5px;
-      color: var(--muted);
+      color: var(--text-secondary);
       font-size: 13px;
+      margin-top: 2px;
     }
-    .member-list {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-      max-width: 320px;
+    .suite-arrow {
+      width: 18px;
+      height: 18px;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+      opacity: 0;
+      transform: translateX(-4px);
+      transition: all .2s;
     }
-    .member-item {
-      padding: 14px 16px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: var(--panel-soft);
-      font-weight: 700;
-      letter-spacing: -0.01em;
+    .suite-card:hover .suite-arrow {
+      opacity: 1;
+      transform: translateX(0);
     }
-    .member-item.link {
-      display: block;
-      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+
+    /* ── CTA Button ── */
+    .cta-wrap {
+      margin-bottom: 48px;
     }
-    .member-item.link:hover {
-      transform: translateY(-2px);
-      border-color: rgba(125, 211, 252, 0.28);
-      background: rgba(255, 255, 255, 0.06);
-    }
-    .member-item.muted { opacity: 0.5; }
-    .empty {
-      color: var(--muted);
-      padding: 12px 0;
-    }
-    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-    .badge {
-      display: inline-flex;
-      gap: 6px;
-      align-items: center;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      border: 1px solid var(--line);
-      background: var(--panel-soft);
-    }
-    .badge.ok { border-color: rgba(74, 222, 128, 0.3); color: #4ade80; }
-    .badge.warn { border-color: rgba(251, 191, 36, 0.3); color: #fbbf24; }
-    .badge.info { border-color: rgba(125, 211, 252, 0.3); color: var(--accent); }
-    .badge strong { font-weight: 600; }
-    .badge em { font-style: normal; opacity: 0.8; }
     .cta {
-      display: inline-block;
-      margin-top: 24px;
-      padding: 14px 28px;
-      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: var(--radius-sm);
       background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #050b16;
-      font-weight: 800;
-      font-size: 15px;
-      letter-spacing: -0.01em;
-      transition: transform .18s ease, box-shadow .18s ease;
-      box-shadow: 0 4px 24px rgba(125, 211, 252, 0.25);
+      color: var(--bg);
+      font-weight: 700;
+      font-size: 14px;
+      transition: all .2s ease;
+      box-shadow: 0 4px 20px rgba(125, 211, 252, 0.2);
     }
     .cta:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(125, 211, 252, 0.38);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 30px rgba(125, 211, 252, 0.3);
     }
-    footer {
-      margin-top: 48px;
-      color: var(--muted);
+
+    /* ── Team Members ── */
+    .team {
+      margin-bottom: 48px;
+    }
+    .member-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 10px;
+    }
+    .member-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      transition: all .2s ease;
+    }
+    .member-card.link {
+      cursor: pointer;
+    }
+    .member-card.link:hover {
+      background: var(--surface-hover);
+      border-color: var(--border-hover);
+      transform: translateY(-1px);
+    }
+    .member-card.muted { opacity: 0.45; }
+    .member-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
       font-size: 12px;
-      border-top: 1px solid var(--line);
-      padding-top: 16px;
+      color: var(--bg);
+      flex-shrink: 0;
+    }
+    .member-name {
+      font-weight: 600;
+      font-size: 14px;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .member-arrow {
+      width: 16px;
+      height: 16px;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+      opacity: 0;
+      transition: opacity .2s;
+    }
+    .member-card.link:hover .member-arrow { opacity: 1; }
+
+    /* ── Footer ── */
+    footer {
+      color: var(--text-secondary);
+      font-size: 12px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    footer a {
+      color: var(--accent);
+      transition: opacity .2s;
+    }
+    footer a:hover { opacity: 0.8; }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .container { padding: 32px 16px 48px; }
+      h1 { font-size: 24px; }
+      .subtitle { margin-left: 0; margin-top: 10px; }
+      .header-top { flex-wrap: wrap; }
+      .member-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="header">
-      <h1>KCPM<br>Test Dashboard</h1>
-      <div class="meta">Waste Recycling Platform &mdash; Quality Gate Report &mdash; 2026-06-14 05:34 UTC</div>
-      <div class="badges"><span class="badge ok"><strong>xUnit</strong><em>present</em></span><span class="badge ok"><strong>Postman</strong><em>present</em></span><span class="badge ok"><strong>History</strong><em>enabled</em></span><span class="badge ok"><strong>Categories</strong><em>configured</em></span><span class="badge info"><strong>Injected</strong><em>396</em></span><span class="badge warn"><strong>Jira</strong><em>24/26</em></span></div>
+  <div class="container">
+    <header class="header">
+      <div class="header-top">
+        <div class="logo">QA</div>
+        <h1>KCPM Test Dashboard</h1>
+      </div>
+      <div class="subtitle">Waste Recycling Platform &mdash; Quality Gate Report &mdash; 2026-06-14 05:50 UTC</div>
+      <div class="badges"><span class="badge ok"><span class="badge-icon">🧪</span><strong>xUnit</strong><em>present</em></span><span class="badge ok"><span class="badge-icon">📬</span><strong>Postman</strong><em>present</em></span><span class="badge ok"><span class="badge-icon">📊</span><strong>History</strong><em>enabled</em></span><span class="badge ok"><span class="badge-icon">🏷️</span><strong>Categories</strong><em>configured</em></span><span class="badge info"><span class="badge-icon">💉</span><strong>Injected</strong><em>396</em></span><span class="badge warn"><span class="badge-icon">🎯</span><strong>Jira</strong><em>24/26</em></span></div>
+    </header>
+
+    <section class="suites">
+      <div class="section-label">Test Suites</div>
+      <div class="suite-list">
+        <a class="suite-card" href="https://chi-trung.github.io/KCPM/report-main/"><div class="suite-icon" style="background:linear-gradient(135deg, #7dd3fc22, #7dd3fc11);border-color:#7dd3fc33;color:#7dd3fc"><span class="suite-emoji">📬</span></div><div class="suite-body"><div class="suite-title">Postman API Test</div><div class="suite-sub">API integration tests</div></div><svg class="suite-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a><a class="suite-card" href="https://chi-trung.github.io/KCPM/report-main/"><div class="suite-icon" style="background:linear-gradient(135deg, #a78bfa22, #a78bfa11);border-color:#a78bfa33;color:#a78bfa"><span class="suite-emoji">🧪</span></div><div class="suite-body"><div class="suite-title">xUnit Backend Test</div><div class="suite-sub">Unit & integration tests</div></div><svg class="suite-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a><a class="suite-card" href="https://chi-trung.github.io/KCPM/report-main/"><div class="suite-icon" style="background:linear-gradient(135deg, #34d39922, #34d39911);border-color:#34d39933;color:#34d399"><span class="suite-emoji">🌐</span></div><div class="suite-body"><div class="suite-title">E2E Frontend Test</div><div class="suite-sub">End-to-end UI tests</div></div><svg class="suite-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      </div>
+    </section>
+
+    <div class="cta-wrap">
+      <a class="cta" href="https://chi-trung.github.io/KCPM/report-main/">Open Full Allure Report &rarr;</a>
     </div>
 
-    <div class="section-title">Test Suites</div>
-    <div class="suite-grid">
-      <a class="suite-card" href="https://chi-trung.github.io/KCPM/report-main/"><div class="suite-icon">API</div><div class="suite-copy"><div class="suite-title">Postman API Test</div><div class="suite-sub">API report</div></div></a><a class="suite-card" href="https://chi-trung.github.io/KCPM/report-main/"><div class="suite-icon">BE</div><div class="suite-copy"><div class="suite-title">xUnit Backend Test</div><div class="suite-sub">Backend report</div></div></a><a class="suite-card" href="https://chi-trung.github.io/KCPM/report-main/"><div class="suite-icon">E2E</div><div class="suite-copy"><div class="suite-title">E2E Frontend Test</div><div class="suite-sub">E2E report</div></div></a>
-    </div>
-
-    <a class="cta" href="https://chi-trung.github.io/KCPM/report-main/">Open Full Allure Report &rarr;</a>
-
-    <div class="section-title">Team Members</div>
-    <div class="member-list"><a class="member-item link" href="https://chi-trung.github.io/KCPM/report-extra/owners/11a6-03-ng/">11A6_03_Đăng</a><a class="member-item link" href="https://chi-trung.github.io/KCPM/report-extra/owners/chi-trung/">Chi Trung</a><a class="member-item link" href="https://chi-trung.github.io/KCPM/report-extra/owners/minh-ph-ng/">Minh Phụng</a><a class="member-item link" href="https://chi-trung.github.io/KCPM/report-extra/owners/nguy-n-ch-trung/">Nguyễn Chí Trung </a><a class="member-item link" href="https://chi-trung.github.io/KCPM/report-extra/owners/nguy-n-ho-ng-ph-ng-cn2303e/">Nguyễn Hoàng Phụng-CN2303E</a><a class="member-item link" href="https://chi-trung.github.io/KCPM/report-extra/owners/thanh-duy/">Thanh Duy</a></div>
+    <section class="team">
+      <div class="section-label">Team Members</div>
+      <div class="member-grid"><a class="member-card link" href="https://chi-trung.github.io/KCPM/report-extra/owners/11a6-03-ng/"><div class="member-avatar" style="background:#7dd3fc">10</div><span class="member-name">11A6_03_Đăng</span><svg class="member-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a><a class="member-card link" href="https://chi-trung.github.io/KCPM/report-extra/owners/chi-trung/"><div class="member-avatar" style="background:#a78bfa">CT</div><span class="member-name">Chi Trung</span><svg class="member-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a><a class="member-card link" href="https://chi-trung.github.io/KCPM/report-extra/owners/minh-ph-ng/"><div class="member-avatar" style="background:#34d399">MP</div><span class="member-name">Minh Phụng</span><svg class="member-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a><a class="member-card link" href="https://chi-trung.github.io/KCPM/report-extra/owners/nguy-n-ch-trung/"><div class="member-avatar" style="background:#fb923c">NC</div><span class="member-name">Nguyễn Chí Trung </span><svg class="member-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a><a class="member-card link" href="https://chi-trung.github.io/KCPM/report-extra/owners/nguy-n-ho-ng-ph-ng-cn2303e/"><div class="member-avatar" style="background:#f472b6">NH</div><span class="member-name">Nguyễn Hoàng Phụng-CN2303E</span><svg class="member-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a><a class="member-card link" href="https://chi-trung.github.io/KCPM/report-extra/owners/thanh-duy/"><div class="member-avatar" style="background:#facc15">TD</div><span class="member-name">Thanh Duy</span><svg class="member-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></div>
+    </section>
 
     <footer>
-      Auto-generated by CI &bull; <a href="https://chi-trung.github.io/KCPM/report-main/" style="color:var(--accent)">View Allure Report</a>
+      Auto-generated by CI &bull; <a href="https://chi-trung.github.io/KCPM/report-main/">View Allure Report</a>
     </footer>
   </div>
 </body>
