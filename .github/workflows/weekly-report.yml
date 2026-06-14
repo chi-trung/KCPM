@@ -63,8 +63,7 @@ jobs:
           dotnet test ./Waste-Recycling-Platform/backend/tests/WastePlatform.Tests/WastePlatform.Tests.csproj \
             --configuration Release \
             --logger "trx;LogFileName=backend-tests.trx" \
-            --results-directory ./TestResults \
-            --no-restore || true
+            --results-directory ./TestResults || true
 
       # ── Postman API Tests ────────────────────────────────────────────
       - name: Install Node.js

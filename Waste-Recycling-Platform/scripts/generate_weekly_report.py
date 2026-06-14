@@ -109,8 +109,12 @@ def load_owners():
                     return owners
             except Exception:
                 pass
-    # Fallback: jira-owner-map
-    for path in ['Waste-Recycling-Platform/allure-results/jira-owner-map.json', 'jira-owner-map.json']:
+    # Fallback: jira-owner-map (multiple possible locations)
+    for path in [
+        'jira-owner-map.json',
+        'Waste-Recycling-Platform/allure-results/jira-owner-map.json',
+        'allure-results/jira-owner-map.json',
+    ]:
         if os.path.exists(path):
             try:
                 with open(path, 'r', encoding='utf-8') as f:
@@ -121,9 +125,19 @@ def load_owners():
                     if name and name not in seen:
                         owners.append(name)
                         seen.add(name)
-                return sorted(owners)
+                if owners:
+                    return sorted(owners)
             except Exception:
                 pass
+    # Final fallback: hardcoded known team members
+    if not owners:
+        owners = [
+            '11A6_03_Đăng',
+            'Minh Phụng',
+            'Nguyễn Chí Trung',
+            'Nguyễn Hoàng Phụng-CNTT',
+            'Thanh Duy',
+        ]
     return owners
 
 
