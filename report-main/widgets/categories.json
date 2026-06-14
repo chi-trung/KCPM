@@ -2,7 +2,7 @@
   "total": 4,
   "items": [
     {
-      "uid": "d51f9055e8734188a83951287bf9cff7",
+      "uid": "dad6332fa66543b084ab57558e45527a",
       "name": "Product defects",
       "statistic": {
         "failed": 21,
@@ -14,7 +14,7 @@
       }
     },
     {
-      "uid": "9dcb48110d434364ba460c62d38438be",
+      "uid": "eda84ce7266e44b1a7c5faa44cedc0f6",
       "name": "Not Found",
       "statistic": {
         "failed": 3,
@@ -26,7 +26,7 @@
       }
     },
     {
-      "uid": "ca4e00f36d4346c0aeb6d256d6dde9a3",
+      "uid": "c0568be5f1444a0a96f1d49add2df591",
       "name": "E2E – Text Not Found",
       "statistic": {
         "failed": 8,
@@ -38,7 +38,7 @@
       }
     },
     {
-      "uid": "509b3844da6a41f6a35487501b7f45b0",
+      "uid": "cbb59fed904345dba0fc3460f6505ddb",
       "name": "Assertion Failure",
       "statistic": {
         "failed": 1,
