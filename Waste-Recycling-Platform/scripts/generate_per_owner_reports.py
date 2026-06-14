@@ -6,6 +6,7 @@ Writes reports into 'allure-report/owners/<owner>/' so they are published with t
 Usage: run from repository root (where `Waste-Recycling-Platform/allure-results` exists) and
 have `allure` CLI available in PATH.
 """
+
 import json
 import os
 import re
@@ -13,7 +14,8 @@ import shutil
 import subprocess
 
 RESULTS_DIR = os.path.join('Waste-Recycling-Platform', 'allure-results')
-BASE_OUT = os.environ.get('ALLURE_RESULTS_TEMP', 'owner-report-temp')
+BASE_RESULTS_TEMP = 'owner-results-temp'
+BASE_REPORTS_TEMP = os.environ.get('ALLURE_RESULTS_TEMP', 'owner-report-temp')
 REPORT_BASE = os.environ.get('ALLURE_PUBLISH_DIR', 'report-extra')
 OUTPUT_BASE = os.path.join(REPORT_BASE, 'owners')
 SELECTED_OWNER = (os.environ.get('SELECTED_OWNER') or '').strip()
@@ -23,7 +25,6 @@ JIRA_MAP_PATHS = [
     os.path.join(RESULTS_DIR, 'jira-owner-map.json'),
     'jira-owner-map.json',
 ]
-
 
 def collect_issue_keys(results_dir):
     keys = set()
@@ -81,7 +82,6 @@ if not jira_map:
         print('Skipping owner reports: jira-owner-map.json empty')
         raise SystemExit(0)
 
-
 def slugify(name: str) -> str:
     if not name:
         return 'unassigned'
@@ -90,12 +90,10 @@ def slugify(name: str) -> str:
     s = s.strip('-')
     return s or 'owner'
 
-
 def owner_matches(owner_name: str, selected_owner: str) -> bool:
     if not selected_owner or selected_owner.lower() == 'all':
         return True
     return owner_name == selected_owner or slugify(owner_name) == slugify(selected_owner)
-
 
 def is_test_result(data):
     if not isinstance(data, dict):
@@ -106,10 +104,10 @@ def is_test_result(data):
         return False
     return True
 
-
-shutil.rmtree(BASE_OUT, ignore_errors=True)
-os.makedirs(BASE_OUT, exist_ok=True)
-
+shutil.rmtree(BASE_RESULTS_TEMP, ignore_errors=True)
+os.makedirs(BASE_RESULTS_TEMP, exist_ok=True)
+shutil.rmtree(BASE_REPORTS_TEMP, ignore_errors=True)
+os.makedirs(BASE_REPORTS_TEMP, exist_ok=True)
 
 # Collect owners from JSON result files (owner label OR via jira map -> issues)
 for fname in os.listdir(RESULTS_DIR):
@@ -131,6 +129,7 @@ for fname in os.listdir(RESULTS_DIR):
             continue
         if label.get('name') == 'owner' and label.get('value'):
             owners.add(label.get('value'))
+
     # fallback: look for issue labels/links and map via jira_map
     issue_keys = set()
     for label in labels:
@@ -164,7 +163,7 @@ if SELECTED_OWNER and SELECTED_OWNER.lower() != 'all':
 for owner in owners:
     # safe folder name
     owner_safe = slugify(owner)
-    dest_results = os.path.join(BASE_OUT, owner_safe)
+    dest_results = os.path.join(BASE_RESULTS_TEMP, owner_safe)
     shutil.rmtree(dest_results, ignore_errors=True)
     os.makedirs(dest_results, exist_ok=True)
 
@@ -188,7 +187,6 @@ for owner in owners:
                 data = json.load(f)
         except Exception:
             continue
-
         if not is_test_result(data):
             continue
 
@@ -264,7 +262,7 @@ for owner in owners:
 
     # generate report if we have results
     if os.listdir(dest_results):
-        out_dir = os.path.join(BASE_OUT, owner_safe)
+        out_dir = os.path.join(BASE_REPORTS_TEMP, owner_safe)
         shutil.rmtree(out_dir, ignore_errors=True)
         os.makedirs(out_dir, exist_ok=True)
         print(f'Generating report for owner {owner} -> {out_dir}')
@@ -279,9 +277,9 @@ print('Per-owner generation complete')
 
 # summary
 generated = []
-if os.path.isdir(BASE_OUT):
-    for d in os.listdir(BASE_OUT):
-        report_dir = os.path.join(BASE_OUT, d)
+if os.path.isdir(BASE_REPORTS_TEMP):
+    for d in os.listdir(BASE_REPORTS_TEMP):
+        report_dir = os.path.join(BASE_REPORTS_TEMP, d)
         if os.path.isdir(report_dir):
             generated.append(d)
 
@@ -293,14 +291,15 @@ except Exception:
 
 shutil.rmtree(OUTPUT_BASE, ignore_errors=True)
 os.makedirs(OUTPUT_BASE, exist_ok=True)
-if os.path.isdir(BASE_OUT):
-    for d in os.listdir(BASE_OUT):
-        src_dir = os.path.join(BASE_OUT, d)
+
+if os.path.isdir(BASE_REPORTS_TEMP):
+    for d in os.listdir(BASE_REPORTS_TEMP):
+        src_dir = os.path.join(BASE_REPORTS_TEMP, d)
         dst_dir = os.path.join(OUTPUT_BASE, d)
         if os.path.isdir(src_dir):
             shutil.copytree(src_dir, dst_dir, dirs_exist_ok=True)
-    shutil.rmtree(BASE_OUT, ignore_errors=True)
 
-print('Generated owner reports:', generated)
+shutil.rmtree(BASE_RESULTS_TEMP, ignore_errors=True)
+shutil.rmtree(BASE_REPORTS_TEMP, ignore_errors=True)
 
 print('Generated owner reports:', generated)
