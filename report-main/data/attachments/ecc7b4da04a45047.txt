@@ -1,0 +1,11 @@
+pm.test('status code is 200 or 201 or conflict on duplicate', function () {
+  pm.expect([200, 201, 409, 400, 422]).to.include(pm.response.code);
+});
+const body = pm.response.text() ? pm.response.json() : {};
+const token = body.accessToken || body.token || body.jwtToken || (body.data && (body.data.accessToken || body.data.token || body.data.jwtToken));
+if (token) {
+  pm.environment.set('citizenToken', token);
+}
+pm.test('response has a message or data object', function () {
+  pm.expect(body).to.satisfy(v => typeof v === 'object');
+});
