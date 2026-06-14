@@ -110,12 +110,36 @@ jobs:
 
       # ── Deploy to GitHub Pages ───────────────────────────────────────
       - name: Deploy weekly report to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: site-output
-          keep_files: true
+        run: |
+          set -e
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Clone gh-pages branch
+          git clone --single-branch --branch gh-pages \
+            "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" \
+            gh-pages-deploy
+
+          # Copy weekly report into gh-pages
+          mkdir -p gh-pages-deploy/reports/weekly
+          cp -R site-output/reports/weekly/. gh-pages-deploy/reports/weekly/
+
+          cd gh-pages-deploy
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to deploy"
+          else
+            git commit -m "Weekly report — Week $(date -u +%V), $(date -u +%Y) [skip ci]"
+            # Retry push with rebase on conflict
+            for i in 1 2 3; do
+              if git push origin gh-pages; then
+                echo "Deploy successful on attempt $i"
+                break
+              fi
+              echo "Push failed, attempt $i. Retrying with rebase..."
+              git pull --rebase origin gh-pages || true
+            done
+          fi
 
       # ── Trigger Allure report refresh ────────────────────────────────
       - name: Trigger Allure Pages workflow
