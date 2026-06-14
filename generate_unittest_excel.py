@@ -1099,8 +1099,10 @@ def build_function_sheet(wb, func: dict, sheet_name: str):
         ws[f"C{group_start}"].border = THIN
 
     # ── Confirm: Return ───────────────────────────────────────────────
-    confirm_start = current_row
-    ws.merge_cells(f"A{current_row}:A{current_row + len(func['returns']) + len(func['exceptions']) + len(func['logs']) - 1}")
+    # Total rows in Confirm section:
+    # 1 (Return header) + returns + 1 (Exception header) + exceptions + 1 (Log header) + logs
+    confirm_total = 3 + len(func['returns']) + len(func['exceptions']) + len(func['logs'])
+    ws.merge_cells(f"A{current_row}:A{current_row + confirm_total - 1}")
     ws[f"A{current_row}"].value = "Confirm"
     ws[f"A{current_row}"].font  = font_white_bold()
     ws[f"A{current_row}"].fill  = header_fill(MED_BLUE)
@@ -1109,6 +1111,7 @@ def build_function_sheet(wb, func: dict, sheet_name: str):
 
     # Return header
     ret_start = current_row
+    ws.row_dimensions[current_row].height = 24
     ws[f"B{current_row}"] = "Return"
     ws[f"B{current_row}"].font = font_bold()
     ws[f"B{current_row}"].alignment = left(); ws[f"B{current_row}"].border = THIN
@@ -1139,6 +1142,7 @@ def build_function_sheet(wb, func: dict, sheet_name: str):
         current_row += 1
 
     # Exception
+    ws.row_dimensions[current_row].height = 24
     ws[f"B{current_row}"] = "Exception"
     ws[f"B{current_row}"].font = font_bold()
     ws[f"B{current_row}"].alignment = left(); ws[f"B{current_row}"].border = THIN
@@ -1167,6 +1171,7 @@ def build_function_sheet(wb, func: dict, sheet_name: str):
         current_row += 1
 
     # Log message
+    ws.row_dimensions[current_row].height = 24
     ws[f"B{current_row}"] = "Log message"
     ws[f"B{current_row}"].font = font_bold()
     ws[f"B{current_row}"].alignment = left(); ws[f"B{current_row}"].border = THIN
