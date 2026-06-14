@@ -1,0 +1,19 @@
+{
+  "CitizenId": "0dfa3021-7d1b-40d0-86f8-e1c21b7c3b19",
+  "WasteCategoryId": 1,
+  "Latitude": 90,
+  "Longitude": 180,
+  "Description": "Boundary test",
+  "Address": "Test address",
+  "AiSuggestion": null,
+  "Images": [
+    {
+      "ContentType": "image/jpeg",
+      "ContentDisposition": null,
+      "Headers": null,
+      "Length": 1024,
+      "Name": null,
+      "FileName": "boundary.jpg"
+    }
+  ]
+}
