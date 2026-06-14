@@ -36,26 +36,20 @@ jobs:
       - name: Build and cache Backend image
         uses: docker/build-push-action@v5
         with:
-          context: ./Waste-Recycling-Platform
-          file: ./Waste-Recycling-Platform/backend/Dockerfile
+          context: Waste-Recycling-Platform/backend
+          file: Waste-Recycling-Platform/backend/Dockerfile
           push: false
           load: true
-          tags: waste-backend:latest
+          tags: waste-recycling-platform-backend:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Start Backend with Docker Compose
         run: |
-          docker compose -f ./Waste-Recycling-Platform/docker-compose.yml up -d --build db backend
-          echo "Waiting for API to be ready..."
-          for i in $(seq 1 60); do
-            if curl -s http://localhost:8080/api/health | grep -q "Healthy"; then
-              echo "API ready after $i attempts"
-              break
-            fi
-            if [ "$i" = "60" ]; then echo "API failed to start"; exit 1; fi
-            sleep 5
-          done
+          cd Waste-Recycling-Platform
+          docker compose up -d backend
+          echo "Waiting for backend and DB to initialize..."
+          sleep 30
 
       # ── Backend xUnit Tests ──────────────────────────────────────────
       - name: Setup .NET
