@@ -69,9 +69,29 @@ jobs:
       - name: Start Backend with Docker Compose
         run: |
           cd Waste-Recycling-Platform
-          docker compose up -d backend
+          docker compose up -d db backend
           echo "Waiting for backend and DB to initialize..."
-          sleep 30 # Đợi 30s để đảm bảo db và backend khởi động xong
+
+      - name: Wait for API health
+        shell: bash
+        run: |
+          maxAttempts=60
+          attempt=0
+          while [ $attempt -lt $maxAttempts ]; do
+            attempt=$((attempt + 1))
+            echo "Health check attempt $attempt/$maxAttempts..."
+            if curl -sf http://localhost:8080/api/health > /dev/null 2>&1; then
+              echo "API is healthy ✓"
+              exit 0
+            fi
+            if [ $attempt -eq $maxAttempts ]; then
+              echo "Health check failed after $maxAttempts attempts"
+              docker compose -f Waste-Recycling-Platform/docker-compose.yml logs backend
+              exit 1
+            fi
+            echo "Waiting... (next attempt in 5s)"
+            sleep 5
+          done
 
       - name: Install Node.js
         uses: actions/setup-node@v4
@@ -82,12 +102,50 @@ jobs:
         run: |
           npm install -g newman newman-reporter-allure
 
+      - name: Pre-login — capture JWT tokens for all roles
+        id: prelogin
+        continue-on-error: true
+        shell: bash
+        run: |
+          BASE="http://localhost:8080"
+
+          get_token() {
+            local email="$1"
+            local password="$2"
+            local resp
+            resp=$(curl -sf -X POST "$BASE/api/auth/login" \
+              -H "Content-Type: application/json" \
+              -d "{\"email\":\"$email\",\"password\":\"$password\"}" 2>/dev/null) || true
+            echo "$resp" | python3 -c "import sys,json; print(json.load(sys.stdin).get('token',''))" 2>/dev/null || echo ""
+          }
+
+          CITIZEN_TOKEN=$(get_token "citizen@test.waste" "Citizen@123")
+          ENTERPRISE_TOKEN=$(get_token "enterprise@test.waste" "Enterprise@123")
+          ADMIN_TOKEN=$(get_token "admin@test.waste" "Admin@123")
+          COLLECTOR_TOKEN=$(get_token "collector@test.waste" "Collector@123")
+
+          echo "citizenToken=$CITIZEN_TOKEN" >> $GITHUB_OUTPUT
+          echo "enterpriseToken=$ENTERPRISE_TOKEN" >> $GITHUB_OUTPUT
+          echo "adminToken=$ADMIN_TOKEN" >> $GITHUB_OUTPUT
+          echo "collectorToken=$COLLECTOR_TOKEN" >> $GITHUB_OUTPUT
+
+          echo "citizenToken    = $([ -n "$CITIZEN_TOKEN" ] && echo '✅ obtained' || echo '❌ empty')"
+          echo "enterpriseToken = $([ -n "$ENTERPRISE_TOKEN" ] && echo '✅ obtained' || echo '❌ empty')"
+          echo "adminToken      = $([ -n "$ADMIN_TOKEN" ] && echo '✅ obtained' || echo '❌ empty')"
+          echo "collectorToken  = $([ -n "$COLLECTOR_TOKEN" ] && echo '✅ obtained' || echo '❌ empty')"
+
       - name: Run Postman Tests via Newman
         continue-on-error: true # Cho phép job tiếp tục ngay cả khi có test case bị fail
         run: |
           cd Waste-Recycling-Platform
-          newman run "postman/WastePlatform API - Professional QA Suite.postman_collection.json" \
+          newman run "postman/WastePlatform.professional.postman_collection.json" \
             -e "postman/WastePlatform.professional.postman_environment.json" \
+            --env-var "baseUrl=http://localhost:8080" \
+            --env-var "citizenToken=${{ steps.prelogin.outputs.citizenToken }}" \
+            --env-var "enterpriseToken=${{ steps.prelogin.outputs.enterpriseToken }}" \
+            --env-var "adminToken=${{ steps.prelogin.outputs.adminToken }}" \
+            --env-var "collectorToken=${{ steps.prelogin.outputs.collectorToken }}" \
+            --env-var "managementToken=${{ steps.prelogin.outputs.adminToken }}" \
             -r allure \
             --reporter-allure-export allure-results
 
