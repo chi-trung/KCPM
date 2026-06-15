@@ -72,16 +72,16 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           dotnet-sonarscanner begin \
-            /k:"chi-trung_KCPM" \
+            /k:"chi-trung_KCPM_backend" \
             /o:"chi-trung" \
             /d:sonar.token="${{ secrets.SONAR_TOKEN }}" \
             /d:sonar.host.url="https://sonarcloud.io" \
+            /d:sonar.projectName="chi-trung_KCPM_backend" \
             /d:sonar.exclusions="**/bin/**,**/obj/**,**/TestResults/**,**/Migrations/**,**/frontend/**,**/db/migrations/**,**/scripts/**" \
             /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" \
             /d:sonar.cs.vstest.reportsPaths="**/TestResults/**/*.trx" \
             /d:sonar.testExclusions="**/Tests/**" \
-            /d:sonar.coverage.exclusions="**/Tests/**,**/Migrations/**" \
-            /d:sonar.branch.name="${{ github.ref_name }}"
+            /d:sonar.coverage.exclusions="**/Tests/**,**/Migrations/**"
 
       - name: Build backend
         run: |
@@ -156,9 +156,9 @@ jobs:
         with:
           projectBaseDir: Waste-Recycling-Platform
           args: >
-            -Dsonar.projectKey=chi-trung_KCPM
+            -Dsonar.projectKey=chi-trung_KCPM_frontend
             -Dsonar.organization=chi-trung
-            "-Dsonar.projectName=KCPM (Waste Recycling Platform)"
+            "-Dsonar.projectName=chi-trung_KCPM_frontend"
             -Dsonar.sources=frontend/src
             -Dsonar.tests=frontend/e2e
             -Dsonar.test.inclusions=frontend/e2e/**/*_test.js
@@ -166,4 +166,25 @@ jobs:
             -Dsonar.coverage.exclusions=frontend/e2e/**
             -Dsonar.cpd.exclusions=frontend/e2e/**
             -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
-            -Dsonar.branch.name=${{ github.ref_name }}
+
+  # ─────────────────────────────────────────────────────────────
+  # JOB 3: Combined project scan (keeps chi-trung_KCPM up to date)
+  # ─────────────────────────────────────────────────────────────
+  sonar-combined:
+    name: SonarCloud Combined (KCPM)
+    runs-on: ubuntu-latest
+    needs: [sonar-backend, sonar-frontend]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: SonarCloud Scan (Combined)
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: Waste-Recycling-Platform
