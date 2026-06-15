@@ -75,7 +75,7 @@ Tất cả tài khoản dùng password: `password`
 ## 🏗️ Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
+|-------|-----------
 | **Backend** | ASP.NET Core 8, Entity Framework Core, MySQL (Aiven) |
 | **Frontend** | Next.js 14, React, Vercel |
 | **Database** | MySQL 8.x (Aiven Cloud) |
@@ -92,29 +92,53 @@ Tất cả tài khoản dùng password: `password`
 
 ## 🏛️ Kiến trúc hệ thống
 
-```
-┌─────────────────┐     ┌──────────────────────┐     ┌─────────────────┐
-│  Next.js Frontend│────▶│  .NET 8 Backend API  │────▶│  MySQL (Aiven)  │
-│  (Vercel)        │     │  (Render - Docker)   │     │                 │
-└─────────────────┘     └──────────────────────┘     └─────────────────┘
-         │                        │
-         │                        ├── JWT Authentication
-         │                        ├── BCrypt Password Hash
-         │                        ├── EF Core + Auto Migration
-         │                        └── Seed Data (8 accounts)
-         │
-    ┌────┴────────────────────────────────────────┐
-    │           GitHub Actions CI/CD               │
-    │  ┌─────────┐ ┌──────────┐ ┌───────────────┐ │
-    │  │ xUnit   │ │ E2E      │ │ Postman Smoke │ │
-    │  │ Backend │ │ Playwright│ │ Newman        │ │
-    │  └────┬────┘ └────┬─────┘ └──────┬────────┘ │
-    │       └────────────┴──────────────┘          │
-    │                    ▼                          │
-    │        Allure Report (GitHub Pages)           │
-    │        SonarCloud Quality Gate                │
-    │        Jira Auto-Comment                      │
-    └──────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph Client["🖥️ Client Layer"]
+        FE["<b>Next.js 14 Frontend</b><br/>React · TailwindCSS<br/>Vercel"]
+    end
+
+    subgraph Server["⚙️ Server Layer"]
+        API["<b>.NET 8 Backend API</b><br/>ASP.NET Core · EF Core<br/>Render (Docker)"]
+    end
+
+    subgraph Data["🗄️ Data Layer"]
+        DB[("🐬 <b>MySQL 8.x</b><br/>Aiven Cloud")]
+    end
+
+    subgraph Security["🔐 Security"]
+        JWT["JWT Authentication"]
+        BCRYPT["BCrypt Password Hash"]
+    end
+
+    FE -->|"REST API<br/>HTTPS"| API
+    API -->|"EF Core<br/>Auto Migration"| DB
+    API --- JWT
+    API --- BCRYPT
+
+    subgraph CI_CD["🔄 GitHub Actions CI/CD Pipeline"]
+        direction LR
+        UT["🧪 xUnit<br/>Backend Tests"]
+        E2E["🎭 Playwright<br/>E2E Tests"]
+        PM["📬 Newman<br/>API Tests"]
+        SC["📊 SonarCloud<br/>Quality Gate"]
+    end
+
+    subgraph Reports["📈 Reports & Monitoring"]
+        AR["📋 Allure Report<br/>GitHub Pages"]
+        JR["📌 Jira<br/>Auto-Comment"]
+    end
+
+    CI_CD -->|"Results"| AR
+    CI_CD -->|"Status"| JR
+    CI_CD -->|"Analysis"| SC
+
+    style Client fill:#1a1a2e,stroke:#16213e,color:#e8e8e8
+    style Server fill:#0f3460,stroke:#16213e,color:#e8e8e8
+    style Data fill:#533483,stroke:#16213e,color:#e8e8e8
+    style Security fill:#2c3333,stroke:#395B64,color:#e8e8e8
+    style CI_CD fill:#1b4332,stroke:#2d6a4f,color:#e8e8e8
+    style Reports fill:#3c1642,stroke:#5e2068,color:#e8e8e8
 ```
 
 ---
@@ -123,29 +147,58 @@ Tất cả tài khoản dùng password: `password`
 
 11 GitHub Actions workflows tự động:
 
-```
-Push to main
-    ├─ Backend Tests (xUnit)     → Allure results + Jira comment (KIEM-5)
-    ├─ Frontend E2E (Playwright) → E2E results + Jira comment (KIEM-14)
-    ├─ Postman Smoke (Newman)    → API tests + Jira comment (KIEM-21)
-    ├─ SonarCloud Analysis       → Code quality gate
-    ├─ Deploy Backend            → Docker build + Render deploy
-    └─ Allure Pages Deploy       → GitHub Pages (auto-triggered)
-             ↓
-   https://chi-trung.github.io/KCPM/report-main/
+```mermaid
+graph LR
+    PUSH["🔀 Push to main"] --> UT["🧪 Backend Tests<br/><i>xUnit + Coverage</i>"]
+    PUSH --> E2E["🎭 Frontend E2E<br/><i>CodeceptJS + Playwright</i>"]
+    PUSH --> PM["📬 Postman Smoke<br/><i>Newman + Docker</i>"]
+    PUSH --> SC["📊 SonarCloud<br/><i>Quality Gate</i>"]
+    PUSH --> DEPLOY["🚀 Deploy Backend<br/><i>Docker + Render</i>"]
+
+    UT -->|"Results"| ALLURE["📋 Allure Report<br/>GitHub Pages"]
+    E2E -->|"Results"| ALLURE
+    PM -->|"Results"| ALLURE
+    UT -->|"Comment"| JIRA["📌 Jira<br/>Auto-Comment"]
+    E2E -->|"Comment"| JIRA
+    PM -->|"Comment"| JIRA
+
+    click ALLURE "https://chi-trung.github.io/KCPM/report-main/" _blank
+
+    style PUSH fill:#f77f00,stroke:#e36414,color:#fff
+    style UT fill:#2d6a4f,stroke:#1b4332,color:#fff
+    style E2E fill:#2d6a4f,stroke:#1b4332,color:#fff
+    style PM fill:#2d6a4f,stroke:#1b4332,color:#fff
+    style SC fill:#023e8a,stroke:#0077b6,color:#fff
+    style DEPLOY fill:#6a040f,stroke:#9d0208,color:#fff
+    style ALLURE fill:#7b2cbf,stroke:#5a189a,color:#fff
+    style JIRA fill:#0052cc,stroke:#0747a6,color:#fff
 ```
 
 ---
 
 ## 👥 Team
 
-| Thành viên | Phụ trách | KIEM Tasks |
-|-----------|-----------|------------|
-| Nguyễn Chí Trung | Auth, Collector, CI/CD | KIEM-21 |
-| Minh Phụng | Reports, File Upload | KIEM-5 |
-| Nguyễn Hoàng Phụng | Waste, Security | KIEM-21 |
-| Đăng | Accept/Reject, Complaints | KIEM-22 |
-| Thanh Duy | Task, Analytics | KIEM-15, KIEM-19 |
+### Phân công theo Sprint & Jira
+
+| Thành viên | Vai trò | Sprint 1 | Sprint 2 | Sprint 3 |
+|-----------|---------|----------|----------|----------|
+| **Nguyễn Chí Trung** | Team Lead, CI/CD, Architect | KIEM-3, KIEM-4, KIEM-41, KIEM-42, KIEM-43 | KIEM-14, KIEM-16, KIEM-17, KIEM-19, KIEM-45, KIEM-51 | KIEM-55, KIEM-59, KIEM-65 |
+| **Minh Phụng** | Backend Testing, Reports | KIEM-5, KIEM-44 | KIEM-15, KIEM-20, KIEM-46, KIEM-52, KIEM-54 | KIEM-32, KIEM-33, KIEM-38, KIEM-63, KIEM-64, KIEM-66 |
+| **Nguyễn Hoàng Phụng** | Security, Notifications | KIEM-6, KIEM-12 | KIEM-21 | KIEM-31, KIEM-34, KIEM-39, KIEM-70 |
+| **11A6_03_Đăng** | Admin, Analytics | KIEM-8, KIEM-9 | KIEM-49 | KIEM-61 |
+| **Thanh Duy** | Complaints, CollectorTask | KIEM-7, KIEM-10 | KIEM-18, KIEM-22, KIEM-47, KIEM-48, KIEM-53 | KIEM-35, KIEM-56, KIEM-60, KIEM-67, KIEM-68, KIEM-69, KIEM-71 |
+
+### Chi tiết phụ trách
+
+| Thành viên | Module phụ trách | Loại test |
+|-----------|-----------------|-----------|
+| **Nguyễn Chí Trung** | Auth, Collector, Enterprise Collectors, WasteCategory, SignalR, Security & Role-based | Unit Tests (xUnit), E2E Tests, CI/CD Pipeline, SonarCloud, Deployment |
+| **Minh Phụng** | Reports, File Upload, CollectorTask, Citizen + Search | Unit Tests (xUnit), Postman Collection, Security Hotspot fixes |
+| **Nguyễn Hoàng Phụng** | Notifications, WasteCategory, Security & Role-based | Unit Tests (xUnit), SonarCloud Quality Gate fixes |
+| **11A6_03_Đăng** | Admin Module, Analytics, Traceability Matrix | Unit Tests (xUnit), Manual Test Cases |
+| **Thanh Duy** | Complaints, CollectionTask, AuditLog, Public Analytics | Unit Tests (xUnit), BVA Tests, Manual Test Cases (Excel) |
+
+> 📌 **Tổng cộng 61+ Jira tasks** được chia đều cho 5 thành viên qua 3 sprints. Xem chi tiết trên [Jira Board](https://ut-team-36.atlassian.net/jira/software/projects/KIEM/boards/3).
 
 ---
 
