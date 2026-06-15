@@ -44,7 +44,7 @@ const LoginPage = () => {
         const errors: Record<string, string> = {};
         if (!values.email) {
           errors.email = "Email là bắt buộc";
-        } else if (!/\S+@\S+\.\S+/.test(values.email)) {
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
           errors.email = "Email không hợp lệ";
         }
         if (!values.password) {
