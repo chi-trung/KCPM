@@ -75,7 +75,7 @@ Tất cả tài khoản dùng password: `password`
 ## 🏗️ Tech Stack
 
 | Layer | Technology |
-|-------|-----------
+|-------|-----------| 
 | **Backend** | ASP.NET Core 8, Entity Framework Core, MySQL (Aiven) |
 | **Frontend** | Next.js 14, React, Vercel |
 | **Database** | MySQL 8.x (Aiven Cloud) |
