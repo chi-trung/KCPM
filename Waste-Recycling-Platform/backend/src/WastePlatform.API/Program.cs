@@ -20,8 +20,35 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
+// Auto-convert MySQL URL format (mysql://user:pass@host:port/db) to ADO.NET format
+// Cloud providers like Aiven provide URL format, but MySqlConnector needs ADO.NET format
+if (connectionString.StartsWith("mysql://", StringComparison.OrdinalIgnoreCase))
+{
+    var uri = new Uri(connectionString);
+    var userInfo = uri.UserInfo.Split(':');
+    var user = Uri.UnescapeDataString(userInfo[0]);
+    var pass = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : "";
+    var host = uri.Host;
+    var port = uri.Port > 0 ? uri.Port : 3306;
+    var database = uri.AbsolutePath.TrimStart('/');
+    // Parse ssl-mode from query string
+    var sslMode = "Required";
+    if (!string.IsNullOrEmpty(uri.Query))
+    {
+        var queryParams = uri.Query.TrimStart('?').Split('&');
+        foreach (var param in queryParams)
+        {
+            var kv = param.Split('=', 2);
+            if (kv.Length == 2 && kv[0].Equals("ssl-mode", StringComparison.OrdinalIgnoreCase))
+                sslMode = kv[1];
+        }
+    }
+    connectionString = $"Server={host};Port={port};Database={database};Uid={user};Pwd={pass};SslMode={sslMode};ConnectionTimeout=30;DefaultCommandTimeout=60";
+    Console.WriteLine($"✅ Converted MySQL URL to ADO.NET format (host={host}, db={database})");
+}
+
 builder.Services.AddDbContext<WastePlatformDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 30)))
 );
 
 // ── JWT Authentication ───────────────────────────────────────────────
