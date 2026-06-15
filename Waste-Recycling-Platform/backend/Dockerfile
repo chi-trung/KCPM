@@ -38,6 +38,9 @@ ENV DOTNET_ThreadPool_UnfairSemaphoreSpinLimit=0
 # Disable tiered compilation to reduce JIT memory
 ENV DOTNET_TieredCompilation=0
 
+# Create writable directories before switching to non-root user
+RUN mkdir -p /app/uploads && chown -R $APP_UID:$APP_UID /app/uploads
+
 # Run as non-root user for security
 USER $APP_UID
 
