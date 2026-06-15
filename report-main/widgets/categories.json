@@ -2,7 +2,7 @@
   "total": 3,
   "items": [
     {
-      "uid": "106e3503af884f51b6078df4b17834ee",
+      "uid": "23c8c714f9f94e94960953d48eb19688",
       "name": "Test defects",
       "statistic": {
         "failed": 0,
@@ -14,7 +14,7 @@
       }
     },
     {
-      "uid": "0b5138af5b3f4c6d9a1ba1c1e556616c",
+      "uid": "422ef00fdac1432a8538fbf9a0718948",
       "name": "E2E – Text Not Found",
       "statistic": {
         "failed": 8,
@@ -26,7 +26,7 @@
       }
     },
     {
-      "uid": "5cff84c5810d4d1780cdf8e7b2b7c844",
+      "uid": "46f41dd76d19490b88d3ee4e5d293b05",
       "name": "Assertion Failure",
       "statistic": {
         "failed": 1,
