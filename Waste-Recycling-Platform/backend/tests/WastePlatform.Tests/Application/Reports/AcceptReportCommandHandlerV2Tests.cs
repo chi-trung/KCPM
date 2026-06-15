@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using Moq;
@@ -181,6 +181,7 @@ public class AcceptReportCommandHandlerV2Tests
     [AllureDescription("TC-REP-005: Verifies repository is queried exactly once with the correct reportId.")]
     public async Task Handle_WhenReportIsPending_ShouldCallRepositoryOnce()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-r-e-p-o-r-t-i-s-p-e-n-d-i-n-g", "Executed: Handle_WhenReportIsPending_ShouldCallRepositoryOnce");
         // ── ARRANGE ─────────────────────────────────────────────────────────────
         var reportId = Guid.NewGuid();
         var report   = CreatePendingReport();
@@ -213,6 +214,7 @@ public class AcceptReportCommandHandlerV2Tests
     [AllureDescription("TC-REP-005: Notification mock is not invoked in current handler — documents upgrade requirement.")]
     public async Task Handle_WhenPendingReport_NotificationServiceShouldBeCalledAfterUpgrade()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-p-e-n-d-i-n-g-r-e-p-o-r-t_-n-", "Executed: Handle_WhenPendingReport_NotificationServiceShouldBeCalledAfterUpgrade");
         // ── ARRANGE ─────────────────────────────────────────────────────────────
         var reportId = Guid.NewGuid();
         var report   = CreatePendingReport();
@@ -325,6 +327,7 @@ public class AcceptReportCommandHandlerV2Tests
     [AllureDescription("TC-REP-007: Report đã Rejected — Accept bị chặn, trạng thái Rejected được expose trong message.")]
     public async Task Handle_WhenReportIsRejected_ShouldThrowWithRejectedStatusInMessage()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-r-e-p-o-r-t-i-s-r-e-j-e-c-t-e", "Executed: Handle_WhenReportIsRejected_ShouldThrowWithRejectedStatusInMessage");
         // ── ARRANGE ─────────────────────────────────────────────────────────────
         var reportId = Guid.NewGuid();
         var report   = CreatePendingReport();
@@ -362,6 +365,7 @@ public class AcceptReportCommandHandlerV2Tests
     [AllureDescription("TC-REP-007: Report đã Collected (terminal state) — Accept bị chặn hoàn toàn.")]
     public async Task Handle_WhenReportIsCollected_ShouldThrowWithCollectedStatusInMessage()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-r-e-p-o-r-t-i-s-c-o-l-l-e-c-t", "Executed: Handle_WhenReportIsCollected_ShouldThrowWithCollectedStatusInMessage");
         // ── ARRANGE ─────────────────────────────────────────────────────────────
         var reportId = Guid.NewGuid();
         var report   = CreatePendingReport();
@@ -396,6 +400,7 @@ public class AcceptReportCommandHandlerV2Tests
     [AllureDescription("TC-REP-007: Double-accept — Report đã Accepted không thể Accept thêm lần nữa.")]
     public async Task Handle_WhenReportIsAlreadyAccepted_ShouldThrowWithAcceptedStatusInMessage()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-r-e-p-o-r-t-i-s-a-l-r-e-a-d-y", "Executed: Handle_WhenReportIsAlreadyAccepted_ShouldThrowWithAcceptedStatusInMessage");
         // ── ARRANGE ─────────────────────────────────────────────────────────────
         var reportId = Guid.NewGuid();
         var report   = CreatePendingReport();

@@ -1,4 +1,4 @@
-using Allure.Xunit.Attributes;
+﻿using Allure.Xunit.Attributes;
 using FluentAssertions;
 using Moq;
 using WastePlatform.Application.Common.Interfaces;
@@ -37,6 +37,7 @@ public class GetCategoryByIdQueryHandlerTests
     [AllureDescription("Returns a category DTO when the category exists.")]
     public async Task Handle_WhenCategoryExists_ShouldReturnCategoryDto()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-c-a-t-e-g-o-r-y-e-x-i-s-t-s_-", "Executed: Handle_WhenCategoryExists_ShouldReturnCategoryDto");
         // Arrange
         var category = new WasteCategory
         {
@@ -72,6 +73,7 @@ public class GetCategoryByIdQueryHandlerTests
     [AllureDescription("Returns null when the category does not exist.")]
     public async Task Handle_WhenCategoryDoesNotExist_ShouldReturnNull()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-c-a-t-e-g-o-r-y-d-o-e-s-n-o-t", "Executed: Handle_WhenCategoryDoesNotExist_ShouldReturnNull");
         // Arrange
         _repositoryMock
             .Setup(x => x.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))

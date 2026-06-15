@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using Moq;
@@ -109,6 +109,7 @@ public class UpdateProfileCommandHandlerTests
     [Allure.Net.Commons.Attributes.AllureLabel("testcase", "TC-CIT-002")]
     public async Task Handle_WithNonExistentCitizen_ShouldThrowKeyNotFoundException()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-n-o-n-e-x-i-s-t-e-n-t-c-i-t-i", "Executed: Handle_WithNonExistentCitizen_ShouldThrowKeyNotFoundException");
         // Arrange
         var citizenId = Guid.NewGuid();
         var command = new UpdateProfileCommand
@@ -263,6 +264,7 @@ public class GetProfileQueryHandlerTests
     [Allure.Net.Commons.Attributes.AllureLabel("testcase", "TC-CIT-102")]
     public async Task Handle_WithNonExistentCitizenId_ShouldThrowKeyNotFoundException()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-n-o-n-e-x-i-s-t-e-n-t-c-i-t-i", "Executed: Handle_WithNonExistentCitizenId_ShouldThrowKeyNotFoundException");
         // Arrange
         var citizenId = Guid.NewGuid();
         var query = new GetProfileQuery { UserId = citizenId };

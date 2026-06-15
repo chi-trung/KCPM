@@ -1,4 +1,4 @@
-using Allure.Xunit.Attributes;
+﻿using Allure.Xunit.Attributes;
 using FluentAssertions;
 using Moq;
 using WastePlatform.Application.Reports.Queries;
@@ -42,6 +42,7 @@ public class GetEnterpriseReportsQueryHandlerTests
     [Fact]
     public async Task Handle_WithValidEnterpriseId_ShouldReturnReports()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-v-a-l-i-d-e-n-t-e-r-p-r-i-s-e", "Executed: Handle_WithValidEnterpriseId_ShouldReturnReports");
         // Arrange
         var enterpriseId = Guid.NewGuid();
         var reports = new List<WasteReport>
@@ -105,6 +106,7 @@ public class GetEnterpriseReportsQueryHandlerTests
     [Fact]
     public async Task Handle_WithEmptyStatus_ShouldNotFilterByStatus()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-e-m-p-t-y-s-t-a-t-u-s_-s-h-o-", "Executed: Handle_WithEmptyStatus_ShouldNotFilterByStatus");
         // Arrange
         var enterpriseId = Guid.NewGuid();
         var reports = new List<WasteReport> { CreateReport(ReportStatus.Pending) };
@@ -131,6 +133,7 @@ public class GetEnterpriseReportsQueryHandlerTests
     [Fact]
     public async Task Handle_WithInvalidStatus_ShouldNotFilterByStatus()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-i-n-v-a-l-i-d-s-t-a-t-u-s_-s-", "Executed: Handle_WithInvalidStatus_ShouldNotFilterByStatus");
         // Arrange - Invalid status should be ignored
         var enterpriseId = Guid.NewGuid();
         var reports = new List<WasteReport> { CreateReport(ReportStatus.Pending) };
@@ -161,6 +164,7 @@ public class GetEnterpriseReportsQueryHandlerTests
     [Fact]
     public async Task Handle_WithCustomPagination_ShouldApplyPagination()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-c-u-s-t-o-m-p-a-g-i-n-a-t-i-o", "Executed: Handle_WithCustomPagination_ShouldApplyPagination");
         // Arrange
         var enterpriseId = Guid.NewGuid();
         var reports = new List<WasteReport> { CreateReport(ReportStatus.Pending) };

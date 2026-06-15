@@ -1,4 +1,4 @@
-using Allure.Xunit.Attributes;
+﻿using Allure.Xunit.Attributes;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using WastePlatform.Domain.Entities;
@@ -28,6 +28,7 @@ public class WasteCategoryRepositoryTests
     [AllureDescription("Returns all categories ordered by name in ascending order.")]
     public async Task GetAllAsync_ShouldReturnCategoriesOrderedByName()
     {
+        AllureAttachmentHelper.AttachText("test-g-e-t-a-l-l-a-s-y-n-c_-s-h-o-u-l-d-r-e-t-u-r-n-c-a", "Executed: GetAllAsync_ShouldReturnCategoriesOrderedByName");
         // Arrange
         await using var context = CreateContext();
         var repository = new WasteCategoryRepository(context);
@@ -50,6 +51,7 @@ public class WasteCategoryRepositoryTests
     [AllureDescription("Returns the matching category when the id exists.")]
     public async Task GetByIdAsync_WhenCategoryExists_ShouldReturnCategory()
     {
+        AllureAttachmentHelper.AttachText("test-g-e-t-b-y-i-d-a-s-y-n-c_-w-h-e-n-c-a-t-e-g-o-r-y-e", "Executed: GetByIdAsync_WhenCategoryExists_ShouldReturnCategory");
         // Arrange
         await using var context = CreateContext();
         var repository = new WasteCategoryRepository(context);
@@ -78,6 +80,7 @@ public class WasteCategoryRepositoryTests
     [AllureDescription("Returns null when the id does not exist.")]
     public async Task GetByIdAsync_WhenCategoryDoesNotExist_ShouldReturnNull()
     {
+        AllureAttachmentHelper.AttachText("test-g-e-t-b-y-i-d-a-s-y-n-c_-w-h-e-n-c-a-t-e-g-o-r-y-d", "Executed: GetByIdAsync_WhenCategoryDoesNotExist_ShouldReturnNull");
         // Arrange
         await using var context = CreateContext();
         var repository = new WasteCategoryRepository(context);

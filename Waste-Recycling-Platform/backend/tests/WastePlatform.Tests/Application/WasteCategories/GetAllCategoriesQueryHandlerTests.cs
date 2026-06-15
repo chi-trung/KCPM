@@ -1,4 +1,4 @@
-using Allure.Xunit.Attributes;
+﻿using Allure.Xunit.Attributes;
 using FluentAssertions;
 using Moq;
 using WastePlatform.Application.Common.Interfaces;
@@ -37,6 +37,7 @@ public class GetAllCategoriesQueryHandlerTests
     [AllureDescription("Maps all categories from the repository into DTOs.")]
     public async Task Handle_WhenCategoriesExist_ShouldMapAndReturnCategories()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-c-a-t-e-g-o-r-i-e-s-e-x-i-s-t", "Executed: Handle_WhenCategoriesExist_ShouldMapAndReturnCategories");
         // Arrange
         var categories = new List<WasteCategory>
         {
@@ -79,6 +80,7 @@ public class GetAllCategoriesQueryHandlerTests
     [AllureDescription("Returns an empty collection when there are no categories.")]
     public async Task Handle_WhenNoCategories_ShouldReturnEmptyCollection()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-n-o-c-a-t-e-g-o-r-i-e-s_-s-h-", "Executed: Handle_WhenNoCategories_ShouldReturnEmptyCollection");
         // Arrange
         _repositoryMock
             .Setup(x => x.GetAllAsync(It.IsAny<CancellationToken>()))

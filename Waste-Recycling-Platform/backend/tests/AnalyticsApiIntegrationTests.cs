@@ -17,7 +17,7 @@ namespace WastePlatform.Tests.Application.Analytics
     [Allure.Net.Commons.Attributes.AllureLabel("suite", "Application Integration")]
     [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "AnalyticsApiIntegrationTests")]
     [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Analytics")]
-    [AllureOwner("qa")]
+    [AllureOwner("Nguyễn Chí Trung")]
     [AllureSeverity(SeverityLevel.normal)]
     [Allure.Net.Commons.Attributes.AllureTag("api")]
     [Allure.Net.Commons.Attributes.AllureTag("analytics")]
@@ -45,6 +45,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminOverviewEndpoint_Get_ReturnsOverviewMetrics()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-o-v-e-r-v-i-e-w-e-n-d-p-o-i-n-t_-g-e-t_-", "Executed: AdminOverviewEndpoint_Get_ReturnsOverviewMetrics");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/overview";
 
@@ -64,6 +65,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminOverviewEndpoint_WithCitizenRole_ReturnsForbidden()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-o-v-e-r-v-i-e-w-e-n-d-p-o-i-n-t_-w-i-t-h", "Executed: AdminOverviewEndpoint_WithCitizenRole_ReturnsForbidden");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/overview";
             var citizenToken = "{{citizenToken}}";
@@ -86,6 +88,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminReportAnalyticsEndpoint_NoDateParams_UsesDefaults()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-o-", "Executed: AdminReportAnalyticsEndpoint_NoDateParams_UsesDefaults");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/reports";
 
@@ -104,6 +107,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminReportAnalyticsEndpoint_ValidDateRange_ReturnsFilteredData()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-o-", "Executed: AdminReportAnalyticsEndpoint_ValidDateRange_ReturnsFilteredData");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/reports";
             var queryParams = "?startDate=2026-01-01&endDate=2026-12-31";
@@ -125,6 +129,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminReportAnalyticsEndpoint_OnlyStartDate_DefaultsEndToToday()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-o-", "Executed: AdminReportAnalyticsEndpoint_OnlyStartDate_DefaultsEndToToday");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/reports";
             var queryParams = "?startDate=2026-01-01";
@@ -145,6 +150,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminReportAnalyticsEndpoint_OnlyEndDate_DefaultsStart()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-o-", "Executed: AdminReportAnalyticsEndpoint_OnlyEndDate_DefaultsStart");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/reports";
             var queryParams = "?endDate=2026-12-31";
@@ -165,6 +171,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminReportAnalyticsEndpoint_InvalidDateRange_ReturnsBadRequest()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-o-", "Executed: AdminReportAnalyticsEndpoint_InvalidDateRange_ReturnsBadRequest");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/reports";
             var queryParams = "?startDate=2026-12-31&endDate=2026-01-01";
@@ -185,6 +192,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminReportAnalyticsEndpoint_MalformedDateFormat_ReturnsBadRequest()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-o-", "Executed: AdminReportAnalyticsEndpoint_MalformedDateFormat_ReturnsBadRequest");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/reports";
             var queryParams = "?startDate=2026/01/01&endDate=not-a-date";
@@ -204,6 +212,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminReportAnalyticsEndpoint_ResponseStructure_ContainsRequiredFields()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-o-", "Executed: AdminReportAnalyticsEndpoint_ResponseStructure_ContainsRequiredFields");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/reports";
             var queryParams = "?startDate=2026-01-01&endDate=2026-12-31";
@@ -229,6 +238,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminUserAnalyticsEndpoint_Get_ReturnsUserMetrics()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-u-s-e-r-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-", "Executed: AdminUserAnalyticsEndpoint_Get_ReturnsUserMetrics");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/users";
 
@@ -251,6 +261,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminWasteAnalyticsEndpoint_NoDateParams_UsesDefaults()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-w-a-s-t-e-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-", "Executed: AdminWasteAnalyticsEndpoint_NoDateParams_UsesDefaults");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/waste";
 
@@ -269,6 +280,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminWasteAnalyticsEndpoint_WithDateRange_ReturnsFilteredData()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-w-a-s-t-e-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-", "Executed: AdminWasteAnalyticsEndpoint_WithDateRange_ReturnsFilteredData");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/waste";
             var queryParams = "?startDate=2026-01-01&endDate=2026-06-30";
@@ -288,6 +300,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminWasteAnalyticsEndpoint_FutureDates_ReturnsEmptyResults()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-w-a-s-t-e-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-", "Executed: AdminWasteAnalyticsEndpoint_FutureDates_ReturnsEmptyResults");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/waste";
             var queryParams = "?startDate=2027-01-01&endDate=2027-12-31";
@@ -311,6 +324,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminSummaryEndpoint_WithDateRange_ReturnsComprehensiveSummary()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-s-u-m-m-a-r-y-e-n-d-p-o-i-n-t_-w-i-t-h-d", "Executed: AdminSummaryEndpoint_WithDateRange_ReturnsComprehensiveSummary");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/summary";
             var queryParams = "?startDate=2026-01-01&endDate=2026-12-31";
@@ -335,6 +349,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task EnterpriseReportAnalyticsEndpoint_WithDateRange_ReturnsScopedData()
         {
+        AllureAttachmentHelper.AttachText("test-e-n-t-e-r-p-r-i-s-e-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-", "Executed: EnterpriseReportAnalyticsEndpoint_WithDateRange_ReturnsScopedData");
             // Arrange
             var endpoint = $"{EnterpriseAnalyticsApiBaseUrl}/reports";
             var queryParams = "?startDate=2026-01-01&endDate=2026-12-31";
@@ -354,6 +369,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task EnterpriseReportAnalyticsEndpoint_InvalidDateRange_ReturnsBadRequest()
         {
+        AllureAttachmentHelper.AttachText("test-e-n-t-e-r-p-r-i-s-e-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-", "Executed: EnterpriseReportAnalyticsEndpoint_InvalidDateRange_ReturnsBadRequest");
             // Arrange
             var endpoint = $"{EnterpriseAnalyticsApiBaseUrl}/reports";
             var queryParams = "?startDate=2026-12-31&endDate=2026-01-01";
@@ -372,6 +388,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task EnterpriseReportAnalyticsEndpoint_WithoutAuth_ReturnsUnauthorized()
         {
+        AllureAttachmentHelper.AttachText("test-e-n-t-e-r-p-r-i-s-e-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-", "Executed: EnterpriseReportAnalyticsEndpoint_WithoutAuth_ReturnsUnauthorized");
             // Arrange
             var endpoint = $"{EnterpriseAnalyticsApiBaseUrl}/reports";
 
@@ -393,6 +410,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task PublicReportAnalyticsEndpoint_NoAuth_ReturnsLastThreeMonths()
         {
+        AllureAttachmentHelper.AttachText("test-p-u-b-l-i-c-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-", "Executed: PublicReportAnalyticsEndpoint_NoAuth_ReturnsLastThreeMonths");
             // Arrange
             var endpoint = $"{PublicAnalyticsApiBaseUrl}/reports";
 
@@ -411,6 +429,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task PublicReportAnalyticsEndpoint_WithDateRange_ReturnsFilteredData()
         {
+        AllureAttachmentHelper.AttachText("test-p-u-b-l-i-c-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-", "Executed: PublicReportAnalyticsEndpoint_WithDateRange_ReturnsFilteredData");
             // Arrange
             var endpoint = $"{PublicAnalyticsApiBaseUrl}/reports";
             var queryParams = "?startDate=2026-01-01&endDate=2026-06-30";
@@ -430,6 +449,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task PublicReportAnalyticsEndpoint_InvalidDateRange_ReturnsBadRequest()
         {
+        AllureAttachmentHelper.AttachText("test-p-u-b-l-i-c-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-", "Executed: PublicReportAnalyticsEndpoint_InvalidDateRange_ReturnsBadRequest");
             // Arrange
             var endpoint = $"{PublicAnalyticsApiBaseUrl}/reports";
             var queryParams = "?startDate=2026-12-31&endDate=2026-01-01";
@@ -449,6 +469,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task PublicReportAnalyticsEndpoint_HistoricalDates_ReturnsEmptyResults()
         {
+        AllureAttachmentHelper.AttachText("test-p-u-b-l-i-c-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-", "Executed: PublicReportAnalyticsEndpoint_HistoricalDates_ReturnsEmptyResults");
             // Arrange
             var endpoint = $"{PublicAnalyticsApiBaseUrl}/reports";
             var queryParams = "?startDate=2020-01-01&endDate=2020-12-31";
@@ -472,6 +493,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AnalyticsEndpoint_SameDayRange_ReturnsDataForThatDay()
         {
+        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-t_-s-a-m-e-d-a-y-r", "Executed: AnalyticsEndpoint_SameDayRange_ReturnsDataForThatDay");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/reports";
             var queryParams = "?startDate=2026-06-15&endDate=2026-06-15";
@@ -491,6 +513,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AnalyticsEndpoint_UtcTimestamps_ParsesCorrectly()
         {
+        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-t_-u-t-c-t-i-m-e-s", "Executed: AnalyticsEndpoint_UtcTimestamps_ParsesCorrectly");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/reports";
             var queryParams = "?startDate=2026-01-01T00:00:00Z&endDate=2026-01-31T23:59:59Z";
@@ -510,6 +533,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AnalyticsEndpoint_YearStartBoundary_ReturnsJanuaryData()
         {
+        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-t_-y-e-a-r-s-t-a-r", "Executed: AnalyticsEndpoint_YearStartBoundary_ReturnsJanuaryData");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/reports";
             var queryParams = "?startDate=2026-01-01&endDate=2026-01-31";
@@ -529,6 +553,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AnalyticsEndpoint_YearEndBoundary_ReturnsDecemberData()
         {
+        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-t_-y-e-a-r-e-n-d-b", "Executed: AnalyticsEndpoint_YearEndBoundary_ReturnsDecemberData");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/reports";
             var queryParams = "?startDate=2026-12-01&endDate=2026-12-31";
@@ -549,6 +574,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AnalyticsEndpoint_MultiYearRange_RespondsInAcceptableTime()
         {
+        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-t_-m-u-l-t-i-y-e-a", "Executed: AnalyticsEndpoint_MultiYearRange_RespondsInAcceptableTime");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/reports";
             var queryParams = "?startDate=2024-01-01&endDate=2026-12-31";
@@ -572,6 +598,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AnalyticsEndpoint_LargeDataset_PerformanceAcceptable()
         {
+        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-t_-l-a-r-g-e-d-a-t", "Executed: AnalyticsEndpoint_LargeDataset_PerformanceAcceptable");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/reports";
             var queryParams = "?startDate=2020-01-01&endDate=2026-12-31";
@@ -594,6 +621,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AnalyticsEndpoint_NullParameters_UsesDefaults()
         {
+        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-t_-n-u-l-l-p-a-r-a", "Executed: AnalyticsEndpoint_NullParameters_UsesDefaults");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/reports";
             var queryParams = ""; // No parameters
@@ -617,6 +645,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminOverviewEndpoint_ResponseStructure_ValidateAllFields()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-o-v-e-r-v-i-e-w-e-n-d-p-o-i-n-t_-r-e-s-p", "Executed: AdminOverviewEndpoint_ResponseStructure_ValidateAllFields");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/overview";
 
@@ -638,6 +667,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task ReportAnalyticsEndpoint_ResponseStructure_ValidateDataTypes()
         {
+        AllureAttachmentHelper.AttachText("test-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-t_-r-e", "Executed: ReportAnalyticsEndpoint_ResponseStructure_ValidateDataTypes");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/reports";
 
@@ -664,6 +694,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AnalyticsEndpoint_InvalidDateRange_ContainsMeaningfulErrorMessage()
         {
+        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-t_-i-n-v-a-l-i-d-d", "Executed: AnalyticsEndpoint_InvalidDateRange_ContainsMeaningfulErrorMessage");
             // Arrange
             var endpoint = $"{AdminAnalyticsApiBaseUrl}/reports";
             var queryParams = "?startDate=2026-12-31&endDate=2026-01-01";

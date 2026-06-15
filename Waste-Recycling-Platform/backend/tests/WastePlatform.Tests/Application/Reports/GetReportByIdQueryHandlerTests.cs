@@ -1,4 +1,4 @@
-using Allure.Xunit.Attributes;
+﻿using Allure.Xunit.Attributes;
 using FluentAssertions;
 using Moq;
 using WastePlatform.Application.Reports.Queries;
@@ -43,6 +43,7 @@ public class GetReportByIdQueryHandlerTests
     [Fact]
     public async Task Handle_WhenReportExists_ShouldReturnReportDto()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-r-e-p-o-r-t-e-x-i-s-t-s_-s-h-", "Executed: Handle_WhenReportExists_ShouldReturnReportDto");
         // Arrange
         var reportId = Guid.NewGuid();
         var citizenId = Guid.NewGuid();
@@ -92,6 +93,7 @@ public class GetReportByIdQueryHandlerTests
     [Fact]
     public async Task Handle_WhenReportExists_WithImages_ShouldReturnReportDtoWithImageUrls()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-r-e-p-o-r-t-e-x-i-s-t-s_-w-i-", "Executed: Handle_WhenReportExists_WithImages_ShouldReturnReportDtoWithImageUrls");
         // Arrange
         var reportId = Guid.NewGuid();
         var report = WasteReport.Create(
@@ -142,6 +144,7 @@ public class GetReportByIdQueryHandlerTests
     [Fact]
     public async Task Handle_WhenReportDoesNotExist_ShouldReturnNull()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-r-e-p-o-r-t-d-o-e-s-n-o-t-e-x", "Executed: Handle_WhenReportDoesNotExist_ShouldReturnNull");
         // Arrange
         var nonExistentReportId = Guid.NewGuid();
 

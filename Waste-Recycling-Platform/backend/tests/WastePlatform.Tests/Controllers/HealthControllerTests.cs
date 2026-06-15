@@ -1,4 +1,4 @@
-using Allure.Xunit.Attributes;
+﻿using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using Microsoft.AspNetCore.Mvc;
 using WastePlatform.API.Controllers;
@@ -13,7 +13,7 @@ namespace WastePlatform.Tests.Controllers;
 [Allure.Net.Commons.Attributes.AllureLabel("suite", "Controllers")]
 [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "HealthControllerTests")]
 [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Controllers")]
-[AllureOwner("Chi Trung")]
+[AllureOwner("Nguyễn Chí Trung")]
 [AllureSeverity(SeverityLevel.blocker)]
 [Allure.Net.Commons.Attributes.AllureTag("api")]
 [Allure.Net.Commons.Attributes.AllureTag("health")]
@@ -39,6 +39,7 @@ public class HealthControllerTests
     [AllureDescription("Health check endpoint returns 200 status code.")]
     public void Get_ShouldReturn200StatusCode()
     {
+        AllureAttachmentHelper.AttachText("test-g-e-t_-s-h-o-u-l-d-r-e-t-u-r-n200-s-t-a-t-u-s-c-o-", "Executed: Get_ShouldReturn200StatusCode");
         var controller = new HealthController();
 
         var result = controller.Get();

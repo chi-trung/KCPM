@@ -37,6 +37,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminAnalyticsOverview_WithValidAdminToken_ReturnsAllMetrics()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-a-n-a-l-y-t-i-c-s-o-v-e-r-v-i-e-w_-w-i-t", "Executed: AdminAnalyticsOverview_WithValidAdminToken_ReturnsAllMetrics");
             // Arrange
             var adminUserId = "admin-user-123";
 
@@ -58,6 +59,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminAnalyticsOverview_WithCitizenToken_ReturnsForbidden()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-a-n-a-l-y-t-i-c-s-o-v-e-r-v-i-e-w_-w-i-t", "Executed: AdminAnalyticsOverview_WithCitizenToken_ReturnsForbidden");
             // Arrange
             var citizenUserId = "citizen-user-123";
 
@@ -79,6 +81,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminReportAnalytics_NoDateFilter_UsesDefaultRange()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-n-o-d-a-t", "Executed: AdminReportAnalytics_NoDateFilter_UsesDefaultRange");
             // Arrange
             var startDate = (DateTime?)null;
             var endDate = (DateTime?)null;
@@ -98,6 +101,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminReportAnalytics_ValidDateRange_ReturnFilteredData()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-v-a-l-i-d", "Executed: AdminReportAnalytics_ValidDateRange_ReturnFilteredData");
             // Arrange
             var startDate = new DateTime(2026, 1, 1);
             var endDate = new DateTime(2026, 12, 31);
@@ -120,6 +124,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminReportAnalytics_OnlyStartDate_DefaultsEndToToday()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-o-n-l-y-s", "Executed: AdminReportAnalytics_OnlyStartDate_DefaultsEndToToday");
             // Arrange
             var startDate = new DateTime(2026, 1, 1);
 
@@ -138,6 +143,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminReportAnalytics_OnlyEndDate_DefaultsStartToOneMonthBefore()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-o-n-l-y-e", "Executed: AdminReportAnalytics_OnlyEndDate_DefaultsStartToOneMonthBefore");
             // Arrange
             var endDate = new DateTime(2026, 12, 31);
 
@@ -156,6 +162,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminReportAnalytics_StartGreaterThanEnd_ReturnsBadRequest()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-s-t-a-r-t", "Executed: AdminReportAnalytics_StartGreaterThanEnd_ReturnsBadRequest");
             // Arrange
             var startDate = new DateTime(2026, 12, 31);
             var endDate = new DateTime(2026, 1, 1);
@@ -176,6 +183,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminReportAnalytics_InvalidDateFormat_ReturnsBadRequest()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-i-n-v-a-l", "Executed: AdminReportAnalytics_InvalidDateFormat_ReturnsBadRequest");
             // Arrange
             var invalidDateString = "2026/01/01"; // Not ISO 8601
 
@@ -199,6 +207,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminUserAnalytics_WithValidRequest_ReturnsUserMetrics()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-u-s-e-r-a-n-a-l-y-t-i-c-s_-w-i-t-h-v-a-l", "Executed: AdminUserAnalytics_WithValidRequest_ReturnsUserMetrics");
             // Arrange
             var adminUserId = "admin-user-123";
 
@@ -224,6 +233,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminWasteAnalytics_NoDateFilter_UsesDefaultRange()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-w-a-s-t-e-a-n-a-l-y-t-i-c-s_-n-o-d-a-t-e", "Executed: AdminWasteAnalytics_NoDateFilter_UsesDefaultRange");
             // Arrange
             var startDate = (DateTime?)null;
             var endDate = (DateTime?)null;
@@ -244,6 +254,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminWasteAnalytics_WithDateRange_ReturnsFilteredData()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-w-a-s-t-e-a-n-a-l-y-t-i-c-s_-w-i-t-h-d-a", "Executed: AdminWasteAnalytics_WithDateRange_ReturnsFilteredData");
             // Arrange
             var startDate = new DateTime(2026, 1, 1);
             var endDate = new DateTime(2026, 6, 30);
@@ -263,6 +274,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminWasteAnalytics_FutureDates_ReturnsEmptyResults()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-w-a-s-t-e-a-n-a-l-y-t-i-c-s_-f-u-t-u-r-e", "Executed: AdminWasteAnalytics_FutureDates_ReturnsEmptyResults");
             // Arrange
             var startDate = new DateTime(2027, 1, 1);
             var endDate = new DateTime(2027, 12, 31);
@@ -287,6 +299,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminAnalyticsSummary_WithDateRange_ReturnsComprehensiveData()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-a-n-a-l-y-t-i-c-s-s-u-m-m-a-r-y_-w-i-t-h", "Executed: AdminAnalyticsSummary_WithDateRange_ReturnsComprehensiveData");
             // Arrange
             var startDate = new DateTime(2026, 1, 1);
             var endDate = new DateTime(2026, 12, 31);
@@ -313,6 +326,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task EnterpriseReportAnalytics_WithDateRange_ReturnsScopedData()
         {
+        AllureAttachmentHelper.AttachText("test-e-n-t-e-r-p-r-i-s-e-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_", "Executed: EnterpriseReportAnalytics_WithDateRange_ReturnsScopedData");
             // Arrange
             var enterpriseId = Guid.NewGuid();
             var startDate = new DateTime(2026, 1, 1);
@@ -334,6 +348,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task EnterpriseReportAnalytics_InvalidDateRange_ReturnsBadRequest()
         {
+        AllureAttachmentHelper.AttachText("test-e-n-t-e-r-p-r-i-s-e-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_", "Executed: EnterpriseReportAnalytics_InvalidDateRange_ReturnsBadRequest");
             // Arrange
             var enterpriseId = Guid.NewGuid();
             var startDate = new DateTime(2026, 12, 31);
@@ -354,6 +369,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task EnterpriseReportAnalytics_WithoutAuth_ReturnsUnauthorized()
         {
+        AllureAttachmentHelper.AttachText("test-e-n-t-e-r-p-r-i-s-e-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_", "Executed: EnterpriseReportAnalytics_WithoutAuth_ReturnsUnauthorized");
             // Arrange
             var enterpriseId = Guid.NewGuid();
 
@@ -375,6 +391,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task PublicReportAnalytics_NoAuth_ReturnsLastThreeMonths()
         {
+        AllureAttachmentHelper.AttachText("test-p-u-b-l-i-c-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-n-o-a-u", "Executed: PublicReportAnalytics_NoAuth_ReturnsLastThreeMonths");
             // Arrange
             // No authentication needed
 
@@ -392,6 +409,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task PublicReportAnalytics_WithDateRange_ReturnsFilteredData()
         {
+        AllureAttachmentHelper.AttachText("test-p-u-b-l-i-c-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-w-i-t-h", "Executed: PublicReportAnalytics_WithDateRange_ReturnsFilteredData");
             // Arrange
             var startDate = new DateTime(2026, 1, 1);
             var endDate = new DateTime(2026, 6, 30);
@@ -410,6 +428,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task PublicReportAnalytics_InvalidDateRange_ReturnsBadRequest()
         {
+        AllureAttachmentHelper.AttachText("test-p-u-b-l-i-c-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-i-n-v-a", "Executed: PublicReportAnalytics_InvalidDateRange_ReturnsBadRequest");
             // Arrange
             var startDate = new DateTime(2026, 12, 31);
             var endDate = new DateTime(2026, 1, 1);
@@ -428,6 +447,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task PublicReportAnalytics_VeryOldDates_ReturnsEmptyResults()
         {
+        AllureAttachmentHelper.AttachText("test-p-u-b-l-i-c-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-v-e-r-y", "Executed: PublicReportAnalytics_VeryOldDates_ReturnsEmptyResults");
             // Arrange
             var startDate = new DateTime(2020, 1, 1);
             var endDate = new DateTime(2020, 12, 31);
@@ -451,6 +471,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task Analytics_SameDayRange_ReturnsDataForThatDay()
         {
+        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-s-a-m-e-d-a-y-r-a-n-g-e_-r-e-t-", "Executed: Analytics_SameDayRange_ReturnsDataForThatDay");
             // Arrange
             var singleDay = new DateTime(2026, 6, 15);
 
@@ -468,6 +489,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task Analytics_UtcTimestamps_ParsesCorrectly()
         {
+        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-u-t-c-t-i-m-e-s-t-a-m-p-s_-p-a-", "Executed: Analytics_UtcTimestamps_ParsesCorrectly");
             // Arrange
             var utcStart = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             var utcEnd = new DateTime(2026, 1, 31, 23, 59, 59, DateTimeKind.Utc);
@@ -486,6 +508,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task Analytics_YearBoundaryStart_ReturnsJanuaryData()
         {
+        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-y-e-a-r-b-o-u-n-d-a-r-y-s-t-a-r", "Executed: Analytics_YearBoundaryStart_ReturnsJanuaryData");
             // Arrange
             var startDate = new DateTime(2026, 1, 1);
             var endDate = new DateTime(2026, 1, 31);
@@ -504,6 +527,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task Analytics_YearBoundaryEnd_ReturnsDecemberData()
         {
+        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-y-e-a-r-b-o-u-n-d-a-r-y-e-n-d_-", "Executed: Analytics_YearBoundaryEnd_ReturnsDecemberData");
             // Arrange
             var startDate = new DateTime(2026, 12, 1);
             var endDate = new DateTime(2026, 12, 31);
@@ -522,6 +546,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task Analytics_MultiYearRange_ReturnsAllData()
         {
+        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-m-u-l-t-i-y-e-a-r-r-a-n-g-e_-r-", "Executed: Analytics_MultiYearRange_ReturnsAllData");
             // Arrange
             var startDate = new DateTime(2024, 1, 1);
             var endDate = new DateTime(2026, 12, 31);
@@ -542,6 +567,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task Analytics_LargeDataset_RespondsWithinTimeLimit()
         {
+        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-l-a-r-g-e-d-a-t-a-s-e-t_-r-e-s-", "Executed: Analytics_LargeDataset_RespondsWithinTimeLimit");
             // Arrange
             var startDate = new DateTime(2020, 1, 1);
             var endDate = new DateTime(2026, 12, 31);
@@ -564,6 +590,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task Analytics_NullParameters_UsesDefaults()
         {
+        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-n-u-l-l-p-a-r-a-m-e-t-e-r-s_-u-", "Executed: Analytics_NullParameters_UsesDefaults");
             // Arrange
             DateTime? startDate = null;
             DateTime? endDate = null;
@@ -583,6 +610,7 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task Analytics_EmptyStringParameters_UsesDefaults()
         {
+        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-e-m-p-t-y-s-t-r-i-n-g-p-a-r-a-m", "Executed: Analytics_EmptyStringParameters_UsesDefaults");
             // Arrange
             var emptyStart = "";
             var emptyEnd = "";

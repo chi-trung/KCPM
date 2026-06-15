@@ -13,7 +13,7 @@ namespace WastePlatform.Tests.Infrastructure;
 [Allure.Net.Commons.Attributes.AllureLabel("suite", "Infrastructure")]
 [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "DateTimeUtcConverterTests")]
 [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Infrastructure")]
-[AllureOwner("Chi Trung")]
+[AllureOwner("Nguyễn Chí Trung")]
 [AllureSeverity(SeverityLevel.minor)]
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("serialization")]
@@ -78,6 +78,7 @@ public class DateTimeUtcConverterTests
 
         var result = JsonSerializer.Deserialize<DateTime>(json, options);
 
+        AllureAttachmentHelper.AttachJson("iso-string-parse", new { Input = json, Parsed = result.ToString("O"), result.Year, result.Month, result.Day });
         result.Year.Should().Be(2026);
         result.Month.Should().Be(6);
         result.Day.Should().Be(13);
@@ -122,6 +123,7 @@ public class DateTimeUtcConverterTests
 
         var result = JsonSerializer.Deserialize<DateTime?>(json, options);
 
+        AllureAttachmentHelper.AttachJson("null-token-parse", new { Input = json, Result = (object?)result ?? "null" });
         result.Should().BeNull();
     }
 
@@ -134,6 +136,7 @@ public class DateTimeUtcConverterTests
 
         var result = JsonSerializer.Deserialize<DateTime?>(json, options);
 
+        AllureAttachmentHelper.AttachJson("valid-string-parse", new { Input = json, Parsed = result?.ToString("O"), Year = result?.Year, Month = result?.Month });
         result.Should().NotBeNull();
         result!.Value.Year.Should().Be(2026);
         result.Value.Month.Should().Be(12);
@@ -153,6 +156,7 @@ public class DateTimeUtcConverterTests
         var json = JsonSerializer.Serialize(original, options);
         var deserialized = JsonSerializer.Deserialize<DateTime>(json, options);
 
+        AllureAttachmentHelper.AttachJson("roundtrip-result", new { Original = original.ToString("O"), Serialized = json, Deserialized = deserialized.ToString("O") });
         deserialized.Year.Should().Be(original.Year);
         deserialized.Month.Should().Be(original.Month);
         deserialized.Day.Should().Be(original.Day);

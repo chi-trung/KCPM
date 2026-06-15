@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Encodings.Web;
 using Allure.Net.Commons;
 
 namespace WastePlatform.Tests.TestSupport;
@@ -7,7 +8,8 @@ internal static class AllureAttachmentHelper
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
-        WriteIndented = true
+        WriteIndented = true,
+        Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
     };
 
     public static void AttachJson(string name, object payload)

@@ -1,4 +1,4 @@
-using Allure.Xunit.Attributes;
+﻿using Allure.Xunit.Attributes;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using System.IdentityModel.Tokens.Jwt;
@@ -28,6 +28,7 @@ public class JwtServiceTests
     [AllureDescription("GenerateToken includes expected claims and expiry")]
     public void GenerateToken_ShouldContainExpectedClaimsAndExpiry()
     {
+        AllureAttachmentHelper.AttachText("test-g-e-n-e-r-a-t-e-t-o-k-e-n_-s-h-o-u-l-d-c-o-n-t-a-i", "Executed: GenerateToken_ShouldContainExpectedClaimsAndExpiry");
         // Arrange
         // Tạo cấu hình giả trong bộ nhớ để JwtService đọc secret/issuer/audience như môi trường thật.
         var settings = new System.Collections.Generic.Dictionary<string, string?>

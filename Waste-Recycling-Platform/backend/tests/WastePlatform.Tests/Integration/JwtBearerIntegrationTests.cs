@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,6 +37,7 @@ public class JwtBearerIntegrationTests : IClassFixture<WebApplicationFactory<Pro
         [Fact]
         public async Task ValidSignedToken_AllowsAccess_ToProtectedEndpoint()
         {
+        AllureAttachmentHelper.AttachText("test-v-a-l-i-d-s-i-g-n-e-d-t-o-k-e-n_-a-l-l-o-w-s-a-c-c", "Executed: ValidSignedToken_AllowsAccess_ToProtectedEndpoint");
             var seededUserId = System.Guid.NewGuid();
 
             var factory = _factory.WithWebHostBuilder(builder =>

@@ -1,4 +1,4 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -299,6 +299,7 @@ public class CollectorTaskControllerExtendedTests
     [AllureDescription("TC-TASK-006b: GET /api/collector/tasks/stats with unknown collector profile returns 401.")]
     public async Task GetStats_WhenCollectorProfileNotFound_ShouldReturnUnauthorized()
     {
+        AllureAttachmentHelper.AttachText("test-g-e-t-s-t-a-t-s_-w-h-e-n-c-o-l-l-e-c-t-o-r-p-r-o-f", "Executed: GetStats_WhenCollectorProfileNotFound_ShouldReturnUnauthorized");
         await using var context = CreateContext();
 
         var controller = BuildController(context, Guid.NewGuid());

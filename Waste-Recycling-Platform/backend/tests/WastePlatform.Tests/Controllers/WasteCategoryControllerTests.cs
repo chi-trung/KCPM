@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using Allure.Xunit.Attributes;
 using FluentAssertions;
 using MediatR;
@@ -39,6 +39,7 @@ public class WasteCategoryControllerTests
     [AllureDescription("Returns the full list of categories when the mediator succeeds.")]
     public async Task GetAllCategories_ShouldReturnOkWithMessageAndData()
     {
+        AllureAttachmentHelper.AttachText("test-g-e-t-a-l-l-c-a-t-e-g-o-r-i-e-s_-s-h-o-u-l-d-r-e-t", "Executed: GetAllCategories_ShouldReturnOkWithMessageAndData");
         // Arrange
         var categories = new List<WasteCategoryDto>
         {
@@ -72,6 +73,7 @@ public class WasteCategoryControllerTests
     [AllureDescription("Returns a single category when the category exists.")]
     public async Task GetCategoryById_WhenFound_ShouldReturnOkWithMessageAndData()
     {
+        AllureAttachmentHelper.AttachText("test-g-e-t-c-a-t-e-g-o-r-y-b-y-i-d_-w-h-e-n-f-o-u-n-d_-", "Executed: GetCategoryById_WhenFound_ShouldReturnOkWithMessageAndData");
         // Arrange
         var category = new WasteCategoryDto
         {
@@ -106,6 +108,7 @@ public class WasteCategoryControllerTests
     [AllureDescription("Returns not found when the category does not exist.")]
     public async Task GetCategoryById_WhenMissing_ShouldReturnNotFoundWithMessage()
     {
+        AllureAttachmentHelper.AttachText("test-g-e-t-c-a-t-e-g-o-r-y-b-y-i-d_-w-h-e-n-m-i-s-s-i-n", "Executed: GetCategoryById_WhenMissing_ShouldReturnNotFoundWithMessage");
         // Arrange
         _mediatorMock
             .Setup(x => x.Send(It.IsAny<GetCategoryByIdQuery>(), It.IsAny<CancellationToken>()))

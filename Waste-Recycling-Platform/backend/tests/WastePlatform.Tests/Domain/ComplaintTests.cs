@@ -1,4 +1,4 @@
-using WastePlatform.Domain.Entities;
+﻿using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
 using WastePlatform.Tests.TestSupport;
 
@@ -11,7 +11,7 @@ namespace WastePlatform.Tests.Domain;
 [Allure.Net.Commons.Attributes.AllureLabel("suite", "Domain")]
 [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "ComplaintTests")]
 [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Domain")]
-[AllureOwner("Chi Trung")]
+[AllureOwner("Nguyễn Chí Trung")]
 [AllureSeverity(SeverityLevel.normal)]
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("domain")]
@@ -41,6 +41,7 @@ public class ComplaintTests
     [AllureDescription("Creates a complaint linked to a report and enterprise.")]
     public void Create_WithReportAndEnterprise_ShouldSetOptionalIds()
     {
+        AllureAttachmentHelper.AttachText("test-c-r-e-a-t-e_-w-i-t-h-r-e-p-o-r-t-a-n-d-e-n-t-e-r-p", "Executed: Create_WithReportAndEnterprise_ShouldSetOptionalIds");
         var citizenId = Guid.NewGuid();
         var reportId = Guid.NewGuid();
         var enterpriseId = Guid.NewGuid();
@@ -149,6 +150,7 @@ public class ComplaintTests
     [AllureDescription("Enterprise resolves without providing a response text.")]
     public void ResolveByEnterprise_WithNullResponse_ShouldStillResolve()
     {
+        AllureAttachmentHelper.AttachText("test-r-e-s-o-l-v-e-b-y-e-n-t-e-r-p-r-i-s-e_-w-i-t-h-n-u", "Executed: ResolveByEnterprise_WithNullResponse_ShouldStillResolve");
         var complaint = CreateComplaint();
 
         complaint.ResolveByEnterprise(null);
@@ -179,6 +181,7 @@ public class ComplaintTests
     [AllureDescription("Citizen escalates without providing a reason.")]
     public void EscalateToAdmin_WithoutReason_ShouldSetEscalatedStatusOnly()
     {
+        AllureAttachmentHelper.AttachText("test-e-s-c-a-l-a-t-e-t-o-a-d-m-i-n_-w-i-t-h-o-u-t-r-e-a", "Executed: EscalateToAdmin_WithoutReason_ShouldSetEscalatedStatusOnly");
         var complaint = CreateComplaint();
 
         complaint.EscalateToAdmin();

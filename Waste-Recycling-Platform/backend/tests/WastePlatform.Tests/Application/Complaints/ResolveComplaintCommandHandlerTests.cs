@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using Moq;
@@ -141,6 +141,7 @@ public class ResolveComplaintCommandHandlerTests
     [AllureDescription("Returns the complaint id in the success result after resolution.")]
     public async Task Handle_WithValidData_ShouldReturnCorrectComplaintIdInResult()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-v-a-l-i-d-d-a-t-a_-s-h-o-u-l-", "Executed: Handle_WithValidData_ShouldReturnCorrectComplaintIdInResult");
         // Arrange
         var complaintId = Guid.NewGuid();
         var citizenId = Guid.NewGuid();
@@ -175,6 +176,7 @@ public class ResolveComplaintCommandHandlerTests
     [AllureDescription("Stores each admin response correctly for different complaint resolutions.")]
     public async Task Handle_WithDifferentAdminResponses_ShouldStoreEachResponseCorrectly()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-d-i-f-f-e-r-e-n-t-a-d-m-i-n-r", "Executed: Handle_WithDifferentAdminResponses_ShouldStoreEachResponseCorrectly");
         // Arrange
         var responses = new[] 
         { 
@@ -263,6 +265,7 @@ public class ResolveComplaintCommandHandlerTests
     [AllureDescription("Returns a not-found style failure when the complaint id is empty.")]
     public async Task Handle_WithEmptyComplaintId_ShouldReturnNotFoundResult()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-e-m-p-t-y-c-o-m-p-l-a-i-n-t-i", "Executed: Handle_WithEmptyComplaintId_ShouldReturnNotFoundResult");
         // Arrange
         var complaintId = Guid.Empty;
         
@@ -292,6 +295,7 @@ public class ResolveComplaintCommandHandlerTests
     [Fact]
     public async Task Handle_WithMultipleNonExistentIds_ShouldReturnFailureForEach()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-m-u-l-t-i-p-l-e-n-o-n-e-x-i-s", "Executed: Handle_WithMultipleNonExistentIds_ShouldReturnFailureForEach");
         // Arrange
         var nonExistentIds = new[] 
         { 
@@ -378,6 +382,7 @@ public class ResolveComplaintCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldCallRepositoryMethodsInCorrectOrder()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-s-h-o-u-l-d-c-a-l-l-r-e-p-o-s-i-t-o-r", "Executed: Handle_ShouldCallRepositoryMethodsInCorrectOrder");
         // Arrange
         var complaintId = Guid.NewGuid();
         var citizenId = Guid.NewGuid();
@@ -414,6 +419,7 @@ public class ResolveComplaintCommandHandlerTests
     [Fact]
     public async Task Handle_WithMultipleResolutionAttempts_ShouldAllowSecondResolution()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-m-u-l-t-i-p-l-e-r-e-s-o-l-u-t", "Executed: Handle_WithMultipleResolutionAttempts_ShouldAllowSecondResolution");
         // Arrange - First resolution
         var complaintId = Guid.NewGuid();
         var citizenId = Guid.NewGuid();
@@ -464,6 +470,7 @@ public class ResolveComplaintCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldNotThrowException_WhenRepositoryThrowsAndComplaintNotFound()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-s-h-o-u-l-d-n-o-t-t-h-r-o-w-e-x-c-e-p", "Executed: Handle_ShouldNotThrowException_WhenRepositoryThrowsAndComplaintNotFound");
         // Arrange
         var complaintId = Guid.NewGuid();
         
@@ -487,6 +494,7 @@ public class ResolveComplaintCommandHandlerTests
     [Fact]
     public async Task Handle_WithValidComplaint_ShouldVerifyDataPersistence()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-v-a-l-i-d-c-o-m-p-l-a-i-n-t_-", "Executed: Handle_WithValidComplaint_ShouldVerifyDataPersistence");
         // Arrange
         var complaintId = Guid.NewGuid();
         var citizenId = Guid.NewGuid();

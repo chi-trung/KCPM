@@ -1,4 +1,4 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using MediatR;
@@ -22,7 +22,7 @@ namespace WastePlatform.Tests.Controllers;
 [Allure.Net.Commons.Attributes.AllureLabel("suite", "Controllers")]
 [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "AdminUsersControllerTests")]
 [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Controllers")]
-[AllureOwner("Chi Trung")]
+[AllureOwner("Nguyễn Chí Trung")]
 [AllureSeverity(SeverityLevel.normal)]
 [Allure.Net.Commons.Attributes.AllureTag("api")]
 [Allure.Net.Commons.Attributes.AllureTag("admin")]
@@ -56,6 +56,7 @@ public class AdminUsersControllerTests
     [AllureDescription("GetUsers passes search and role filters to query.")]
     public async Task GetUsers_WithFilters_ShouldPassFiltersToQuery()
     {
+        AllureAttachmentHelper.AttachText("test-g-e-t-u-s-e-r-s_-w-i-t-h-f-i-l-t-e-r-s_-s-h-o-u-l-", "Executed: GetUsers_WithFilters_ShouldPassFiltersToQuery");
         _mediatorMock
             .Setup(m => m.Send(It.Is<GetUsersQuery>(q => q.Search == "test" && q.Role == "citizen"), default))
             .ReturnsAsync(new List<UserDto>());
@@ -72,6 +73,7 @@ public class AdminUsersControllerTests
     [AllureDescription("GetStats returns OK with dashboard statistics.")]
     public async Task GetStats_ShouldReturnOkWithStats()
     {
+        AllureAttachmentHelper.AttachText("test-g-e-t-s-t-a-t-s_-s-h-o-u-l-d-r-e-t-u-r-n-o-k-w-i-t", "Executed: GetStats_ShouldReturnOkWithStats");
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetDashboardStatsQuery>(), default))
             .ReturnsAsync(new DashboardStatsDto { TotalUsers = 100, TotalReports = 50 });
@@ -105,6 +107,7 @@ public class AdminUsersControllerTests
     [AllureDescription("ToggleStatus returns OK when user exists.")]
     public async Task ToggleStatus_WhenUserExists_ShouldReturnOk()
     {
+        AllureAttachmentHelper.AttachText("test-t-o-g-g-l-e-s-t-a-t-u-s_-w-h-e-n-u-s-e-r-e-x-i-s-t", "Executed: ToggleStatus_WhenUserExists_ShouldReturnOk");
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<ToggleUserStatusCommand>(), default))
             .ReturnsAsync(true);
@@ -120,6 +123,7 @@ public class AdminUsersControllerTests
     [AllureDescription("ToggleStatus returns NotFound when user doesn't exist.")]
     public async Task ToggleStatus_WhenUserNotFound_ShouldReturnNotFound()
     {
+        AllureAttachmentHelper.AttachText("test-t-o-g-g-l-e-s-t-a-t-u-s_-w-h-e-n-u-s-e-r-n-o-t-f-o", "Executed: ToggleStatus_WhenUserNotFound_ShouldReturnNotFound");
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<ToggleUserStatusCommand>(), default))
             .ReturnsAsync(false);
@@ -135,6 +139,7 @@ public class AdminUsersControllerTests
     [AllureDescription("UpdateRole returns OK when user exists.")]
     public async Task UpdateRole_WhenUserExists_ShouldReturnOk()
     {
+        AllureAttachmentHelper.AttachText("test-u-p-d-a-t-e-r-o-l-e_-w-h-e-n-u-s-e-r-e-x-i-s-t-s_-", "Executed: UpdateRole_WhenUserExists_ShouldReturnOk");
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<UpdateUserRoleCommand>(), default))
             .ReturnsAsync(true);
@@ -151,6 +156,7 @@ public class AdminUsersControllerTests
     [AllureDescription("UpdateRole returns NotFound when user doesn't exist.")]
     public async Task UpdateRole_WhenUserNotFound_ShouldReturnNotFound()
     {
+        AllureAttachmentHelper.AttachText("test-u-p-d-a-t-e-r-o-l-e_-w-h-e-n-u-s-e-r-n-o-t-f-o-u-n", "Executed: UpdateRole_WhenUserNotFound_ShouldReturnNotFound");
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<UpdateUserRoleCommand>(), default))
             .ReturnsAsync(false);
@@ -167,6 +173,7 @@ public class AdminUsersControllerTests
     [AllureDescription("UpdateRole sets UserId from URL parameter into the command.")]
     public async Task UpdateRole_ShouldSetUserIdFromUrl()
     {
+        AllureAttachmentHelper.AttachText("test-u-p-d-a-t-e-r-o-l-e_-s-h-o-u-l-d-s-e-t-u-s-e-r-i-d", "Executed: UpdateRole_ShouldSetUserIdFromUrl");
         var userId = "test-user-id";
         _mediatorMock
             .Setup(m => m.Send(It.Is<UpdateUserRoleCommand>(c => c.UserId == userId), default))

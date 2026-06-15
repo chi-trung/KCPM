@@ -1,4 +1,4 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using MediatR;
@@ -21,7 +21,7 @@ namespace WastePlatform.Tests.Controllers;
 [Allure.Net.Commons.Attributes.AllureLabel("suite", "Controllers")]
 [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "ComplaintsControllerTests")]
 [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Controllers")]
-[AllureOwner("Chi Trung")]
+[AllureOwner("Nguyễn Chí Trung")]
 [AllureSeverity(SeverityLevel.normal)]
 [Allure.Net.Commons.Attributes.AllureTag("api")]
 [Allure.Net.Commons.Attributes.AllureTag("complaints")]
@@ -63,6 +63,7 @@ public class ComplaintsControllerTests
     [AllureDescription("CreateComplaint returns BadRequest when content is empty.")]
     public async Task CreateComplaint_WithEmptyContent_ShouldReturnBadRequest()
     {
+        AllureAttachmentHelper.AttachText("test-c-r-e-a-t-e-c-o-m-p-l-a-i-n-t_-w-i-t-h-e-m-p-t-y-c", "Executed: CreateComplaint_WithEmptyContent_ShouldReturnBadRequest");
         var controller = CreateController(Guid.NewGuid());
         var dto = new CreateComplaintDto { Content = "  " };
 
@@ -75,6 +76,7 @@ public class ComplaintsControllerTests
     [AllureDescription("CreateComplaint returns Unauthorized when user ID is missing.")]
     public async Task CreateComplaint_WhenNoAuth_ShouldReturnUnauthorized()
     {
+        AllureAttachmentHelper.AttachText("test-c-r-e-a-t-e-c-o-m-p-l-a-i-n-t_-w-h-e-n-n-o-a-u-t-h", "Executed: CreateComplaint_WhenNoAuth_ShouldReturnUnauthorized");
         var controller = CreateControllerWithoutAuth();
         var dto = new CreateComplaintDto { Content = "Valid content" };
 
@@ -87,6 +89,7 @@ public class ComplaintsControllerTests
     [AllureDescription("GetComplaints returns OK with paginated complaints list.")]
     public async Task GetComplaints_WithValidParams_ShouldReturnOk()
     {
+        AllureAttachmentHelper.AttachText("test-g-e-t-c-o-m-p-l-a-i-n-t-s_-w-i-t-h-v-a-l-i-d-p-a-r", "Executed: GetComplaints_WithValidParams_ShouldReturnOk");
         var userId = Guid.NewGuid();
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetCitizenComplaintsQuery>(), default))
@@ -103,6 +106,7 @@ public class ComplaintsControllerTests
     [AllureDescription("GetComplaints returns BadRequest when page is less than 1.")]
     public async Task GetComplaints_WithInvalidPagination_ShouldReturnBadRequest()
     {
+        AllureAttachmentHelper.AttachText("test-g-e-t-c-o-m-p-l-a-i-n-t-s_-w-i-t-h-i-n-v-a-l-i-d-p", "Executed: GetComplaints_WithInvalidPagination_ShouldReturnBadRequest");
         var controller = CreateController(Guid.NewGuid());
 
         var result = await controller.GetComplaints(page: 0, pageSize: 10);
@@ -114,6 +118,7 @@ public class ComplaintsControllerTests
     [AllureDescription("GetComplaints returns Unauthorized when user ID is missing.")]
     public async Task GetComplaints_WhenNoAuth_ShouldReturnUnauthorized()
     {
+        AllureAttachmentHelper.AttachText("test-g-e-t-c-o-m-p-l-a-i-n-t-s_-w-h-e-n-n-o-a-u-t-h_-s-", "Executed: GetComplaints_WhenNoAuth_ShouldReturnUnauthorized");
         var controller = CreateControllerWithoutAuth();
 
         var result = await controller.GetComplaints();
@@ -125,6 +130,7 @@ public class ComplaintsControllerTests
     [AllureDescription("GetComplaintDetail returns OK for complaint owned by user.")]
     public async Task GetComplaintDetail_WhenOwned_ShouldReturnOk()
     {
+        AllureAttachmentHelper.AttachText("test-g-e-t-c-o-m-p-l-a-i-n-t-d-e-t-a-i-l_-w-h-e-n-o-w-n", "Executed: GetComplaintDetail_WhenOwned_ShouldReturnOk");
         var userId = Guid.NewGuid();
         var complaintId = Guid.NewGuid();
 
@@ -149,6 +155,7 @@ public class ComplaintsControllerTests
     [AllureDescription("GetComplaintDetail returns NotFound when complaint doesn't exist.")]
     public async Task GetComplaintDetail_WhenNotFound_ShouldReturnNotFound()
     {
+        AllureAttachmentHelper.AttachText("test-g-e-t-c-o-m-p-l-a-i-n-t-d-e-t-a-i-l_-w-h-e-n-n-o-t", "Executed: GetComplaintDetail_WhenNotFound_ShouldReturnNotFound");
         var userId = Guid.NewGuid();
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetComplaintByIdQuery>(), default))
@@ -165,6 +172,7 @@ public class ComplaintsControllerTests
     [AllureDescription("GetComplaintDetail returns Forbid when complaint belongs to another user.")]
     public async Task GetComplaintDetail_WhenNotOwned_ShouldReturnForbid()
     {
+        AllureAttachmentHelper.AttachText("test-g-e-t-c-o-m-p-l-a-i-n-t-d-e-t-a-i-l_-w-h-e-n-n-o-t", "Executed: GetComplaintDetail_WhenNotOwned_ShouldReturnForbid");
         var userId = Guid.NewGuid();
         var otherUserId = Guid.NewGuid();
 

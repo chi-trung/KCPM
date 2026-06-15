@@ -1,4 +1,4 @@
-using Xunit;
+﻿using Xunit;
 using Moq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -35,6 +35,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task GetUsers_WithValidAdminToken_ReturnsOkWithUserList()
         {
+        AllureAttachmentHelper.AttachText("test-g-e-t-u-s-e-r-s_-w-i-t-h-v-a-l-i-d-a-d-m-i-n-t-o-k", "Executed: GetUsers_WithValidAdminToken_ReturnsOkWithUserList");
             // Arrange
             var adminUserId = "admin-user-123";
             var searchTerm = "";
@@ -55,6 +56,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task GetUserStats_WithValidAdminToken_ReturnsUserStatistics()
         {
+        AllureAttachmentHelper.AttachText("test-g-e-t-u-s-e-r-s-t-a-t-s_-w-i-t-h-v-a-l-i-d-a-d-m-i", "Executed: GetUserStats_WithValidAdminToken_ReturnsUserStatistics");
             // Arrange
             var adminUserId = "admin-user-123";
 
@@ -73,6 +75,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task CreateUser_WithValidAdminRequest_ReturnsCreatedUser()
         {
+        AllureAttachmentHelper.AttachText("test-c-r-e-a-t-e-u-s-e-r_-w-i-t-h-v-a-l-i-d-a-d-m-i-n-r", "Executed: CreateUser_WithValidAdminRequest_ReturnsCreatedUser");
             // Arrange
             var createUserRequest = new CreateUserRequest
             {
@@ -100,6 +103,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task ToggleUserStatus_WithValidUserId_ChangesUserActiveStatus()
         {
+        AllureAttachmentHelper.AttachText("test-t-o-g-g-l-e-u-s-e-r-s-t-a-t-u-s_-w-i-t-h-v-a-l-i-d", "Executed: ToggleUserStatus_WithValidUserId_ChangesUserActiveStatus");
             // Arrange
             var userId = "user-123";
             var initialStatus = true;
@@ -118,6 +122,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task UpdateUserRole_WithValidUserIdAndNewRole_ChangesUserRole()
         {
+        AllureAttachmentHelper.AttachText("test-u-p-d-a-t-e-u-s-e-r-r-o-l-e_-w-i-t-h-v-a-l-i-d-u-s", "Executed: UpdateUserRole_WithValidUserIdAndNewRole_ChangesUserRole");
             // Arrange
             var userId = "user-123";
             var newRole = "Collector";
@@ -140,6 +145,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task GetEnterprises_WithValidPagination_ReturnsEnterpriseList()
         {
+        AllureAttachmentHelper.AttachText("test-g-e-t-e-n-t-e-r-p-r-i-s-e-s_-w-i-t-h-v-a-l-i-d-p-a", "Executed: GetEnterprises_WithValidPagination_ReturnsEnterpriseList");
             // Arrange
             var page = 1;
             var pageSize = 10;
@@ -160,6 +166,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task GetEnterpriseDetail_WithValidEnterpriseId_ReturnsEnterpriseDetail()
         {
+        AllureAttachmentHelper.AttachText("test-g-e-t-e-n-t-e-r-p-r-i-s-e-d-e-t-a-i-l_-w-i-t-h-v-a", "Executed: GetEnterpriseDetail_WithValidEnterpriseId_ReturnsEnterpriseDetail");
             // Arrange
             var enterpriseId = "enterprise-123";
 
@@ -177,6 +184,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task VerifyEnterprise_WithValidEnterpriseId_MarksAsVerified()
         {
+        AllureAttachmentHelper.AttachText("test-v-e-r-i-f-y-e-n-t-e-r-p-r-i-s-e_-w-i-t-h-v-a-l-i-d", "Executed: VerifyEnterprise_WithValidEnterpriseId_MarksAsVerified");
             // Arrange
             var enterpriseId = "enterprise-123";
 
@@ -194,6 +202,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task RejectEnterprise_WithValidEnterpriseIdAndReason_RejectsEnterprise()
         {
+        AllureAttachmentHelper.AttachText("test-r-e-j-e-c-t-e-n-t-e-r-p-r-i-s-e_-w-i-t-h-v-a-l-i-d", "Executed: RejectEnterprise_WithValidEnterpriseIdAndReason_RejectsEnterprise");
             // Arrange
             var enterpriseId = "enterprise-123";
             var rejectionReason = "Missing required compliance documents";
@@ -217,6 +226,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task GetAnalyticsOverview_WithValidAdminToken_ReturnsOverviewMetrics()
         {
+        AllureAttachmentHelper.AttachText("test-g-e-t-a-n-a-l-y-t-i-c-s-o-v-e-r-v-i-e-w_-w-i-t-h-v", "Executed: GetAnalyticsOverview_WithValidAdminToken_ReturnsOverviewMetrics");
             // Arrange
             var adminUserId = "admin-user-123";
 
@@ -235,6 +245,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task GetAnalyticsReports_WithDateRange_ReturnsReportMetrics()
         {
+        AllureAttachmentHelper.AttachText("test-g-e-t-a-n-a-l-y-t-i-c-s-r-e-p-o-r-t-s_-w-i-t-h-d-a", "Executed: GetAnalyticsReports_WithDateRange_ReturnsReportMetrics");
             // Arrange
             var startDate = "2026-01-01";
             var endDate = "2026-12-31";
@@ -253,6 +264,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task GetAnalyticsUsers_WithValidRequest_ReturnsUserAnalytics()
         {
+        AllureAttachmentHelper.AttachText("test-g-e-t-a-n-a-l-y-t-i-c-s-u-s-e-r-s_-w-i-t-h-v-a-l-i", "Executed: GetAnalyticsUsers_WithValidRequest_ReturnsUserAnalytics");
             // Arrange
             var adminUserId = "admin-user-123";
 
@@ -270,6 +282,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task GetAnalyticsWaste_WithValidRequest_ReturnsWasteAnalytics()
         {
+        AllureAttachmentHelper.AttachText("test-g-e-t-a-n-a-l-y-t-i-c-s-w-a-s-t-e_-w-i-t-h-v-a-l-i", "Executed: GetAnalyticsWaste_WithValidRequest_ReturnsWasteAnalytics");
             // Arrange
             var adminUserId = "admin-user-123";
 
@@ -287,6 +300,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task GetAnalyticsSummary_WithValidRequest_ReturnsComprehensiveSummary()
         {
+        AllureAttachmentHelper.AttachText("test-g-e-t-a-n-a-l-y-t-i-c-s-s-u-m-m-a-r-y_-w-i-t-h-v-a", "Executed: GetAnalyticsSummary_WithValidRequest_ReturnsComprehensiveSummary");
             // Arrange
             var adminUserId = "admin-user-123";
 
@@ -311,6 +325,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task AdminEndpoint_WithoutAdminRole_ReturnsForbidden()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-e-n-d-p-o-i-n-t_-w-i-t-h-o-u-t-a-d-m-i-n", "Executed: AdminEndpoint_WithoutAdminRole_ReturnsForbidden");
             // Arrange
             var citizenUserId = "citizen-user-123";
 
@@ -327,6 +342,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task AdminEndpoint_WithInvalidToken_ReturnsUnauthorized()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-e-n-d-p-o-i-n-t_-w-i-t-h-i-n-v-a-l-i-d-t", "Executed: AdminEndpoint_WithInvalidToken_ReturnsUnauthorized");
             // Arrange
             var invalidToken = "invalid.jwt.token";
 
@@ -347,6 +363,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task CreateUser_WithMissingRequiredFields_ReturnsBadRequest()
         {
+        AllureAttachmentHelper.AttachText("test-c-r-e-a-t-e-u-s-e-r_-w-i-t-h-m-i-s-s-i-n-g-r-e-q-u", "Executed: CreateUser_WithMissingRequiredFields_ReturnsBadRequest");
             // Arrange
             var invalidRequest = new CreateUserRequest
             {
@@ -368,6 +385,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task CreateUser_WithExistingEmail_ReturnsConflict()
         {
+        AllureAttachmentHelper.AttachText("test-c-r-e-a-t-e-u-s-e-r_-w-i-t-h-e-x-i-s-t-i-n-g-e-m-a", "Executed: CreateUser_WithExistingEmail_ReturnsConflict");
             // Arrange
             var existingEmail = "existing@example.com";
             var request = new CreateUserRequest
@@ -394,6 +412,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task GetEnterprises_WithPaginationParams_ReturnCorrectPageData()
         {
+        AllureAttachmentHelper.AttachText("test-g-e-t-e-n-t-e-r-p-r-i-s-e-s_-w-i-t-h-p-a-g-i-n-a-t", "Executed: GetEnterprises_WithPaginationParams_ReturnCorrectPageData");
             // Arrange
             var page = 2;
             var pageSize = 5;

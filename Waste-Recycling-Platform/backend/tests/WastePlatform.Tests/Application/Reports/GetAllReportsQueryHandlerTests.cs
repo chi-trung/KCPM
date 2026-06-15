@@ -1,4 +1,4 @@
-using Allure.Xunit.Attributes;
+﻿using Allure.Xunit.Attributes;
 using FluentAssertions;
 using Moq;
 using WastePlatform.Application.Reports.Queries;
@@ -42,6 +42,7 @@ public class GetAllReportsQueryHandlerTests
     [Fact]
     public async Task Handle_WithDefaultPagination_ShouldReturnReports()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-d-e-f-a-u-l-t-p-a-g-i-n-a-t-i", "Executed: Handle_WithDefaultPagination_ShouldReturnReports");
         // Arrange
         var reports = new List<WasteReport>
         {
@@ -68,6 +69,7 @@ public class GetAllReportsQueryHandlerTests
     [Fact]
     public async Task Handle_WithCustomPagination_ShouldReturnCorrectPage()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-c-u-s-t-o-m-p-a-g-i-n-a-t-i-o", "Executed: Handle_WithCustomPagination_ShouldReturnCorrectPage");
         // Arrange
         var reports = new List<WasteReport> { CreateReport(ReportStatus.Pending) };
 
@@ -120,6 +122,7 @@ public class GetAllReportsQueryHandlerTests
     [Fact]
     public async Task Handle_WithEmptyStatusFilter_ShouldNotFilterByStatus()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-e-m-p-t-y-s-t-a-t-u-s-f-i-l-t", "Executed: Handle_WithEmptyStatusFilter_ShouldNotFilterByStatus");
         // Arrange
         var reports = new List<WasteReport> { CreateReport(ReportStatus.Pending) };
 
@@ -141,6 +144,7 @@ public class GetAllReportsQueryHandlerTests
     [Fact]
     public async Task Handle_WithInvalidStatusFilter_ShouldNotFilterByStatus()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-i-n-v-a-l-i-d-s-t-a-t-u-s-f-i", "Executed: Handle_WithInvalidStatusFilter_ShouldNotFilterByStatus");
         // Arrange - Invalid status string should be ignored
         var reports = new List<WasteReport> { CreateReport(ReportStatus.Pending) };
 

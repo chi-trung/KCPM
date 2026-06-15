@@ -15,7 +15,7 @@ namespace WastePlatform.Tests.Application.Admin
     [Allure.Net.Commons.Attributes.AllureLabel("suite", "Application Integration")]
     [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "AdminApiIntegrationTests")]
     [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Admin")]
-    [AllureOwner("qa")]
+    [AllureOwner("Nguyễn Chí Trung")]
     [AllureSeverity(SeverityLevel.normal)]
     [Allure.Net.Commons.Attributes.AllureTag("api")]
     [Allure.Net.Commons.Attributes.AllureTag("admin")]
@@ -40,6 +40,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task AdminUsersEndpoint_GetAll_ReturnsSuccessfulResponse()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-u-s-e-r-s-e-n-d-p-o-i-n-t_-g-e-t-a-l-l_-", "Executed: AdminUsersEndpoint_GetAll_ReturnsSuccessfulResponse");
             // Arrange
             var endpoint = $"{AdminApiBaseUrl}/users";
             var queryParams = new Dictionary<string, string>
@@ -65,6 +66,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task AdminUsersStatsEndpoint_Get_ReturnsUserStatistics()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-u-s-e-r-s-s-t-a-t-s-e-n-d-p-o-i-n-t_-g-e", "Executed: AdminUsersStatsEndpoint_Get_ReturnsUserStatistics");
             // Arrange
             var endpoint = $"{AdminApiBaseUrl}/users/stats";
 
@@ -84,6 +86,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task AdminUsersEndpoint_CreateNew_ReturnsCreatedUser()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-u-s-e-r-s-e-n-d-p-o-i-n-t_-c-r-e-a-t-e-n", "Executed: AdminUsersEndpoint_CreateNew_ReturnsCreatedUser");
             // Arrange
             var endpoint = $"{AdminApiBaseUrl}/users";
             var newUserPayload = new
@@ -114,6 +117,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task AdminUsersEndpoint_ToggleStatus_ChangesUserActiveStatus()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-u-s-e-r-s-e-n-d-p-o-i-n-t_-t-o-g-g-l-e-s", "Executed: AdminUsersEndpoint_ToggleStatus_ChangesUserActiveStatus");
             // Arrange
             var userId = "{{userId}}"; // From Postman environment
             var endpoint = $"{AdminApiBaseUrl}/users/{userId}/toggle-status";
@@ -135,6 +139,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task AdminUsersEndpoint_UpdateRole_ChangesUserRole()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-u-s-e-r-s-e-n-d-p-o-i-n-t_-u-p-d-a-t-e-r", "Executed: AdminUsersEndpoint_UpdateRole_ChangesUserRole");
             // Arrange
             var userId = "{{userId}}";
             var endpoint = $"{AdminApiBaseUrl}/users/{userId}/role";
@@ -164,6 +169,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task AdminEnterprisesEndpoint_GetAll_ReturnsPaginatedList()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-e-n-t-e-r-p-r-i-s-e-s-e-n-d-p-o-i-n-t_-g", "Executed: AdminEnterprisesEndpoint_GetAll_ReturnsPaginatedList");
             // Arrange
             var endpoint = $"{AdminApiBaseUrl}/enterprises";
             var queryParams = new Dictionary<string, string>
@@ -191,6 +197,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task AdminEnterprisesEndpoint_GetById_ReturnsEnterpriseDetail()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-e-n-t-e-r-p-r-i-s-e-s-e-n-d-p-o-i-n-t_-g", "Executed: AdminEnterprisesEndpoint_GetById_ReturnsEnterpriseDetail");
             // Arrange
             var enterpriseId = "{{enterpriseId}}";
             var endpoint = $"{AdminApiBaseUrl}/enterprises/{enterpriseId}";
@@ -211,6 +218,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task AdminEnterprisesEndpoint_Verify_MarksEnterpriseAsVerified()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-e-n-t-e-r-p-r-i-s-e-s-e-n-d-p-o-i-n-t_-v", "Executed: AdminEnterprisesEndpoint_Verify_MarksEnterpriseAsVerified");
             // Arrange
             var enterpriseId = "{{enterpriseId}}";
             var endpoint = $"{AdminApiBaseUrl}/enterprises/{enterpriseId}/verify";
@@ -232,6 +240,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task AdminEnterprisesEndpoint_Reject_RejectsEnterpriseWithReason()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-e-n-t-e-r-p-r-i-s-e-s-e-n-d-p-o-i-n-t_-r", "Executed: AdminEnterprisesEndpoint_Reject_RejectsEnterpriseWithReason");
             // Arrange
             var enterpriseId = "{{enterpriseId}}";
             var endpoint = $"{AdminApiBaseUrl}/enterprises/{enterpriseId}/reject";
@@ -261,6 +270,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task AdminAnalyticsEndpoint_GetOverview_ReturnsOverviewMetrics()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-t_-g-e-t", "Executed: AdminAnalyticsEndpoint_GetOverview_ReturnsOverviewMetrics");
             // Arrange
             var endpoint = $"{AdminApiBaseUrl}/analytics/overview";
 
@@ -280,6 +290,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task AdminAnalyticsEndpoint_GetReports_ReturnsReportAnalytics()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-t_-g-e-t", "Executed: AdminAnalyticsEndpoint_GetReports_ReturnsReportAnalytics");
             // Arrange
             var endpoint = $"{AdminApiBaseUrl}/analytics/reports";
             var queryParams = new Dictionary<string, string>
@@ -304,6 +315,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task AdminAnalyticsEndpoint_GetUsers_ReturnsUserAnalytics()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-t_-g-e-t", "Executed: AdminAnalyticsEndpoint_GetUsers_ReturnsUserAnalytics");
             // Arrange
             var endpoint = $"{AdminApiBaseUrl}/analytics/users";
 
@@ -323,6 +335,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task AdminAnalyticsEndpoint_GetWaste_ReturnsWasteAnalytics()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-t_-g-e-t", "Executed: AdminAnalyticsEndpoint_GetWaste_ReturnsWasteAnalytics");
             // Arrange
             var endpoint = $"{AdminApiBaseUrl}/analytics/waste";
 
@@ -342,6 +355,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task AdminAnalyticsEndpoint_GetSummary_ReturnsComprehensiveSummary()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-t_-g-e-t", "Executed: AdminAnalyticsEndpoint_GetSummary_ReturnsComprehensiveSummary");
             // Arrange
             var endpoint = $"{AdminApiBaseUrl}/analytics/summary";
 
@@ -364,6 +378,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task AdminEndpoint_WithCitizenToken_ReturnsForbidden()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-e-n-d-p-o-i-n-t_-w-i-t-h-c-i-t-i-z-e-n-t", "Executed: AdminEndpoint_WithCitizenToken_ReturnsForbidden");
             // Arrange
             var endpoint = $"{AdminApiBaseUrl}/users";
             var citizenToken = "{{citizenToken}}";
@@ -382,6 +397,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task AdminEndpoint_WithoutToken_ReturnsUnauthorized()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-e-n-d-p-o-i-n-t_-w-i-t-h-o-u-t-t-o-k-e-n", "Executed: AdminEndpoint_WithoutToken_ReturnsUnauthorized");
             // Arrange
             var endpoint = $"{AdminApiBaseUrl}/users";
 
@@ -399,6 +415,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task AdminUsersEndpoint_WithInvalidUserId_ReturnsNotFound()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-u-s-e-r-s-e-n-d-p-o-i-n-t_-w-i-t-h-i-n-v", "Executed: AdminUsersEndpoint_WithInvalidUserId_ReturnsNotFound");
             // Arrange
             var invalidUserId = "invalid-non-existent-id";
             var endpoint = $"{AdminApiBaseUrl}/users/{invalidUserId}/toggle-status";
@@ -417,6 +434,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task AdminUsersEndpoint_CreateWithMissingFields_ReturnsBadRequest()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-u-s-e-r-s-e-n-d-p-o-i-n-t_-c-r-e-a-t-e-w", "Executed: AdminUsersEndpoint_CreateWithMissingFields_ReturnsBadRequest");
             // Arrange
             var endpoint = $"{AdminApiBaseUrl}/users";
             var invalidPayload = new
@@ -444,6 +462,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task AdminEndpoints_CreateAndRetrieve_DataConsistencyVerified()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-e-n-d-p-o-i-n-t-s_-c-r-e-a-t-e-a-n-d-r-e", "Executed: AdminEndpoints_CreateAndRetrieve_DataConsistencyVerified");
             // Arrange
             var createEndpoint = $"{AdminApiBaseUrl}/users";
             var newUserEmail = $"test.{System.Guid.NewGuid()}@example.com";
@@ -477,6 +496,7 @@ namespace WastePlatform.Tests.Application.Admin
         [Fact]
         public async Task AdminEnterprisesEndpoint_LargeDataset_RespondsWithinTimeLimit()
         {
+        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-e-n-t-e-r-p-r-i-s-e-s-e-n-d-p-o-i-n-t_-l", "Executed: AdminEnterprisesEndpoint_LargeDataset_RespondsWithinTimeLimit");
             // Arrange
             var endpoint = $"{AdminApiBaseUrl}/enterprises";
             var pageSize = 50; // Large page size

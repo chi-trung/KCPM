@@ -1,4 +1,4 @@
-using Allure.Xunit.Attributes;
+﻿using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +18,7 @@ namespace WastePlatform.Tests.Controllers;
 [Allure.Net.Commons.Attributes.AllureLabel("suite", "Controllers")]
 [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "AdminEnterpriseControllerTests")]
 [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Controllers")]
-[AllureOwner("Chi Trung")]
+[AllureOwner("Nguyễn Chí Trung")]
 [AllureSeverity(SeverityLevel.normal)]
 [Allure.Net.Commons.Attributes.AllureTag("api")]
 [Allure.Net.Commons.Attributes.AllureTag("admin")]
@@ -54,6 +54,7 @@ public class AdminEnterpriseControllerTests
     [AllureDescription("GetEnterprises passes filter params to query.")]
     public async Task GetEnterprises_WithFilters_ShouldPassParams()
     {
+        AllureAttachmentHelper.AttachText("test-g-e-t-e-n-t-e-r-p-r-i-s-e-s_-w-i-t-h-f-i-l-t-e-r-s", "Executed: GetEnterprises_WithFilters_ShouldPassParams");
         _mediatorMock
             .Setup(m => m.Send(It.Is<GetEnterprisesQuery>(q =>
                 q.Page == 2 && q.PageSize == 5 && q.IsVerified == true && q.SearchTerm == "green"), default))
@@ -71,6 +72,7 @@ public class AdminEnterpriseControllerTests
     [AllureDescription("GetEnterprises returns 500 on exception.")]
     public async Task GetEnterprises_WhenException_ShouldReturn500()
     {
+        AllureAttachmentHelper.AttachText("test-g-e-t-e-n-t-e-r-p-r-i-s-e-s_-w-h-e-n-e-x-c-e-p-t-i", "Executed: GetEnterprises_WhenException_ShouldReturn500");
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetEnterprisesQuery>(), default))
             .ThrowsAsync(new Exception("DB error"));
@@ -91,6 +93,7 @@ public class AdminEnterpriseControllerTests
     [AllureDescription("GetEnterpriseDetail returns OK when enterprise exists.")]
     public async Task GetEnterpriseDetail_WhenExists_ShouldReturnOk()
     {
+        AllureAttachmentHelper.AttachText("test-g-e-t-e-n-t-e-r-p-r-i-s-e-d-e-t-a-i-l_-w-h-e-n-e-x", "Executed: GetEnterpriseDetail_WhenExists_ShouldReturnOk");
         var enterpriseId = Guid.NewGuid();
         _mediatorMock
             .Setup(m => m.Send(It.Is<GetEnterpriseDetailQuery>(q => q.EnterpriseId == enterpriseId), default))
@@ -112,6 +115,7 @@ public class AdminEnterpriseControllerTests
     [AllureDescription("GetEnterpriseDetail returns NotFound when enterprise doesn't exist.")]
     public async Task GetEnterpriseDetail_WhenNotFound_ShouldReturnNotFound()
     {
+        AllureAttachmentHelper.AttachText("test-g-e-t-e-n-t-e-r-p-r-i-s-e-d-e-t-a-i-l_-w-h-e-n-n-o", "Executed: GetEnterpriseDetail_WhenNotFound_ShouldReturnNotFound");
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetEnterpriseDetailQuery>(), default))
             .ReturnsAsync((EnterpriseDetailDto?)null);
@@ -131,6 +135,7 @@ public class AdminEnterpriseControllerTests
     [AllureDescription("VerifyEnterprise returns OK when successful.")]
     public async Task VerifyEnterprise_WhenSuccess_ShouldReturnOk()
     {
+        AllureAttachmentHelper.AttachText("test-v-e-r-i-f-y-e-n-t-e-r-p-r-i-s-e_-w-h-e-n-s-u-c-c-e", "Executed: VerifyEnterprise_WhenSuccess_ShouldReturnOk");
         var enterpriseId = Guid.NewGuid();
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<VerifyEnterpriseCommand>(), default))
@@ -152,6 +157,7 @@ public class AdminEnterpriseControllerTests
     [AllureDescription("VerifyEnterprise returns NotFound when enterprise doesn't exist.")]
     public async Task VerifyEnterprise_WhenNotFound_ShouldReturnNotFound()
     {
+        AllureAttachmentHelper.AttachText("test-v-e-r-i-f-y-e-n-t-e-r-p-r-i-s-e_-w-h-e-n-n-o-t-f-o", "Executed: VerifyEnterprise_WhenNotFound_ShouldReturnNotFound");
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<VerifyEnterpriseCommand>(), default))
             .ReturnsAsync(new VerifyEnterpriseResult { Success = false, Message = "Not found" });
@@ -171,6 +177,7 @@ public class AdminEnterpriseControllerTests
     [AllureDescription("RejectEnterprise returns BadRequest when reason is empty.")]
     public async Task RejectEnterprise_EmptyReason_ShouldReturnBadRequest()
     {
+        AllureAttachmentHelper.AttachText("test-r-e-j-e-c-t-e-n-t-e-r-p-r-i-s-e_-e-m-p-t-y-r-e-a-s", "Executed: RejectEnterprise_EmptyReason_ShouldReturnBadRequest");
         var controller = new AdminEnterpriseController(_mediatorMock.Object);
         var request = new RejectEnterpriseRequest { ReasonForRejection = "  " };
 
@@ -183,6 +190,7 @@ public class AdminEnterpriseControllerTests
     [AllureDescription("RejectEnterprise returns OK when successful.")]
     public async Task RejectEnterprise_WithValidData_ShouldReturnOk()
     {
+        AllureAttachmentHelper.AttachText("test-r-e-j-e-c-t-e-n-t-e-r-p-r-i-s-e_-w-i-t-h-v-a-l-i-d", "Executed: RejectEnterprise_WithValidData_ShouldReturnOk");
         var enterpriseId = Guid.NewGuid();
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<RejectEnterpriseCommand>(), default))
@@ -205,6 +213,7 @@ public class AdminEnterpriseControllerTests
     [AllureDescription("RejectEnterprise returns NotFound when enterprise doesn't exist.")]
     public async Task RejectEnterprise_WhenNotFound_ShouldReturnNotFound()
     {
+        AllureAttachmentHelper.AttachText("test-r-e-j-e-c-t-e-n-t-e-r-p-r-i-s-e_-w-h-e-n-n-o-t-f-o", "Executed: RejectEnterprise_WhenNotFound_ShouldReturnNotFound");
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<RejectEnterpriseCommand>(), default))
             .ReturnsAsync(new RejectEnterpriseResult { Success = false, Message = "Not found" });

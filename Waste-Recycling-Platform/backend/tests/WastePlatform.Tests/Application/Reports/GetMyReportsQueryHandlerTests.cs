@@ -1,4 +1,4 @@
-using Allure.Xunit.Attributes;
+﻿using Allure.Xunit.Attributes;
 using FluentAssertions;
 using Moq;
 using WastePlatform.Application.Reports.Queries;
@@ -42,6 +42,7 @@ public class GetMyReportsQueryHandlerTests
     [Fact]
     public async Task Handle_WithValidUserId_ShouldReturnOnlyUserReports()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-v-a-l-i-d-u-s-e-r-i-d_-s-h-o-", "Executed: Handle_WithValidUserId_ShouldReturnOnlyUserReports");
         // Arrange
         var userId = Guid.NewGuid();
         var otherUserId = Guid.NewGuid();
@@ -73,6 +74,7 @@ public class GetMyReportsQueryHandlerTests
     [Fact]
     public async Task Handle_WithEmptyResult_ShouldReturnEmptyList()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-e-m-p-t-y-r-e-s-u-l-t_-s-h-o-", "Executed: Handle_WithEmptyResult_ShouldReturnEmptyList");
         // Arrange - User has no reports
         var userId = Guid.NewGuid();
 
@@ -98,6 +100,7 @@ public class GetMyReportsQueryHandlerTests
     [Fact]
     public async Task Handle_WithCustomPagination_ShouldApplyPagination()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-c-u-s-t-o-m-p-a-g-i-n-a-t-i-o", "Executed: Handle_WithCustomPagination_ShouldApplyPagination");
         // Arrange
         var userId = Guid.NewGuid();
         var reports = new List<WasteReport> { CreateReport(userId, ReportStatus.Pending) };
@@ -129,6 +132,7 @@ public class GetMyReportsQueryHandlerTests
     [Fact]
     public async Task Handle_ShouldMapReportToReportListDto()
     {
+        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-s-h-o-u-l-d-m-a-p-r-e-p-o-r-t-t-o-r-e", "Executed: Handle_ShouldMapReportToReportListDto");
         // Arrange
         var userId = Guid.NewGuid();
         var citizen = User.Create("test@test.com", "password123", "Test Citizen", UserRole.Citizen, "0901234567");
