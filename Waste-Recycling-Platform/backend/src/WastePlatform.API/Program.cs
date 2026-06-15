@@ -48,7 +48,15 @@ if (connectionString.StartsWith("mysql://", StringComparison.OrdinalIgnoreCase))
 }
 
 builder.Services.AddDbContext<WastePlatformDbContext>(options =>
-    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 30)))
+    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 30)),
+        mysqlOptions =>
+        {
+            mysqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(10),
+                errorNumbersToAdd: null);
+            mysqlOptions.CommandTimeout(60);
+        })
 );
 
 // ── JWT Authentication ───────────────────────────────────────────────
