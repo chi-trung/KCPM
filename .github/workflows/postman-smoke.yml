@@ -142,6 +142,8 @@ jobs:
         continue-on-error: true
         run: |
           $base = "http://localhost:8080"
+          # Seed password from Program.cs (SEED_PASSWORD env or default)
+          $seedPwd = "S33dP@ss!2026"
 
           function Get-Token($email, $password) {
             try {
@@ -155,15 +157,14 @@ jobs:
             }
           }
 
-          # Login với các tài khoản seeded trong DB
-          $citizenToken    = Get-Token "citizen@test.waste"    "Citizen@123"
-          $enterpriseToken = Get-Token "enterprise@test.waste" "Enterprise@123"
-          $adminToken      = Get-Token "admin@test.waste"      "Admin@123"
-          $collectorToken  = Get-Token "collector@test.waste"  "Collector@123"
+          # Login with the actual seeded accounts from Program.cs
+          $citizenToken    = Get-Token "nguyenvana@gmail.com"    $seedPwd
+          $enterpriseToken = Get-Token "greenlife@gmail.com"     $seedPwd
+          $adminToken      = Get-Token "admin@gmail.com"         $seedPwd
+          $collectorToken  = Get-Token "collector1@gmail.com"    $seedPwd
 
-          # Fallback — thử seed accounts nếu login fail
           if (-not $citizenToken) {
-            Write-Host "::warning::Citizen token empty — tokens will be empty strings in Newman env"
+            Write-Host "::warning::Citizen token empty — the Postman collection's Auth folder will register + login fresh accounts"
           }
 
           # Export để dùng ở bước tiếp

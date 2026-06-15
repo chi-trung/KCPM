@@ -14,6 +14,7 @@ NOTE: Only parentSuite and suite labels are overwritten.
 """
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -60,10 +61,20 @@ def classify(data: dict) -> tuple[str, str]:
         return PARENT_E2E, SUITE_E2E
 
     # --- Postman/Newman signals ---
-    postman_keywords = ["postman", "newman", "pm.test", "api test", "smoke"]
+    postman_keywords = [
+        "postman", "newman", "pm.test", "api test", "smoke",
+        "wasteplatform api",                              # Collection name from --collection-as-parent-suite
+        "waste platform",                                 # Variant
+        "professional qa suite",                          # Collection subtitle
+    ]
     for kw in postman_keywords:
         if kw in search_space:
             return PARENT_API, SUITE_API
+
+    # Detect Newman-generated files by folder naming pattern: "00 - Smoke", "01 - Auth", etc.
+    folder_pattern = re.compile(r'\b\d{2}\s*-\s*')
+    if folder_pattern.search(suite_val) or folder_pattern.search(parent_val):
+        return PARENT_API, SUITE_API
 
     # --- Default → Backend / xUnit ---
     return PARENT_BACKEND, SUITE_BACKEND

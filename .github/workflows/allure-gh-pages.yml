@@ -108,6 +108,8 @@ jobs:
         shell: bash
         run: |
           BASE="http://localhost:8080"
+          # Seed password from Program.cs (SEED_PASSWORD env or default)
+          SEED_PWD="S33dP@ss!2026"
 
           get_token() {
             local email="$1"
@@ -119,10 +121,11 @@ jobs:
             echo "$resp" | python3 -c "import sys,json; print(json.load(sys.stdin).get('token',''))" 2>/dev/null || echo ""
           }
 
-          CITIZEN_TOKEN=$(get_token "citizen@test.waste" "Citizen@123")
-          ENTERPRISE_TOKEN=$(get_token "enterprise@test.waste" "Enterprise@123")
-          ADMIN_TOKEN=$(get_token "admin@test.waste" "Admin@123")
-          COLLECTOR_TOKEN=$(get_token "collector@test.waste" "Collector@123")
+          # Use the actual seeded accounts from Program.cs
+          CITIZEN_TOKEN=$(get_token "nguyenvana@gmail.com" "$SEED_PWD")
+          ENTERPRISE_TOKEN=$(get_token "greenlife@gmail.com" "$SEED_PWD")
+          ADMIN_TOKEN=$(get_token "admin@gmail.com" "$SEED_PWD")
+          COLLECTOR_TOKEN=$(get_token "collector1@gmail.com" "$SEED_PWD")
 
           echo "citizenToken=$CITIZEN_TOKEN" >> $GITHUB_OUTPUT
           echo "enterpriseToken=$ENTERPRISE_TOKEN" >> $GITHUB_OUTPUT
@@ -146,8 +149,9 @@ jobs:
             --env-var "adminToken=${{ steps.prelogin.outputs.adminToken }}" \
             --env-var "collectorToken=${{ steps.prelogin.outputs.collectorToken }}" \
             --env-var "managementToken=${{ steps.prelogin.outputs.adminToken }}" \
-            -r allure \
-            --reporter-allure-export allure-results
+            -r cli,allure \
+            --reporter-allure-export allure-results \
+            --reporter-allure-collection-as-parent-suite
 
       - name: Checkout gh-pages history
         if: always()
