@@ -1,0 +1,15 @@
+{
+  "Id": "27d4a80f-8291-43c9-949e-316322a2a262",
+  "CitizenId": "816ccb17-c70e-4e3e-8eb7-ebc6ac5158da",
+  "Type": 5,
+  "Channel": 0,
+  "Status": 0,
+  "Title": "Báo cáo bị từ chối",
+  "Message": "Báo cáo #fe12c6e2 không được chấp nhận. Lý do: Thiếu ảnh rõ ràng",
+  "ActionUrl": "/citizen/reports/fe12c6e2-5e5b-4a05-a1db-52ab55ebdc73",
+  "RelatedEntityId": "fe12c6e2-5e5b-4a05-a1db-52ab55ebdc73",
+  "RelatedEntityType": "Report",
+  "CreatedAt": "2026-06-15T15:22:55.513263Z",
+  "ReadAt": null,
+  "Citizen": null
+}

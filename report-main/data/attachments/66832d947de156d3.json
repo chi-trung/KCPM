@@ -1,0 +1,23 @@
+{
+  "message": "Complaints retrieved successfully",
+  "data": [
+    {
+      "Id": "b7170c79-29d6-4be3-aeaa-bc13c00c0eb4",
+      "CitizenName": null,
+      "Content": "Test complaint 1",
+      "Status": 0,
+      "CreatedAt": "0001-01-01T00:00:00",
+      "HasReport": false,
+      "EnterpriseResponse": null,
+      "EnterpriseRespondedAt": null,
+      "EscalationReason": null,
+      "AdminResponse": null
+    }
+  ],
+  "pagination": {
+    "total": 1,
+    "totalPages": 1,
+    "page": 1,
+    "pageSize": 10
+  }
+}
