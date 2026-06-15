@@ -1,4 +1,4 @@
-# Normalize line endings for text files
+﻿# Normalize line endings for text files
 * text=auto
 
 # Keep GitHub workflows and docs LF to reduce merge noise
@@ -10,3 +10,4 @@
 *.ps1 text eol=crlf
 *.bat text eol=crlf
 *.cmd text eol=crlf
+*.sh text eol=lf
