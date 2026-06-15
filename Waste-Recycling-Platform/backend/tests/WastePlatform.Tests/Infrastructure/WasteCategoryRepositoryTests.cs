@@ -6,6 +6,8 @@ using WastePlatform.Infrastructure.Persistence;
 using WastePlatform.Infrastructure.Persistence.Repositories;
 using Xunit;
 
+using WastePlatform.Tests.TestSupport;
+
 namespace WastePlatform.Tests.Infrastructure;
 
 [AllureEpic("KIEM-12: Waste Category Update Test Data And Report")]

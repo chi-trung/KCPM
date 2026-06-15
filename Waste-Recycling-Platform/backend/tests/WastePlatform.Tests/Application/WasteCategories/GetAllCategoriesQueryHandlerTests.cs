@@ -6,6 +6,8 @@ using WastePlatform.Application.WasteCategories.Queries;
 using WastePlatform.Domain.Entities;
 using Xunit;
 
+using WastePlatform.Tests.TestSupport;
+
 namespace WastePlatform.Tests.Application.WasteCategories;
 
 [AllureEpic("KIEM-12: Waste Category Update Test Data And Report")]

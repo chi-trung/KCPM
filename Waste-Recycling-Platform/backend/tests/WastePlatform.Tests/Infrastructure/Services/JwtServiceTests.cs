@@ -7,6 +7,8 @@ using WastePlatform.Domain.Enums;
 using WastePlatform.Infrastructure.Services;
 using Xunit;
 
+using WastePlatform.Tests.TestSupport;
+
 namespace WastePlatform.Tests.Infrastructure.Services;
 
 [AllureEpic("KIEM-4: Auth Module Testing")]

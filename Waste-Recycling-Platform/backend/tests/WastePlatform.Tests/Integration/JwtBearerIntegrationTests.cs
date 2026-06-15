@@ -19,6 +19,8 @@ using MediatR;
 using WastePlatform.Application.Admin.Enterprises.DTOs;
 using WastePlatform.Application.Admin.Enterprises.Queries;
 
+using WastePlatform.Tests.TestSupport;
+
 namespace WastePlatform.Tests.Integration
 {
     [AllureEpic("KIEM-21: Security & Role-based Access Tests")]

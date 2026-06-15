@@ -7,6 +7,8 @@ using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
 using Xunit;
 
+using WastePlatform.Tests.TestSupport;
+
 namespace WastePlatform.Tests.Application.Reports;
 
 /// <summary>

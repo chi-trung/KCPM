@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using WastePlatform.Tests.TestSupport;
+
 namespace WastePlatform.Tests.Application.Analytics
 {
     /// <summary>

@@ -6,6 +6,8 @@ using WastePlatform.Application.Admin.Users;
 using WastePlatform.Application.Admin.Enterprises;
 using WastePlatform.Application.Admin.Analytics;
 
+using WastePlatform.Tests.TestSupport;
+
 namespace WastePlatform.Tests.Application.Admin
 {
     /// <summary>

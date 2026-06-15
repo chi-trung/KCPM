@@ -6,6 +6,8 @@ using WastePlatform.Application.Admin.Analytics;
 using WastePlatform.Application.Public.Analytics;
 using WastePlatform.Application.Enterprise.Analytics;
 
+using WastePlatform.Tests.TestSupport;
+
 namespace WastePlatform.Tests.Application.Analytics
 {
     /// <summary>
