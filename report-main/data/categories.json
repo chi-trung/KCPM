@@ -1,5 +1,5 @@
 {
-  "uid": "e16f29614c60412bb888a962b23ee5d5",
+  "uid": "8e11d7950ffb4d1d8455865a9d62bf3e",
   "name": "categories",
   "children": [
     {
@@ -9,9 +9,9 @@
           "name": "Text \"Tạo Báo Cáo\" was not found on page after 15 sec.",
           "children": [
             {
-              "name": "#3 Create-report form shows validation error when submitted empty Frontend Role Validation",
-              "uid": "6852a90cb7a64666",
-              "parentUid": "d406a28b01714d2a",
+              "name": "#2 Citizen can navigate to create-report page and see the form Frontend Role Report Creation",
+              "uid": "1b5ef92e05a6454d",
+              "parentUid": "90f54d23e8954412",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -25,8 +25,8 @@
             },
             {
               "name": "#4 Citizen reports list page is accessible after login Frontend Role History",
-              "uid": "c4fba48153494d0c",
-              "parentUid": "d406a28b01714d2a",
+              "uid": "7f4e278690ba41ef",
+              "parentUid": "90f54d23e8954412",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -39,9 +39,9 @@
               "tags": []
             },
             {
-              "name": "#2 Citizen can navigate to create-report page and see the form Frontend Role Report Creation",
-              "uid": "fa25240527f54f33",
-              "parentUid": "d406a28b01714d2a",
+              "name": "#3 Create-report form shows validation error when submitted empty Frontend Role Validation",
+              "uid": "827fabc5a4fe4f76",
+              "parentUid": "90f54d23e8954412",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -54,51 +54,15 @@
               "tags": []
             }
           ],
-          "uid": "d406a28b01714d2a"
-        },
-        {
-          "name": "Text \"Báo Cáo\" was not found on page after 15 sec.",
-          "children": [
-            {
-              "name": "#1 Complaint form shows error when content is empty (DT-05 Error Guessing) Frontend Role Creation",
-              "uid": "bd9d30eed1de45ba",
-              "parentUid": "e8077919b1224a42",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [],
-              "tags": []
-            },
-            {
-              "name": "#2 Citizen can view complaint list page Frontend Role List",
-              "uid": "3aa3fe80d60c4949",
-              "parentUid": "e8077919b1224a42",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [],
-              "tags": []
-            }
-          ],
-          "uid": "e8077919b1224a42"
+          "uid": "90f54d23e8954412"
         },
         {
           "name": "Text \"Đăng ký thành công\" was not found on page after 10 sec.",
           "children": [
             {
               "name": "#1 Citizen can register a new account and reach citizen dashboard Frontend Role",
-              "uid": "d5777eff693743f9",
-              "parentUid": "beff4f517a6d4049",
+              "uid": "49036382acba40b4",
+              "parentUid": "bae53ebe80764a33",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -111,15 +75,15 @@
               "tags": []
             }
           ],
-          "uid": "beff4f517a6d4049"
+          "uid": "bae53ebe80764a33"
         },
         {
-          "name": "Text \"Email hoặc mật khẩu không đúng\" was not found on page after 10 sec.",
+          "name": "Text \"Báo Cáo\" was not found on page after 15 sec.",
           "children": [
             {
-              "name": "#4 Collector login fails with wrong password (negative test – error guessing) Frontend Role",
-              "uid": "65c97b0576c54793",
-              "parentUid": "d59069eb1ee54ee1",
+              "name": "#2 Citizen can view complaint list page Frontend Role List",
+              "uid": "ffa5599e8d8048e5",
+              "parentUid": "770a158461e74c25",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -132,9 +96,9 @@
               "tags": []
             },
             {
-              "name": "#4 Enterprise login fails with invalid credentials (negative test) Frontend Role",
-              "uid": "edb1b90c751c472b",
-              "parentUid": "d59069eb1ee54ee1",
+              "name": "#1 Complaint form shows error when content is empty (DT-05 Error Guessing) Frontend Role Creation",
+              "uid": "ad6d863c23914165",
+              "parentUid": "770a158461e74c25",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -147,10 +111,46 @@
               "tags": []
             }
           ],
-          "uid": "d59069eb1ee54ee1"
+          "uid": "770a158461e74c25"
+        },
+        {
+          "name": "Text \"Email hoặc mật khẩu không đúng\" was not found on page after 10 sec.",
+          "children": [
+            {
+              "name": "#4 Enterprise login fails with invalid credentials (negative test) Frontend Role",
+              "uid": "28798a6205b648ec",
+              "parentUid": "ba4664fb25754b32",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [],
+              "tags": []
+            },
+            {
+              "name": "#4 Collector login fails with wrong password (negative test – error guessing) Frontend Role",
+              "uid": "2da82f3bd0dc45cf",
+              "parentUid": "ba4664fb25754b32",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [],
+              "tags": []
+            }
+          ],
+          "uid": "ba4664fb25754b32"
         }
       ],
-      "uid": "65a6b27627a548d1"
+      "uid": "9f0b3bdc109f4ed5"
     },
     {
       "name": "Assertion Failure",
@@ -160,8 +160,8 @@
           "children": [
             {
               "name": "#1 Home page and auth entry points render correctly Frontend Pages & Auth Routes",
-              "uid": "b629117f3ae34d7e",
-              "parentUid": "e9eece960b414ca7",
+              "uid": "34882003e1964c1d",
+              "parentUid": "93bff7581fc04be9",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -174,10 +174,10 @@
               "tags": []
             }
           ],
-          "uid": "e9eece960b414ca7"
+          "uid": "93bff7581fc04be9"
         }
       ],
-      "uid": "481e756f38e2414b"
+      "uid": "0f73bf03266047ed"
     }
   ]
 }
