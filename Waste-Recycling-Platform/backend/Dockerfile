@@ -11,7 +11,7 @@ COPY src/WastePlatform.API/WastePlatform.API.csproj src/WastePlatform.API/
 RUN --mount=type=cache,target=/root/.nuget/packages \
     dotnet restore src/WastePlatform.API/WastePlatform.API.csproj
 
-# Copy all source and build
+# Copy all source and build (build stage is discarded in multi-stage; use .dockerignore to exclude secrets)
 COPY . .
 WORKDIR /src/src/WastePlatform.API
 RUN --mount=type=cache,target=/root/.nuget/packages \
@@ -37,5 +37,8 @@ ENV DOTNET_GCConserveMemory=9
 ENV DOTNET_ThreadPool_UnfairSemaphoreSpinLimit=0
 # Disable tiered compilation to reduce JIT memory
 ENV DOTNET_TieredCompilation=0
+
+# Run as non-root user for security
+USER $APP_UID
 
 ENTRYPOINT ["dotnet", "WastePlatform.API.dll"]
