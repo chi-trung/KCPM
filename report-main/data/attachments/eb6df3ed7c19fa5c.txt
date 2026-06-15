@@ -1,0 +1,8 @@
+pm.test('status code is 200', function () {
+  pm.response.to.have.status(200);
+});
+pm.test('roles array exists', function () {
+  const body = pm.response.json();
+  pm.expect(body.roles).to.be.an('array');
+  pm.expect(body.roles.length).to.be.greaterThan(0);
+});
