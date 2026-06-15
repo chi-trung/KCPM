@@ -1,0 +1,10 @@
+{
+  "citizenId": "0c8c2a6a-b2ed-4122-a38f-259f3a193b4e",
+  "reportId": "6406441b-f67c-4728-84f3-08d3ee1b2468",
+  "taskId": "90f6ccbe-e062-4d4f-98ae-afa6a3a4ddd7",
+  "enterpriseId": "246293cc-66a4-4fed-8003-9b109db467d8",
+  "wasteCategoryId": 1,
+  "idempotencyKey": "task_90f6ccbe-e062-4d4f-98ae-afa6a3a4ddd7_6406441b-f67c-4728-84f3-08d3ee1b2468",
+  "Id": "ac2be87f-4095-4d75-af36-e28d72dfc5db",
+  "Points": 22
+}
