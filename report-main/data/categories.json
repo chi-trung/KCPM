@@ -1,5 +1,5 @@
 {
-  "uid": "be3c50448c004a2eb0f046abb805fe09",
+  "uid": "796fcb371f7349c783c057094a1f8445",
   "name": "categories",
   "children": [
     {
@@ -10,8 +10,8 @@
           "children": [
             {
               "name": "#4 Collector login fails with wrong password (negative test – error guessing) Frontend Role",
-              "uid": "87f06d9ef14247fb",
-              "parentUid": "25b051355f3f4986",
+              "uid": "42ea0267b7a14d9c",
+              "parentUid": "3c777179fe594f58",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -25,8 +25,8 @@
             },
             {
               "name": "#4 Enterprise login fails with invalid credentials (negative test) Frontend Role",
-              "uid": "ad6ff4b50eb84191",
-              "parentUid": "25b051355f3f4986",
+              "uid": "5f5d41fdae6847ca",
+              "parentUid": "3c777179fe594f58",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -39,15 +39,87 @@
               "tags": []
             }
           ],
-          "uid": "25b051355f3f4986"
+          "uid": "3c777179fe594f58"
+        },
+        {
+          "name": "Text \"Đăng ký thành công\" was not found on page after 10 sec.",
+          "children": [
+            {
+              "name": "#1 Citizen can register a new account and reach citizen dashboard Frontend Role",
+              "uid": "a537e26e0d3b45af",
+              "parentUid": "a85b5058dd25468a",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [],
+              "tags": []
+            }
+          ],
+          "uid": "a85b5058dd25468a"
+        },
+        {
+          "name": "Text \"Báo Cáo\" was not found on page after 15 sec.",
+          "children": [
+            {
+              "name": "#1 Complaint form shows error when content is empty (DT-05 Error Guessing) Frontend Role Creation",
+              "uid": "5478aaa088e24eb8",
+              "parentUid": "e8d7b2262e4c4a45",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [],
+              "tags": []
+            },
+            {
+              "name": "#2 Citizen can view complaint list page Frontend Role List",
+              "uid": "8688301a26a34b83",
+              "parentUid": "e8d7b2262e4c4a45",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [],
+              "tags": []
+            }
+          ],
+          "uid": "e8d7b2262e4c4a45"
         },
         {
           "name": "Text \"Tạo Báo Cáo\" was not found on page after 15 sec.",
           "children": [
             {
+              "name": "#4 Citizen reports list page is accessible after login Frontend Role History",
+              "uid": "f07808b3413e41a6",
+              "parentUid": "242afc804a9c4527",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [],
+              "tags": []
+            },
+            {
               "name": "#3 Create-report form shows validation error when submitted empty Frontend Role Validation",
-              "uid": "4837068d5522462d",
-              "parentUid": "4db85d0e118647d0",
+              "uid": "ca57ece2fe5941a9",
+              "parentUid": "242afc804a9c4527",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -61,23 +133,8 @@
             },
             {
               "name": "#2 Citizen can navigate to create-report page and see the form Frontend Role Report Creation",
-              "uid": "e8d65f6018754dc9",
-              "parentUid": "4db85d0e118647d0",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [],
-              "tags": []
-            },
-            {
-              "name": "#4 Citizen reports list page is accessible after login Frontend Role History",
-              "uid": "471874414be84760",
-              "parentUid": "4db85d0e118647d0",
+              "uid": "841cdd35b2944fc5",
+              "parentUid": "242afc804a9c4527",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -90,67 +147,10 @@
               "tags": []
             }
           ],
-          "uid": "4db85d0e118647d0"
-        },
-        {
-          "name": "Text \"Đăng ký thành công\" was not found on page after 10 sec.",
-          "children": [
-            {
-              "name": "#1 Citizen can register a new account and reach citizen dashboard Frontend Role",
-              "uid": "ce9682e47fea4657",
-              "parentUid": "c47fc04a85444f14",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [],
-              "tags": []
-            }
-          ],
-          "uid": "c47fc04a85444f14"
-        },
-        {
-          "name": "Text \"Báo Cáo\" was not found on page after 15 sec.",
-          "children": [
-            {
-              "name": "#2 Citizen can view complaint list page Frontend Role List",
-              "uid": "c80f57add497431d",
-              "parentUid": "249490f6bc3f490e",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [],
-              "tags": []
-            },
-            {
-              "name": "#1 Complaint form shows error when content is empty (DT-05 Error Guessing) Frontend Role Creation",
-              "uid": "988b5a0170aa4e08",
-              "parentUid": "249490f6bc3f490e",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [],
-              "tags": []
-            }
-          ],
-          "uid": "249490f6bc3f490e"
+          "uid": "242afc804a9c4527"
         }
       ],
-      "uid": "5d99cabd43974d69"
+      "uid": "db091c5fb5904a1f"
     },
     {
       "name": "Assertion Failure",
@@ -160,8 +160,8 @@
           "children": [
             {
               "name": "#1 Home page and auth entry points render correctly Frontend Pages & Auth Routes",
-              "uid": "0af1e025108b4c80",
-              "parentUid": "01e79cbd36d64cab",
+              "uid": "da3f6c5e07c64cdc",
+              "parentUid": "f7449d183ea8478f",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -174,10 +174,10 @@
               "tags": []
             }
           ],
-          "uid": "01e79cbd36d64cab"
+          "uid": "f7449d183ea8478f"
         }
       ],
-      "uid": "73e03b051b9143da"
+      "uid": "af70e16c91524023"
     }
   ]
 }
