@@ -136,6 +136,13 @@ jobs:
           JIRA_PROJECT_KEY: KIEM
           TEST_TYPE: e2e
           ALLURE_REPORT_URL: https://chi-trung.github.io/KCPM/report-main/
+          GITHUB_RUN_ID:    ${{ github.run_id }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          GITHUB_REF_NAME:  ${{ github.ref_name }}
+          GITHUB_SHA:       ${{ github.sha }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_WORKFLOW:  ${{ github.workflow }}
+          PR_TITLE:         ${{ github.event.pull_request.title || '' }}
         run: |
           # Parse allure-report summary JSON (generated report has widgets folder)
           SUMMARY_FILE="Waste-Recycling-Platform/frontend/allure-report/widgets/summary.json"

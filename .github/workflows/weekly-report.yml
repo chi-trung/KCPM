@@ -176,6 +176,7 @@ jobs:
           GITHUB_SHA:       ${{ github.sha }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_WORKFLOW:  ${{ github.workflow }}
+          PR_TITLE:         ${{ github.event.pull_request.title || '' }}
         run: |
           # Parse TRX
           TRX=$(find . -name "*.trx" -type f | head -1)

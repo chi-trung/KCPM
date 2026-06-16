@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 jira_log_test_execution.py
 --------------------------
@@ -12,6 +13,8 @@ Reads (env vars):
 
 import json
 import os
+import re
+import subprocess
 import sys
 import urllib.request
 import urllib.error
@@ -37,8 +40,11 @@ RUN_ID       = os.environ.get("GITHUB_RUN_ID", "0")
 RUN_NUMBER   = os.environ.get("GITHUB_RUN_NUMBER", "0")
 BRANCH       = os.environ.get("GITHUB_REF_NAME", "main")
 SHA          = os.environ.get("GITHUB_SHA", "")[:7]
+FULL_SHA     = os.environ.get("GITHUB_SHA", "")
 REPO         = os.environ.get("GITHUB_REPOSITORY", "chi-trung/KCPM")
 WORKFLOW     = os.environ.get("GITHUB_WORKFLOW", "CI")
+PR_TITLE     = os.environ.get("PR_TITLE", "")
+EPIC_KEY     = os.environ.get("JIRA_EPIC_KEY", "KIEM-3")  # Fallback epic for summary
 TEST_TYPE    = os.environ.get("TEST_TYPE", "all").lower()
 
 try:
@@ -93,65 +99,73 @@ TIMESTAMP    = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 #
 # Team leader (trungnc7062@ut.edu.vn) logs on behalf of all members via CI token.
 #
-# Mapping logic:
-#   backend (xUnit .NET) => all WRP-BE-TESTS issues with xUnit coverage
-#   postman (Newman API) => auth/security/API-level test issues
-#   e2e (CodeceptJS)     => frontend/browser test issues (Collector E2E)
-ISSUE_MAP = {
-    # xUnit backend tests — all WRP-BE-TESTS-001 through WRP-BE-TESTS-020
-    # + Sprint-2/3 task issues that are verified by backend test runs
-    "backend": [
-        # ── Original test module issues ──
-        "KIEM-4",   # Auth Module (Nguyễn Chí Trung)
-        "KIEM-5",   # Reports Module (Minh Phụng)
-        "KIEM-6",   # Notifications Module (Nguyễn Hoàng Phụng)
-        "KIEM-7",   # Complaints Module (Thanh Duy)
-        "KIEM-8",   # Admin Module (11A6_03_Đăng)
-        "KIEM-9",   # Analytics Module (11A6_03_Đăng)
-        "KIEM-10",  # Public Analytics (Thanh Duy)
-        "KIEM-12",  # WasteCategory Module (Nguyễn Hoàng Phụng)
-        "KIEM-13",  # Citizen Module (11A6_03_Đăng)
-        "KIEM-15",  # CollectorTask Module (Minh Phụng)
-        "KIEM-16",  # Enterprise Task Module (Nguyễn Chí Trung)
-        "KIEM-17",  # Enterprise Collectors & Reward Rules (Nguyễn Chí Trung)
-        "KIEM-18",  # CollectionTask / CollectionImage (Thanh Duy)
-        "KIEM-19",  # SignalR Real-time (Nguyễn Chí Trung)
-        "KIEM-20",  # File Uploads & Storage (Minh Phụng)
-        "KIEM-22",  # AuditLog & Error Path (Thanh Duy)
-        "KIEM-23",  # Search, Pagination & Filters (11A6_03_Đăng)
-        # ── Sprint-1 infrastructure ──
-        "KIEM-40",  # [Sprint-1] CI/CD Pipeline (9 workflows)
-        # ── Sprint-2 task issues (verified by same xUnit run) ──
-        "KIEM-45",  # [Sprint-2] Auth Tests (EP + Error Guessing)
-        "KIEM-46",  # [Sprint-2] Reports Tests (BVA + State Transition)
-        "KIEM-47",  # [Sprint-2] Notifications Tests
-        "KIEM-48",  # [Sprint-2] Complaints Tests (Decision Table)
-        "KIEM-49",  # [Sprint-2] Admin + Analytics Tests
-        "KIEM-51",  # [Sprint-2] WasteCategory + Security Tests
-        "KIEM-52",  # [Sprint-2] CollectorTask + File Uploads Tests
-        "KIEM-53",  # [Sprint-2] CollectionTask + Audit Tests
-        "KIEM-54",  # [Sprint-2] Citizen + Search/Pagination Tests
-        # ── Sprint-3 bug fix issues (verified by regression tests) ──
-        "KIEM-55",  # [Sprint-3] SonarCloud Quality Gate fix
-        "KIEM-56",  # [Sprint-3] Max 5 Images BVA fix
-    ],
-
-    # Postman API tests — auth, security, role-based access
-    "postman": [
-        "KIEM-4",   # Auth Module - login/register endpoints
-        "KIEM-21",  # Security & Role-based Access (Nguyễn Hoàng Phụng)
-        "KIEM-44",  # [Sprint-1] Postman Collection (Minh Phụng)
-    ],
-
-    # CodeceptJS E2E tests — Collector module browser tests
-    "e2e": [
-        "KIEM-14",  # Collector Module Testing (Nguyễn Chí Trung)
-        "KIEM-50",  # [Sprint-2] E2E Tests (19 scenarios)
-    ],
-
-    # Default fallback
-    "all": ["KIEM-5"],
+# Mapping logic (UPDATED 2026-06-16):
+#   1. Parse KIEM-<id> from branch name, commit message, PR title
+#   2. Comment ONLY on the relevant issue(s) + Epic summary
+#   3. Fallback to Epic KIEM-3 for scheduled/main runs without keys
+#
+# KNOWN_ISSUES: used for validation only (not for broadcast)
+KNOWN_ISSUES = {
+    # ── Original test module issues ──
+    "KIEM-4", "KIEM-5", "KIEM-6", "KIEM-7", "KIEM-8",
+    "KIEM-9", "KIEM-10", "KIEM-12", "KIEM-13", "KIEM-14",
+    "KIEM-15", "KIEM-16", "KIEM-17", "KIEM-18", "KIEM-19",
+    "KIEM-20", "KIEM-21", "KIEM-22", "KIEM-23",
+    # ── Sprint-1 infrastructure ──
+    "KIEM-40", "KIEM-44",
+    # ── Sprint-2 task issues ──
+    "KIEM-45", "KIEM-46", "KIEM-47", "KIEM-48", "KIEM-49",
+    "KIEM-50", "KIEM-51", "KIEM-52", "KIEM-53", "KIEM-54",
+    # ── Sprint-3 bug fix issues ──
+    "KIEM-55", "KIEM-56",
+    # ── Bug issues ──
+    "KIEM-26", "KIEM-27", "KIEM-28", "KIEM-29",
+    # ── Epic ──
+    "KIEM-3",
 }
+
+
+def extract_kiem_keys() -> list:
+    """Extract KIEM-<id> keys from branch name, commit message, and PR title.
+
+    Returns a deduplicated, sorted list of KIEM keys found.
+    Only returns keys that exist in KNOWN_ISSUES for safety.
+    """
+    sources = []
+    keys_found = set()
+
+    # Source 1: Branch name (e.g. KIEM-12-waste-category-tests)
+    if BRANCH and BRANCH != "main":
+        sources.append(("branch", BRANCH))
+
+    # Source 2: PR title (e.g. "KIEM-5: Reports Module Testing")
+    if PR_TITLE:
+        sources.append(("pr_title", PR_TITLE))
+
+    # Source 3: Latest commit message
+    try:
+        result = subprocess.run(
+            ["git", "log", "-1", "--format=%s", FULL_SHA or "HEAD"],
+            capture_output=True, text=True, timeout=10,
+            cwd=os.environ.get("GITHUB_WORKSPACE", ".")
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            sources.append(("commit", result.stdout.strip()))
+    except Exception as e:
+        _log(f"[jira] Could not read commit message: {e}")
+
+    # Parse KIEM-<number> from all sources
+    pattern = re.compile(r"KIEM-\d+")
+    for source_name, source_text in sources:
+        matches = pattern.findall(source_text)
+        for m in matches:
+            if m in KNOWN_ISSUES:
+                keys_found.add(m)
+                _log(f"[jira] Found {m} in {source_name}: {source_text[:80]}")
+            else:
+                _log(f"[jira] Ignoring unknown key {m} from {source_name}")
+
+    return sorted(keys_found)
 
 # ── helpers ───────────────────────────────────────────────────────────────────
 def _log(msg: str) -> None:
@@ -382,6 +396,8 @@ def main():
     _log(f"[jira] Test type   : {TEST_TYPE}")
     _log(f"[jira] Results     : {PASSED} passed / {FAILED} failed / {TOTAL} total ({pass_rate()})")
     _log(f"[jira] Status      : {status_label()}")
+    _log(f"[jira] Branch      : {BRANCH}")
+    _log(f"[jira] PR Title    : {PR_TITLE or '(none)'}")
     _log(f"[jira] Allure URL  : {ALLURE_URL}")
     _log(f"[jira] GitHub Run  : {GH_RUN_URL}")
     _log(f"[jira] Jira Base   : {JIRA_BASE}")
@@ -414,16 +430,27 @@ def main():
         sys.exit(0)   # Don't try to post if auth fails
     _log(f"[jira] Auth OK - logged in as: {me.get('emailAddress', me.get('displayName', 'unknown'))}")
 
-    issue_keys   = ISSUE_MAP.get(TEST_TYPE, ISSUE_MAP["all"])
+    # ── Smart key extraction (replaces hardcoded ISSUE_MAP broadcast) ──
+    extracted_keys = extract_kiem_keys()
     comment_body = build_comment_body()
-
     success_count = 0
-    for key in issue_keys:
-        if post_comment(key, comment_body):
-            success_count += 1
-            transition_issue_if_needed(key)
 
-    _log(f"[jira] Done. Posted to {success_count}/{len(issue_keys)} issues.")
+    if extracted_keys:
+        # Comment on specific issues found in branch/commit/PR
+        _log(f"[jira] Targeted mode: commenting on {len(extracted_keys)} issue(s): {', '.join(extracted_keys)}")
+        for key in extracted_keys:
+            if post_comment(key, comment_body):
+                success_count += 1
+                transition_issue_if_needed(key)
+    else:
+        # Fallback: scheduled runs or main-branch pushes without KIEM keys
+        _log(f"[jira] Fallback mode: no KIEM keys found in branch/commit/PR")
+        _log(f"[jira] Commenting on Epic {EPIC_KEY} only (sprint summary)")
+        if post_comment(EPIC_KEY, comment_body):
+            success_count += 1
+
+    total_targets = len(extracted_keys) if extracted_keys else 1
+    _log(f"[jira] Done. Posted to {success_count}/{total_targets} issue(s).")
     # Exit 0 always -- Jira logging should never break CI
     sys.exit(0)
 
