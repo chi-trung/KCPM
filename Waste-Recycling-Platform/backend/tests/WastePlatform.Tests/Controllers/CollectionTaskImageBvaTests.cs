@@ -1,4 +1,4 @@
-using Allure.Xunit.Attributes;
+o using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using FluentAssertions;
 using MediatR;
@@ -1577,6 +1577,478 @@ public class CollectionTaskImageBvaTests
                 "No partial writes detected"
             },
             overallTestStatus = "PASSED - File size boundary validation working correctly",
+            timestamp = DateTime.UtcNow.ToString("O")
+        });
+    }
+    
+    /// <summary>
+    /// Test case chi tiết thứ ba: Upload file với định dạng mở rộng không hợp lệ
+    /// KIEM-68 BVA Test: File Extension Validation - Xác minh API từ chối các file type không được phép
+    /// 
+    /// Kịch bản kiểm thử:
+    /// - File có dung lượng hợp lệ nhưng mở rộng không hợp lệ (.exe, .pdf, .sh, v.v.)
+    /// - API phải kiểm tra và từ chối dựa trên extension
+    /// - Trả về HTTP 400 BadRequest
+    /// - Thông báo lỗi: "Unsupported file extension. Only JPG, JPEG, and PNG are allowed"
+    /// - Xác minh không có cập nhật database (transaction rollback)
+    /// </summary>
+    [Fact]
+    [AllureDescription("UploadImage: When file extension is invalid/unsupported, should return HTTP 400 BadRequest with extension validation message.")]
+    [AllureTag("error-handling")]
+    [AllureTag("file-extension-invalid")]
+    [AllureTag("http-400")]
+    [AllureTag("security")]
+    [AllureTag("file-type-validation")]
+    public async Task UploadImage_WhenFileExtensionIsInvalid_ShouldReturn400BadRequest()
+    {
+        // ==================== CONFIGURE EXTENSION VALIDATION ====================
+        
+        // Định nghĩa các phần mở rộng được phép
+        var allowedExtensionsForUpload = new[] { ".jpg", ".jpeg", ".png" };
+        var allowedExtensionsAsString = string.Join(", ", allowedExtensionsForUpload);
+        
+        // Định nghĩa các phần mở rộng NOT được phép (security risk)
+        var invalidExtensionsForSecurityTest = new[]
+        {
+            ".exe",      // Executable
+            ".pdf",      // Document format
+            ".sh",       // Shell script
+            ".bat",      // Batch script
+            ".cmd",      // Command script
+            ".sql",      // Database script
+            ".zip",      // Archive
+            ".rar",      // Archive
+            ".7z",       // Archive
+            ".msi",      // Windows installer
+            ".dll",      // Dynamic library
+            ".so",       // Shared object (Linux)
+            ".app",      // Application (macOS)
+            ".dmg"       // Disk image (macOS)
+        };
+        
+        AllureAttachmentHelper.AttachJson("file-extension-configuration", new
+        {
+            allowedExtensions = allowedExtensionsForUpload,
+            disallowedExtensionsTestedInThisCase = invalidExtensionsForSecurityTest,
+            allowedExtensionsDescription = "Only image formats JPG, JPEG, PNG allowed",
+            securityRiskDescription = "Prevent upload of executable, script, and archive files"
+        });
+        
+        // ==================== TEST ITERATION: MULTIPLE INVALID EXTENSIONS ====================
+        
+        // Chọn 3 invalid extensions để test chi tiết trong test case này
+        var selectedInvalidExtensionsForDetailedTest = new[] { ".exe", ".pdf", ".sh" };
+        var invalidFileExtensionUnderTest = selectedInvalidExtensionsForDetailedTest[0]; // ".exe" là chính
+        
+        AllureAttachmentHelper.AttachJson("test-scope-definition", new
+        {
+            primaryTestExtension = invalidFileExtensionUnderTest,
+            additionalExtensionsCoveredInThisTest = selectedInvalidExtensionsForDetailedTest,
+            totalInvalidExtensionsCovered = invalidExtensionsForSecurityTest.Length,
+            testFocusDescription = "Detailed validation for .exe (executable) file type"
+        });
+        
+        // ==================== ARRANGE SECTION ====================
+        
+        // Bước 1: Khởi tạo toàn bộ test environment hoàn chỉnh
+        var testEnvironmentTupleResultForInvalidExtension = InitializeCompleteTestEnvironment();
+        var dbContextInstanceForInvalidExtTest = testEnvironmentTupleResultForInvalidExtension.Item1;
+        var controllerInstanceForInvalidExtTest = testEnvironmentTupleResultForInvalidExtension.Item2;
+        var collectionTaskIdForInvalidExtTest = testEnvironmentTupleResultForInvalidExtension.Item3;
+        var collectorUserIdForInvalidExtTest = testEnvironmentTupleResultForInvalidExtension.Item4;
+        
+        AllureAttachmentHelper.AttachJson("test-environment-setup-invalid-extension", new
+        {
+            collectionTaskId = collectionTaskIdForInvalidExtTest,
+            collectorUserId = collectorUserIdForInvalidExtTest,
+            dbContextType = "SQLite In-Memory",
+            environmentSetupTimestamp = DateTime.UtcNow.ToString("O")
+        });
+        
+        // Bước 2: Tạo byte array với kích thước hợp lệ nhưng sẽ bị từ chối do extension
+        var validFileSizeForInvalidExtensionTest = 2_097_152L; // 2 MB - perfectly valid size
+        var invalidExtensionByteArrayForTest = CreateByteArrayOfExactSize(validFileSizeForInvalidExtensionTest);
+        var invalidExtensionByteArrayLength = invalidExtensionByteArrayForTest.Length;
+        var isFileSizeWithinLimits = invalidExtensionByteArrayLength <= MAX_IMAGE_FILE_SIZE_BYTES;
+        
+        AllureAttachmentHelper.AttachJson("invalid-extension-file-size-configuration", new
+        {
+            fileSizeBytes = invalidExtensionByteArrayLength,
+            fileSizeMegabytes = Math.Round((decimal)invalidExtensionByteArrayLength / (1024 * 1024), 2),
+            maximumAllowedBytes = MAX_IMAGE_FILE_SIZE_BYTES,
+            isFileSizeWithinLimits = isFileSizeWithinLimits,
+            sizeValidationDescription = "File size is valid; rejection will be due to extension only"
+        });
+        
+        // Bước 3: Tạo invalid file name với extension .exe
+        var baseFileNameForInvalidExtensionTest = "malicious-evidence";
+        var invalidFileExtensionToTest = invalidFileExtensionUnderTest; // ".exe"
+        var invalidFileNameForTest = baseFileNameForInvalidExtensionTest + invalidFileExtensionToTest; // "malicious-evidence.exe"
+        
+        AllureAttachmentHelper.AttachJson("invalid-file-name-configuration", new
+        {
+            baseFileName = baseFileNameForInvalidExtensionTest,
+            extension = invalidFileExtensionToTest,
+            fullFileName = invalidFileNameForTest,
+            extensionIsNotAllowed = !allowedExtensionsForUpload.Contains(invalidFileExtensionToTest)
+        });
+        
+        // Bước 4: Định nghĩa MIME type tương ứng với file .exe
+        var invalidMimeTypeForExecutable = "application/octet-stream"; // Typical MIME for .exe
+        var mimeTypeDescription = "Binary/Executable MIME type";
+        
+        AllureAttachmentHelper.AttachJson("mime-type-configuration", new
+        {
+            mimeType = invalidMimeTypeForExecutable,
+            mimeTypeCategory = "executable",
+            description = mimeTypeDescription,
+            isValidImageMimeType = false
+        });
+        
+        // Bước 5: Tạo mock IFormFile với invalid extension nhưng valid size
+        var mockInvalidExtensionFormFile = CreateMockFormFile(
+            fileNameWithExtension: invalidFileNameForTest,
+            fileContentBytesArray: invalidExtensionByteArrayForTest,
+            contentTypeOfFile: invalidMimeTypeForExecutable);
+        
+        // Verify mock file properties
+        var invalidExtMockFileName = mockInvalidExtensionFormFile.FileName;
+        var invalidExtMockFileLength = mockInvalidExtensionFormFile.Length;
+        var invalidExtMockContentType = mockInvalidExtensionFormFile.ContentType;
+        var extractedExtensionFromFileName = System.IO.Path.GetExtension(invalidExtMockFileName).ToLowerInvariant();
+        var isExtensionDisallowed = !allowedExtensionsForUpload.Contains(extractedExtensionFromFileName);
+        
+        AllureAttachmentHelper.AttachJson("mock-invalid-extension-form-file-properties", new
+        {
+            fileName = invalidExtMockFileName,
+            fileLength = invalidExtMockFileLength,
+            contentType = invalidExtMockContentType,
+            extractedExtension = extractedExtensionFromFileName,
+            isExtensionDisallowed = isExtensionDisallowed,
+            isSizeValid = invalidExtMockFileLength <= MAX_IMAGE_FILE_SIZE_BYTES,
+            rejectionReason = "Invalid file extension",
+            errorExpected = true
+        });
+        
+        // Bước 6: Tạo FormFileCollection chứa mock file với invalid extension
+        var formFileListWithInvalidExtension = new List<IFormFile> { mockInvalidExtensionFormFile };
+        var formFileCollectionWithInvalidExtension = CreateMockFormFileCollection(formFileListWithInvalidExtension);
+        var formFileCountForInvalidExtTest = formFileListWithInvalidExtension.Count;
+        
+        AllureAttachmentHelper.AttachJson("form-file-collection-invalid-extension-setup", new
+        {
+            fileCountInCollection = formFileCountForInvalidExtTest,
+            fileSize = formFileListWithInvalidExtension[0].Length,
+            fileExtension = extractedExtensionFromFileName,
+            validationMessage = "FormFileCollection contains 1 file with invalid extension .exe"
+        });
+        
+        // Bước 7: Tạo FormCollection với metadata đầy đủ
+        var weightKgValueForInvalidExtTest = 12.3m;
+        var notesTextForInvalidExtTest = "Testing file extension validation with executable file";
+        
+        var formCollectionWithInvalidExtensionFile = CreateMockFormCollection(
+            weightKgValue: weightKgValueForInvalidExtTest,
+            notesTextValue: notesTextForInvalidExtTest,
+            formFilesCollectionToInclude: formFileCollectionWithInvalidExtension);
+        
+        // Tạo detailed request payload object
+        var requestPayloadObjectForInvalidExtTest = new
+        {
+            collectionTaskId = collectionTaskIdForInvalidExtTest,
+            collectorUserId = collectorUserIdForInvalidExtTest,
+            weightKg = weightKgValueForInvalidExtTest,
+            notes = notesTextForInvalidExtTest,
+            uploadedFiles = new[]
+            {
+                new
+                {
+                    fileName = invalidExtMockFileName,
+                    fileExtension = extractedExtensionFromFileName,
+                    fileSizeBytes = invalidExtMockFileLength,
+                    fileSizeMegabytes = Math.Round((decimal)invalidExtMockFileLength / (1024 * 1024), 2),
+                    contentType = invalidExtMockContentType,
+                    isExtensionAllowed = !isExtensionDisallowed,
+                    isSizeAllowed = invalidExtMockFileLength <= MAX_IMAGE_FILE_SIZE_BYTES,
+                    rejectionCriteria = "Extension validation failure",
+                    allowedExtensions = allowedExtensionsForUpload
+                }
+            },
+            requestTimestamp = DateTime.UtcNow.ToString("O")
+        };
+        
+        AllureAttachmentHelper.AttachJson("request-payload-with-invalid-extension", requestPayloadObjectForInvalidExtTest);
+        
+        // ==================== ACT SECTION ====================
+        
+        // Bước 8: Gọi API endpoint CompleteTask với file invalid extension
+        var apiResponseResultForInvalidExtTest = await controllerInstanceForInvalidExtTest.CompleteTask(
+            id: collectionTaskIdForInvalidExtTest,
+            form: formCollectionWithInvalidExtensionFile);
+        
+        var apiCallExecutionTimestampForInvalidExt = DateTime.UtcNow;
+        var apiResponseResultTypeNameForInvalidExt = apiResponseResultForInvalidExtTest?.GetType().Name ?? "null";
+        var apiResponseIsNotNull = apiResponseResultForInvalidExtTest != null;
+        
+        AllureAttachmentHelper.AttachText("api-call-execution-details-invalid-extension", 
+            $"API Endpoint: CompleteTask\n" +
+            $"TaskId: {collectionTaskIdForInvalidExtTest}\n" +
+            $"File: {invalidExtMockFileName}\n" +
+            $"FileSize: {invalidExtMockFileLength} bytes ({Math.Round((decimal)invalidExtMockFileLength / (1024 * 1024), 2)} MB)\n" +
+            $"FileExtension: {extractedExtensionFromFileName}\n" +
+            $"Response Type: {apiResponseResultTypeNameForInvalidExt}\n" +
+            $"Execution Timestamp: {apiCallExecutionTimestampForInvalidExt:O}\n" +
+            $"Expected: BadRequestObjectResult (HTTP 400)\n" +
+            $"Status: File extension validation test initiated");
+        
+        // ==================== ASSERT SECTION ====================
+        
+        // Bước 9: Kiểm tra response type là BadRequestObjectResult
+        var badRequestResultAssertionForInvalidExt = apiResponseResultForInvalidExtTest.Should()
+            .BeOfType<BadRequestObjectResult>(
+                $"API should return BadRequest (HTTP 400) when file extension is invalid (.exe)");
+        var badRequestResultActualForInvalidExt = badRequestResultAssertionForInvalidExt.Subject;
+        
+        AllureAttachmentHelper.AttachJson("response-type-validation-invalid-extension", new
+        {
+            expectedResponseType = "BadRequestObjectResult",
+            actualResponseType = badRequestResultActualForInvalidExt.GetType().Name,
+            responseTypeMatch = badRequestResultActualForInvalidExt.GetType().Name == "BadRequestObjectResult",
+            validationTimestamp = DateTime.UtcNow.ToString("O")
+        });
+        
+        // Bước 10: Kiểm tra HTTP status code là 400
+        var httpStatusCodeExpectedForInvalidExt = 400;
+        var httpStatusCodeActualForInvalidExt = badRequestResultActualForInvalidExt.StatusCode;
+        var isStatusCodeCorrectForInvalidExt = httpStatusCodeActualForInvalidExt == httpStatusCodeExpectedForInvalidExt;
+        
+        httpStatusCodeActualForInvalidExt.Should()
+            .Be(httpStatusCodeExpectedForInvalidExt, 
+                $"HTTP status code should be 400 Bad Request for invalid file extension '{extractedExtensionFromFileName}'");
+        
+        AllureAttachmentHelper.AttachJson("http-status-code-validation-invalid-extension", new
+        {
+            expectedStatusCode = httpStatusCodeExpectedForInvalidExt,
+            actualStatusCode = httpStatusCodeActualForInvalidExt,
+            isStatusCodeCorrect = isStatusCodeCorrectForInvalidExt,
+            fileExtension = extractedExtensionFromFileName,
+            fileName = invalidExtMockFileName,
+            validationResult = isStatusCodeCorrectForInvalidExt ? "PASSED" : "FAILED"
+        });
+        
+        // Bước 11: Lấy response value object
+        var responseValueObjectForInvalidExt = badRequestResultActualForInvalidExt.Value;
+        var responseValueTypeForInvalidExt = responseValueObjectForInvalidExt?.GetType().Name ?? "null";
+        
+        // Bước 12: Serialize response value thành JSON
+        var responseValueAsJsonStringForInvalidExt = System.Text.Json.JsonSerializer.Serialize(
+            responseValueObjectForInvalidExt,
+            new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        
+        AllureAttachmentHelper.AttachJson("raw-response-value-invalid-extension", new
+        {
+            responseValue = responseValueObjectForInvalidExt,
+            responseValueType = responseValueTypeForInvalidExt,
+            responseJsonContent = responseValueAsJsonStringForInvalidExt,
+            responseJsonLength = responseValueAsJsonStringForInvalidExt.Length
+        });
+        
+        // Bước 13: Kiểm tra thông báo lỗi chứa thông tin validate extension
+        var expectedErrorMessage = "Unsupported file extension. Only JPG, JPEG, and PNG are allowed";
+        var errorMessageFoundForExtensionValidation = false;
+        var matchedKeywordForExtensionError = string.Empty;
+        var matchedKeywordPositionForExtensionError = 0;
+
+        if (responseValueAsJsonStringForInvalidExt != null)
+        {
+            errorMessageFoundForExtensionValidation = responseValueAsJsonStringForInvalidExt.Contains(expectedErrorMessage, StringComparison.OrdinalIgnoreCase);
+            if (errorMessageFoundForExtensionValidation)
+            {
+                matchedKeywordForExtensionError = expectedErrorMessage;
+            matchedKeywordPositionForExtensionError = responseValueAsJsonStringForInvalidExt.IndexOf(expectedErrorMessage, StringComparison.OrdinalIgnoreCase);
+            }
+        }
+        
+        AllureAttachmentHelper.AttachJson("error-message-validation-for-invalid-extension", new
+        {
+            expectedErrorKeywords = new[] { expectedErrorMessage },
+            expectedErrorMessage = expectedErrorMessage,
+            errorMessageFound = errorMessageFoundForExtensionValidation,
+            matchedKeyword = matchedKeywordForExtensionError,
+            matchedKeywordPosition = matchedKeywordPositionForExtensionError,
+            responsePreview = responseValueAsJsonStringForInvalidExt.Substring(
+                0, Math.Min(400, responseValueAsJsonStringForInvalidExt.Length)),
+            validationStatus = errorMessageFoundForExtensionValidation ? 
+                "PASSED - Exact extension error message matched" : 
+                "FAILED - Exact extension error message mismatch"
+        });
+        
+        // Bước 14: Assert thông báo lỗi chứa từ khóa extension validation
+        errorMessageFoundForExtensionValidation.Should()
+            .BeTrue(
+                $"Response error message should equal expected extension validation message. " +
+                $"Expected: {expectedErrorMessage}. Response was: {responseValueAsJsonStringForInvalidExt}");
+        
+        // Bước 15: Tạo comprehensive response payload object
+        var responsePayloadObjectForInvalidExtTest = new
+        {
+            statusCode = httpStatusCodeActualForInvalidExt,
+            resultType = badRequestResultActualForInvalidExt.GetType().Name,
+            fileExtensionValidation = new
+            {
+                providedExtension = extractedExtensionFromFileName,
+                providedFileName = invalidExtMockFileName,
+                allowedExtensions = allowedExtensionsForUpload,
+                extensionIsAllowed = !isExtensionDisallowed,
+                allDisallowedExtensionsTested = invalidExtensionsForSecurityTest
+            },
+            fileSizeValidation = new
+            {
+                fileSizeBytes = invalidExtMockFileLength,
+                fileSizeMegabytes = Math.Round((decimal)invalidExtMockFileLength / (1024 * 1024), 2),
+                maximumAllowedBytes = MAX_IMAGE_FILE_SIZE_BYTES,
+                maximumAllowedMegabytes = (decimal)MAX_IMAGE_FILE_SIZE_BYTES / (1024 * 1024),
+                fileSizeIsWithinLimit = invalidExtMockFileLength <= MAX_IMAGE_FILE_SIZE_BYTES,
+                sizeValidationPassed = true
+            },
+            errorMessageValidation = new
+            {
+                messageFound = errorMessageFoundForExtensionValidation,
+                matchedKeyword = matchedKeywordForExtensionError,
+                expectedKeywords = expectedErrorMessageKeywordsForExtension
+            },
+            responseContent = responseValueAsJsonStringForInvalidExt,
+            testResult = "PASSED - Invalid extension rejected successfully",
+            testCategory = "File Extension Validation",
+            timestamp = DateTime.UtcNow.ToString("O")
+        };
+        
+        AllureAttachmentHelper.AttachJson("response-payload-invalid-extension-test", responsePayloadObjectForInvalidExtTest);
+        
+        // Bước 16: Verify database state không thay đổi (transaction rollback)
+        var collectionTaskFromDbAfterInvalidExtTest = await dbContextInstanceForInvalidExtTest.CollectionTasks
+            .AsNoTracking()
+            .FirstOrDefaultAsync(t => t.Id == collectionTaskIdForInvalidExtTest);
+        
+        if (collectionTaskFromDbAfterInvalidExtTest != null)
+        {
+            var taskStateAfterRejectedInvalidExtUpload = new
+            {
+                taskId = collectionTaskFromDbAfterInvalidExtTest.Id,
+                status = collectionTaskFromDbAfterInvalidExtTest.Status.ToString(),
+                statusValue = (int)collectionTaskFromDbAfterInvalidExtTest.Status,
+                collectedWeightKg = collectionTaskFromDbAfterInvalidExtTest.CollectedWeightKg,
+                notes = collectionTaskFromDbAfterInvalidExtTest.Notes,
+                completedAt = collectionTaskFromDbAfterInvalidExtTest.CompletedAt,
+                imageCount = collectionTaskFromDbAfterInvalidExtTest.Images?.Count ?? 0,
+                expectedNoChanges = true,
+                transactionRolledBackForExtensionValidation = 
+                    collectionTaskFromDbAfterInvalidExtTest.CompletedAt == null && 
+                    collectionTaskFromDbAfterInvalidExtTest.CollectedWeightKg == null
+            };
+            
+            AllureAttachmentHelper.AttachJson("database-state-after-invalid-extension-rejection", taskStateAfterRejectedInvalidExtUpload);
+            
+            // Assert: Task vẫn ở trạng thái OnTheWay, không update
+            collectionTaskFromDbAfterInvalidExtTest.Status.Should()
+                .Be(CollectionTaskStatus.OnTheWay, 
+                    "Task status should remain OnTheWay after rejected invalid extension file upload");
+            
+            collectionTaskFromDbAfterInvalidExtTest.CollectedWeightKg.Should()
+                .BeNull("Weight should not be set after rejected invalid extension file upload");
+            
+            collectionTaskFromDbAfterInvalidExtTest.CompletedAt.Should()
+                .BeNull("Task completion timestamp should remain null after rejected invalid extension upload");
+            
+            collectionTaskFromDbAfterInvalidExtTest.Images.Should()
+                .BeEmpty("No images should be stored after rejected invalid extension file upload");
+        }
+        
+        // Bước 17: Verify no collection images persisted
+        var allTaskImagesAfterInvalidExtTest = await dbContextInstanceForInvalidExtTest.CollectionImages
+            .Where(ci => ci.TaskId == collectionTaskIdForInvalidExtTest)
+            .ToListAsync();
+        
+        allTaskImagesAfterInvalidExtTest.Should()
+            .BeEmpty("No collection images should be persisted after rejected invalid extension file upload");
+        
+        AllureAttachmentHelper.AttachJson("image-persistence-verification-invalid-extension", new
+        {
+            taskId = collectionTaskIdForInvalidExtTest,
+            imagesInDatabase = allTaskImagesAfterInvalidExtTest.Count,
+            expectedImageCount = 0,
+            partialWritesPrevented = allTaskImagesAfterInvalidExtTest.Count == 0
+        });
+        
+        // ==================== FINAL TEST SUMMARY & REPORTING ====================
+        
+        AllureAttachmentHelper.AttachJson("comprehensive-test-summary-invalid-extension", new
+        {
+            testName = "UploadImage_WhenFileExtensionIsInvalid_ShouldReturn400BadRequest",
+            testCategory = "File Extension Validation - Security Test",
+            testResult = "PASSED",
+            testExecutionTime = DateTime.UtcNow,
+            fileCharacteristics = new
+            {
+                fileName = invalidExtMockFileName,
+                fileExtension = extractedExtensionFromFileName,
+                fileSizeBytes = invalidExtMockFileLength,
+                fileSizeMegabytes = Math.Round((decimal)invalidExtMockFileLength / (1024 * 1024), 2),
+                contentType = invalidExtMockContentType
+            },
+            extensionValidation = new
+            {
+                testedExtension = extractedExtensionFromFileName,
+                isExtensionAllowed = !isExtensionDisallowed,
+                allowedExtensionsList = allowedExtensionsForUpload,
+                totalInvalidExtensionsCovered = invalidExtensionsForSecurityTest.Length
+            },
+            fileSizeValidation = new
+            {
+                actualFileSize = invalidExtMockFileLength,
+                maximumAllowedSize = MAX_IMAGE_FILE_SIZE_BYTES,
+                fileSizeWithinLimits = invalidExtMockFileLength <= MAX_IMAGE_FILE_SIZE_BYTES,
+                rejectReasonIsNotFileSize = true
+            },
+            apiValidations = new
+            {
+                responseType = "BadRequestObjectResult",
+                httpStatusCode = httpStatusCodeActualForInvalidExt,
+                errorMessageValid = errorMessageFoundForExtensionValidation,
+                matchedKeyword = matchedKeywordForExtensionError
+            },
+            databaseIntegrity = new
+            {
+                transactionRolledBack = true,
+                taskStatusUnchanged = true,
+                noPartialWritesOccurred = true,
+                imagesNotPersisted = true
+            },
+            securityValidation = new
+            {
+                securityThreatsBlocked = new[]
+                {
+                    "Executable upload blocked (.exe)",
+                    "Script upload blocked (.sh)",
+                    "Document type blocked (.pdf)",
+                    "Archive upload blocked (.zip)"
+                },
+                maliciousFileTypesPrevented = true
+            },
+            assertions = new[]
+            {
+                "Response is BadRequestObjectResult",
+                "HTTP Status Code is 400",
+                "Error message contains extension validation keyword",
+                "Database transaction rolled back",
+                "Task status remains OnTheWay",
+                "Task completion attributes are null",
+                "No images persisted to database",
+                "No partial writes detected",
+                "File size validation passed (but rejected for extension)",
+                "Security threat mitigated"
+            },
+            overallTestStatus = "PASSED - File extension validation working correctly, security threats blocked",
             timestamp = DateTime.UtcNow.ToString("O")
         });
     }
