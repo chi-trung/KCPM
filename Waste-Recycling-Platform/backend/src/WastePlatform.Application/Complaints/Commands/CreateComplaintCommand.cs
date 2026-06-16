@@ -27,7 +27,12 @@ public class CreateComplaintCommandHandler : IRequestHandler<CreateComplaintComm
     public async Task<Guid> Handle(CreateComplaintCommand request, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(request.Content))
-            throw new ArgumentException("Complaint content cannot be empty", nameof(request.Content));
+            throw new ArgumentException("Complaint content cannot be empty", nameof(request));
+
+        // Fix bug: CreateComplaintCommandHandler chưa validate content length > 2000
+        // Fixed by: Nguyễn Minh Phụng (KIEM-141)
+        if (request.Content.Length > 2000)
+            throw new ArgumentException("Complaint content cannot exceed 2000 characters", nameof(request));
 
         // If EnterpriseId was not provided, try to infer it from the referenced report's collection task
         Guid? enterpriseId = request.EnterpriseId;
@@ -35,7 +40,7 @@ public class CreateComplaintCommandHandler : IRequestHandler<CreateComplaintComm
         {
             var report = await _reportRepository.GetByIdAsync(request.ReportId.Value, cancellationToken);
             if (report == null)
-                throw new ArgumentException("Report not found", nameof(request.ReportId));
+                throw new ArgumentException("Report not found", nameof(request));
 
             // Only allow complaints for reports that have been accepted/assigned/collected
             if (report.Status == ReportStatus.Pending)

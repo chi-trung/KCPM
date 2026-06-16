@@ -435,8 +435,10 @@ public class CreateComplaintCommandHandlerTests
             Times.Never, "DT-05: Không nên gọi repository khi content rỗng");
     }
 
-    [Fact(Skip = "BUG: CreateComplaintCommandHandler chưa validate content length > 2000. Assign fix cho member khác theo nguyên tắc độc lập kiểm thử (Ch.6).")]
+    // Bug fixed and test activated by: Nguyễn Minh Phụng (KIEM-7)
+    [Fact]
     [AllureDescription("DT-06: Decision Table — Content > 2000 ký tự (BVA max+1) → 400 (ArgumentException)")]
+    [AllureOwner("Nguyễn Minh Phụng")]
     public async Task Handle_ContentTooLong_ShouldThrowArgumentException_DT06_BVA()
     {
         // DT-06 + BVA: Content vượt 2000 ký tự (BVA max boundary + 1)
