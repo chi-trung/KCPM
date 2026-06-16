@@ -9,7 +9,7 @@ on:
       force_run:
         description: 'Force run even if not Monday'
         required: false
-        default: 'true'
+        default: true
         type: boolean
 
 permissions:

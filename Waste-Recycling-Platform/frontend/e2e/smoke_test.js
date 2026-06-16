@@ -24,10 +24,14 @@ Scenario('#1 Home page and auth entry points render correctly', async ({ I }) =>
   // When: User navigates to /login
   I.amOnPage('/login');
 
-  // Then: Login page renders with credentials form
-  I.see('Đăng Nhập');
+  // Then: Login page renders with credentials form and submit button
   I.waitForElement('input[name="email"]', 10);
   I.seeElement('input[name="email"]');
+  I.seeElement('input[name="password"]');
+  I.seeElement('button[type="submit"]');
+
+  // Verify login page contains key branding text
+  I.see('WASTE PLATFORM');
 })
   .tag('@allure.label.epic:E2E Frontend')
   .tag('@allure.label.feature:Public Pages')
