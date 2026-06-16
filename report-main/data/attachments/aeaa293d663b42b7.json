@@ -1,0 +1,10 @@
+{
+  "CitizenId": "a0c4a136-3290-40f2-bd80-84b79d860c1b",
+  "WasteCategoryId": 1,
+  "Latitude": 10.7769,
+  "Longitude": 106.7009,
+  "Description": "Test with empty images",
+  "Address": "Test address",
+  "AiSuggestion": null,
+  "Images": []
+}
