@@ -363,9 +363,13 @@ public class ReportControllerTests
 
         _mediatorMock
             .Setup(x => x.Send(It.IsAny<GetAllReportsQuery>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(queryResult);
+            .Returns(Task.FromResult(queryResult));
 
-        var controller = new ReportController(_mediatorMock.Object, context, _notificationServiceMock.Object);
+        var adminId = Guid.NewGuid();
+        var controller = new ReportController(_mediatorMock.Object, context, _notificationServiceMock.Object)
+        {
+            ControllerContext = BuildControllerContext(adminId, "Admin")
+        };
 
         // Act
         var result = await controller.GetAllReports(page: 1, pageSize: 10, status: "Pending");
