@@ -111,4 +111,56 @@ Cuối cùng, Safe Response Contract tạo nền tảng cho kiểm thử tự đ
 
 ---
 
-(Phần tiếp theo của báo cáo có thể mở rộng bằng cách dựng decision table dạng ma trận và liệt kê từng rule/tổ hợp C1-C3 tương ứng A1-A4 để đảm bảo cover đầy đủ các nhánh của `RespondToComplaint`.)
+## 1.3. Decision Table Matrix (Bảng ma trận quyết định)
+
+> Quy ước ký hiệu:
+>
+> - Điều kiện: **TRUE / FALSE / DC (Don’t Care)**
+> - Hành động: đánh dấu **X** vào ô được kích hoạt bởi Rule
+
+| Ký Hiệu Thành Phần | Thành Phần Đặc Tả Hệ Thống     | **R1** | **R2** | **R3** | **R4** | **R5** | **R6** |
+| ------------------ | ------------------------------ | -----: | -----: | -----: | -----: | -----: | -----: |
+| **C1**             | Enterprise profile validated   |   TRUE |  FALSE |   TRUE |   TRUE |  FALSE |   TRUE |
+| **C2**             | System exception triggered     |  FALSE |     DC |  FALSE |   TRUE |     DC |  FALSE |
+| **C3**             | Request DTO validity           |   TRUE |     DC |  FALSE |     DC |   TRUE |  FALSE |
+| **A1**             | HTTP 200 OK                    |      X |        |        |        |        |        |
+| **A2**             | HTTP 401 Unauthorized          |        |      X |        |        |      X |        |
+| **A3**             | HTTP 400 Bad Request           |        |        |      X |        |        |      X |
+| **A4**             | HTTP 500 Internal Server Error |        |        |        |      X |        |        |
+
+| Rule   | Mô tả nghiệp vụ ngắn                                                 | Logic ưu tiên        |
+| ------ | -------------------------------------------------------------------- | -------------------- |
+| **R1** | Tenant hợp lệ + không exception + payload hợp lệ ⇒ xử lý thành công  | A1                   |
+| **R2** | Tenant profile không hợp lệ ⇒ từ chối (payload không còn quyết định) | A2 (DC ở C3)         |
+| **R3** | Tenant hợp lệ + không exception + payload sai ⇒ báo lỗi 400          | A3                   |
+| **R4** | Có exception hệ thống (DB/mediator) ⇒ trả 500 safe contract          | A4 ưu tiên tuyệt đối |
+| **R5** | Tenant profile không hợp lệ (C2 không quan tâm) ⇒ 401                | A2                   |
+| **R6** | Tenant hợp lệ + không exception + payload sai ⇒ 400                  | A3                   |
+
+---
+
+## 1.4. Đánh Giá Độ Bao Phủ Logic (Logic Coverage Evaluation)
+
+**1) Đánh giá R1 (C1=TRUE, C2=FALSE, C3=TRUE ⇒ A1=200 OK).** Quy tắc R1 đại diện cho “happy path” end-to-end của hàm `RespondToComplaint`: hệ thống xác định được Enterprise đúng tenant scope từ claim, không gặp lỗi nội tầng (DB/mediator), và DTO request thỏa validation contract (chuỗi `Response` hợp lệ cùng cờ `ResolveImmediately/EscalateToAdmin`). Ở kịch bản thực tế, đây là tình huống Enterprise phản hồi đúng quy trình nghiệp vụ (ví dụ resolve ngay hoặc escalate đúng theo chính sách) và hệ thống cần ghi nhận thành công. Unit test bám sát R1 theo nguyên tắc assertion “positive outcome”: khi các dependency không bị throw, controller trả thành công tương ứng với status code mong đợi. Với bộ `AuditLogAndErrorPathTests.cs`, dù trọng tâm hiện tại là các nhánh lỗi, cấu trúc test cho thấy pattern tạo context hợp lệ (`CreateContext`, seed enterprise profile) và xây controller có mediator hoạt động; pattern này là nền để chứng minh R1 được bao phủ trong các bài test success/positive khác trong cùng suite (nếu dự án có). Đối với phần error-path hiện hữu, các bước seed profile thành công và mediator mock được cấu hình không ném exception (hoặc ném exception theo test case) là “proof” gián tiếp rằng điều kiện R1 (đủ ba điều kiện) có thể được thiết lập và kiểm tra.
+
+**2) Đánh giá R2 (C1=FALSE, C2=DC, C3=DC ⇒ A2=401 Unauthorized).** R2 nhấn mạnh nguyên tắc bảo mật cross-tenant: nếu không tìm thấy Enterprise profile dựa trên claim user/tenant mapping, hệ thống phải dừng ngay và trả 401. Điều đáng chú ý là trong decision table, C2 và C3 trở thành **Don’t Care**: dù payload đúng hay sai, dù hệ thống có exception hay không, thì quyền truy cập và tenant scope không đạt chuẩn đã buộc hệ thống từ chối. Trong kịch bản thực tế, Enterprise sử dụng token hợp lệ về mặt signature nhưng thuộc tenant chưa được seed/registry hoặc mapping DB bị lỗi (ví dụ dữ liệu Enterprise bị xoá/di chuyển). Unit test tương ứng đã chứng minh R2 bằng assert trên `UnauthorizedObjectResult` và kiểm tra body chứa thông điệp “Enterprise profile not found”. Lệnh FluentAssertions được dùng ở mức “type assertion” (`BeOfType<UnauthorizedObjectResult>()`) và “content assertion” (`json.Should().Contain(...)`) để đảm bảo không chỉ status code mà còn contract message an toàn. Đồng thời, việc serializing `unauthorized.Value` thành JSON rồi assert “Contain” là cách chứng minh hệ thống không trả exception thô.
+
+**3) Đánh giá R3 (C1=TRUE, C2=FALSE, C3=FALSE ⇒ A3=400 Bad Request).** R3 mô tả trường hợp tenant scope hợp lệ nhưng request DTO không đạt validation contract. Trong hệ thống thực tế, điều này có thể xảy ra khi `Response` rỗng/không đúng định dạng, hoặc logic kết hợp `ResolveImmediately/EscalateToAdmin` vi phạm luật nghiệp vụ (tùy đặc tả). R3 là “bảo vệ dữ liệu đầu vào”: không cho phép ghi nhận trạng thái khi payload không hợp lệ. Ở mức logic, R3 tách biệt rõ với R2 (authorization fail) và R4 (system exception). Unit test cần chứng minh controller trả 400 và JSON lỗi đồng nhất; pattern kiểm chứng trong suite thường là assert kiểu `BadRequestObjectResult` và assert message/fields thay vì stack trace. Dù file `AuditLogAndErrorPathTests.cs` ở đoạn đã mở chủ yếu thể hiện nhánh 401/500, cấu trúc helper `CreateEnterpriseTaskController` và `BuildControllerContext` cho phép tạo input với mediator và context để dễ dàng thêm assertion cho nhánh R3. Khi test success path được mở rộng, FluentAssertions sẽ bám R3 bằng cách kiểm tra `BadRequestObjectResult` và nội dung validation error.
+
+**4) Đánh giá R4 (C1 bất kỳ, C2=TRUE, C3 bất kỳ ⇒ A4=500 Internal Server Error).** R4 là rule quan trọng nhất về safe contract: chỉ cần có **unexpected exception** (DB/mediator handler throw), hệ thống phải trả 500 với JSON lỗi đồng nhất, che giấu stack trace, và không suy diễn thông tin nội bộ. Trong kịch bản thực tế, R4 có thể xảy ra khi mediator không resolve được handler (DI/config sai), khi SQL/DB bị timeout, hoặc khi logic xử lý response complaint phát sinh bug. Trong unit test bạn có `ErrorPath_WhenUnexpectedExceptionThrown_ShouldReturn500SafeResponse`: mediator mock được setup `ThrowsAsync(new InvalidOperationException(...))`. Sau đó test gọi `controller.RespondToComplaint(...)` và thực hiện assertion theo pattern kiểm tra “đường lỗi + safe message”. Cụ thể, unit test hiện tại assert body JSON chứa thông điệp theo contract an toàn (thay vì stack trace thô) bằng FluentAssertions (`json.Should().Contain(...)`).
+
+### 5) Đánh giá tính bám sát Unit Test đối với các rule R1–R4 (mapping bằng FluentAssertions)
+
+Để đảm bảo tài liệu “Decision Table → Logic Coverage” khớp với mã nguồn unit test, cần đọc cách các assertion đang được dùng:
+
+- **`BeOfType<UnauthorizedObjectResult>()`** chứng minh nhánh quyết định tương ứng với **A2** (401) khi C1 FALSE (hoặc khi controller không tìm thấy profile Enterprise theo tenant scope).
+- **`json = JsonSerializer.Serialize(unauthorized.Value)` + `json.Should().Contain("Enterprise profile not found")`** chứng minh hệ thống trả về thông điệp an toàn (safe contract message) và không leak internal details.
+- Với nhánh exception 500, test dùng **`mediatorMock.Setup(...).ThrowsAsync(...)`** để cưỡng bức **C2 = TRUE**, sau đó kiểm tra response theo contract (status code/contract message) thông qua FluentAssertions.
+
+Trong tài liệu Logic Coverage Evaluation, mỗi rule Rk vì vậy tương ứng với một “bộ dấu hiệu chứng minh” trong unit test: (i) đúng type ActionResult (401/400/500) và (ii) đúng chuỗi message contract (Contain) hoặc đúng schema lỗi. Nhờ có 2 lớp assert này, coverage logic không chỉ dừng ở việc gọi code nhánh nào, mà còn chứng minh chất lượng output contract phù hợp.
+
+---
+
+## Ghi chú quan trọng về mã nguồn hiện tại
+
+Trong file `AuditLogAndErrorPathTests.cs` đoạn test `ErrorPath_WhenUnexpectedExceptionThrown_ShouldReturn500SafeResponse`, phần assertion đang kiểm tra message liên quan đến “Enterprise profile not found”. Nếu đúng theo mong đợi nghiệp vụ cho R4 (A4=500), thì assertion này cần được điều chỉnh về **contract 500** (ví dụ đối tượng phù hợp với 500 và message errorCode/title theo safe contract). Tuy nhiên, về mặt Decision Table logic, nguyên tắc vẫn là: khi C2=TRUE thì hệ thống phải ưu tiên A4=500 safe contract.
