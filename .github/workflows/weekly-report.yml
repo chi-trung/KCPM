@@ -154,7 +154,7 @@ jobs:
               ref: 'main',
               inputs: {
                 report_mode: 'both',
-                export_format: 'html',
+                export_format: 'both',
                 selected_owner: 'all'
               }
             });
