@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 1,
-  "label": "method coverage",
   "message": "64%",
+  "label": "method coverage",
+  "schemaVersion": 1,
   "color": "yellow"
 }
