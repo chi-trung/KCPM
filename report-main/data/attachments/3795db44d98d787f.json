@@ -1,0 +1,13 @@
+{
+  "methodName": "TaskStatusUpdated",
+  "payload": {
+    "Id": "73159b0a-4b03-4d03-9ea0-5c29545e06ff",
+    "Type": "TaskUpdated",
+    "Title": "Danh sách trống",
+    "Message": "Không có user nào được gửi.",
+    "ActionUrl": "/",
+    "RelatedEntityId": "f6594846-fa95-40d4-96c2-894e5e05d08b",
+    "RelatedEntityType": "Task",
+    "CreatedAt": "2026-06-16T15:32:13.1149359Z"
+  }
+}
