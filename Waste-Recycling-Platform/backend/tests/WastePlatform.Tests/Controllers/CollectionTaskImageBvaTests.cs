@@ -898,4 +898,269 @@ public class CollectionTaskImageBvaTests
     }
     
     #endregion
+    
+    #region Detailed Error Handling & Validation Tests
+    
+    /// <summary>
+    /// Test case chi tiết: Upload file rỗng hoặc 0 bytes
+    /// KIEM-68 BVA Test: Xác minh API trả về HTTP 400 BadRequest khi file không có nội dung
+    /// 
+    /// Quy trình kiểm thử:
+    /// 1. Tạo mock file với Length = 0 bytes (empty file)
+    /// 2. Seed đầy đủ CollectionTask vào In-Memory DbContext
+    /// 3. Gọi API endpoint CompleteTask với file rỗng
+    /// 4. Kiểm tra response là BadRequestObjectResult
+    /// 5. Xác nhận mã lỗi HTTP 400
+    /// 6. Kiểm tra thông báo lỗi chứa "Invalid file size" hoặc "File is empty"
+    /// 7. Đính kèm payload request/response cho Allure Report
+    /// </summary>
+    [Fact]
+    [AllureDescription("UploadImage: When file is empty (0 bytes), should return HTTP 400 BadRequest with appropriate error message.")]
+    [AllureTag("error-handling")]
+    [AllureTag("empty-file")]
+    [AllureTag("http-400")]
+    [AllureTag("validation")]
+    public async Task UploadImage_WhenFileIsEmptyOrZeroBytes_ShouldReturn400BadRequest()
+    {
+        // ==================== ARRANGE SECTION ====================
+        
+        // Bước 1: Khởi tạo test environment hoàn chỉnh
+        var testEnvironmentTupleResult = InitializeCompleteTestEnvironment();
+        var dbContextInstanceForTest = testEnvironmentTupleResult.Item1;
+        var controllerInstanceForTest = testEnvironmentTupleResult.Item2;
+        var collectionTaskIdForTest = testEnvironmentTupleResult.Item3;
+        var collectorUserIdForTest = testEnvironmentTupleResult.Item4;
+        
+        AllureAttachmentHelper.AttachJson("test-environment-setup", new
+        {
+            collectionTaskId = collectionTaskIdForTest,
+            collectorUserId = collectorUserIdForTest,
+            dbContextType = "SQLite In-Memory",
+            environmentTimestamp = DateTime.UtcNow.ToString("O")
+        });
+        
+        // Bước 2: Tạo byte array rỗng (0 bytes) để mô phỏng file trống
+        var emptyByteArrayForZeroSizeFile = Array.Empty<byte>();
+        var emptyFileByteCountExpected = 0;
+        var emptyFileSizeInKbExpected = 0.0m;
+        
+        AllureAttachmentHelper.AttachJson("empty-file-configuration", new
+        {
+            expectedFileSize = emptyFileByteCountExpected,
+            expectedFileSizeInKb = emptyFileSizeInKbExpected,
+            byteArrayLength = emptyByteArrayForZeroSizeFile.Length,
+            description = "Zero-byte empty file for BVA boundary testing"
+        });
+        
+        // Bước 3: Tạo mock IFormFile với thuộc tính Length = 0
+        var fileNameForEmptyUpload = "empty-proof.jpg";
+        var contentTypeForEmptyFile = "image/jpeg";
+        var mockEmptyFormFileInstance = CreateMockFormFile(
+            fileNameWithExtension: fileNameForEmptyUpload,
+            fileContentBytesArray: emptyByteArrayForZeroSizeFile,
+            contentTypeOfFile: contentTypeForEmptyFile);
+        
+        // Verify mock file properties
+        var mockFileNameProperty = mockEmptyFormFileInstance.FileName;
+        var mockFileLengthProperty = mockEmptyFormFileInstance.Length;
+        var mockFileContentTypeProperty = mockEmptyFormFileInstance.ContentType;
+        
+        AllureAttachmentHelper.AttachJson("mock-form-file-properties", new
+        {
+            fileName = mockFileNameProperty,
+            fileLength = mockFileLengthProperty,
+            contentType = mockFileContentTypeProperty,
+            isFileLengthZero = mockFileLengthProperty == 0,
+            errorExpected = true
+        });
+        
+        // Bước 4: Tạo FormFileCollection chứa mock file rỗng
+        var formFileListWithEmptyFile = new List<IFormFile> { mockEmptyFormFileInstance };
+        var formFileCollectionWithEmptyFile = CreateMockFormFileCollection(formFileListWithEmptyFile);
+        var formFileCollectionItemCountActual = formFileListWithEmptyFile.Count;
+        
+        AllureAttachmentHelper.AttachJson("form-file-collection-setup", new
+        {
+            fileCountInCollection = formFileCollectionItemCountActual,
+            firstFileSize = formFileListWithEmptyFile[0].Length,
+            validationMessage = "FormFileCollection contains 1 empty file"
+        });
+        
+        // Bước 5: Tạo FormCollection với metadata (WeightKg, Notes, Images)
+        var weightKgValueForCompletion = 10.5m;
+        var notesTextFromCollector = "Collection task completed with proof images";
+        var formCollectionWithEmptyImageFile = CreateMockFormCollection(
+            weightKgValue: weightKgValueForCompletion,
+            notesTextValue: notesTextFromCollector,
+            formFilesCollectionToInclude: formFileCollectionWithEmptyFile);
+        
+        // Tạo object request payload để đính kèm
+        var requestPayloadObject = new
+        {
+            collectionTaskId = collectionTaskIdForTest,
+            weightKg = weightKgValueForCompletion,
+            notes = notesTextFromCollector,
+            uploadedFiles = new[]
+            {
+                new
+                {
+                    fileName = mockFileNameProperty,
+                    fileSizeBytes = mockFileLengthProperty,
+                    contentType = mockFileContentTypeProperty,
+                    isEmpty = mockFileLengthProperty == 0
+                }
+            },
+            timestamp = DateTime.UtcNow.ToString("O")
+        };
+        
+        AllureAttachmentHelper.AttachJson("request-payload", requestPayloadObject);
+        
+        // ==================== ACT SECTION ====================
+        
+        // Bước 6: Gọi API endpoint CompleteTask với FormCollection chứa empty file
+        var apiResponseResult = await controllerInstanceForTest.CompleteTask(
+            id: collectionTaskIdForTest,
+            form: formCollectionWithEmptyImageFile);
+        
+        AllureAttachmentHelper.AttachText("api-call-executed", 
+            $"Executed: CompleteTask(id={collectionTaskIdForTest}, form=with-empty-file)\n" +
+            $"Response Type: {apiResponseResult?.GetType().Name ?? "null"}\n" +
+            $"Timestamp: {DateTime.UtcNow:O}");
+        
+        // ==================== ASSERT SECTION ====================
+        
+        // Bước 7: Kiểm tra response type là BadRequestObjectResult
+        var badRequestResultAssertion = apiResponseResult.Should()
+            .BeOfType<BadRequestObjectResult>("API should return BadRequest for zero-byte file");
+        var badRequestResultActual = badRequestResultAssertion.Subject;
+        
+        // Bước 8: Kiểm tra status code HTTP 400
+        var httpStatusCodeExpected = 400;
+        var httpStatusCodeActual = badRequestResultActual.StatusCode;
+        
+        httpStatusCodeActual.Should()
+            .Be(httpStatusCodeExpected, "HTTP status code should be 400 Bad Request");
+        
+        AllureAttachmentHelper.AttachJson("status-code-validation", new
+        {
+            expectedStatusCode = httpStatusCodeExpected,
+            actualStatusCode = httpStatusCodeActual,
+            isStatusCodeCorrect = httpStatusCodeActual == httpStatusCodeExpected
+        });
+        
+        // Bước 9: Lấy object response value
+        var responseValueObject = badRequestResultActual.Value;
+        
+        // Bước 10: Serialize response value thành string để kiểm tra thông báo lỗi
+        var responseValueAsJsonString = System.Text.Json.JsonSerializer.Serialize(
+            responseValueObject,
+            new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        
+        AllureAttachmentHelper.AttachJson("raw-response-value", new
+        {
+            responseValue = responseValueObject,
+            responseValueType = responseValueObject?.GetType().Name,
+            responseValueAsString = responseValueAsJsonString
+        });
+        
+        // Bước 11: Kiểm tra thông báo lỗi chứa từ khóa hợp lệ
+        var allowedErrorMessageKeywords = new[] { "Invalid file size", "File is empty", "zero", "0 bytes" };
+        var errorMessageFoundInResponse = false;
+        var matchedKeywordFromResponse = string.Empty;
+        
+        foreach (var keywordToSearch in allowedErrorMessageKeywords)
+        {
+            var isKeywordPresentInResponse = responseValueAsJsonString.Contains(
+                keywordToSearch,
+                StringComparison.OrdinalIgnoreCase);
+            
+            if (isKeywordPresentInResponse)
+            {
+                errorMessageFoundInResponse = true;
+                matchedKeywordFromResponse = keywordToSearch;
+                break;
+            }
+        }
+        
+        AllureAttachmentHelper.AttachJson("error-message-validation", new
+        {
+            allowedKeywords = allowedErrorMessageKeywords,
+            errorMessageFound = errorMessageFoundInResponse,
+            matchedKeyword = matchedKeywordFromResponse,
+            responseContains = responseValueAsJsonString.Substring(0, Math.Min(200, responseValueAsJsonString.Length))
+        });
+        
+        // Bước 12: Assert thông báo lỗi chứa ít nhất một từ khóa hợp lệ
+        errorMessageFoundInResponse.Should()
+            .BeTrue("Response error message should contain validation keyword about empty/invalid file size. " +
+                   $"Response was: {responseValueAsJsonString}");
+        
+        // Bước 13: Tạo response payload object để đính kèm vào Allure Report
+        var responsePayloadObject = new
+        {
+            statusCode = httpStatusCodeActual,
+            resultType = badRequestResultActual.GetType().Name,
+            errorMessageValidation = new
+            {
+                messageFound = errorMessageFoundInResponse,
+                matchedKeyword = matchedKeywordFromResponse,
+                expectedKeywords = allowedErrorMessageKeywords
+            },
+            responseContent = responseValueAsJsonString,
+            testResult = "PASSED - File rejected successfully",
+            timestamp = DateTime.UtcNow.ToString("O")
+        };
+        
+        AllureAttachmentHelper.AttachJson("response-payload", responsePayloadObject);
+        
+        // Bước 14: Verify task state không được cập nhật trong database
+        var collectionTaskFromDbAfterTest = await dbContextInstanceForTest.CollectionTasks
+            .FirstOrDefaultAsync(t => t.Id == collectionTaskIdForTest);
+        
+        if (collectionTaskFromDbAfterTest != null)
+        {
+            var taskStateAfterFailedUpload = new
+            {
+                taskId = collectionTaskFromDbAfterTest.Id,
+                status = collectionTaskFromDbAfterTest.Status.ToString(),
+                collectedWeightKg = collectionTaskFromDbAfterTest.CollectedWeightKg,
+                notes = collectionTaskFromDbAfterTest.Notes,
+                completedAt = collectionTaskFromDbAfterTest.CompletedAt,
+                imageCount = collectionTaskFromDbAfterTest.Images?.Count ?? 0,
+                expectedNoChanges = true
+            };
+            
+            AllureAttachmentHelper.AttachJson("database-state-after-failed-upload", taskStateAfterFailedUpload);
+            
+            // Assert: Task vẫn ở trạng thái OnTheWay, không bị cập nhật
+            collectionTaskFromDbAfterTest.Status.Should()
+                .Be(CollectionTaskStatus.OnTheWay, "Task status should not change after failed file upload");
+            
+            collectionTaskFromDbAfterTest.CollectedWeightKg.Should()
+                .BeNull("Weight should not be set after rejected file upload");
+        }
+        
+        // ==================== FINAL TEST SUMMARY ====================
+        
+        AllureAttachmentHelper.AttachJson("test-summary", new
+        {
+            testName = "UploadImage_WhenFileIsEmptyOrZeroBytes_ShouldReturn400BadRequest",
+            testResult = "PASSED",
+            fileSize = emptyFileByteCountExpected,
+            httpStatusCode = httpStatusCodeActual,
+            errorValidated = errorMessageFoundInResponse,
+            dbTransactionRolledBack = collectionTaskFromDbAfterTest?.CompletedAt == null,
+            assertions = new[]
+            {
+                "Response is BadRequestObjectResult",
+                "HTTP Status Code is 400",
+                "Error message contains validation keyword",
+                "Database transaction rolled back",
+                "Task status unchanged"
+            },
+            timestamp = DateTime.UtcNow.ToString("O")
+        });
+    }
+    
+    #endregion
 }
