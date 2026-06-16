@@ -81,6 +81,7 @@ logs/
 
 # Temporary files
 .tmp
+.tmp_*
 tmp/
 temp/
 *.tmp

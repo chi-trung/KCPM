@@ -307,9 +307,17 @@ jobs:
         if: always()
         run: |
           mkdir -p Waste-Recycling-Platform/allure-results
+          # Use workflow_run context when triggered by another workflow
+          SOURCE_SHA="${{ github.event.workflow_run.head_sha || github.sha }}"
+          SOURCE_BRANCH="${{ github.event.workflow_run.head_branch || github.ref_name }}"
+          TRIGGER_RUN_ID="${{ github.event.workflow_run.id || '' }}"
+          TRIGGER_RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id || github.run_id }}"
+
           cat > Waste-Recycling-Platform/allure-results/environment.properties <<EOF
-          GIT_BRANCH=${{ github.ref }}
-          GIT_COMMIT=${{ github.sha }}
+          GIT_BRANCH=${SOURCE_BRANCH}
+          GIT_COMMIT=${SOURCE_SHA}
+          TRIGGER_WORKFLOW=${{ github.event.workflow_run.name || 'manual' }}
+          TRIGGER_RUN_ID=${TRIGGER_RUN_ID}
           RUN_ID=${{ github.run_id }}
           RUN_URL=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           BUILD_NUMBER=${{ github.run_number }}
