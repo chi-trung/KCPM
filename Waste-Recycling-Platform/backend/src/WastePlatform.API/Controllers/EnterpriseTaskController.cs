@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System.Text.Json;
 using MediatR;
@@ -130,7 +131,7 @@ public class EnterpriseTaskController : ControllerBase
     /// Gán Collector cho một nhiệm vụ thu gom
     /// </summary>
     [HttpPut("{id}/assign-collector")]
-    public async Task<IActionResult> AssignCollector(Guid id, [FromBody] AssignCollectorRequest request)
+    public async Task<IActionResult> AssignCollector([Required] Guid id, [FromBody] AssignCollectorRequest request)
     {
         bool isAdmin = User.IsInRole("Admin");
         Enterprise? enterprise = null;
@@ -497,7 +498,7 @@ public class EnterpriseTaskController : ControllerBase
     /// Lấy tiến độ (timeline) chi tiết của một nhiệm vụ thu gom
     /// </summary>
     [HttpGet("{id}/progress")]
-    public async Task<IActionResult> GetTaskProgress(Guid id)
+    public async Task<IActionResult> GetTaskProgress([Required] Guid id)
     {
         bool isAdmin = User.IsInRole("Admin");
         Enterprise? enterprise = null;
@@ -617,7 +618,7 @@ public class EnterpriseTaskController : ControllerBase
     /// Phản hồi và giải quyết khiếu nại
     /// </summary>
     [HttpPost("complaints/{id}/respond")]
-    public async Task<IActionResult> RespondToComplaint(Guid id, [FromBody] EnterpriseRespondRequest request)
+    public async Task<IActionResult> RespondToComplaint([Required] Guid id, [FromBody] EnterpriseRespondRequest request)
     {
         try
         {
@@ -655,7 +656,9 @@ public class EnterpriseTaskController : ControllerBase
 public class EnterpriseRespondRequest
 {
     public string? Response { get; set; }
+    [Required]
     public bool ResolveImmediately { get; set; } = false;
+    [Required]
     public bool EscalateToAdmin { get; set; } = false;
 }
 
@@ -664,6 +667,7 @@ public class EnterpriseRespondRequest
 /// </summary>
 public class AssignCollectorRequest
 {
+    [Required]
     public Guid CollectorId { get; set; }
 }
 

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -63,7 +64,7 @@ public class AdminComplaintsController : ControllerBase
     /// Admin only endpoint.
     /// </remarks>
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetComplaintDetail(Guid id)
+    public async Task<IActionResult> GetComplaintDetail([Required] Guid id)
     {
         try
         {
@@ -90,7 +91,7 @@ public class AdminComplaintsController : ControllerBase
     /// Admin only endpoint.
     /// </remarks>
     [HttpPost("{id}/resolve")]
-    public async Task<IActionResult> ResolveComplaint(Guid id, [FromBody] ComplaintResponseRequest request)
+    public async Task<IActionResult> ResolveComplaint([Required] Guid id, [FromBody] ComplaintResponseRequest request)
     {
         try
         {
@@ -150,7 +151,7 @@ public class AdminComplaintsController : ControllerBase
     /// Admin only endpoint.
     /// </remarks>
     [HttpPost("{id}/reject")]
-    public async Task<IActionResult> RejectComplaint(Guid id, [FromBody] ComplaintResponseRequest request)
+    public async Task<IActionResult> RejectComplaint([Required] Guid id, [FromBody] ComplaintResponseRequest request)
     {
         try
         {

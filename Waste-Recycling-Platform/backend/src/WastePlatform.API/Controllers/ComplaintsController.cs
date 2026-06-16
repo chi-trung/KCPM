@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -95,7 +96,7 @@ public class ComplaintsController : ControllerBase
 
     /// <summary>Get complaint detail by ID</summary>
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetComplaintDetail(Guid id)
+    public async Task<IActionResult> GetComplaintDetail([Required] Guid id)
     {
         try
         {
@@ -126,7 +127,7 @@ public class ComplaintsController : ControllerBase
 
     [HttpPost("{id:guid}/escalate")]
     [Authorize(Roles = "Citizen")]
-    public async Task<IActionResult> EscalateToAdmin(Guid id, [FromBody] CitizenEscalateRequest request)
+    public async Task<IActionResult> EscalateToAdmin([Required] Guid id, [FromBody] CitizenEscalateRequest request)
     {
         try
         {

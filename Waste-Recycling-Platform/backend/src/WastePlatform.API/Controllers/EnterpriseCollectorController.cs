@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -116,7 +117,7 @@ public class EnterpriseCollectorController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateCollector(Guid id, [FromBody] UpdateEnterpriseCollectorRequest request)
+    public async Task<IActionResult> UpdateCollector([Required] Guid id, [FromBody] UpdateEnterpriseCollectorRequest request)
     {
         var enterprise = await GetCurrentEnterpriseAsync();
         if (enterprise == null)
@@ -175,7 +176,7 @@ public class EnterpriseCollectorController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteCollector(Guid id)
+    public async Task<IActionResult> DeleteCollector([Required] Guid id)
     {
         var enterprise = await GetCurrentEnterpriseAsync();
         if (enterprise == null)
@@ -216,6 +217,7 @@ public class CreateEnterpriseCollectorRequest
     public string Email { get; set; } = string.Empty;
     public string? Phone { get; set; }
     public string TemporaryPassword { get; set; } = string.Empty;
+    [Required]
     public bool IsAvailable { get; set; } = true;
 }
 
@@ -225,5 +227,6 @@ public class UpdateEnterpriseCollectorRequest
     public string Email { get; set; } = string.Empty;
     public string? Phone { get; set; }
     public string? TemporaryPassword { get; set; }
+    [Required]
     public bool IsAvailable { get; set; } = true;
 }

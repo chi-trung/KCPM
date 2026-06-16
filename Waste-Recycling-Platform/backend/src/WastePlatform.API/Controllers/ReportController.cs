@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System.Text.Json;
 using MediatR;
@@ -93,7 +94,7 @@ public class ReportController : ControllerBase
 
     /// <summary>Lấy chi tiết báo cáo theo ID</summary>
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetReportById(Guid id)
+    public async Task<IActionResult> GetReportById([Required] Guid id)
     {
         try
         {
@@ -220,7 +221,7 @@ public class ReportController : ControllerBase
     /// <summary>Chấp nhận báo cáo và tạo nhiệm vụ thu gom (Admin/Enterprise)</summary>
     [HttpPost("{id}/accept")]
     [Authorize(Roles = "Admin,Enterprise")]
-    public async Task<IActionResult> AcceptReportAndCreateTask(Guid id)
+    public async Task<IActionResult> AcceptReportAndCreateTask([Required] Guid id)
     {
         try
         {
@@ -305,7 +306,7 @@ public class ReportController : ControllerBase
     /// <summary>Từ chối báo cáo (Admin/Enterprise)</summary>
     [HttpPost("{id}/reject")]
     [Authorize(Roles = "Admin,Enterprise")]
-    public async Task<IActionResult> RejectReport(Guid id, [FromBody] RejectReportRequest request)
+    public async Task<IActionResult> RejectReport([Required] Guid id, [FromBody] RejectReportRequest request)
     {
         try
         {

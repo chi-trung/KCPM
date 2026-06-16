@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -120,7 +121,7 @@ public class NotificationController : ControllerBase
     /// Đánh dấu một thông báo là đã đọc
     /// </summary>
     [HttpPut("{id}/read")]
-    public async Task<IActionResult> MarkAsRead(Guid id)
+    public async Task<IActionResult> MarkAsRead([Required] Guid id)
     {
         try
         {

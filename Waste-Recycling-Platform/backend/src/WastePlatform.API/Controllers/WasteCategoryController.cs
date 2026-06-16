@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -42,7 +43,7 @@ public class WasteCategoryController : ControllerBase
 
     /// <summary>Lấy chi tiết loại rác theo ID</summary>
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetCategoryById(int id)
+    public async Task<IActionResult> GetCategoryById([Required] int id)
     {
         try
         {

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -104,7 +105,7 @@ public class CollectorTaskController : ControllerBase
     /// WRP-109: Lấy chi tiết một nhiệm vụ thu gom
     /// </summary>
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetTaskById(Guid id)
+    public async Task<IActionResult> GetTaskById([Required] Guid id)
     {
         var collector = await GetCurrentCollectorAsync();
         if (collector == null)
@@ -161,7 +162,7 @@ public class CollectorTaskController : ControllerBase
     /// Cập nhật trạng thái nhiệm vụ thành "On the way" (Đang di chuyển)
     /// </summary>
     [HttpPut("{id}/on-the-way")]
-    public async Task<IActionResult> SetOnTheWay(Guid id)
+    public async Task<IActionResult> SetOnTheWay([Required] Guid id)
     {
         var collector = await GetCurrentCollectorAsync();
         if (collector == null)
@@ -218,7 +219,7 @@ public class CollectorTaskController : ControllerBase
     /// Cập nhật trạng thái nhiệm vụ thành "Collected" (Đã thu gom) kèm theo khối lượng, ghi chú và hình ảnh
     /// </summary>
     [HttpPut("{id}/complete")]
-    public async Task<IActionResult> CompleteTask(Guid id, [FromForm] IFormCollection form)
+    public async Task<IActionResult> CompleteTask([Required] Guid id, [FromForm] IFormCollection form)
     {
         var collector = await GetCurrentCollectorAsync();
         if (collector == null)

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -55,7 +56,7 @@ public class AdminEnterpriseController : ControllerBase
     /// Admin only endpoint.
     /// </remarks>
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetEnterpriseDetail(Guid id)
+    public async Task<IActionResult> GetEnterpriseDetail([Required] Guid id)
     {
         try
         {
@@ -82,7 +83,7 @@ public class AdminEnterpriseController : ControllerBase
     /// Admin only endpoint.
     /// </remarks>
     [HttpPost("{id}/verify")]
-    public async Task<IActionResult> VerifyEnterprise(Guid id)
+    public async Task<IActionResult> VerifyEnterprise([Required] Guid id)
     {
         try
         {
@@ -109,7 +110,7 @@ public class AdminEnterpriseController : ControllerBase
     /// Admin only endpoint.
     /// </remarks>
     [HttpPost("{id}/reject")]
-    public async Task<IActionResult> RejectEnterprise(Guid id, [FromBody] RejectEnterpriseRequest request)
+    public async Task<IActionResult> RejectEnterprise([Required] Guid id, [FromBody] RejectEnterpriseRequest request)
     {
         try
         {
