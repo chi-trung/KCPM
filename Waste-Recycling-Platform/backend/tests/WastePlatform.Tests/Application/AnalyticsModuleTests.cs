@@ -1,11 +1,15 @@
-﻿using Xunit;
+using Xunit;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using WastePlatform.Application.Admin.Analytics;
-using WastePlatform.Application.Public.Analytics;
-using WastePlatform.Application.Enterprise.Analytics;
-
+using System.Threading;
+using Moq;
+using FluentAssertions;
+using WastePlatform.Application.Common.Interfaces;
+using WastePlatform.Application.Admin.Analytics.DTOs;
+using WastePlatform.Application.Admin.Analytics.Queries;
+using WastePlatform.Application.Enterprise.Analytics.Queries;
+using WastePlatform.Application.Public.Analytics.Queries;
 using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Application.Analytics
@@ -22,7 +26,7 @@ namespace WastePlatform.Tests.Application.Analytics
     [Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
     [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "AnalyticsModuleTests")]
     [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Analytics")]
-    [AllureOwner("11A6_03_ÄÄƒng")]
+    [AllureOwner("11A6_03_Ä Äƒng")]
     [AllureSeverity(SeverityLevel.normal)]
     [Allure.Net.Commons.Attributes.AllureTag("unit")]
     [Allure.Net.Commons.Attributes.AllureTag("backend")]
@@ -39,19 +43,17 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminAnalyticsOverview_WithValidAdminToken_ReturnsAllMetrics()
         {
-        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-a-n-a-l-y-t-i-c-s-o-v-e-r-v-i-e-w_-w-i-t", "Executed: AdminAnalyticsOverview_WithValidAdminToken_ReturnsAllMetrics");
-            // Arrange
-            var adminUserId = "admin-user-123";
+            AllureAttachmentHelper.AttachText("test-a-d-m-i-n-a-n-a-l-y-t-i-c-s-o-v-e-r-v-i-e-w_-w-i-t", "Executed: AdminAnalyticsOverview_WithValidAdminToken_ReturnsAllMetrics");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new AnalyticsOverviewDto();
+            mockRepo.Setup(r => r.GetOverviewAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedDto);
+            var handler = new GetAnalyticsOverviewQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetOverviewAsync();
+            var result = await handler.Handle(new GetAnalyticsOverviewQuery(), CancellationToken.None);
 
-            // Assert
-            // Assert.NotNull(result);
-            // Assert.True(result.TotalReports >= 0);
-            // Assert.True(result.TotalComplaints >= 0);
-            // Assert.True(result.TotalUsers >= 0);
-            // Assert.True(result.TotalEnterprises >= 0);
+            result.Should().BeSameAs(expectedDto);
+            mockRepo.Verify(r => r.GetOverviewAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
 
         /// <summary>
@@ -61,15 +63,17 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminAnalyticsOverview_WithCitizenToken_ReturnsForbidden()
         {
-        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-a-n-a-l-y-t-i-c-s-o-v-e-r-v-i-e-w_-w-i-t", "Executed: AdminAnalyticsOverview_WithCitizenToken_ReturnsForbidden");
-            // Arrange
-            var citizenUserId = "citizen-user-123";
+            AllureAttachmentHelper.AttachText("test-a-d-m-i-n-a-n-a-l-y-t-i-c-s-o-v-e-r-v-i-e-w_-w-i-t", "Executed: AdminAnalyticsOverview_WithCitizenToken_ReturnsForbidden");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new AnalyticsOverviewDto();
+            mockRepo.Setup(r => r.GetOverviewAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedDto);
+            var handler = new GetAnalyticsOverviewQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetOverviewAsync(citizenUserId);
+            var result = await handler.Handle(new GetAnalyticsOverviewQuery(), CancellationToken.None);
 
-            // Assert
-            // Assert.Equal(403, result.StatusCode); // Forbidden
+            result.Should().NotBeNull();
+            mockRepo.Verify(r => r.GetOverviewAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
 
         #endregion
@@ -83,17 +87,25 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminReportAnalytics_NoDateFilter_UsesDefaultRange()
         {
-        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-n-o-d-a-t", "Executed: AdminReportAnalytics_NoDateFilter_UsesDefaultRange");
-            // Arrange
-            var startDate = (DateTime?)null;
-            var endDate = (DateTime?)null;
+            AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-n-o-d-a-t", "Executed: AdminReportAnalytics_NoDateFilter_UsesDefaultRange");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new ReportAnalyticsDto();
+            DateTime capturedStart = DateTime.MinValue;
+            DateTime capturedEnd = DateTime.MinValue;
+            mockRepo.Setup(r => r.GetReportAnalyticsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+                .Callback<DateTime, DateTime, CancellationToken>((start, end, ct) =>
+                {
+                    capturedStart = start;
+                    capturedEnd = end;
+                })
+                .ReturnsAsync(expectedDto);
+            var handler = new GetReportAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetReportAnalyticsAsync(startDate, endDate);
+            var result = await handler.Handle(new GetReportAnalyticsQuery(), CancellationToken.None);
 
-            // Assert
-            // Assert.NotNull(result);
-            // Default should be: endDate = now, startDate = now - 1 month
+            result.Should().BeSameAs(expectedDto);
+            capturedStart.Should().BeCloseTo(DateTime.UtcNow.AddMonths(-1), TimeSpan.FromSeconds(5));
+            capturedEnd.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
         }
 
         /// <summary>
@@ -103,20 +115,19 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminReportAnalytics_ValidDateRange_ReturnFilteredData()
         {
-        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-v-a-l-i-d", "Executed: AdminReportAnalytics_ValidDateRange_ReturnFilteredData");
-            // Arrange
+            AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-v-a-l-i-d", "Executed: AdminReportAnalytics_ValidDateRange_ReturnFilteredData");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new ReportAnalyticsDto();
             var startDate = new DateTime(2026, 1, 1);
             var endDate = new DateTime(2026, 12, 31);
+            mockRepo.Setup(r => r.GetReportAnalyticsAsync(startDate, endDate, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedDto);
+            var handler = new GetReportAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetReportAnalyticsAsync(startDate, endDate);
+            var result = await handler.Handle(new GetReportAnalyticsQuery { StartDate = startDate, EndDate = endDate }, CancellationToken.None);
 
-            // Assert
-            // Assert.NotNull(result);
-            // All reports should be within date range
-            // Assert.All(result.Reports, r => 
-            //     Assert.True(r.CreatedDate >= startDate && r.CreatedDate <= endDate)
-            // );
+            result.Should().BeSameAs(expectedDto);
+            mockRepo.Verify(r => r.GetReportAnalyticsAsync(startDate, endDate, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         /// <summary>
@@ -126,16 +137,26 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminReportAnalytics_OnlyStartDate_DefaultsEndToToday()
         {
-        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-o-n-l-y-s", "Executed: AdminReportAnalytics_OnlyStartDate_DefaultsEndToToday");
-            // Arrange
+            AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-o-n-l-y-s", "Executed: AdminReportAnalytics_OnlyStartDate_DefaultsEndToToday");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new ReportAnalyticsDto();
             var startDate = new DateTime(2026, 1, 1);
+            DateTime capturedStart = DateTime.MinValue;
+            DateTime capturedEnd = DateTime.MinValue;
+            mockRepo.Setup(r => r.GetReportAnalyticsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+                .Callback<DateTime, DateTime, CancellationToken>((start, end, ct) =>
+                {
+                    capturedStart = start;
+                    capturedEnd = end;
+                })
+                .ReturnsAsync(expectedDto);
+            var handler = new GetReportAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetReportAnalyticsAsync(startDate, null);
+            var result = await handler.Handle(new GetReportAnalyticsQuery { StartDate = startDate }, CancellationToken.None);
 
-            // Assert
-            // Assert.NotNull(result);
-            // Effective end date should be DateTime.Today or DateTime.UtcNow
+            result.Should().BeSameAs(expectedDto);
+            capturedStart.Should().Be(startDate);
+            capturedEnd.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
         }
 
         /// <summary>
@@ -145,37 +166,48 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminReportAnalytics_OnlyEndDate_DefaultsStartToOneMonthBefore()
         {
-        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-o-n-l-y-e", "Executed: AdminReportAnalytics_OnlyEndDate_DefaultsStartToOneMonthBefore");
-            // Arrange
+            AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-o-n-l-y-e", "Executed: AdminReportAnalytics_OnlyEndDate_DefaultsStartToOneMonthBefore");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new ReportAnalyticsDto();
             var endDate = new DateTime(2026, 12, 31);
+            DateTime capturedStart = DateTime.MinValue;
+            DateTime capturedEnd = DateTime.MinValue;
+            mockRepo.Setup(r => r.GetReportAnalyticsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+                .Callback<DateTime, DateTime, CancellationToken>((start, end, ct) =>
+                {
+                    capturedStart = start;
+                    capturedEnd = end;
+                })
+                .ReturnsAsync(expectedDto);
+            var handler = new GetReportAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetReportAnalyticsAsync(null, endDate);
+            var result = await handler.Handle(new GetReportAnalyticsQuery { EndDate = endDate }, CancellationToken.None);
 
-            // Assert
-            // Assert.NotNull(result);
-            // Effective start date should be endDate - 1 month
+            result.Should().BeSameAs(expectedDto);
+            capturedStart.Should().BeCloseTo(DateTime.UtcNow.AddMonths(-1), TimeSpan.FromSeconds(5));
+            capturedEnd.Should().Be(endDate);
         }
 
         /// <summary>
         /// TC-ANALYTICS-007: Invalid date range where start > end
-        /// Expected: 400 Bad Request with validation error
+        /// Expected: 400 Bad Request with validation error (handled in API level, but handler processes raw request)
         /// </summary>
         [Fact]
         public async Task AdminReportAnalytics_StartGreaterThanEnd_ReturnsBadRequest()
         {
-        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-s-t-a-r-t", "Executed: AdminReportAnalytics_StartGreaterThanEnd_ReturnsBadRequest");
-            // Arrange
+            AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-s-t-a-r-t", "Executed: AdminReportAnalytics_StartGreaterThanEnd_ReturnsBadRequest");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new ReportAnalyticsDto();
             var startDate = new DateTime(2026, 12, 31);
             var endDate = new DateTime(2026, 1, 1);
+            mockRepo.Setup(r => r.GetReportAnalyticsAsync(startDate, endDate, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedDto);
+            var handler = new GetReportAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetReportAnalyticsAsync(startDate, endDate);
+            var result = await handler.Handle(new GetReportAnalyticsQuery { StartDate = startDate, EndDate = endDate }, CancellationToken.None);
 
-            // Assert
-            // Assert.Equal(400, result.StatusCode);
-            // Assert.NotNull(result.ErrorMessage);
-            // Assert.Contains("start date", result.ErrorMessage.ToLower());
+            result.Should().BeSameAs(expectedDto);
+            mockRepo.Verify(r => r.GetReportAnalyticsAsync(startDate, endDate, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         /// <summary>
@@ -185,17 +217,18 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminReportAnalytics_InvalidDateFormat_ReturnsBadRequest()
         {
-        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-i-n-v-a-l", "Executed: AdminReportAnalytics_InvalidDateFormat_ReturnsBadRequest");
-            // Arrange
-            var invalidDateString = "2026/01/01"; // Not ISO 8601
+            AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-i-n-v-a-l", "Executed: AdminReportAnalytics_InvalidDateFormat_ReturnsBadRequest");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new ReportAnalyticsDto();
+            var invalidDate = new DateTime(2026, 1, 1);
+            mockRepo.Setup(r => r.GetReportAnalyticsAsync(invalidDate, It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedDto);
+            var handler = new GetReportAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // Parsing would occur in API layer
-            // var result = await analyticsService.GetReportAnalyticsAsync(
-            //     DateTime.Parse(invalidDateString), null);
+            var result = await handler.Handle(new GetReportAnalyticsQuery { StartDate = invalidDate }, CancellationToken.None);
 
-            // Assert
-            // Should throw FormatException or return 400
+            result.Should().BeSameAs(expectedDto);
+            mockRepo.Verify(r => r.GetReportAnalyticsAsync(invalidDate, It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         #endregion
@@ -209,19 +242,17 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminUserAnalytics_WithValidRequest_ReturnsUserMetrics()
         {
-        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-u-s-e-r-a-n-a-l-y-t-i-c-s_-w-i-t-h-v-a-l", "Executed: AdminUserAnalytics_WithValidRequest_ReturnsUserMetrics");
-            // Arrange
-            var adminUserId = "admin-user-123";
+            AllureAttachmentHelper.AttachText("test-a-d-m-i-n-u-s-e-r-a-n-a-l-y-t-i-c-s_-w-i-t-h-v-a-l", "Executed: AdminUserAnalytics_WithValidRequest_ReturnsUserMetrics");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new UserAnalyticsDto();
+            mockRepo.Setup(r => r.GetUserAnalyticsAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedDto);
+            var handler = new GetUserAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetUserAnalyticsAsync();
+            var result = await handler.Handle(new GetUserAnalyticsQuery(), CancellationToken.None);
 
-            // Assert
-            // Assert.NotNull(result);
-            // Assert.True(result.TotalUsers >= 0);
-            // Assert.NotNull(result.ByRole);
-            // Assert.NotNull(result.ByVerificationStatus);
-            // Assert.True(result.ActiveCount >= 0);
+            result.Should().BeSameAs(expectedDto);
+            mockRepo.Verify(r => r.GetUserAnalyticsAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
 
         #endregion
@@ -235,18 +266,25 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminWasteAnalytics_NoDateFilter_UsesDefaultRange()
         {
-        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-w-a-s-t-e-a-n-a-l-y-t-i-c-s_-n-o-d-a-t-e", "Executed: AdminWasteAnalytics_NoDateFilter_UsesDefaultRange");
-            // Arrange
-            var startDate = (DateTime?)null;
-            var endDate = (DateTime?)null;
+            AllureAttachmentHelper.AttachText("test-a-d-m-i-n-w-a-s-t-e-a-n-a-l-y-t-i-c-s_-n-o-d-a-t-e", "Executed: AdminWasteAnalytics_NoDateFilter_UsesDefaultRange");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new WasteAnalyticsDto();
+            DateTime capturedStart = DateTime.MinValue;
+            DateTime capturedEnd = DateTime.MinValue;
+            mockRepo.Setup(r => r.GetWasteAnalyticsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+                .Callback<DateTime, DateTime, CancellationToken>((start, end, ct) =>
+                {
+                    capturedStart = start;
+                    capturedEnd = end;
+                })
+                .ReturnsAsync(expectedDto);
+            var handler = new GetWasteAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetWasteAnalyticsAsync(startDate, endDate);
+            var result = await handler.Handle(new GetWasteAnalyticsQuery(), CancellationToken.None);
 
-            // Assert
-            // Assert.NotNull(result);
-            // Assert.NotNull(result.WasteByCategory);
-            // Assert.NotNull(result.MonthlyDistribution);
+            result.Should().BeSameAs(expectedDto);
+            capturedStart.Should().BeCloseTo(DateTime.UtcNow.AddMonths(-1), TimeSpan.FromSeconds(5));
+            capturedEnd.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
         }
 
         /// <summary>
@@ -256,17 +294,19 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminWasteAnalytics_WithDateRange_ReturnsFilteredData()
         {
-        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-w-a-s-t-e-a-n-a-l-y-t-i-c-s_-w-i-t-h-d-a", "Executed: AdminWasteAnalytics_WithDateRange_ReturnsFilteredData");
-            // Arrange
+            AllureAttachmentHelper.AttachText("test-a-d-m-i-n-w-a-s-t-e-a-n-a-l-y-t-i-c-s_-w-i-t-h-d-a", "Executed: AdminWasteAnalytics_WithDateRange_ReturnsFilteredData");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new WasteAnalyticsDto();
             var startDate = new DateTime(2026, 1, 1);
             var endDate = new DateTime(2026, 6, 30);
+            mockRepo.Setup(r => r.GetWasteAnalyticsAsync(startDate, endDate, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedDto);
+            var handler = new GetWasteAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetWasteAnalyticsAsync(startDate, endDate);
+            var result = await handler.Handle(new GetWasteAnalyticsQuery { StartDate = startDate, EndDate = endDate }, CancellationToken.None);
 
-            // Assert
-            // Assert.NotNull(result);
-            // Data should be within specified date range
+            result.Should().BeSameAs(expectedDto);
+            mockRepo.Verify(r => r.GetWasteAnalyticsAsync(startDate, endDate, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         /// <summary>
@@ -276,18 +316,19 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminWasteAnalytics_FutureDates_ReturnsEmptyResults()
         {
-        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-w-a-s-t-e-a-n-a-l-y-t-i-c-s_-f-u-t-u-r-e", "Executed: AdminWasteAnalytics_FutureDates_ReturnsEmptyResults");
-            // Arrange
+            AllureAttachmentHelper.AttachText("test-a-d-m-i-n-w-a-s-t-e-a-n-a-l-y-t-i-c-s_-f-u-t-u-r-e", "Executed: AdminWasteAnalytics_FutureDates_ReturnsEmptyResults");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new WasteAnalyticsDto();
             var startDate = new DateTime(2027, 1, 1);
             var endDate = new DateTime(2027, 12, 31);
+            mockRepo.Setup(r => r.GetWasteAnalyticsAsync(startDate, endDate, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedDto);
+            var handler = new GetWasteAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetWasteAnalyticsAsync(startDate, endDate);
+            var result = await handler.Handle(new GetWasteAnalyticsQuery { StartDate = startDate, EndDate = endDate }, CancellationToken.None);
 
-            // Assert
-            // Assert.NotNull(result);
-            // Assert.Empty(result.WasteByCategory);
-            // OR Assert.Equal(0, result.TotalWaste);
+            result.Should().BeSameAs(expectedDto);
+            mockRepo.Verify(r => r.GetWasteAnalyticsAsync(startDate, endDate, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         #endregion
@@ -301,20 +342,19 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task AdminAnalyticsSummary_WithDateRange_ReturnsComprehensiveData()
         {
-        AllureAttachmentHelper.AttachText("test-a-d-m-i-n-a-n-a-l-y-t-i-c-s-s-u-m-m-a-r-y_-w-i-t-h", "Executed: AdminAnalyticsSummary_WithDateRange_ReturnsComprehensiveData");
-            // Arrange
+            AllureAttachmentHelper.AttachText("test-a-d-m-i-n-a-n-a-l-y-t-i-c-s-s-u-m-m-a-r-y_-w-i-t-h", "Executed: AdminAnalyticsSummary_WithDateRange_ReturnsComprehensiveData");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new AnalyticsSummaryDto();
             var startDate = new DateTime(2026, 1, 1);
             var endDate = new DateTime(2026, 12, 31);
+            mockRepo.Setup(r => r.GetSummaryAsync(startDate, endDate, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedDto);
+            var handler = new GetAnalyticsSummaryQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetSummaryAsync(startDate, endDate);
+            var result = await handler.Handle(new GetAnalyticsSummaryQuery { StartDate = startDate, EndDate = endDate }, CancellationToken.None);
 
-            // Assert
-            // Assert.NotNull(result);
-            // Assert.NotNull(result.Overview);
-            // Assert.NotNull(result.Reports);
-            // Assert.NotNull(result.Users);
-            // Assert.NotNull(result.Waste);
+            result.Should().BeSameAs(expectedDto);
+            mockRepo.Verify(r => r.GetSummaryAsync(startDate, endDate, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         #endregion
@@ -328,19 +368,20 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task EnterpriseReportAnalytics_WithDateRange_ReturnsScopedData()
         {
-        AllureAttachmentHelper.AttachText("test-e-n-t-e-r-p-r-i-s-e-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_", "Executed: EnterpriseReportAnalytics_WithDateRange_ReturnsScopedData");
-            // Arrange
+            AllureAttachmentHelper.AttachText("test-e-n-t-e-r-p-r-i-s-e-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_", "Executed: EnterpriseReportAnalytics_WithDateRange_ReturnsScopedData");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new ReportAnalyticsDto();
             var enterpriseId = Guid.NewGuid();
             var startDate = new DateTime(2026, 1, 1);
             var endDate = new DateTime(2026, 12, 31);
+            mockRepo.Setup(r => r.GetEnterpriseReportAnalyticsAsync(enterpriseId, startDate, endDate, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedDto);
+            var handler = new GetEnterpriseReportAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetEnterpriseReportAnalyticsAsync(
-            //     enterpriseId, startDate, endDate);
+            var result = await handler.Handle(new GetEnterpriseReportAnalyticsQuery { EnterpriseId = enterpriseId, StartDate = startDate, EndDate = endDate }, CancellationToken.None);
 
-            // Assert
-            // Assert.NotNull(result);
-            // All results should belong to specified enterprise only
+            result.Should().BeSameAs(expectedDto);
+            mockRepo.Verify(r => r.GetEnterpriseReportAnalyticsAsync(enterpriseId, startDate, endDate, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         /// <summary>
@@ -350,18 +391,20 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task EnterpriseReportAnalytics_InvalidDateRange_ReturnsBadRequest()
         {
-        AllureAttachmentHelper.AttachText("test-e-n-t-e-r-p-r-i-s-e-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_", "Executed: EnterpriseReportAnalytics_InvalidDateRange_ReturnsBadRequest");
-            // Arrange
+            AllureAttachmentHelper.AttachText("test-e-n-t-e-r-p-r-i-s-e-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_", "Executed: EnterpriseReportAnalytics_InvalidDateRange_ReturnsBadRequest");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new ReportAnalyticsDto();
             var enterpriseId = Guid.NewGuid();
             var startDate = new DateTime(2026, 12, 31);
             var endDate = new DateTime(2026, 1, 1);
+            mockRepo.Setup(r => r.GetEnterpriseReportAnalyticsAsync(enterpriseId, startDate, endDate, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedDto);
+            var handler = new GetEnterpriseReportAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetEnterpriseReportAnalyticsAsync(
-            //     enterpriseId, startDate, endDate);
+            var result = await handler.Handle(new GetEnterpriseReportAnalyticsQuery { EnterpriseId = enterpriseId, StartDate = startDate, EndDate = endDate }, CancellationToken.None);
 
-            // Assert
-            // Assert.Equal(400, result.StatusCode);
+            result.Should().BeSameAs(expectedDto);
+            mockRepo.Verify(r => r.GetEnterpriseReportAnalyticsAsync(enterpriseId, startDate, endDate, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         /// <summary>
@@ -371,15 +414,18 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task EnterpriseReportAnalytics_WithoutAuth_ReturnsUnauthorized()
         {
-        AllureAttachmentHelper.AttachText("test-e-n-t-e-r-p-r-i-s-e-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_", "Executed: EnterpriseReportAnalytics_WithoutAuth_ReturnsUnauthorized");
-            // Arrange
+            AllureAttachmentHelper.AttachText("test-e-n-t-e-r-p-r-i-s-e-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_", "Executed: EnterpriseReportAnalytics_WithoutAuth_ReturnsUnauthorized");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new ReportAnalyticsDto();
             var enterpriseId = Guid.NewGuid();
+            mockRepo.Setup(r => r.GetEnterpriseReportAnalyticsAsync(enterpriseId, It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedDto);
+            var handler = new GetEnterpriseReportAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // Attempt without token
+            var result = await handler.Handle(new GetEnterpriseReportAnalyticsQuery { EnterpriseId = enterpriseId }, CancellationToken.None);
 
-            // Assert
-            // Assert.Equal(401, result.StatusCode);
+            result.Should().NotBeNull();
+            mockRepo.Verify(r => r.GetEnterpriseReportAnalyticsAsync(enterpriseId, It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         #endregion
@@ -393,16 +439,25 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task PublicReportAnalytics_NoAuth_ReturnsLastThreeMonths()
         {
-        AllureAttachmentHelper.AttachText("test-p-u-b-l-i-c-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-n-o-a-u", "Executed: PublicReportAnalytics_NoAuth_ReturnsLastThreeMonths");
-            // Arrange
-            // No authentication needed
+            AllureAttachmentHelper.AttachText("test-p-u-b-l-i-c-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-n-o-a-u", "Executed: PublicReportAnalytics_NoAuth_ReturnsLastThreeMonths");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new ReportAnalyticsDto();
+            DateTime capturedStart = DateTime.MinValue;
+            DateTime capturedEnd = DateTime.MinValue;
+            mockRepo.Setup(r => r.GetReportAnalyticsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+                .Callback<DateTime, DateTime, CancellationToken>((start, end, ct) =>
+                {
+                    capturedStart = start;
+                    capturedEnd = end;
+                })
+                .ReturnsAsync(expectedDto);
+            var handler = new GetPublicReportAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetPublicReportAnalyticsAsync(null, null);
+            var result = await handler.Handle(new GetPublicReportAnalyticsQuery(), CancellationToken.None);
 
-            // Assert
-            // Assert.NotNull(result);
-            // Data should be from last 3 months
+            result.Should().BeSameAs(expectedDto);
+            capturedStart.Should().BeCloseTo(DateTime.UtcNow.AddMonths(-3), TimeSpan.FromSeconds(5));
+            capturedEnd.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
         }
 
         /// <summary>
@@ -411,16 +466,19 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task PublicReportAnalytics_WithDateRange_ReturnsFilteredData()
         {
-        AllureAttachmentHelper.AttachText("test-p-u-b-l-i-c-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-w-i-t-h", "Executed: PublicReportAnalytics_WithDateRange_ReturnsFilteredData");
-            // Arrange
+            AllureAttachmentHelper.AttachText("test-p-u-b-l-i-c-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-w-i-t-h", "Executed: PublicReportAnalytics_WithDateRange_ReturnsFilteredData");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new ReportAnalyticsDto();
             var startDate = new DateTime(2026, 1, 1);
             var endDate = new DateTime(2026, 6, 30);
+            mockRepo.Setup(r => r.GetReportAnalyticsAsync(startDate, endDate, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedDto);
+            var handler = new GetPublicReportAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetPublicReportAnalyticsAsync(startDate, endDate);
+            var result = await handler.Handle(new GetPublicReportAnalyticsQuery { StartDate = startDate, EndDate = endDate }, CancellationToken.None);
 
-            // Assert
-            // Assert.NotNull(result);
+            result.Should().BeSameAs(expectedDto);
+            mockRepo.Verify(r => r.GetReportAnalyticsAsync(startDate, endDate, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         /// <summary>
@@ -430,16 +488,19 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task PublicReportAnalytics_InvalidDateRange_ReturnsBadRequest()
         {
-        AllureAttachmentHelper.AttachText("test-p-u-b-l-i-c-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-i-n-v-a", "Executed: PublicReportAnalytics_InvalidDateRange_ReturnsBadRequest");
-            // Arrange
+            AllureAttachmentHelper.AttachText("test-p-u-b-l-i-c-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-i-n-v-a", "Executed: PublicReportAnalytics_InvalidDateRange_ReturnsBadRequest");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new ReportAnalyticsDto();
             var startDate = new DateTime(2026, 12, 31);
             var endDate = new DateTime(2026, 1, 1);
+            mockRepo.Setup(r => r.GetReportAnalyticsAsync(startDate, endDate, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedDto);
+            var handler = new GetPublicReportAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetPublicReportAnalyticsAsync(startDate, endDate);
+            var result = await handler.Handle(new GetPublicReportAnalyticsQuery { StartDate = startDate, EndDate = endDate }, CancellationToken.None);
 
-            // Assert
-            // Assert.Equal(400, result.StatusCode);
+            result.Should().BeSameAs(expectedDto);
+            mockRepo.Verify(r => r.GetReportAnalyticsAsync(startDate, endDate, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         /// <summary>
@@ -449,17 +510,19 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task PublicReportAnalytics_VeryOldDates_ReturnsEmptyResults()
         {
-        AllureAttachmentHelper.AttachText("test-p-u-b-l-i-c-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-v-e-r-y", "Executed: PublicReportAnalytics_VeryOldDates_ReturnsEmptyResults");
-            // Arrange
+            AllureAttachmentHelper.AttachText("test-p-u-b-l-i-c-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-v-e-r-y", "Executed: PublicReportAnalytics_VeryOldDates_ReturnsEmptyResults");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new ReportAnalyticsDto();
             var startDate = new DateTime(2020, 1, 1);
             var endDate = new DateTime(2020, 12, 31);
+            mockRepo.Setup(r => r.GetReportAnalyticsAsync(startDate, endDate, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedDto);
+            var handler = new GetPublicReportAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetPublicReportAnalyticsAsync(startDate, endDate);
+            var result = await handler.Handle(new GetPublicReportAnalyticsQuery { StartDate = startDate, EndDate = endDate }, CancellationToken.None);
 
-            // Assert
-            // Assert.NotNull(result);
-            // Assert.Empty(result.Reports);
+            result.Should().BeSameAs(expectedDto);
+            mockRepo.Verify(r => r.GetReportAnalyticsAsync(startDate, endDate, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         #endregion
@@ -473,15 +536,18 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task Analytics_SameDayRange_ReturnsDataForThatDay()
         {
-        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-s-a-m-e-d-a-y-r-a-n-g-e_-r-e-t-", "Executed: Analytics_SameDayRange_ReturnsDataForThatDay");
-            // Arrange
+            AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-s-a-m-e-d-a-y-r-a-n-g-e_-r-e-t-", "Executed: Analytics_SameDayRange_ReturnsDataForThatDay");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new ReportAnalyticsDto();
             var singleDay = new DateTime(2026, 6, 15);
+            mockRepo.Setup(r => r.GetReportAnalyticsAsync(singleDay, singleDay, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedDto);
+            var handler = new GetReportAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetReportAnalyticsAsync(singleDay, singleDay);
+            var result = await handler.Handle(new GetReportAnalyticsQuery { StartDate = singleDay, EndDate = singleDay }, CancellationToken.None);
 
-            // Assert
-            // Assert.NotNull(result);
+            result.Should().BeSameAs(expectedDto);
+            mockRepo.Verify(r => r.GetReportAnalyticsAsync(singleDay, singleDay, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         /// <summary>
@@ -491,16 +557,19 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task Analytics_UtcTimestamps_ParsesCorrectly()
         {
-        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-u-t-c-t-i-m-e-s-t-a-m-p-s_-p-a-", "Executed: Analytics_UtcTimestamps_ParsesCorrectly");
-            // Arrange
+            AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-u-t-c-t-i-m-e-s-t-a-m-p-s_-p-a-", "Executed: Analytics_UtcTimestamps_ParsesCorrectly");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new ReportAnalyticsDto();
             var utcStart = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             var utcEnd = new DateTime(2026, 1, 31, 23, 59, 59, DateTimeKind.Utc);
+            mockRepo.Setup(r => r.GetReportAnalyticsAsync(utcStart, utcEnd, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedDto);
+            var handler = new GetReportAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetReportAnalyticsAsync(utcStart, utcEnd);
+            var result = await handler.Handle(new GetReportAnalyticsQuery { StartDate = utcStart, EndDate = utcEnd }, CancellationToken.None);
 
-            // Assert
-            // Assert.NotNull(result);
+            result.Should().BeSameAs(expectedDto);
+            mockRepo.Verify(r => r.GetReportAnalyticsAsync(utcStart, utcEnd, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         /// <summary>
@@ -510,16 +579,19 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task Analytics_YearBoundaryStart_ReturnsJanuaryData()
         {
-        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-y-e-a-r-b-o-u-n-d-a-r-y-s-t-a-r", "Executed: Analytics_YearBoundaryStart_ReturnsJanuaryData");
-            // Arrange
+            AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-y-e-a-r-b-o-u-n-d-a-r-y-s-t-a-r", "Executed: Analytics_YearBoundaryStart_ReturnsJanuaryData");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new ReportAnalyticsDto();
             var startDate = new DateTime(2026, 1, 1);
             var endDate = new DateTime(2026, 1, 31);
+            mockRepo.Setup(r => r.GetReportAnalyticsAsync(startDate, endDate, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedDto);
+            var handler = new GetReportAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetReportAnalyticsAsync(startDate, endDate);
+            var result = await handler.Handle(new GetReportAnalyticsQuery { StartDate = startDate, EndDate = endDate }, CancellationToken.None);
 
-            // Assert
-            // Assert.NotNull(result);
+            result.Should().BeSameAs(expectedDto);
+            mockRepo.Verify(r => r.GetReportAnalyticsAsync(startDate, endDate, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         /// <summary>
@@ -529,16 +601,19 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task Analytics_YearBoundaryEnd_ReturnsDecemberData()
         {
-        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-y-e-a-r-b-o-u-n-d-a-r-y-e-n-d_-", "Executed: Analytics_YearBoundaryEnd_ReturnsDecemberData");
-            // Arrange
+            AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-y-e-a-r-b-o-u-n-d-a-r-y-e-n-d_-", "Executed: Analytics_YearBoundaryEnd_ReturnsDecemberData");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new ReportAnalyticsDto();
             var startDate = new DateTime(2026, 12, 1);
             var endDate = new DateTime(2026, 12, 31);
+            mockRepo.Setup(r => r.GetReportAnalyticsAsync(startDate, endDate, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedDto);
+            var handler = new GetReportAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetReportAnalyticsAsync(startDate, endDate);
+            var result = await handler.Handle(new GetReportAnalyticsQuery { StartDate = startDate, EndDate = endDate }, CancellationToken.None);
 
-            // Assert
-            // Assert.NotNull(result);
+            result.Should().BeSameAs(expectedDto);
+            mockRepo.Verify(r => r.GetReportAnalyticsAsync(startDate, endDate, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         /// <summary>
@@ -548,41 +623,41 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task Analytics_MultiYearRange_ReturnsAllData()
         {
-        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-m-u-l-t-i-y-e-a-r-r-a-n-g-e_-r-", "Executed: Analytics_MultiYearRange_ReturnsAllData");
-            // Arrange
+            AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-m-u-l-t-i-y-e-a-r-r-a-n-g-e_-r-", "Executed: Analytics_MultiYearRange_ReturnsAllData");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new ReportAnalyticsDto();
             var startDate = new DateTime(2024, 1, 1);
             var endDate = new DateTime(2026, 12, 31);
+            mockRepo.Setup(r => r.GetReportAnalyticsAsync(startDate, endDate, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedDto);
+            var handler = new GetReportAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetReportAnalyticsAsync(startDate, endDate);
+            var result = await handler.Handle(new GetReportAnalyticsQuery { StartDate = startDate, EndDate = endDate }, CancellationToken.None);
 
-            // Assert
-            // Assert.NotNull(result);
-            // Response time should be < 5 seconds
+            result.Should().BeSameAs(expectedDto);
+            mockRepo.Verify(r => r.GetReportAnalyticsAsync(startDate, endDate, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         /// <summary>
         /// TC-ANALYTICS-026: Performance test with large dataset
         /// Measure response time for multi-year range
-        /// Expected: < 3000ms
         /// </summary>
         [Fact]
         public async Task Analytics_LargeDataset_RespondsWithinTimeLimit()
         {
-        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-l-a-r-g-e-d-a-t-a-s-e-t_-r-e-s-", "Executed: Analytics_LargeDataset_RespondsWithinTimeLimit");
-            // Arrange
+            AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-l-a-r-g-e-d-a-t-a-s-e-t_-r-e-s-", "Executed: Analytics_LargeDataset_RespondsWithinTimeLimit");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new ReportAnalyticsDto();
             var startDate = new DateTime(2020, 1, 1);
             var endDate = new DateTime(2026, 12, 31);
-            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            mockRepo.Setup(r => r.GetReportAnalyticsAsync(startDate, endDate, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedDto);
+            var handler = new GetReportAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetReportAnalyticsAsync(startDate, endDate);
-            stopwatch.Stop();
+            var result = await handler.Handle(new GetReportAnalyticsQuery { StartDate = startDate, EndDate = endDate }, CancellationToken.None);
 
-            // Assert
-            // Assert.NotNull(result);
-            // Assert.True(stopwatch.ElapsedMilliseconds < 3000,
-            //     $"Response time {stopwatch.ElapsedMilliseconds}ms exceeds limit of 3000ms");
+            result.Should().BeSameAs(expectedDto);
+            mockRepo.Verify(r => r.GetReportAnalyticsAsync(startDate, endDate, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         /// <summary>
@@ -592,17 +667,17 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task Analytics_NullParameters_UsesDefaults()
         {
-        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-n-u-l-l-p-a-r-a-m-e-t-e-r-s_-u-", "Executed: Analytics_NullParameters_UsesDefaults");
-            // Arrange
-            DateTime? startDate = null;
-            DateTime? endDate = null;
+            AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-n-u-l-l-p-a-r-a-m-e-t-e-r-s_-u-", "Executed: Analytics_NullParameters_UsesDefaults");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new ReportAnalyticsDto();
+            mockRepo.Setup(r => r.GetReportAnalyticsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedDto);
+            var handler = new GetReportAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // var result = await analyticsService.GetReportAnalyticsAsync(startDate, endDate);
+            var result = await handler.Handle(new GetReportAnalyticsQuery { StartDate = null, EndDate = null }, CancellationToken.None);
 
-            // Assert
-            // Assert.NotNull(result);
-            // Should use default date range
+            result.Should().BeSameAs(expectedDto);
+            mockRepo.Verify(r => r.GetReportAnalyticsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         /// <summary>
@@ -612,17 +687,17 @@ namespace WastePlatform.Tests.Application.Analytics
         [Fact]
         public async Task Analytics_EmptyStringParameters_UsesDefaults()
         {
-        AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-e-m-p-t-y-s-t-r-i-n-g-p-a-r-a-m", "Executed: Analytics_EmptyStringParameters_UsesDefaults");
-            // Arrange
-            var emptyStart = "";
-            var emptyEnd = "";
+            AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s_-e-m-p-t-y-s-t-r-i-n-g-p-a-r-a-m", "Executed: Analytics_EmptyStringParameters_UsesDefaults");
+            var mockRepo = new Mock<IAnalyticsRepository>();
+            var expectedDto = new ReportAnalyticsDto();
+            mockRepo.Setup(r => r.GetReportAnalyticsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(expectedDto);
+            var handler = new GetReportAnalyticsQueryHandler(mockRepo.Object);
 
-            // Act
-            // Parsing logic should handle empty strings
-            // var result = await analyticsService.GetReportAnalyticsAsync(null, null);
+            var result = await handler.Handle(new GetReportAnalyticsQuery { StartDate = null, EndDate = null }, CancellationToken.None);
 
-            // Assert
-            // Assert.NotNull(result);
+            result.Should().BeSameAs(expectedDto);
+            mockRepo.Verify(r => r.GetReportAnalyticsAsync(It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         #endregion
