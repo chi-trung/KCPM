@@ -163,4 +163,692 @@ Trong tài liệu Logic Coverage Evaluation, mỗi rule Rk vì vậy tương ứ
 
 ## Ghi chú quan trọng về mã nguồn hiện tại
 
-Trong file `AuditLogAndErrorPathTests.cs` đoạn test `ErrorPath_WhenUnexpectedExceptionThrown_ShouldReturn500SafeResponse`, phần assertion đang kiểm tra message liên quan đến “Enterprise profile not found”. Nếu đúng theo mong đợi nghiệp vụ cho R4 (A4=500), thì assertion này cần được điều chỉnh về **contract 500** (ví dụ đối tượng phù hợp với 500 và message errorCode/title theo safe contract). Tuy nhiên, về mặt Decision Table logic, nguyên tắc vẫn là: khi C2=TRUE thì hệ thống phải ưu tiên A4=500 safe contract.
+## Trong file `AuditLogAndErrorPathTests.cs` đoạn test `ErrorPath_WhenUnexpectedExceptionThrown_ShouldReturn500SafeResponse`, phần assertion đang kiểm tra message liên quan đến “Enterprise profile not found”. Nếu đúng theo mong đợi nghiệp vụ cho R4 (A4=500), thì assertion này cần được điều chỉnh về **contract 500** (ví dụ đối tượng phù hợp với 500 và message errorCode/title theo safe contract). Tuy nhiên, về mặt Decision Table logic, nguyên tắc vẫn là: khi C2=TRUE thì hệ thống phải ưu tiên A4=500 safe contract.
+
+# CHƯƠNG 2: PHÂN TÍCH CHUYỂN MẠCH TRẠNG THÁI COLLECTIONTASK MODULE
+
+## Giới thiệu về State Transition Testing trong Kiểm Thử Hệ Thống Stateful
+
+**State Transition Testing** (Kiểm thử chuyển mạch trạng thái) theo tiêu chuẩn ISTQB Foundation Level (Chương 4: "Test Techniques") là phương pháp kiểm thử dành cho các hệ thống có **các trạng thái rõ ràng và các quy tắc chuyển đổi xác định**. Trong bối cảnh CollectionTask Module, mỗi nhiệm vụ thu gom rác từ khi tạo ra cho đến khi hoàn tất sẽ trải qua một chuỗi trạng thái cụ thể. Nếu trạng thái không được quản lý chính xác, hoặc các điều kiện chuyển dịch không được kiểm thử nghiêm ngặt, hệ thống sẽ rơi vào tình trạng "bất nhất quán" (inconsistent state) hoặc "kẹt" (deadlock state)—dẫn tới những lỗi khó phát hiện trên Production.
+
+Lý do State Transition Testing là quan trọng với CollectionTask Module: (i) **tính phức tạp của vòng đời** — một collection task không chỉ có trạng thái đơn độc, mà thường liên kết với trạng thái complaint, trạng thái xe thu gom, trạng thái collector, (ii) **ảnh hưởng kinh doanh trực tiếp** — task bị "kẹt" hoặc chuyển sai trạng thái có thể dẫn tới việc rác không được thu gom, khiếu nại không được giải quyết, (iii) **nguy cơ bảo mật và dữ liệu** — các nhánh chuyển dịch sai có thể để lộ dữ liệu hoặc cho phép Enterprise thao tác lên task không thuộc quyền quản lý của mình.
+
+State Transition Testing vì vậy cần xác định:
+
+1. **State Space**: tập hợp tất cả các trạng thái có thể xảy ra (ở đây là 5 trạng thái cốt lõi).
+2. **State Transition Rules**: từ trạng thái nào chuyển sang trạng thái nào, điều kiện/sự kiện kích hoạt là gì.
+3. **Invalid Transitions**: các chuyển dịch không được phép (tránh trạng thái vô hạn).
+4. **Boundary Conditions & Error Paths**: những trường hợp lỗi buộc task chuyển sang SYSTEM ERROR.
+
+Phần tiếp theo sẽ define chính thức 5 trạng thái cốt lõi, mô tả chi tiết từng trạng thái, xác định điều kiện chuyển dịch, và cuối cùng vẽ sơ đồ luồng bằng ASCII Art để trực quan hóa các quy tắc này.
+
+---
+
+## 2.1. Định Nghĩa 5 Trạng Thái Cốt Lõi của CollectionTask
+
+### **Trạng Thái 1: NEW (Nhiệm Vụ Mới - Chờ Gán)**
+
+#### Ý Nghĩa Nghiệp Vụ
+
+Trạng thái **NEW** đại diện cho giai đoạn ban đầu của một collection task ngay sau khi được tạo ra bởi hệ thống, thường là kết quả của việc xử lý một hoặc nhiều complaint liên quan đến ô nhiễm tại một khu vực nhất định. Ở trạng thái này, task chưa được gán cho bất kỳ collector hoặc vehicle nào; nó chỉ tồn tại trong hệ thống như một "mệnh lệnh chờ xử lý" (pending directive) được lên lịch để phân công. Từ góc nhìn vận hành, trạng thái NEW là thời điểm "đầu tiên" mà hệ thống tuyên bố "đã xác nhận nhu cầu thu gom tại địa điểm này", nhưng chưa có tài nguyên cụ thể (nhân lực, phương tiện) được cam kết. Trong thực tế, khi hệ thống nhận khiếu nại từ công dân về tình trạng rác tại vị trí nào đó, nó phải xử lý theo flow logic: (i) xác thực khiếu nại hợp lệ, (ii) tạo collection task với trạng thái NEW, (iii) đặt task vào hàng chờ để được xem xét và gán. Task ở trạng thái NEW là nền tảng cho quyết định phân công: hệ thống có thể dùng các tiêu chí như vị trí địa lý, tải công việc hiện tại của collector, loại rác, và ưu tiên khẩn cấp để quyết định "gán task này cho collector/vehicle nào". Nếu trạng thái NEW không được quản lý đúng—ví dụ task ở NEW mãi không được gán (ngâm ngoai), hoặc task bị "lạc" ở trạng thái này khi hệ thống gặp lỗi—thì toàn bộ vòng đời của task sẽ bị ảnh hưởng.
+
+#### Điều Kiện Cần và Đủ để Hệ Thống Chấp Nhận Trạng Thái NEW
+
+Để một collection task được hệ thống chấp nhận ở trạng thái NEW, các điều kiện sau phải được thỏa đồng thời:
+
+1. **Task Record tồn tại trong Database** — phải có một bản ghi trong bảng CollectionTask với ID, tenantId/enterpriseId, complaintIds liên kết, thời gian tạo, địa điểm, loại rác, mức ưu tiên.
+
+2. **Status Column = "NEW"** — trường status phải được ghi nhận đúng là "NEW", không phải các trạng thái khác.
+
+3. **Task chưa có Collector Assignment** — cột `CollectorId` và `VehicleId` phải là NULL hoặc rỗng, chứng tỏ chưa được gán.
+
+4. **Complaint Mapping hợp lệ** — các complaintId liên kết trong trường `LinkedComplaintIds` phải trỏ tới các complaint record hợp lệ trong hệ thống (không phải ID vô hiệu hoặc complaint đã bị xoá).
+
+5. **Timestamp Creation hợp lệ** — `CreatedAt` phải là một timestamp hợp lệ (không phải trong tương lai, không phải NULL).
+
+6. **Metadata đầy đủ** — các trường metadata bắt buộc như `ServiceAreaId`, `PollutionType`, `Priority` phải được điền đầy đủ và hợp lệ theo business rule.
+
+7. **No Active Lock/Flag** — task không được có cờ "locked", "archived", "deleted", hoặc "error_flag" được đặt. Nếu có các cờ này, hệ thống phải xem xét task đó đã rời khỏi vòng đời NEW bình thường.
+
+Khi tất cả 7 điều kiện trên được thỏa, hệ thống có quyền xem task ở trạng thái NEW là "hợp lệ và sẵn sàng chuyển sang giai đoạn tiếp theo". Nếu bất kỳ điều kiện nào không thỏa (ví dụ `CollectorId` đã được đặt nhưng Status vẫn là NEW), đây là một **dấu hiệu bất nhất quán** và hệ thống phải trigger một hành động khắc phục hoặc ghi log alert.
+
+#### Rủi Ro Khi Trạng Thái NEW Bị Chuyển Dịch Sai Quy Trình
+
+Nếu task bị chuyển từ NEW sang bất kỳ trạng thái nào mà không thỏa các điều kiện cần thiết, hoặc nếu task mắc kẹt ở NEW mãi, những rủi ro sau có thể xảy ra:
+
+1. **Complaint không được xử lý** — nếu task ở NEW quá lâu không được gán, complaint gốc sẽ bị "ngâm" không có tiến triển. Công dân sẽ không nhận được phản hồi/cập nhật và có thể gửi lại khiếu nại, gây lãng phí tài nguyên.
+
+2. **Mâu thuẫn dữ liệu giữa Complaint và CollectionTask** — nếu complaint được đánh dấu "đang xử lý" (in-progress) trong khi collection task vẫn ở NEW, dữ liệu trở nên không nhất quán. Các hệ thống khác (analytics, reporting) sẽ lấy được con số sai lệch.
+
+3. **Tài nguyên không được tối ưu** — nếu collection task NEW thiếu metadata (ví dụ `Priority` bị NULL, hoặc `ServiceAreaId` sai), các thuật toán phân công sẽ không thể ra quyết định tốt. Kết quả là xe/collector có thể được gán task không hợp lý (sai ưu tiên, sai vị trí).
+
+4. **Enterprise RBAC bị vô hiệu** — nếu task NEW không ghi lại đúng tenantId/enterpriseId, hoặc khóa ngoại mapping sai, Enterprise có thể nhìn thấy task không thuộc quyền quản lý của mình. Đây là lỗ hổng bảo mật dẫn tới **rò rỉ dữ liệu**.
+
+5. **Audit Trail bị phá vỡ** — nếu task NEW không ghi nhận đúng `CreatedAt` hoặc `CreatedBy`, việc truy vết sau này sẽ bị ảnh hưởng. Không thể biết được task được tạo bởi hệ thống (automatic trigger) hay bởi user thủ công.
+
+6. **Cascading Failure** — khi task NEW bị chuyển sai trạng thái (ví dụ bị chuyển thẳng sang RESOLVED mà không qua giai đoạn ASSIGNED/VERIFIED), các quy trình downstream sẽ nhận được tín hiệu "task hoàn tất" trong khi thực tế rác chưa được thu gom. Điều này dẫn tới notification sai, audit log sai, và có thể khiến collector/vehicle không được cập nhật đúng tiến trình làm việc.
+
+7. **Infinite Loop / Deadlock** — trong một số hệ thống, nếu collection task NEW không thể chuyển sang ASSIGNED do lỗi logic (ví dụ tất cả collector đều offline, hoặc điều kiện chuyển dịch không thể thỏa), task sẽ bị "kẹt" ở NEW vĩnh viễn. Điều này không phải là trạng thái lỗi (500), mà là một trạng thái "half-working" khó phát hiện trong testing.
+
+---
+
+### **Trạng Thái 2: ASSIGNED (Nhiệm Vụ Được Gán - Chờ Xác Nhận)**
+
+#### Ý Nghĩa Nghiệp Vụ
+
+Trạng thái **ASSIGNED** đánh dấu giai đoạn mà một collection task đã được hệ thống phân công cho một **specific collector** (người thu gom) và/hoặc một **specific vehicle** (xe thu gom). Ở trạng thái này, task không còn là "mệnh lệnh chung chung", mà đã có "chủ nhân" cụ thể. Từ góc nhìn vận hành, collector đã nhận được thông báo (notification) rằng "bạn có một tác vụ thu gom tại địa điểm A, loại rác B, độ ưu tiên C". Tuy nhiên, ASSIGNED không có nghĩa là công việc đã bắt đầu; nó chỉ có nghĩa là "đã gán" và collector cần "xác nhận là sẽ thực hiện" hoặc "từ chối". Trong một số hệ thống, ASSIGNED có thể là trạng thái "chờ xác nhận" (pending acknowledgment), nơi collector phải bấm "Accept" để chuyển sang VERIFIED. Trong các hệ thống khác, ASSIGNED có thể là trạng thái "đã chấp nhận ngầm" (auto-acknowledged) nếu collector không từ chối trong khoảng thời gian nào đó. Tùy thuộc vào thiết kế của CollectionTask Module, ý nghĩa cụ thể của ASSIGNED cần được làm rõ. Nhưng ở cấp độ trừu tượng, ASSIGNED = "task đã có owner".
+
+Trong bối cảnh thực tế WastePlatform, khi hệ thống gán task cho collector, nó cũng có thể đồng thời cập nhật trạng thái complaint liên kết thành "đang xử lý" (in-progress) để cho công dân biết rằng khiếu nại của họ đang được xem xét/hành động. Ngoài ra, ASSIGNED có thể trigger các hành động phụ như: ghi audit log "task assigned to CollectorX at TimeY", gửi notification cho collector, cập nhật bảng "Active Tasks" để dashboard vận hành có cái nhìn real-time về tải công việc.
+
+#### Điều Kiện Cần và Đủ để Hệ Thống Chấp Nhận Trạng Thái ASSIGNED
+
+Để một collection task được hệ thống chấp nhận ở trạng thái ASSIGNED, các điều kiện sau phải được thỏa đồng thời:
+
+1. **Task Record tồn tại** — giống như trạng thái NEW, phải có bản ghi CollectionTask hợp lệ.
+
+2. **Status Column = "ASSIGNED"** — trường status phải được ghi nhận là "ASSIGNED".
+
+3. **Collector Assignment hợp lệ** — `CollectorId` phải được gán một ID hợp lệ (không NULL, không rỗng), và ID này phải trỏ tới một collector record hợp lệ trong bảng Collector (active user, không bị deactivated, thuộc đúng enterprise/tenant).
+
+4. **Vehicle Assignment có thể hợp lệ hoặc NULL** — `VehicleId` có thể là NULL (nếu collector dùng phương tiện cá nhân), hoặc phải trỏ tới một vehicle record hợp lệ (vehicle status = "available" hoặc "in-use", thuộc đúng enterprise, không bị maintenance).
+
+5. **Complaint Link còn hợp lệ** — các `LinkedComplaintIds` vẫn phải trỏ tới complaint records hợp lệ và trạng thái complaint phải tương thích (ví dụ not "resolved", not "closed").
+
+6. **Assignment Timestamp hợp lệ** — `AssignedAt` timestamp phải được ghi nhận đúng, không phải NULL, không phải trong tương lai.
+
+7. **No Unresolved Lock** — task không được có các cờ "locked_for_modification", "error_flag", "cancelled" v.v. Các cờ này chỉ được phép nếu chúng có ý nghĩa đặc biệt được định nghĩa rõ trong business rule.
+
+8. **Deadline/SLA hợp lệ** — nếu task có deadline (expected completion time), deadline phải được tính toán hợp lệ dựa trên priority, servicetype, v.v. Deadline không được phép ở quá khứ (điều này báo hiệu task đã quá hạn).
+
+Khi tất cả 8 điều kiện trên được thỏa, hệ thống có quyền xem task ở trạng thái ASSIGNED là "hợp lệ và sẵn sàng chuyển sang giai đoạn tiếp theo hoặc chờ collector xác nhận".
+
+#### Rủi Ro Khi Trạng Thái ASSIGNED Bị Chuyển Dịch Sai Quy Trình
+
+1. **Double Assignment** — nếu task ASSIGNED được gán lại cho collector khác mà không hủy bỏ assignment trước, cả hai collector sẽ nhận thông báo. Kết quả là cả hai có thể cố thực hiện task, gây lãng phí công sức và confusion.
+
+2. **Collector Offline** — nếu collector được gán task ASSIGNED nhưng sau đó offline/deactivated, task sẽ "mồ côi" (orphaned). Hệ thống cần cơ chế detect và reassign, nếu không task sẽ stuck ở ASSIGNED mãi.
+
+3. **Vehicle Không Khả Dụng** — nếu vehicle được gán ở ASSIGNED nhưng sau đó bị maintenance/offline, collector không thể sử dụng vehicle để thực hiện task. Điều này tạo ra tình huống "task assigned nhưng không thể execute".
+
+4. **Complaint Status Mismatch** — nếu complaint liên kết chuyển sang "resolved" hoặc "closed" trong khi task vẫn ở ASSIGNED, dữ liệu trở nên mâu thuẫn. Ví dụ, complaint đã được giải quyết bằng cách khác, nhưng collection task vẫn chờ gán.
+
+5. **RBAC Violation** — nếu task được gán sai tenant (ví dụ Enterprise A được gán task thuộc Enterprise B), hoặc collector không thuộc enterprise được gán, đây là lỗ hổng bảo mật. Enterprise có thể nhìn thấy dữ liệu ngoài quyền quản lý.
+
+6. **Missed Notification** — nếu system không gửi notification khi chuyển sang ASSIGNED, collector sẽ không biết task đã được gán. Kết quả là task sẽ timeout hoặc chưa bao giờ được thực hiện.
+
+7. **Cascading Status Update Issue** — nếu hệ thống chuyển ASSIGNED mà complaint vẫn ở "pending" (chưa "in-progress"), frontend/dashboard sẽ hiển thị sai trạng thái. Công dân sẽ thấy complaint chưa được xử lý trong khi thực tế collector đã được gán.
+
+8. **Audit Trail Gap** — nếu không ghi nhận đúng "AssignedAt" timestamp và "AssignedBy" (hệ thống, user, hoặc automatic algorithm), việc truy vết sẽ bị thiếu.
+
+---
+
+### **Trạng Thái 3: VERIFIED (Nhiệm Vụ Được Xác Nhận - Đang Thực Hiện)**
+
+#### Ý Nghĩa Nghiệp Vụ
+
+Trạng thái **VERIFIED** đánh dấu giai đoạn mà collector đã **xác nhận/chấp nhận** task được gán và chuẩn bị hoặc đang thực hiện công việc thu gom tại địa điểm được chỉ định. "VERIFIED" ở đây có thể hiểu là "collector đã xác nhận rằng anh/cô ấy sẽ thực hiện task này" hoặc "collector đã bắt đầu hoặc sắp bắt đầu". Tùy theo thiết kế, VERIFIED có thể là trạng thái "đã chấp nhận" (accepted/acknowledged) hoặc "đang xử lý" (in-progress). Trong bối cảnh thực tế WastePlatform, VERIFIED thường là giai đoạn "collector đã nhận task và bắt đầu hành động", chẳng hạn như: collector lái xe tới địa điểm, kiểm tra tình trạng rác, chuẩn bị công cụ. Ở trạng thái này, hệ thống có thể bắt đầu theo dõi (tracking) quá trình làm việc: ghi nhận vị trí GPS của collector, thời gian bắt đầu, số lượng rác được thu gom, v.v. VERIFIED cũng có thể trigger các hành động phụ như cập nhật complaint thành "in-progress with collector assigned", hoặc ghi nhật ký hoạt động.
+
+Về mặt vòng đời, VERIFIED là điểm "không quay lại được" (point of no return) ở một mức độ nào đó: khi task đã được xác nhận thực hiện, hệ thống thường không cho phép hủy bỏ task mà không có lý do chính đáng (ví dụ complaint được hủy bỏ, hoặc có lỗi hệ thống). Điều này để đảm bảo "commitment" giữa hệ thống và collector, cũng như consistency với complaint và audit trail.
+
+#### Điều Kiện Cần và Đủ để Hệ Thống Chấp Nhận Trạng Thái VERIFIED
+
+Để một collection task được hệ thống chấp nhận ở trạng thái VERIFIED, các điều kiện sau phải được thỏa đồng thời:
+
+1. **Task Record tồn tại và status = "VERIFIED"** — phải có bản ghi hợp lệ và status column phải là "VERIFIED".
+
+2. **Task phải đã qua ASSIGNED trước đó** — `PreviousStatus` hoặc `AssignedAt` timestamp phải không NULL, chứng tỏ task đã trải qua giai đoạn ASSIGNED. Nếu task nhảy trực tiếp từ NEW → VERIFIED mà không qua ASSIGNED, đây là lỗi logic.
+
+3. **Collector Assignment không thể thay đổi** — `CollectorId` phải giữ nguyên so với khi ở ASSIGNED. Hệ thống không được phép thay collector ở giai đoạn VERIFIED nếu không có lý do chính đáng (ví dụ collector gặp sự cố khẩn cấp).
+
+4. **Vehicle Assignment nhất quán** — `VehicleId` (nếu có) phải giữ nguyên hoặc được cập nhật hợp lệ. Nếu vehicle thay đổi, phải ghi nhận lý do và cập nhật audit log.
+
+5. **Verification Timestamp hợp lệ** — `VerifiedAt` timestamp phải được ghi nhận, không NULL, không trong tương lai.
+
+6. **Complaint Link vẫn hợp lệ** — `LinkedComplaintIds` vẫn phải trỏ tới complaint records hợp lệ, và trạng thái complaint nên được cập nhật thành "in-progress" hoặc tương tương.
+
+7. **No "cancelled" hoặc "error" flag** — task không được có các cờ hủy bỏ hoặc lỗi, trừ khi đó là "recoverable_error" có cơ chế khắc phục tự động.
+
+8. **Geolocation / Context hợp lệ** — nếu hệ thống tracking, phải có vị trí GPS hợp lệ hoặc địa điểm được xác nhận. Nếu collector cố gắng xác nhận task từ vị trí quá xa so với địa điểm dự kiến, hệ thống phải cảnh báo hoặc từ chối.
+
+Khi tất cả 8 điều kiện trên được thỏa, hệ thống có quyền xem task ở trạng thái VERIFIED là "hợp lệ và đang được thực hiện".
+
+#### Rủi Ro Khi Trạng Thái VERIFIED Bị Chuyển Dịch Sai Quy Trình
+
+1. **Data Inconsistency Cascade** — nếu task nhảy từ VERIFIED thẳng sang RESOLVED mà không qua RESOLVED hoặc không ghi nhận đúng kết quả công việc (ví dụ số lượng rác thu gom, loại rác, thời gian thực tế), complaint sẽ không có dữ liệu đầy đủ để đánh giá xem vấn đề đã được giải quyết hay chưa.
+
+2. **Incomplete Work Recording** — nếu task bị chuyển sang trạng thái khác (ví dụ RESOLVED) mà collector vẫn chưa hoàn tất công việc (rác chưa hết được thu, hoặc chưa kịp ghi nhận), audit trail sẽ bị sai lệch. Sau này khi kiểm tra, hệ thống sẽ không biết nguyên nhân.
+
+3. **Collector Reassignment Risk** — nếu task ở VERIFIED bị reassign cho collector khác (do lỗi logic hoặc bug), cả hai collector sẽ nhận tín hiệu "thực hiện task", gây duplicate work hoặc conflict.
+
+4. **SLA Violation Detection** — nếu task VERIFIED bị chuyển sang trạng thái khác mà không ghi nhận thời gian thực tế hoàn tất so với deadline, hệ thống không thể tính toán đúng SLA (Service Level Agreement). Kết quả là metrics công ty sẽ sai lệch.
+
+5. **Notification Storm** — nếu hệ thống gửi notification mỗi khi chuyển trạng thái, và logic chuyển dịch có lỗi khiến task lên xuống trạng thái liên tục, collector sẽ nhận spam notification, làm giảm trust và user experience.
+
+6. **RBAC Leakage** — nếu task VERIFIED (đã có collector/vehicle được gán) bị truy cập bởi Enterprise khác, đây là lỗ hổng. Enterprise có thể thấy dữ liệu chi tiết về hoạt động thu gom của đối thủ cạnh tranh.
+
+7. **Geolocation Spoofing** — nếu hệ thống không xác thực đúng vị trí GPS của collector khi chuyển trạng thái từ VERIFIED, collector có thể "giả vờ" ở địa điểm khác mà vẫn ghi nhận task hoàn tất. Điều này gây sai lệch trong theo dõi và có thể dẫn tới fraud.
+
+8. **Audit Log Loss** — nếu transaction chuyển từ VERIFIED sang trạng thái khác gặp lỗi (transaction rolled back), nhưng audit log đã được ghi, sẽ có sự không khớp giữa trạng thái thực tế của task và audit trail. Điều này làm phức tạp việc investigate sự cố.
+
+---
+
+### **Trạng Thái 4: RESOLVED (Nhiệm Vụ Được Giải Quyết - Hoàn Tất)**
+
+#### Ý Nghĩa Nghiệp Vụ
+
+Trạng thái **RESOLVED** đánh dấu giai đoạn mà collection task đã được **hoàn tất thành công**. Ở trạng thái này, công việc thu gom rác tại địa điểm được chỉ định đã xong; rác đã được thu gom, di chuyển tới nơi tiếp nhận, và hệ thống đã ghi nhận kết quả cuối cùng (số lượng rác, loại rác, độ sạch sẽ địa điểm, v.v.). RESOLVED không phải là "bắt đầu" hoặc "đang làm", mà là "đã xong". Từ góc nhìn vận hành, RESOLVED = "task đã đạt mục tiêu", "complaint liên kết có thể được đánh dấu xử lý" (hoặc resolved, tùy theo flow).
+
+Điểm quan trọng là RESOLVED không nhất thiết có nghĩa là "hoàn toàn OK". Ví dụ, task có thể RESOLVED nhưng "partially completed" (rác được thu gom nhưng còn dư, hoặc địa điểm vẫn còn bẩn); tùy theo business rule, RESOLVED có thể có các sub-status hoặc flag (ví dụ "resolved_partial", "resolved_full", v.v.). Tuy nhiên ở cấp độ trừu tượng 5 trạng thái này, RESOLVED = "task đã được đóng lại, không còn ở trạng thái hoạt động".
+
+RESOLVED cũng trigger các hành động phụ: cập nhật complaint thành "resolved" hoặc "closed", ghi nhận thời gian hoàn tất, tính SLA compliance, phát hành báo cáo cho Enterprise, v.v. Ngoài ra, RESOLVED là ranh giới của "active task" và "historical task"; task ở RESOLVED thường được lưu trữ hoặc archived để analytics, reporting, audit trail.
+
+#### Điều Kiện Cần và Đủ để Hệ Thống Chấp Nhận Trạng Thái RESOLVED
+
+Để một collection task được hệ thống chấp nhận ở trạng thái RESOLVED, các điều kiện sau phải được thỏa đồng thời:
+
+1. **Task Record tồn tại và status = "RESOLVED"** — phải có bản ghi hợp lệ và status column phải là "RESOLVED".
+
+2. **Task phải đã qua VERIFIED trước đó** — `VerifiedAt` timestamp phải không NULL, chứng tỏ task đã được xác nhận thực hiện. Nếu task nhảy thẳng từ ASSIGNED hoặc NEW → RESOLVED, đây là lỗi logic.
+
+3. **Completion Data đầy đủ** — task phải có thông tin kết quả hoàn tất: `CompletedAt` timestamp, `ResultSummary` (mô tả kết quả), `QuantityCollected` (số lượng rác thu), `PollutionTypeCollected` (loại rác thực tế), `LocationCleanlinessScore` (điểm sạch sẽ sau khi thu gom), v.v. Nếu các trường này NULL hoặc rỗng, task không được coi là RESOLVED hợp lệ.
+
+4. **Collector Assignment giữ nguyên** — `CollectorId` phải giữ nguyên so với khi ở VERIFIED. Task phải có "chủ nhân duy nhất" là người đã thực hiện công việc.
+
+5. **Complaint Link được resolve** — `LinkedComplaintIds` phải được cập nhật trạng thái thành "resolved" hoặc "closed" (tùy business rule). Nếu complaint liên kết vẫn ở "in-progress", đây là dấu hiệu bất nhất quán.
+
+6. **SLA/Deadline Compliance được ghi nhận** — nếu task có deadline, hệ thống phải ghi nhận xem task có được hoàn tất đúng hạn hay không. Trường `CompletedOnTime` (boolean) hoặc `DelayInMinutes` (duration) phải được tính toán và lưu.
+
+7. **No Unresolved Lock hoặc Error Flag** — task không được có các cờ "error", "locked", "pending_review", v.v. nếu không có cơ chế xác định rõ ràng. Nếu task có "requires_verification_by_manager" flag, manager phải đã verify trước khi chuyển RESOLVED.
+
+8. **Geolocation Final hợp lệ** — nếu hệ thống tracking, vị trí GPS cuối cùng phải được ghi nhận, và điểm này phải nằm trong hoặc gần "service area" của task. Nếu collector báo cáo completed task từ vị trí rất xa, hệ thống phải cảnh báo hoặc từ chối.
+
+9. **Photo/Evidence hợp lệ (nếu có)** — nếu business rule yêu cầu collector phải chụp ảnh sau khi hoàn tất, ảnh phải được upload, không bị corrupted, và metadata phải khớp (thời gian, vị trí).
+
+Khi tất cả 9 điều kiện trên được thỏa, hệ thống có quyền xem task ở trạng thái RESOLVED là "hợp lệ và hoàn tất thành công".
+
+#### Rủi Ro Khi Trạng Thái RESOLVED Bị Chuyển Dịch Sai Quy Trình
+
+1. **Premature Resolution** — nếu task được đánh dấu RESOLVED khi thực tế công việc chưa hoàn tất (ví dụ collector ghi nhận completed nhưng rác chưa hết), complaint sẽ được đóng lại nhầm. Công dân có thể gửi khiếu nại mới, gây lãng phí.
+
+2. **False Completion Report** — nếu task RESOLVED nhưng completion data bị giả mạo (ví dụ ghi "100 kg rác" nhưng thực tế chỉ "10 kg"), báo cáo của hệ thống sẽ bị sai lệch. Analytics, budget planning, KPI đều bị ảnh hưởng.
+
+3. **SLA Metric Corruption** — nếu task RESOLVED nhưng không ghi nhận đúng `CompletedAt` time (ví dụ ghi thời gian sai hoặc trong quá khứ), SLA calculation sẽ sai. Công ty có thể bị phạt nếu SLA metric sai mà client phát hiện.
+
+4. **Rollback Issue** — nếu hệ thống cần rollback task từ RESOLVED về VERIFIED hoặc ASSIGNED (ví dụ do complaint được re-open), điều này có thể gây ra corruption data nếu không xử lý transaction đúng. Dữ liệu hoàn tất có thể bị mất hoặc sai lệch.
+
+5. **Audit Trail Loss** — nếu task RESOLVED nhưng audit log không ghi nhận đúng "resolved by", "resolved at", "reason", việc truy vết sẽ bị thiếu. Sau này nếu có tranh chấp, công ty không có bằng chứng.
+
+6. **RBAC Issue at Resolution** — nếu task RESOLVED nhưng dữ liệu completion (ví dụ geolocation, photo) bị lộ cho Enterprise sai, đây là lỗ hổng. Enterprise có thể thấy chi tiết hoạt động của đối thủ.
+
+7. **Notification Chaos** — nếu hệ thống gửi notification tới công dân khi task RESOLVED, mà task được resolved premature hoặc với dữ liệu sai, công dân sẽ không tin tưởng hệ thống.
+
+8. **Revenue/Payment Issue** — trong một số hệ thống, RESOLVED task là trigger cho billing/payment. Nếu task được resolved sai, công ty có thể tính tiền sai hoặc tính tiền nhưng công việc chưa xong, dẫn tới tranh chấp.
+
+---
+
+### **Trạng Thái 5: SYSTEM ERROR (Lỗi Hệ Thống - Trạng Thái Ngoại Lệ)**
+
+#### Ý Nghĩa Nghiệp Vụ
+
+Trạng thái **SYSTEM ERROR** không phải là trạng thái bình thường của vòng đời task, mà là **trạng thái exception** được sử dụng khi hệ thống gặp lỗi không mong đợi (Unexpected Exception) trong quá trình xử lý task. Ví dụ: DB connection lost, mediator handler throw exception, payment gateway timeout, hoặc bất kỳ lỗi infrastructure/code bug nào khiến hệ thống không thể tiếp tục xử lý task bình thường. Khi task chuyển sang SYSTEM ERROR, nó được "quarantine" (cách ly) ra khỏi vòng đời bình thường; nó không còn được coi là "NEW", "ASSIGNED", v.v., mà được đánh dấu là "cần khắc phục bằng tay" hoặc "cần retry".
+
+Từ góc nhìn vận hành, SYSTEM ERROR là tín hiệu cảnh báo rằng "có gì đó sai trong hệ thống, cần điều tra ngay". Nó khác với "business error" (ví dụ task không thể assigned vì không có collector nào available) hoặc "validation error" (ví dụ complaint ID không tồn tại). SYSTEM ERROR là "lỗi mà hệ thống đã cố gắng xử lý nhưng không thành công".
+
+Trong thực tế, SYSTEM ERROR có thể mang theo thông tin chi tiết như error code, error message, stack trace (lưu trong server log chứ không trả client), exception type, v.v. Tuy nhiên, khi trả response cho client/collector, hệ thống phải sử dụng "Safe Response Contract" như đã mô tả ở Chương 1: trả HTTP 500 với JSON lỗi đồng nhất, che giấu stack trace, cung cấp correlationId để trace log server.
+
+SYSTEM ERROR cũng có thể kèm theo cơ chế retry tự động hoặc manual intervention cần thiết. Ví dụ, task bị SYSTEM ERROR có thể tự động retry sau N phút, hoặc có thể được xếp vào hàng "manual review" chờ engineer hoặc admin thực hiện retry.
+
+#### Điều Kiện Cần và Đủ để Hệ Thống Chấp Nhận Trạng Thái SYSTEM ERROR
+
+Để một collection task được hệ thống chấp nhận ở trạng thái SYSTEM ERROR, các điều kiện sau phải được thỏa đồng thời:
+
+1. **Task Record tồn tại và status = "SYSTEM_ERROR"** — phải có bản ghi hợp lệ và status column phải là "SYSTEM_ERROR" (hoặc "ERROR", tùy convention).
+
+2. **Exception Information được ghi nhận** — task phải có trường `ErrorCode`, `ErrorMessage`, `ExceptionType` được điền đầy đủ. Những trường này giúp engineer diagnose vấn đề.
+
+3. **Timestamp lỗi hợp lệ** — `ErrorAt` (thời điểm lỗi xảy ra) phải được ghi nhận, không NULL, không trong tương lai. Này cho biết lỗi xảy ra khi nào.
+
+4. **Previous Valid State được lưu** — `PreviousStatus` phải ghi nhận trạng thái task trước khi chuyển sang ERROR. Ví dụ, nếu lỗi xảy ra khi chuyển từ ASSIGNED → VERIFIED, thì `PreviousStatus = "ASSIGNED"`. Điều này giúp retry logic biết nên retry từ trạng thái nào.
+
+5. **Retry Policy Information** — task phải có thông tin về "retry strategy": số lần retry tối đa, thời gian delay giữa các retry, status của retry hiện tại (retry_count, next_retry_at). Nếu không có thông tin này, task sẽ stuck ở ERROR mãi.
+
+6. **No Data Corruption** — dù task ở ERROR, dữ liệu đã ghi nhận trước khi lỗi (ví dụ `CreatedAt`, `AssignedAt`) phải vẫn còn nguyên vẹn, không bị xoá hoặc corrupt.
+
+7. **Audit Trail of Error được ghi nhận** — phải có bản ghi trong audit log về "task chuyển sang ERROR lúc nào, do lỗi gì, lỗi xảy ra ở module nào". Audit trail phải đủ chi tiết để engineer trace được root cause.
+
+8. **Notification được gửi** — nếu business rule yêu cầu, thông báo lỗi phải được gửi tới admin, collector, hoặc Enterprise tương ứng. Thông báo phải không tiết lộ stack trace nhưng phải rõ là "có lỗi hệ thống, cần đợi giải quyết".
+
+9. **No Partial State** — nếu lỗi xảy ra ở giữa một transaction (ví dụ đã cập nhật task status thành ERROR nhưng chưa ghi audit log), transaction phải được roll back để đảm bảo consistency. Nếu transaction không thể roll back đầy đủ (ví dụ đã ghi external system), phải ghi nhận "partial error" để manual intervention xử lý.
+
+Khi tất cả 9 điều kiện trên được thỏa, hệ thống có quyền xem task ở trạng thái SYSTEM ERROR là "hợp lệ và cần được xử lý/retry".
+
+#### Rủi Ro Khi Trạng Thái SYSTEM ERROR Bị Xử Lý Sai Quy Trình
+
+1. **Infinite Retry Loop** — nếu retry logic không kiểm tra điều kiện thích hợp, task có thể bị retry mãi mãi mà không bao giờ thành công, lãng phí resource.
+
+2. **Data Loss** — nếu task ở SYSTEM ERROR mà không ghi nhận đủ information để retry, sau đó bị xoá hoặc reset (vô tình hoặc do bug), dữ liệu liên quan sẽ bị mất.
+
+3. **Manual Intervention Nightmare** — nếu task ở SYSTEM ERROR không có clear audit trail hoặc recovery procedure, admin sẽ không biết phải làm gì. Lỗi sẽ bị "ngâm" trong hệ thống.
+
+4. **Cascading Failure** — nếu task SYSTEM ERROR nhưng complaint liên kết không được cập nhật (ví dụ vẫn ở "in-progress"), công dân sẽ không biết tình trạng. Nếu collector bị gán nhiều task ERROR nhưng không được reassign, collector sẽ không có task để làm.
+
+5. **RBAC Bypass Risk** — nếu error handling không kiểm tra RBAC đúng, task SYSTEM ERROR của Enterprise A có thể bị nhìn thấy hoặc access bởi Enterprise B.
+
+6. **Audit Trail Paradox** — nếu task ở SYSTEM ERROR nhưng audit log không được ghi hoặc bị corrupt, không thể biết root cause. Nếu log được ghi nhưng bị lỗi (stack trace bị cut off, hoặc log format sai), recovery sẽ khó khăn.
+
+7. **SLA Violation** — nếu task ở SYSTEM ERROR quá lâu (ví dụ chờ retry), complaint liên kết sẽ vượt deadline, gây violation SLA.
+
+8. **Collection Efficiency Loss** — nếu collector được gán task nhưng task lại ở SYSTEM ERROR (collector không biết lý do), collector sẽ rối rắm. Kết quả là thời gian từ assignment đến resolution sẽ tăng, làm giảm efficiency.
+
+9. **Trust & Reputation Damage** — nếu hệ thống sering bị SYSTEM ERROR mà không thể khắc phục nhanh, Enterprise sẽ mất tin tưởng vào platform. Trong ngành công nghiệp, một hệ thống không đáng tin cậy là "deal breaker".
+
+---
+
+## 2.2. Sơ Đồ Luồng Chuyển Dịch Trạng Thái (State Transition Diagram - ASCII Art)
+
+Dưới đây là sơ đồ trực quan bằng ASCII Art thể hiện luồng chuyển dịch trạng thái của CollectionTask Module, bao gồm các sự kiện kích hoạt (trigger events), các mũi tên chuyển dịch, và các nhánh rẽ lỗi hướng tới SYSTEM ERROR:
+
+```
+                          ┌──────────────────────────────────────────────────────────────────────┐
+                          │                 COLLECTIONTASK STATE TRANSITION FLOW                 │
+                          │                     (State Space: 5 States, 5 Core)                  │
+                          └──────────────────────────────────────────────────────────────────────┘
+
+        ╔════════════════════════════════════════════════════════════════════════════════════════╗
+        ║                           Trigger Event (API Call / Operation)                         ║
+        ║                                                                                        ║
+        ║  • CreateCollectionTask()     ⟶ NEW                                                   ║
+        ║  • AssignCollector()          ⟶ NEW → ASSIGNED                                        ║
+        ║  • VerifyTask()               ⟶ ASSIGNED → VERIFIED                                   ║
+        ║  • ResolveTask()              ⟶ VERIFIED → RESOLVED                                   ║
+        ║  • Exception/Error            ⟶ [ANY STATE] → SYSTEM ERROR (500)                      ║
+        ║                                                                                        ║
+        ╚════════════════════════════════════════════════════════════════════════════════════════╝
+
+    ┏━━━━━━━━━━━━━━━┓
+    ┃      NEW      ┃  ⟵─── (1) Task Created via CreateCollectionTask()
+    ┃   (Chờ Gán)   ┃         Complaint triggered → Task instantiated with Status="NEW"
+    ┗━━━━━━━━━━━━━━━┛         PreConditions: Complaint valid, ServiceArea defined, Priority set
+         │                    Metadata: CreatedAt, CreatedBy, LinkedComplaintIds
+         │
+         │
+         ├──────────────────────────────────────────────────────────────────────────────────────┐
+         │                                                                                      │
+         │  ╔═════════════════════════════════════════════════════════════════════════════╗   │
+         │  ║  [ERROR PATH 1] Exception during CreateCollectionTask()                    ║   │
+         │  ║  ⟶  AssignCollector() call fails (DB error, Mediator exception, timeout)   ║   │
+         │  ║  ⟶  Task status NOT updated, or partial update → Rollback to last stable  ║   │
+         │  ║  ⟶  Create ERROR_LOG entry, set task SYSTEM_ERROR status                  ║   │
+         │  ║  ⟶  Notify admin, return HTTP 500 with safe_contract_error_json          ║   │
+         │  ║                                                                             ║   │
+         │  ║  ExceptionTypes: DbConnectionException, MediatorHandlerException,          ║   │
+         │  ║                  TimeoutException, ValidationException (semantic)          ║   │
+         │  ╚═════════════════════════════════════════════════════════════════════════════╝   │
+         │                                                                                      │
+         └──────────────────────────────────────────────────────────────────────────────────────┤
+         │                                                                                      │
+         │        AssignCollector(collectorId, vehicleId)                                      │
+         │        ⟶ Verify Collector exists & active & belongs to correct Enterprise          │
+         │        ⟶ Verify Vehicle (if provided) exists & available                           │
+         │        ⟶ Update Task.Status = "ASSIGNED", Task.CollectorId, Task.VehicleId         │
+         │        ⟶ Record AssignedAt timestamp, AssignedBy (system/user)                     │
+         │        ⟶ Send Notification to Collector: "Task assigned, please acknowledge"       │
+         │        ⟶ Update Complaint.Status = "in_progress" (if applicable)                   │
+         ▼        ⟶ Create AuditLog entry                                                      │
+    ┏━━━━━━━━━━━━━━━━━━┓                                                                       │
+    ┃    ASSIGNED      ┃◄──────────────────────────────────────────────────────────────────────┘
+    ┃ (Đã Gán - Chờ   ┃
+    ┃  Xác Nhận)       ┃
+    ┗━━━━━━━━━━━━━━━━━━┛
+         │
+         │
+         ├──────────────────────────────────────────────────────────────────────────────────────┐
+         │                                                                                      │
+         │  ╔═════════════════════════════════════════════════════════════════════════════╗   │
+         │  ║  [ERROR PATH 2] Exception during AssignCollector()                         ║   │
+         │  ║  ⟶  Query Collector profile fails (Collector DB not available)             ║   │
+         │  ║  ⟶  Query Vehicle fails (Vehicle status incorrect, maintenance mode)       ║   │
+         │  ║  ⟶  Permission check fails (Collector not in Enterprise scope)             ║   │
+         │  ║  ⟶  Mediator.Send(AssignCollectorCommand) throws exception                 ║   │
+         │  ║  ⟶  Task status remains NEW (no partial update), or rollback if updated    ║   │
+         │  ║  ⟶  Set task SYSTEM_ERROR status, log exception, notify admin             ║   │
+         │  ║  ⟶ Return HTTP 500 with safe_contract_error_json                          ║   │
+         │  ║                                                                             ║   │
+         │  ║  ExceptionTypes: DbConnectionException, PermissionDenied, Timeout          ║   │
+         │  ║                  ValidationException (Collector/Vehicle not found)         ║   │
+         │  ╚═════════════════════════════════════════════════════════════════════════════╝   │
+         │                                                                                      │
+         └──────────────────────────────────────────────────────────────────────────────────────┤
+         │                                                                                      │
+         │        VerifyTask()                                                                  │
+         │        ⟶ Collector accepts task by calling VerifyTask (Acknowledge)                 │
+         │        ⟶ Verify Collector is same as assigned CollectorId                          │
+         │        ⟶ Verify Task is currently in "ASSIGNED" state                              │
+         │        ⟶ Update Task.Status = "VERIFIED", Task.VerifiedAt = now                    │
+         │        ⟶ Collector can provide initial context (GPS location, notes)               │
+         │        ⟶ Update Complaint.Status = "in_progress_work_started" (if applicable)      │
+         │        ⟶ Create AuditLog entry                                                      │
+         ▼        ⟶ Send Notification: "Task verified, work in progress"                      │
+    ┏━━━━━━━━━━━━━━━━━━┓                                                                       │
+    ┃   VERIFIED       ┃◄──────────────────────────────────────────────────────────────────────┘
+    ┃ (Đang Thực Hiện) ┃
+    ┗━━━━━━━━━━━━━━━━━━┛
+         │
+         │
+         ├──────────────────────────────────────────────────────────────────────────────────────┐
+         │                                                                                      │
+         │  ╔═════════════════════════════════════════════════════════════════════════════╗   │
+         │  ║  [ERROR PATH 3] Exception during VerifyTask()                              ║   │
+         │  ║  ⟶  Query Collector failed (Collector deactivated, DB error)               ║   │
+         │  ║  ⟶  Task not in ASSIGNED state (already VERIFIED/RESOLVED - state mismatch)║   │
+         │  ║  ⟶  Mediator handler throws exception during verification                 ║   │
+         │  ║  ⟶  Update Complaint status fails (cross-module consistency error)         ║   │
+         │  ║  ⟶  GPS validation fails (Collector location too far from service area)    ║   │
+         │  ║  ⟶  Task status remains ASSIGNED (no partial update), or rollback          ║   │
+         │  ║  ⟶ Set task SYSTEM_ERROR status, notify admin, return HTTP 500             ║   │
+         │  ║                                                                             ║   │
+         │  ║  ExceptionTypes: DbConnectionException, StateTransitionException,          ║   │
+         │  ║                  GeolocationValidationException, MediatorException         ║   │
+         │  ╚═════════════════════════════════════════════════════════════════════════════╝   │
+         │                                                                                      │
+         └──────────────────────────────────────────────────────────────────────────────────────┤
+         │                                                                                      │
+         │        ResolveTask(completionData)                                                   │
+         │        ⟶ Collector completes task by calling ResolveTask                            │
+         │        ⟶ Verify Collector is same as assigned CollectorId                          │
+         │        ⟶ Verify Task is currently in "VERIFIED" state                              │
+         │        ⟶ Validate completionData: QuantityCollected, PollutionTypeCollected, etc.  │
+         │        ⟶ Verify GPS location is within service area (final validation)             │
+         │        ⟶ Update Task.Status = "RESOLVED", Task.CompletedAt = now                   │
+         │        ⟶ Store completionData: ResultSummary, Photos (if any), LocationScore       │
+         │        ⟶ Calculate SLA: CompletedOnTime (boolean), DelayInMinutes (if late)         │
+         │        ⟶ Update Complaint.Status = "resolved" or "closed"                          │
+         │        ⟶ Create AuditLog entry, Archive Task (move to historical table)            │
+         ▼        ⟶ Trigger notification: "Task completed, complaint resolved"                │
+    ┏━━━━━━━━━━━━━━━━━━┓                                                                       │
+    ┃   RESOLVED       ┃◄──────────────────────────────────────────────────────────────────────┘
+    ┃  (Hoàn Tất)      ┃
+    ┗━━━━━━━━━━━━━━━━━━┘  ⟶ [Final State - Task lifecycle complete]
+         │                   ⟶ Task archived/historical, no further state changes
+         │                   ⟶ Enterprise can view results, generate reports
+         │
+         │
+         ├──────────────────────────────────────────────────────────────────────────────────────┐
+         │                                                                                      │
+         │  ╔═════════════════════════════════════════════════════════════════════════════╗   │
+         │  ║  [ERROR PATH 4] Exception during ResolveTask()                             ║   │
+         │  ║  ⟶  Query Collector failed (Collector deactivated)                         ║   │
+         │  ║  ⟶  Task not in VERIFIED state (state mismatch, already RESOLVED)          ║   │
+         │  ║  ⟶  Validation of completionData fails (QuantityCollected invalid format) ║   │
+         │  ║  ⟶  GPS validation fails (Collector at wrong location)                     ║   │
+         │  ║  ⟶  Update Complaint.Status fails (Complaint already closed, DB error)     ║   │
+         │  ║  ⟶  Archive Task operation fails (storage/transaction error)               ║   │
+         │  ║  ⟶  Task status remains VERIFIED (no partial update), or rollback          ║   │
+         │  ║  ⟶ Set task SYSTEM_ERROR status, notify admin, return HTTP 500             ║   │
+         │  ║                                                                             ║   │
+         │  ║  ExceptionTypes: DbConnectionException, StateTransitionException,          ║   │
+         │  ║                  ValidationException, GeolocationException,                ║   │
+         │  ║                  ArchiveStorageException, TransactionRollbackException     ║   │
+         │  ╚═════════════════════════════════════════════════════════════════════════════╝   │
+         │                                                                                      │
+         └──────────────────────────────────────────────────────────────────────────────────────┘
+
+
+    ╔════════════════════════════════════════════════════════════════════════════════════════╗
+    ║                            SYSTEM ERROR (Exception Handler)                           ║
+    ║                                                                                        ║
+    ║  ┏━━━━━━━━━━━━━━━━━━━┓                                                                ║
+    ║  ┃  SYSTEM_ERROR    ┃  ⟵─── Exception trap from any state                            ║
+    ║  ┃  (Lỗi Hệ Thống)  ┃                                                                ║
+    ║  ┗━━━━━━━━━━━━━━━━━━━┛                                                                ║
+    ║        │                                                                              ║
+    ║        ├─ ExceptionInfo: ErrorCode, ErrorMessage, ExceptionType, StackTrace (server) ║
+    ║        ├─ ErrorAt: timestamp, ErrorContext (which state, which operation)            ║
+    ║        ├─ PreviousStatus: state before error (for retry logic)                       ║
+    ║        ├─ RetryPolicy: retry_count, max_retries, next_retry_at                      ║
+    ║        ├─ AuditLog: created, error logged with correlation_id                       ║
+    ║        └─ Notification: Admin alert sent, Safe response JSON returned to client     ║
+    ║                                                                                        ║
+    ║  Recovery Path:                                                                       ║
+    ║  ┌─────────────────────────────────────────────────────────────────────────┐          ║
+    ║  │ (A) Manual Intervention by Admin:                                      │          ║
+    ║  │     ⟶ Review error log, determine root cause                           │          ║
+    ║  │     ⟶ Fix underlying issue (restart DB, redeploy code, etc.)           │          ║
+    ║  │     ⟶ Call RetryTask(taskId) → Transition back to previous state       │          ║
+    ║  │     ⟶ If retry succeeds: Task continues from saved state              │          ║
+    ║  │     ⟶ If retry fails: Task remains ERROR, escalate to engineer        │          ║
+    ║  │                                                                         │          ║
+    ║  │ (B) Automatic Retry:                                                  │          ║
+    ║  │     ⟶ Job scheduler checks tasks with status=ERROR every N minutes    │          ║
+    ║  │     ⟶ If retry_count < max_retries AND now >= next_retry_at:          │          ║
+    ║  │     ⟶   Attempt to restore to previous state and retry operation      │          ║
+    ║  │     ⟶ If retry succeeds: Task transitions to next valid state         │          ║
+    ║  │     ⟶ If max_retries exceeded: Mark task as "PERMANENT_ERROR"         │          ║
+    ║  │       (requires manual investigation)                                 │          ║
+    ║  └─────────────────────────────────────────────────────────────────────────┘          ║
+    ║                                                                                        ║
+    ╚════════════════════════════════════════════════════════════════════════════════════════╝
+
+
+    ╔════════════════════════════════════════════════════════════════════════════════════════╗
+    ║                      Invalid / Forbidden Transitions (NOT ALLOWED)                     ║
+    ║                                                                                        ║
+    ║  ✗ NEW → VERIFIED (skip ASSIGNED)                                                    ║
+    ║  ✗ NEW → RESOLVED (skip ASSIGNED + VERIFIED)                                         ║
+    ║  ✗ ASSIGNED → RESOLVED (skip VERIFIED)                                               ║
+    ║  ✗ VERIFIED → ASSIGNED (backward)                                                    ║
+    ║  ✗ RESOLVED → ASSIGNED (backward, unless special case like complaint re-open)         ║
+    ║  ✗ RESOLVED → VERIFIED (backward, unless complaint re-open)                          ║
+    ║  ✗ [ANY] → NEW (backward to initial state, not allowed)                              ║
+    ║  ✗ SYSTEM_ERROR → [ANY] (must resolve error first, then transition)                  ║
+    ║                                                                                        ║
+    ║  Note: Some backward transitions MAY be allowed if explicitly handled in              ║
+    ║        business logic (e.g., complaint re-open causes task reset), but these          ║
+    ║        must be guarded by strict RBAC checks and audit logging.                       ║
+    ║                                                                                        ║
+    ╚════════════════════════════════════════════════════════════════════════════════════════╝
+
+
+    ╔════════════════════════════════════════════════════════════════════════════════════════╗
+    ║                          State Transition Truth Table (Simplified)                     ║
+    ║                                                                                        ║
+    ║  Current State │ Next State   │ Trigger Event          │ Valid? │ Outcome             ║
+    ║  ───────────────┼──────────────┼────────────────────────┼────────┼─────────────────    ║
+    ║  NEW           │ ASSIGNED     │ AssignCollector()      │   ✓    │ Update status, log  ║
+    ║  NEW           │ VERIFIED     │ VerifyTask() (wrong!)  │   ✗    │ 400 Invalid trans.  ║
+    ║  NEW           │ RESOLVED     │ ResolveTask() (wrong!) │   ✗    │ 400 Invalid trans.  ║
+    ║  NEW           │ SYSTEM_ERROR │ Exception in any step  │   ✓    │ 500 Safe error JSON ║
+    ║  ───────────────┼──────────────┼────────────────────────┼────────┼─────────────────    ║
+    ║  ASSIGNED      │ VERIFIED     │ VerifyTask()           │   ✓    │ Update status, log  ║
+    ║  ASSIGNED      │ NEW          │ Reset (backward)       │   ✗    │ 400 Invalid trans.  ║
+    ║  ASSIGNED      │ RESOLVED     │ ResolveTask() (wrong!) │   ✗    │ 400 Invalid trans.  ║
+    ║  ASSIGNED      │ SYSTEM_ERROR │ Exception in any step  │   ✓    │ 500 Safe error JSON ║
+    ║  ───────────────┼──────────────┼────────────────────────┼────────┼─────────────────    ║
+    ║  VERIFIED      │ RESOLVED     │ ResolveTask()          │   ✓    │ Update status, log  ║
+    ║  VERIFIED      │ ASSIGNED     │ Reset (backward)       │   ✗    │ 400 Invalid trans.  ║
+    ║  VERIFIED      │ NEW          │ Reset (backward)       │   ✗    │ 400 Invalid trans.  ║
+    ║  VERIFIED      │ SYSTEM_ERROR │ Exception in any step  │   ✓    │ 500 Safe error JSON ║
+    ║  ───────────────┼──────────────┼────────────────────────┼────────┼─────────────────    ║
+    ║  RESOLVED      │ NEW          │ N/A (final state)      │   ✗    │ 400 / Not allowed   ║
+    ║  RESOLVED      │ ASSIGNED     │ N/A (final state)      │   ✗    │ 400 / Not allowed   ║
+    ║  RESOLVED      │ VERIFIED     │ N/A (final state)      │   ✗    │ 400 / Not allowed   ║
+    ║  RESOLVED      │ RESOLVED     │ (idempotent)           │   ✓    │ 200 OK (no change)  ║
+    ║  ───────────────┼──────────────┼────────────────────────┼────────┼─────────────────    ║
+    ║  SYSTEM_ERROR  │ NEW          │ Recovery / Retry       │   ~    │ Conditional, admin  ║
+    ║  SYSTEM_ERROR  │ ASSIGNED     │ Recovery / Retry       │   ~    │ Conditional, admin  ║
+    ║  SYSTEM_ERROR  │ VERIFIED     │ Recovery / Retry       │   ~    │ Conditional, admin  ║
+    ║                                                                                        ║
+    ║  Legend:  ✓ = Always valid   │  ✗ = Never valid   │  ~ = Conditional / admin only   ║
+    ║                                                                                        ║
+    ╚════════════════════════════════════════════════════════════════════════════════════════╝
+```
+
+---
+
+## 2.3. Phân Tích Chi Tiết Các Error Path và Exception Handling
+
+Sơ đồ trên đã chỉ ra bốn error path chính (ERROR PATH 1-4) tương ứng với các sự kiện kích hoạt. Dưới đây là phân tích chuyên sâu từng error path:
+
+### Error Path 1: Exception during CreateCollectionTask()
+
+**Ngữ cảnh**: Khi hệ thống nhận khiếu nại hợp lệ và cố gắng tạo ra một collection task mới.
+
+**Các điểm có thể xảy ra exception**:
+
+- **DB Write Failure**: Khi cố gắng INSERT task record vào bảng CollectionTask, DB connection bị mất, hoặc constraint violation (ví dụ complaintId không tồn tại, violate foreign key).
+- **Mediator Handler Exception**: Handler xử lý CreateCollectionTaskCommand throw exception (bug trong logic, dependency injection fail, v.v.).
+- **Timeout**: Operation quá lâu, vượt quá timeout setting.
+- **Validation Exception**: ComplaintId không hợp lệ (semantic validation, không phải model validation).
+
+**Expected Response**: HTTP 500 Internal Server Error với Safe Response Contract JSON (không leak stack trace).
+
+**Implications for Testing**:
+
+- Test case: Mock DB context để throw exception (ví dụ `DbUpdateException`).
+- Assert: Response status = 500, JSON body chứa `errorCode`, `message`, `correlationId`, NOT chứa "stack", "at <namespace>", file path.
+- Verify: Complaint status không bị thay đổi (rollback), task record không được tạo hoặc bị mark as ERROR.
+- Audit log entry: Phải ghi nhận error event để admin trace.
+
+### Error Path 2: Exception during AssignCollector()
+
+**Ngữ cảnh**: Khi task ở NEW state, hệ thống cố gắng gán task cho collector.
+
+**Các điểm có thể xảy ra exception**:
+
+- **Collector Query Fail**: DB không thể retrieve collector record (connector error, index error).
+- **Permission Denied**: Collector không thuộc enterprise đúng, hoặc collector bị deactivated.
+- **Vehicle Not Available**: Vehicle không tồn tại, hoặc status không phải "available".
+- **Mediator Handler Exception**: Handler throw exception (ví dụ khi cố gắng publish event assignment).
+- **Constraint Violation**: Task đã được gán cho collector khác (race condition).
+
+**Expected Response**: HTTP 500 Internal Server Error với Safe Response Contract.
+
+**Implications for Testing**:
+
+- Test case: Mock collector query để throw exception, hoặc mock permission check để fail.
+- Assert: Response status = 500, safe error JSON.
+- Verify: Task status vẫn ở NEW (không được update thành ASSIGNED), no notification sent.
+- Edge case: Race condition — hai request assign cùng task — phải handle idempotent hoặc first-write-win.
+
+### Error Path 3: Exception during VerifyTask()
+
+**Ngữ cảnh**: Collector cố gắng verify/acknowledge task.
+
+**Các điểm có thể xảy ra exception**:
+
+- **Collector Mismatch**: Collector gọi VerifyTask nhưng task được gán cho collector khác.
+- **State Mismatch**: Task đã ở VERIFIED hoặc RESOLVED, không ở ASSIGNED nữa (race condition).
+- **Geolocation Validation Fail**: Collector ở vị trí quá xa so với service area, reject verify.
+- **Update Complaint Fail**: Khi cố gắng update complaint status thành "in_progress_work_started", DB lỗi.
+- **Mediator Handler Exception**: Handler throw exception.
+
+**Expected Response**: HTTP 500 Internal Server Error với Safe Response Contract.
+
+**Implications for Testing**:
+
+- Test case: Mock geolocation validator để return invalid location, hoặc mock complaint update để throw exception.
+- Assert: Response status = 500, safe error JSON.
+- Verify: Task status vẫn ở ASSIGNED (không được update thành VERIFIED), complaint status không thay đổi.
+
+### Error Path 4: Exception during ResolveTask()
+
+**Ngữ cảnh**: Collector cố gắng hoàn tất task.
+
+**Các điểm có thể xảy ra exception**:
+
+- **Validation of Completion Data**: QuantityCollected không hợp lệ (negative, too large), PollutionTypeCollected không trong enum list.
+- **Geolocation Final Validation**: GPS location không nằm trong service area.
+- **Update Complaint Fail**: Complaint không thể được update thành "resolved" (ví dụ complaint đã bị xoá, hoặc có complain khác liên kết chưa xong).
+- **Archive Operation Fail**: Task không thể được archive (storage error, transaction fail).
+- **Mediator Handler Exception**: Handler throw exception.
+- **Photo Upload Fail**: Nếu collector upload photo, upload service bị lỗi.
+
+**Expected Response**: HTTP 500 Internal Server Error với Safe Response Contract.
+
+**Implications for Testing**:
+
+- Test case: Mock completion data validation để fail, mock archive operation để throw exception.
+- Assert: Response status = 500, safe error JSON.
+- Verify: Task status vẫn ở VERIFIED (không được update thành RESOLVED), complaint status không thay đổi, completion data không được lưu (rollback).
+
+---
+
+## 2.4. Recovery Strategy & Retry Logic
+
+Khi task rơi vào SYSTEM_ERROR state, hệ thống cần một **recovery strategy** để khôi phục lại hoặc retry operation.
+
+### Automatic Retry (Automatic Recovery)
+
+```
+Trigger: Scheduled job runs every N minutes (ví dụ 5 minutes)
+Query: SELECT * FROM CollectionTasks WHERE Status = 'SYSTEM_ERROR'
+       AND retry_count < max_retries
+       AND next_retry_at <= now()
+
+For each task:
+  1. Read error details: error_code, error_type, previous_status
+  2. Assess: Có thể retry không?
+     - Transient error (DB timeout, network): Retry
+     - Permanent error (invalid input, missing data): Skip, escalate to manual
+     - Unknown: Log, wait for manual investigation
+
+  3. If retry:
+     - Set next_retry_at = now() + exponential_backoff(retry_count)
+     - Increment retry_count
+     - Attempt to restore task to previous_status
+     - Re-execute the failed operation (e.g., AssignCollector again)
+     - If success: Update task status to next valid state, clear error flag
+     - If fail: Increment retry_count, update next_retry_at, keep ERROR status
+
+  4. If retry_count >= max_retries:
+     - Set task status to 'PERMANENT_ERROR'
+     - Alert admin: "Task XXXXXXX requires manual intervention after N retries"
+     - Add to escalation queue
+
+Log: Detailed audit trail of each retry attempt
+```
+
+### Manual Intervention (Manual Recovery)
+
+```
+Admin dashboard shows tasks with status = 'ERROR' or 'PERMANENT_ERROR':
+  - Task ID, error details, previous state, retry attempts, last error timestamp
+  - Admin can:
+    (a) Review error log & diagnostics
+    (b) Click "Retry Now" button → Trigger immediate retry (skip wait time)
+    (c) Click "Force State Update" → Manually update task to a valid state
+        (e.g., from ERROR → ASSIGNED, to allow re-verify)
+    (d) Click "Cancel & Refund" → Mark task cancelled, refund/notification logic
+    (e) Click "Escalate to Engineer" → Create ticket for dev team
+
+Safeguards:
+  - Admin actions logged with actor ID, timestamp, reason
+  - Force state update only allowed for specific transitions (governed by RBAC)
+  - Cannot force RESOLVED without manual verification of completion data
+```
+
+---
+
+## Kết Luận Chương 2
+
+**State Transition Testing** cho CollectionTask Module là một phần **bắt buộc** của testing strategy:
+
+1. **State Space Definition**: 5 trạng thái cốt lõi (NEW, ASSIGNED, VERIFIED, RESOLVED, SYSTEM_ERROR) cung cấp khung rõ ràng cho vòng đời task.
+
+2. **Detailed State Descriptions**: Mỗi trạng thái có ý nghĩa nghiệp vụ, điều kiện chấp nhận, và rủi ro khi sai. Điều này giúp tester hiểu **why** các kiểm thử cần được thực hiện, không chỉ "what".
+
+3. **State Transition Diagram**: ASCII Art diagram cung cấp trực quan về luồng chuyển dịch, các sự kiện kích hoạt, và đặc biệt là các error path.
+
+4. **Error Handling Strategy**: 4 error path chính đều dẫn tới SYSTEM_ERROR state với safe response contract, đảm bảo bảo mật thông tin.
+
+5. **Recovery Mechanism**: Kết hợp automatic retry + manual intervention để đảm bảo task có thể được khôi phục hoặc escalate.
+
+Các kiểm thử dựa trên State Transition Testing sẽ tập trung vào:
+
+- **Valid transitions**: Verify task chuyển đúng trạng thái với dữ liệu đúng.
+- **Invalid transitions**: Verify hệ thống từ chối transition không hợp lệ (400 Bad Request).
+- **Error transitions**: Verify exception khiến task chuyển SYSTEM_ERROR với safe contract.
+- **Edge cases**: Race conditions, state mismatch, timeout, RBAC violation.
+- **Data consistency**: Verify dữ liệu liên kết (complaint, collector, vehicle) luôn nhất quán.
+
+Phần tiếp theo sẽ mô tả chi tiết các test case bao phủ toàn bộ state space này.
