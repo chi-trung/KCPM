@@ -589,6 +589,25 @@ namespace WastePlatform.Tests.Integration
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
+        /// <summary>
+        /// Test: Waste analytics invalid date range
+        /// Expected: 400 Bad Request
+        /// </summary>
+        [Fact]
+        public async Task AdminWasteAnalyticsEndpoint_InvalidDateRange_ReturnsBadRequest()
+        {
+            AllureAttachmentHelper.AttachText("test-a-d-m-i-n-w-a-s-t-e-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-", "Executed: AdminWasteAnalyticsEndpoint_InvalidDateRange_ReturnsBadRequest");
+            // Arrange
+            var dbName = Guid.NewGuid().ToString();
+            var client = CreateClientWithUser("admin@example.com", UserRole.Admin, out _, dbName);
+
+            // Act
+            var response = await client.GetAsync($"{AdminAnalyticsApiBaseUrl}/waste?startDate=2026-12-31&endDate=2026-01-01");
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+
         #endregion
 
         #region Admin Summary Analytics Tests
@@ -618,6 +637,25 @@ namespace WastePlatform.Tests.Integration
             data.GetProperty("reportAnalytics").ValueKind.Should().Be(JsonValueKind.Object);
             data.GetProperty("userAnalytics").ValueKind.Should().Be(JsonValueKind.Object);
             data.GetProperty("wasteAnalytics").ValueKind.Should().Be(JsonValueKind.Object);
+        }
+
+        /// <summary>
+        /// Test: Summary analytics invalid date range
+        /// Expected: 400 Bad Request
+        /// </summary>
+        [Fact]
+        public async Task AdminSummaryEndpoint_InvalidDateRange_ReturnsBadRequest()
+        {
+            AllureAttachmentHelper.AttachText("test-a-d-m-i-n-s-u-m-m-a-r-y-e-n-d-p-o-i-n-t_-i-n-v-a-l", "Executed: AdminSummaryEndpoint_InvalidDateRange_ReturnsBadRequest");
+            // Arrange
+            var dbName = Guid.NewGuid().ToString();
+            var client = CreateClientWithUser("admin@example.com", UserRole.Admin, out _, dbName);
+
+            // Act
+            var response = await client.GetAsync($"{AdminAnalyticsApiBaseUrl}/summary?startDate=2026-12-31&endDate=2026-01-01");
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
         #endregion
