@@ -591,6 +591,14 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
             // Chỉ đọc claim từ JWT để phục vụ test authorization, không verify chữ ký.
             var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token);
             var claims = jwt.Claims.Select(c => new Claim(c.Type, c.Value)).ToList();
+            
+            // Map "sub" to ClaimTypes.NameIdentifier to allow User.FindFirst(ClaimTypes.NameIdentifier) to succeed
+            if (claims.Any(c => c.Type == JwtRegisteredClaimNames.Sub) && !claims.Any(c => c.Type == ClaimTypes.NameIdentifier))
+            {
+                var subClaim = claims.First(c => c.Type == JwtRegisteredClaimNames.Sub);
+                claims.Add(new Claim(ClaimTypes.NameIdentifier, subClaim.Value));
+            }
+
             // Tạo principal test từ claim của JWT để ASP.NET Core áp dụng [Authorize(Roles=...)]
             var identity = new ClaimsIdentity(claims, "Test");
             var principal = new ClaimsPrincipal(identity);

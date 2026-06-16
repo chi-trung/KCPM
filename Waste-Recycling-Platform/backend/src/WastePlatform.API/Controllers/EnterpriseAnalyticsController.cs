@@ -28,6 +28,11 @@ public class EnterpriseAnalyticsController : ControllerBase
     [HttpGet("reports")]
     public async Task<IActionResult> GetReportAnalytics([FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null)
     {
+        if (startDate.HasValue && endDate.HasValue && startDate.Value > endDate.Value)
+        {
+            return BadRequest(new { message = "Start date must be less than or equal to end date" });
+        }
+
         try
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
