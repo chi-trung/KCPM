@@ -1,12 +1,12 @@
 {
   "week": 25,
   "year": 2026,
-  "timestamp": "2026-06-15T06:14:05.971262+00:00",
+  "timestamp": "2026-06-16T17:26:38.184802+00:00",
   "backend": {
-    "passed": 398,
+    "passed": 430,
     "failed": 0,
-    "total": 400,
-    "duration": "8s"
+    "total": 431,
+    "duration": "9s"
   },
   "postman": {
     "passed": 81,
@@ -21,7 +21,7 @@
     "Nguyễn Hoàng Phụng-CNTT",
     "Thanh Duy"
   ],
-  "total_tests": 481,
-  "total_passed": 479,
+  "total_tests": 512,
+  "total_passed": 511,
   "total_failed": 0
 }
