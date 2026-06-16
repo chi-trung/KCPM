@@ -1,0 +1,15 @@
+{
+  "Id": "0c2052f5-fa33-47e9-902a-102a07106ca6",
+  "CitizenId": "d9c87032-c5a7-49be-91df-fefa921eaa0d",
+  "Type": 5,
+  "Channel": 0,
+  "Status": 0,
+  "Title": "Báo cáo bị từ chối",
+  "Message": "Báo cáo #c1edad90 không được chấp nhận. Lý do: Thiếu ảnh rõ ràng",
+  "ActionUrl": "/citizen/reports/c1edad90-5272-40ea-ba7a-d33255c15568",
+  "RelatedEntityId": "c1edad90-5272-40ea-ba7a-d33255c15568",
+  "RelatedEntityType": "Report",
+  "CreatedAt": "2026-06-16T16:06:27.0365127Z",
+  "ReadAt": null,
+  "Citizen": null
+}

@@ -1,0 +1,97 @@
+{
+  "Page": 2,
+  "Results": [
+    {
+      "Id": "a86cdd3a-460f-480b-942e-392f6f57417a",
+      "CitizenName": null,
+      "CategoryName": null,
+      "Status": 0,
+      "Address": null,
+      "CreatedAt": "2026-06-16T16:06:25.0614946Z",
+      "ImageCount": 0
+    },
+    {
+      "Id": "98ea42fb-a358-4412-a37f-b8b64f107233",
+      "CitizenName": null,
+      "CategoryName": null,
+      "Status": 0,
+      "Address": null,
+      "CreatedAt": "2026-06-16T16:06:25.0614975Z",
+      "ImageCount": 0
+    },
+    {
+      "Id": "87b03ffd-1108-49d0-b2c8-d74f75865712",
+      "CitizenName": null,
+      "CategoryName": null,
+      "Status": 0,
+      "Address": null,
+      "CreatedAt": "2026-06-16T16:06:25.0614983Z",
+      "ImageCount": 0
+    },
+    {
+      "Id": "6f3316a3-e098-48b8-a903-d9919a645b8e",
+      "CitizenName": null,
+      "CategoryName": null,
+      "Status": 0,
+      "Address": null,
+      "CreatedAt": "2026-06-16T16:06:25.0615002Z",
+      "ImageCount": 0
+    },
+    {
+      "Id": "e78b389c-8052-48ff-9624-a0bb2a5e609b",
+      "CitizenName": null,
+      "CategoryName": null,
+      "Status": 0,
+      "Address": null,
+      "CreatedAt": "2026-06-16T16:06:25.0615009Z",
+      "ImageCount": 0
+    },
+    {
+      "Id": "47c7be72-945a-4eb5-947f-74894f0e744a",
+      "CitizenName": null,
+      "CategoryName": null,
+      "Status": 0,
+      "Address": null,
+      "CreatedAt": "2026-06-16T16:06:25.0615016Z",
+      "ImageCount": 0
+    },
+    {
+      "Id": "c388731c-6548-4d39-bd37-50cae0f5a635",
+      "CitizenName": null,
+      "CategoryName": null,
+      "Status": 0,
+      "Address": null,
+      "CreatedAt": "2026-06-16T16:06:25.0615023Z",
+      "ImageCount": 0
+    },
+    {
+      "Id": "fa0b78ad-008d-4117-91e6-2bc9206cee14",
+      "CitizenName": null,
+      "CategoryName": null,
+      "Status": 0,
+      "Address": null,
+      "CreatedAt": "2026-06-16T16:06:25.0615034Z",
+      "ImageCount": 0
+    },
+    {
+      "Id": "3eb4b6f7-399a-4490-a3f6-9bb619cccfbd",
+      "CitizenName": null,
+      "CategoryName": null,
+      "Status": 0,
+      "Address": null,
+      "CreatedAt": "2026-06-16T16:06:25.0615041Z",
+      "ImageCount": 0
+    },
+    {
+      "Id": "d150e58c-9de3-46df-a279-a0221911b140",
+      "CitizenName": null,
+      "CategoryName": null,
+      "Status": 0,
+      "Address": null,
+      "CreatedAt": "2026-06-16T16:06:25.0615048Z",
+      "ImageCount": 0
+    }
+  ],
+  "Total": 150,
+  "TotalPages": 15
+}
