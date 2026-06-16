@@ -55,17 +55,4 @@ Notes: Tổng cộng có 3 TCs failed trong lần chạy — chủ yếu thuộc
   - Waste-Recycling-Platform/backend/tests/.../CreateReportCommandHandlerTests.cs (BVA-F11 block)
   - generate_unittest_excel.py (BVA definitions and expected messages)
 
-## 7. Hành động đề xuất
-- Ghi defect ticket cho KIEM-26, KIEM-29 nếu chưa có (kiểm tra JIRA).
-- Dev: implement validation (min 1 image, max 5 images) trong handler.
-- QA: sau bugfix, chạy lại BVA F11, verify 68/68 passed.
-- Tài liệu: đính kèm screenshot Allure vào báo cáo (thư mục `allure-results` hoặc snapshot trong PR).
 
-## 8. Branch / Commit
-- Branch gợi ý: `feature/KIEM-XX-admin-citizen-report`
-- Commit message gợi ý: `docs(KIEM-XX): add Admin & Citizen test report`
-
----
-Generated evidence references (search results):
-- History notes: history-chat/2026-06-12_16h50.md (BVA run summary)
-- Final report references: docs/FINAL_REPORT.md (mentions KIEM-26 / KIEM-29)
