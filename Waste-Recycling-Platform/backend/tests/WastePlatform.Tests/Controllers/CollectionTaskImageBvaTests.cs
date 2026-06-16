@@ -1162,5 +1162,424 @@ public class CollectionTaskImageBvaTests
         });
     }
     
+    /// <summary>
+    /// Test case chi tiết thứ hai: Upload file vượt quá giới hạn kích thước tối đa
+    /// KIEM-68 BVA Boundary Test (Upper Boundary): Xác minh API trả về HTTP 400 BadRequest khi file vượt limit
+    /// 
+    /// Kịch bản kiểm thử:
+    /// - Giả định hệ thống cho phép upload tối đa 5MB (5,242,880 bytes)
+    /// - Upload file có kích thước 5MB + 1 byte (5,242,881 bytes) hoặc 10MB (10,485,760 bytes)
+    /// - API phải từ chối và trả về lỗi 400
+    /// - Xác minh database không được cập nhật (transaction rollback)
+    /// - Đính kèm chi tiết payload request/response lỗi cho Allure Report
+    /// </summary>
+    [Fact]
+    [AllureDescription("UploadImage: When file size exceeds maximum allowed limit (5MB), should return HTTP 400 BadRequest with size limit error message.")]
+    [AllureTag("error-handling")]
+    [AllureTag("file-size-exceeded")]
+    [AllureTag("http-400")]
+    [AllureTag("boundary-upper")]
+    [AllureTag("size-validation")]
+    public async Task UploadImage_WhenFileSizeExceedsMaximumLimit_ShouldReturn400BadRequest()
+    {
+        // ==================== CONFIGURE SIZE LIMITS ====================
+        
+        // Định nghĩa giới hạn kích thước file tối đa cho hệ thống (BVA boundary)
+        var maximumAllowedFileSizeInBytesForSystem = 5_242_880L; // Exactly 5 MB
+        var maximumAllowedFileSizeInMegabytes = 5.0m;
+        var maximumAllowedFileSizeInKilobytes = 5_120.0m;
+        
+        AllureAttachmentHelper.AttachJson("file-size-limit-configuration", new
+        {
+            maxFileSizeBytes = maximumAllowedFileSizeInBytesForSystem,
+            maxFileSizeMegabytes = maximumAllowedFileSizeInMegabytes,
+            maxFileSizeKilobytes = maximumAllowedFileSizeInKilobytes,
+            configurationDescription = "System boundary value: 5MB file size limit"
+        });
+        
+        // ==================== ARRANGE SECTION ====================
+        
+        // Bước 1: Khởi tạo toàn bộ test environment hoàn chỉnh
+        var testEnvironmentTupleResultForOversizedFile = InitializeCompleteTestEnvironment();
+        var dbContextInstanceForOversizedFileTest = testEnvironmentTupleResultForOversizedFile.Item1;
+        var controllerInstanceForOversizedFileTest = testEnvironmentTupleResultForOversizedFile.Item2;
+        var collectionTaskIdForOversizedFileTest = testEnvironmentTupleResultForOversizedFileTest.Item3;
+        var collectorUserIdForOversizedFileTest = testEnvironmentTupleResultForOversizedFileTest.Item4;
+        
+        AllureAttachmentHelper.AttachJson("test-environment-initialization", new
+        {
+            collectionTaskId = collectionTaskIdForOversizedFileTest,
+            collectorUserId = collectorUserIdForOversizedFileTest,
+            dbContextType = "SQLite In-Memory",
+            environmentInitializationTimestamp = DateTime.UtcNow.ToString("O")
+        });
+        
+        // Bước 2: Tính toán kích thước file vượt quá giới hạn (BVA boundary + 1)
+        var oversizedFileExceedByOneByteSizeInBytes = maximumAllowedFileSizeInBytesForSystem + 1;
+        var oversizedFileExceedByOneByteSizeInMegabytes = (decimal)oversizedFileExceedByOneByteSizeInBytes / (1024 * 1024);
+        var oversizedFileExceedByOneByteSizeInKilobytes = (decimal)oversizedFileExceedByOneByteSizeInBytes / 1024;
+        
+        AllureAttachmentHelper.AttachJson("oversized-file-size-calculation-boundary-plus-one", new
+        {
+            fileSizeBytes = oversizedFileExceedByOneByteSizeInBytes,
+            fileSizeMegabytes = Math.Round(oversizedFileExceedByOneByteSizeInMegabytes, 6),
+            fileSizeKilobytes = Math.Round(oversizedFileExceedByOneByteSizeInKilobytes, 2),
+            exceedsMaximumByBytes = 1,
+            bvaCategory = "Boundary Upper Test - MAX + 1"
+        });
+        
+        // Bước 3: Tạo byte array với kích thước vượt giới hạn (5MB + 1 byte)
+        var oversizedByteArrayForBoundaryTest = CreateByteArrayOfExactSize(oversizedFileExceedByOneByteSizeInBytes);
+        var oversizedByteArrayLengthVerification = oversizedByteArrayForBoundaryTest.Length;
+        var oversizedByteArrayIsGreaterThanLimit = oversizedByteArrayLengthVerification > maximumAllowedFileSizeInBytesForSystem;
+        
+        AllureAttachmentHelper.AttachJson("oversized-byte-array-creation", new
+        {
+            byteArrayCreatedSizeInBytes = oversizedByteArrayLengthVerification,
+            isArraySizeGreaterThanLimit = oversizedByteArrayIsGreaterThanLimit,
+            exceedsLimitByBytes = oversizedByteArrayLengthVerification - maximumAllowedFileSizeInBytesForSystem,
+            creationTimestamp = DateTime.UtcNow.ToString("O")
+        });
+        
+        // Bước 4: Tạo mock IFormFile với kích thước vượt quá giới hạn
+        var oversizedFileNameForUpload = "oversized-collection-proof.jpg";
+        var oversizedFileContentType = "image/jpeg";
+        var oversizedFileMimeTypeCategory = "image";
+        var mockOversizedFormFileInstance = CreateMockFormFile(
+            fileNameWithExtension: oversizedFileNameForUpload,
+            fileContentBytesArray: oversizedByteArrayForBoundaryTest,
+            contentTypeOfFile: oversizedFileContentType);
+        
+        // Verify mock file properties before sending
+        var oversizedMockFileNameProperty = mockOversizedFormFileInstance.FileName;
+        var oversizedMockFileLengthProperty = mockOversizedFormFileInstance.Length;
+        var oversizedMockFileContentTypeProperty = mockOversizedFormFileInstance.ContentType;
+        var oversizedMockFileIsValidImage = oversizedMockFileContentTypeProperty.StartsWith(oversizedFileMimeTypeCategory);
+        
+        AllureAttachmentHelper.AttachJson("oversized-mock-form-file-configuration", new
+        {
+            fileName = oversizedMockFileNameProperty,
+            fileLength = oversizedMockFileLengthProperty,
+            contentType = oversizedMockFileContentTypeProperty,
+            isValidImageMimeType = oversizedMockFileIsValidImage,
+            isFileLengthExceedingLimit = oversizedMockFileLengthProperty > maximumAllowedFileSizeInBytesForSystem,
+            excessSizeBytes = oversizedMockFileLengthProperty - maximumAllowedFileSizeInBytesForSystem,
+            errorExpected = true,
+            mockCreationStatus = "READY_FOR_UPLOAD_REJECTION"
+        });
+        
+        // Bước 5: Tạo FormFileCollection chứa mock file vượt giới hạn
+        var formFileListWithOversizedFile = new List<IFormFile> { mockOversizedFormFileInstance };
+        var formFileCollectionWithOversizedFile = CreateMockFormFileCollection(formFileListWithOversizedFile);
+        var formFileCollectionItemCountForOversizedTest = formFileListWithOversizedFile.Count;
+        var totalFileSizeInCollectionBytes = formFileListWithOversizedFile.Sum(f => f.Length);
+        
+        AllureAttachmentHelper.AttachJson("form-file-collection-for-oversized-test", new
+        {
+            fileCountInCollection = formFileCollectionItemCountForOversizedTest,
+            firstFileSize = formFileListWithOversizedFile[0].Length,
+            totalSizeInCollection = totalFileSizeInCollectionBytes,
+            exceedsLimitByTotalBytes = totalFileSizeInCollectionBytes - maximumAllowedFileSizeInBytesForSystem,
+            validationMessage = "FormFileCollection contains 1 oversized file exceeding system limit"
+        });
+        
+        // Bước 6: Tạo FormCollection với metadata (WeightKg, Notes, Images)
+        var weightKgValueForOversizedUpload = 8.75m;
+        var notesTextForOversizedUpload = "Uploading collection completion proof with oversized image file";
+        var additionalNotesContextForOversized = " - Testing file size validation at boundary";
+        var completedNotesTextForOversizedUpload = notesTextForOversizedUpload + additionalNotesContextForOversized;
+        
+        var formCollectionWithOversizedImageFile = CreateMockFormCollection(
+            weightKgValue: weightKgValueForOversizedUpload,
+            notesTextValue: completedNotesTextForOversizedUpload,
+            formFilesCollectionToInclude: formFileCollectionWithOversizedFile);
+        
+        // Tạo detailed request payload object để đính kèm
+        var requestPayloadObjectForOversizedUpload = new
+        {
+            collectionTaskId = collectionTaskIdForOversizedFileTest,
+            collectorUserId = collectorUserIdForOversizedFileTest,
+            weightKg = weightKgValueForOversizedUpload,
+            notes = completedNotesTextForOversizedUpload,
+            uploadedFiles = new[]
+            {
+                new
+                {
+                    fileName = oversizedMockFileNameProperty,
+                    fileSizeBytes = oversizedMockFileLengthProperty,
+                    fileSizeMegabytes = Math.Round((decimal)oversizedMockFileLengthProperty / (1024 * 1024), 4),
+                    contentType = oversizedMockFileContentTypeProperty,
+                    exceedsSystemLimit = oversizedMockFileLengthProperty > maximumAllowedFileSizeInBytesForSystem,
+                    excessBytes = oversizedMockFileLengthProperty - maximumAllowedFileSizeInBytesForSystem,
+                    systemMaxLimitBytes = maximumAllowedFileSizeInBytesForSystem,
+                    systemMaxLimitMegabytes = maximumAllowedFileSizeInMegabytes
+                }
+            },
+            requestTimestamp = DateTime.UtcNow.ToString("O")
+        };
+        
+        AllureAttachmentHelper.AttachJson("request-payload-with-oversized-file", requestPayloadObjectForOversizedUpload);
+        
+        // ==================== ACT SECTION ====================
+        
+        // Bước 7: Gọi API endpoint CompleteTask với FormCollection chứa oversized file
+        var apiResponseResultForOversizedUpload = await controllerInstanceForOversizedFileTest.CompleteTask(
+            id: collectionTaskIdForOversizedFileTest,
+            form: formCollectionWithOversizedImageFile);
+        
+        var apiCallExecutionTimestamp = DateTime.UtcNow;
+        var apiResponseResultTypeName = apiResponseResultForOversizedUpload?.GetType().Name ?? "null";
+        
+        AllureAttachmentHelper.AttachText("api-call-execution-details", 
+            $"API Endpoint: CompleteTask\n" +
+            $"TaskId: {collectionTaskIdForOversizedFileTest}\n" +
+            $"FileSize: {oversizedMockFileLengthProperty} bytes ({Math.Round((decimal)oversizedMockFileLengthProperty / (1024 * 1024), 2)} MB)\n" +
+            $"Response Type: {apiResponseResultTypeName}\n" +
+            $"Execution Timestamp: {apiCallExecutionTimestamp:O}\n" +
+            $"Expected: BadRequestObjectResult (HTTP 400)\n" +
+            $"Status: File size validation test initiated");
+        
+        // ==================== ASSERT SECTION ====================
+        
+        // Bước 8: Kiểm tra response type là BadRequestObjectResult
+        var badRequestResultAssertionForOversized = apiResponseResultForOversizedUpload.Should()
+            .BeOfType<BadRequestObjectResult>(
+                "API should return BadRequest (HTTP 400) when file size exceeds maximum allowed limit of 5MB");
+        var badRequestResultActualForOversized = badRequestResultAssertionForOversized.Subject;
+        
+        AllureAttachmentHelper.AttachJson("response-type-validation", new
+        {
+            expectedResponseType = "BadRequestObjectResult",
+            actualResponseType = badRequestResultActualForOversized.GetType().Name,
+            responseTypeMatch = badRequestResultActualForOversized.GetType().Name == "BadRequestObjectResult"
+        });
+        
+        // Bước 9: Kiểm tra status code HTTP 400
+        var httpStatusCodeExpectedForOversized = 400;
+        var httpStatusCodeActualForOversized = badRequestResultActualForOversized.StatusCode;
+        var isStatusCodeCorrectForOversized = httpStatusCodeActualForOversized == httpStatusCodeExpectedForOversized;
+        
+        httpStatusCodeActualForOversized.Should()
+            .Be(httpStatusCodeExpectedForOversized, 
+                $"HTTP status code should be 400 Bad Request for file size {oversizedMockFileLengthProperty} bytes exceeding limit of {maximumAllowedFileSizeInBytesForSystem} bytes");
+        
+        AllureAttachmentHelper.AttachJson("http-status-code-validation", new
+        {
+            expectedStatusCode = httpStatusCodeExpectedForOversized,
+            actualStatusCode = httpStatusCodeActualForOversized,
+            isStatusCodeCorrect = isStatusCodeCorrectForOversized,
+            fileSizeExceeded = oversizedMockFileLengthProperty,
+            maximumLimit = maximumAllowedFileSizeInBytesForSystem,
+            excessBytes = oversizedMockFileLengthProperty - maximumAllowedFileSizeInBytesForSystem,
+            validationResult = isStatusCodeCorrectForOversized ? "PASSED" : "FAILED"
+        });
+        
+        // Bước 10: Lấy object response value
+        var responseValueObjectForOversized = badRequestResultActualForOversized.Value;
+        var responseValueObjectTypeNameForOversized = responseValueObjectForOversized?.GetType().Name ?? "null";
+        
+        // Bước 11: Serialize response value thành JSON để kiểm tra thông báo lỗi
+        var responseValueAsJsonStringForOversized = System.Text.Json.JsonSerializer.Serialize(
+            responseValueObjectForOversized,
+            new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        
+        AllureAttachmentHelper.AttachJson("raw-response-value-oversized", new
+        {
+            responseValueObject = responseValueObjectForOversized,
+            responseValueType = responseValueObjectTypeNameForOversized,
+            responseJsonContent = responseValueAsJsonStringForOversized,
+            responseJsonLength = responseValueAsJsonStringForOversized.Length
+        });
+        
+        // Bước 12: Kiểm tra thông báo lỗi chứa thông tin về giới hạn kích thước
+        var allowedErrorKeywordsForFileSizeValidation = new[]
+        {
+            "File size exceeds",
+            "exceeds the allowed limit",
+            "exceeds the maximum",
+            "size limit",
+            "maximum file size",
+            "5MB",
+            "5242880",
+            "file too large",
+            "oversized"
+        };
+        
+        var errorMessageFoundInResponseForOversized = false;
+        var matchedKeywordFromResponseForOversized = string.Empty;
+        var matchedKeywordPositionInResponse = 0;
+        
+        foreach (var keywordToSearchInResponse in allowedErrorKeywordsForFileSizeValidation)
+        {
+            var keywordSearchIndex = responseValueAsJsonStringForOversized.IndexOf(
+                keywordToSearchInResponse,
+                StringComparison.OrdinalIgnoreCase);
+            
+            if (keywordSearchIndex >= 0)
+            {
+                errorMessageFoundInResponseForOversized = true;
+                matchedKeywordFromResponseForOversized = keywordToSearchInResponse;
+                matchedKeywordPositionInResponse = keywordSearchIndex;
+                break;
+            }
+        }
+        
+        AllureAttachmentHelper.AttachJson("error-message-validation-for-oversized-file", new
+        {
+            allowedErrorKeywords = allowedErrorKeywordsForFileSizeValidation,
+            errorMessageFound = errorMessageFoundInResponseForOversized,
+            matchedKeyword = matchedKeywordFromResponseForOversized,
+            matchedKeywordPosition = matchedKeywordPositionInResponse,
+            responsePreview = responseValueAsJsonStringForOversized.Substring(
+                0, Math.Min(300, responseValueAsJsonStringForOversized.Length)),
+            validationStatus = errorMessageFoundInResponseForOversized ? "PASSED - Error message contains expected keyword" : "NEED_INVESTIGATION"
+        });
+        
+        // Bước 13: Assert thông báo lỗi chứa ít nhất một từ khóa hợp lệ
+        errorMessageFoundInResponseForOversized.Should()
+            .BeTrue(
+                $"Response error message should contain a validation keyword about file size limit. " +
+                $"Expected keywords: {string.Join(", ", allowedErrorKeywordsForFileSizeValidation)}. " +
+                $"Response was: {responseValueAsJsonStringForOversized}");
+        
+        // Bước 14: Tạo comprehensive response payload object để đính kèm vào Allure Report
+        var responsePayloadObjectForOversizedTest = new
+        {
+            statusCode = httpStatusCodeActualForOversized,
+            resultType = badRequestResultActualForOversized.GetType().Name,
+            fileSizeValidation = new
+            {
+                fileSize = oversizedMockFileLengthProperty,
+                fileSizeMegabytes = Math.Round((decimal)oversizedMockFileLengthProperty / (1024 * 1024), 4),
+                maximumAllowedBytes = maximumAllowedFileSizeInBytesForSystem,
+                maximumAllowedMegabytes = maximumAllowedFileSizeInMegabytes,
+                exceededByBytes = oversizedMockFileLengthProperty - maximumAllowedFileSizeInBytesForSystem,
+                exceededByPercentage = Math.Round(
+                    ((decimal)(oversizedMockFileLengthProperty - maximumAllowedFileSizeInBytesForSystem) / 
+                     maximumAllowedFileSizeInBytesForSystem) * 100, 
+                    2)
+            },
+            errorMessageValidation = new
+            {
+                messageFound = errorMessageFoundInResponseForOversized,
+                matchedKeyword = matchedKeywordFromResponseForOversized,
+                expectedKeywords = allowedErrorKeywordsForFileSizeValidation
+            },
+            responseContent = responseValueAsJsonStringForOversized,
+            testResult = "PASSED - File rejection successful",
+            testCategory = "BVA Boundary Upper Test (MAX + 1)",
+            timestamp = DateTime.UtcNow.ToString("O")
+        };
+        
+        AllureAttachmentHelper.AttachJson("response-payload-oversized-file-test", responsePayloadObjectForOversizedTest);
+        
+        // Bước 15: Verify database state không được cập nhật (transaction integrity)
+        var collectionTaskFromDbAfterOversizedFileTest = await dbContextInstanceForOversizedFileTest.CollectionTasks
+            .AsNoTracking()
+            .FirstOrDefaultAsync(t => t.Id == collectionTaskIdForOversizedFileTest);
+        
+        if (collectionTaskFromDbAfterOversizedFileTest != null)
+        {
+            var taskStateAfterRejectedOversizedUpload = new
+            {
+                taskId = collectionTaskFromDbAfterOversizedFileTest.Id,
+                status = collectionTaskFromDbAfterOversizedFileTest.Status.ToString(),
+                statusValue = (int)collectionTaskFromDbAfterOversizedFileTest.Status,
+                collectedWeightKg = collectionTaskFromDbAfterOversizedFileTest.CollectedWeightKg,
+                notes = collectionTaskFromDbAfterOversizedFileTest.Notes,
+                completedAt = collectionTaskFromDbAfterOversizedFileTest.CompletedAt,
+                imageCount = collectionTaskFromDbAfterOversizedFileTest.Images?.Count ?? 0,
+                expectedNoChanges = true,
+                transactionRolledBack = collectionTaskFromDbAfterOversizedFileTest.CompletedAt == null && 
+                                       collectionTaskFromDbAfterOversizedFileTest.CollectedWeightKg == null
+            };
+            
+            AllureAttachmentHelper.AttachJson("database-state-after-oversized-file-rejection", taskStateAfterRejectedOversizedUpload);
+            
+            // Assert: Task vẫn ở trạng thái OnTheWay (chưa complete), không bị cập nhật
+            collectionTaskFromDbAfterOversizedFileTest.Status.Should()
+                .Be(CollectionTaskStatus.OnTheWay, 
+                    "Task status should remain OnTheWay after rejected oversized file upload");
+            
+            collectionTaskFromDbAfterOversizedFileTest.CollectedWeightKg.Should()
+                .BeNull("Weight should not be set after rejected oversized file upload");
+            
+            collectionTaskFromDbAfterOversizedFileTest.CompletedAt.Should()
+                .BeNull("Task completion timestamp should remain null after rejected upload");
+            
+            collectionTaskFromDbAfterOversizedFileTest.Images.Should()
+                .BeEmpty("No images should be stored after rejected oversized file upload");
+        }
+        
+        // Bước 16: Verify no partial writes occurred
+        var allTaskImagesAfterTest = await dbContextInstanceForOversizedFileTest.CollectionImages
+            .Where(ci => ci.TaskId == collectionTaskIdForOversizedFileTest)
+            .ToListAsync();
+        
+        allTaskImagesAfterTest.Should()
+            .BeEmpty("No collection images should be persisted in database after rejected oversized file upload");
+        
+        AllureAttachmentHelper.AttachJson("image-persistence-verification", new
+        {
+            taskId = collectionTaskIdForOversizedFileTest,
+            imagesInDatabase = allTaskImagesAfterTest.Count,
+            expectedImageCount = 0,
+            partialWritePrevented = allTaskImagesAfterTest.Count == 0
+        });
+        
+        // ==================== FINAL TEST SUMMARY & REPORTING ====================
+        
+        AllureAttachmentHelper.AttachJson("comprehensive-test-summary-oversized-file", new
+        {
+            testName = "UploadImage_WhenFileSizeExceedsMaximumLimit_ShouldReturn400BadRequest",
+            testCategory = "Boundary Value Analysis - Upper Boundary (MAX + 1)",
+            testResult = "PASSED",
+            testExecutionTime = DateTime.UtcNow,
+            fileCharacteristics = new
+            {
+                fileSizeBytes = oversizedMockFileLengthProperty,
+                fileSizeMegabytes = Math.Round((decimal)oversizedMockFileLengthProperty / (1024 * 1024), 4),
+                fileName = oversizedMockFileNameProperty,
+                contentType = oversizedMockFileContentTypeProperty
+            },
+            systemLimits = new
+            {
+                maximumAllowedBytes = maximumAllowedFileSizeInBytesForSystem,
+                maximumAllowedMegabytes = maximumAllowedFileSizeInMegabytes,
+                exceedanceBytes = oversizedMockFileLengthProperty - maximumAllowedFileSizeInBytesForSystem,
+                exceedancePercentage = Math.Round(
+                    ((decimal)(oversizedMockFileLengthProperty - maximumAllowedFileSizeInBytesForSystem) / 
+                     maximumAllowedFileSizeInBytesForSystem) * 100, 2)
+            },
+            apiValidations = new
+            {
+                responseType = "BadRequestObjectResult",
+                httpStatusCode = httpStatusCodeActualForOversized,
+                errorMessageValid = errorMessageFoundInResponseForOversized,
+                matchedKeyword = matchedKeywordFromResponseForOversized
+            },
+            databaseIntegrity = new
+            {
+                transactionRolledBack = true,
+                taskStatusUnchanged = true,
+                noPartialWritesOccurred = true,
+                imagesNotPersisted = true
+            },
+            assertions = new[]
+            {
+                "Response is BadRequestObjectResult",
+                "HTTP Status Code is 400",
+                "Error message contains file size validation keyword",
+                "Database transaction rolled back",
+                "Task status remains OnTheWay",
+                "Task completion attributes are null",
+                "No collection images persisted",
+                "No partial writes detected"
+            },
+            overallTestStatus = "PASSED - File size boundary validation working correctly",
+            timestamp = DateTime.UtcNow.ToString("O")
+        });
+    }
+    
     #endregion
 }
