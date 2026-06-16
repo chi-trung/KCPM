@@ -24,7 +24,7 @@ services:
     networks:
       - waste_network
 
-  # ── .NET 9 Backend ──────────────────────────────────────────────
+  # ── .NET 8 Backend ──────────────────────────────────────────────
   backend:
     image: waste-recycling-platform-backend:latest
     build:

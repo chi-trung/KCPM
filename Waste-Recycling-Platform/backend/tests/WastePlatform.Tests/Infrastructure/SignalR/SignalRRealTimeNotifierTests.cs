@@ -14,6 +14,8 @@ namespace WastePlatform.Tests.Infrastructure.SignalR;
 [Allure.Net.Commons.Attributes.AllureLabel("suite", "Infrastructure")]
 [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "SignalRRealTimeNotifierTests")]
 [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Infrastructure.SignalR")]
+[AllureOwner("Nguyen Chi Trung")]
+[Allure.Net.Commons.Attributes.AllureTag("signalr", "infrastructure", "backend")]
 public class SignalRRealTimeNotifierTests
 {
     [AllureStory("Push notification to a single user")]

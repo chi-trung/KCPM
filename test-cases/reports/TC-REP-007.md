@@ -41,11 +41,7 @@ Verify that the system prevents invalid state transitions (e.g., accepting an al
 ### Error Response
 ```json
 {
-  "success": false,
-  "error": "Invalid state transition",
-  "message": "Cannot accept report with status 'Accepted'. Current state: Accepted",
-  "currentStatus": "Accepted",
-  "requestedAction": "Accept"
+  "message": "Report can only be accepted if it is in Pending status. Current status: Accepted"
 }
 ```
 

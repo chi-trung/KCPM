@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,8 +26,13 @@ namespace WastePlatform.Tests.Integration
     [AllureEpic("KIEM-21: Security & Role-based Access Tests")]
     [AllureFeature("JWT Bearer Authentication")]
     [AllureOwner("Hoàng Phụng")]
+    [AllureSeverity(Allure.Net.Commons.SeverityLevel.blocker)]
     [Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-21")]
-public class JwtBearerIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
+    [Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
+    [Allure.Net.Commons.Attributes.AllureLabel("suite", "Integration")]
+    [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "JwtBearerIntegrationTests")]
+    [Allure.Net.Commons.Attributes.AllureTag("security", "jwt", "integration", "backend")]
+    public class JwtBearerIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
     {
         private readonly WebApplicationFactory<Program> _factory;
 
