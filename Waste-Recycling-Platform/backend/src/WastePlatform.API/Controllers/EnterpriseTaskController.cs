@@ -656,10 +656,8 @@ public class EnterpriseTaskController : ControllerBase
 public class EnterpriseRespondRequest
 {
     public string? Response { get; set; }
-    [Required]
-    public bool ResolveImmediately { get; set; } = false;
-    [Required]
-    public bool EscalateToAdmin { get; set; } = false;
+    public required bool ResolveImmediately { get; set; }
+    public required bool EscalateToAdmin { get; set; }
 }
 
 /// <summary>
@@ -667,8 +665,7 @@ public class EnterpriseRespondRequest
 /// </summary>
 public class AssignCollectorRequest
 {
-    [Required]
-    public Guid CollectorId { get; set; }
+    public required Guid CollectorId { get; set; }
 }
 
 public class UpdateEnterpriseProfileRequest

@@ -132,8 +132,8 @@ public class UpdateEnterpriseRewardRulesRequest
 
 public class UpdateEnterpriseRewardRuleItem
 {
-    public int WasteCategoryId { get; set; }
-    public int PointsPerReport { get; set; }
-    public int BonusQuality { get; set; }
-    public bool IsActive { get; set; } = true;
+    public required int WasteCategoryId { get; set; }
+    public required int PointsPerReport { get; set; }
+    public required int BonusQuality { get; set; }
+    public required bool IsActive { get; set; }
 }

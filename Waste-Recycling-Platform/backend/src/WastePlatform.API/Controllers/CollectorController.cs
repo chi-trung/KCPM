@@ -79,6 +79,5 @@ public class CollectorController : ControllerBase
 
 public class ToggleAvailabilityRequest
 {
-    [Required]
-    public bool IsAvailable { get; set; }
+    public required bool IsAvailable { get; set; }
 }

@@ -217,8 +217,7 @@ public class CreateEnterpriseCollectorRequest
     public string Email { get; set; } = string.Empty;
     public string? Phone { get; set; }
     public string TemporaryPassword { get; set; } = string.Empty;
-    [Required]
-    public bool IsAvailable { get; set; } = true;
+    public required bool IsAvailable { get; set; }
 }
 
 public class UpdateEnterpriseCollectorRequest
@@ -227,6 +226,5 @@ public class UpdateEnterpriseCollectorRequest
     public string Email { get; set; } = string.Empty;
     public string? Phone { get; set; }
     public string? TemporaryPassword { get; set; }
-    [Required]
-    public bool IsAvailable { get; set; } = true;
+    public required bool IsAvailable { get; set; }
 }
