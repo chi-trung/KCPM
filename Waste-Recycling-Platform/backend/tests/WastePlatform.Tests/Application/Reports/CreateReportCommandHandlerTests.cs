@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using Microsoft.AspNetCore.Http;
@@ -657,8 +657,8 @@ public class CreateReportCommandHandlerTests
             Times.Once);
     }
 
-    [Fact(Skip = "KIEM-29 Bug open — max 5 images validation not yet implemented in handler. See: https://ut-team-36.atlassian.net/browse/KIEM-29")]
-    [AllureDescription("BVA-07: KIEM-29 Bug — 6 ảnh (vượt max) phải bị từ chối với ArgumentException")]
+    [Fact]
+    [AllureDescription("BVA-07: KIEM-29 Fixed — 6 ảnh (vượt max) phải bị từ chối với ArgumentException")]
     public async Task Handle_WithSixImages_ShouldThrowArgumentException_BVA_OverMax_KIEM29()
     {
         // Arrange — BVA: images = 6 (above max boundary, INVALID — KIEM-29 bug)
@@ -679,7 +679,7 @@ public class CreateReportCommandHandlerTests
             .ReturnsAsync(category);
 
         // Act & Assert — BVA-07: KIEM-29 — must throw when > 5 images
-        // NOTE: This test FAILS on current implementation (bug KIEM-29 not yet fixed)
+        // KIEM-29 FIXED: max 5 images validation now implemented in CreateReportCommandHandler
         var exception = await Assert.ThrowsAsync<ArgumentException>(
             () => _handler.Handle(command, CancellationToken.None));
 
