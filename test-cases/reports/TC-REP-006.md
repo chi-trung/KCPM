@@ -52,20 +52,10 @@ reportId: {reportId}
 ### Response Body
 ```json
 {
-  "success": true,
   "message": "Report rejected successfully",
-  "data": {
-    "reportId": "uuid",
-    "status": "Rejected",
-    "previousStatus": "Pending",
-    "rejectedBy": {
-      "userId": "enterprise-id",
-      "name": "Green Recycle Co."
-    },
-    "rejectedAt": "2025-05-17T11:30:00Z",
-    "reason": "Ngoài khu vực phục vụ - Quận 5 ngoài phạm vi",
-    "rejectionCategory": "OUT_OF_SERVICE_AREA"
-  }
+  "reportId": "uuid",
+  "reportStatus": "Rejected",
+  "rejectionReason": "Ngoài khu vực phục vụ - Quận 5 ngoài phạm vi"
 }
 ```
 
