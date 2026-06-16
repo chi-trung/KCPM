@@ -289,6 +289,35 @@ public class CreateComplaintCommandHandlerTests
             Times.Once, "AddAsync should be called exactly once");
     }
 
+    // Bug fixed and test case implemented by: Nguyễn Minh Phụng (KIEM-7)
+    [Fact]
+    public async Task Handle_WithContentLengthExceeding2000_ShouldThrowArgumentException()
+    {
+        // Arrange
+        var citizenId = Guid.NewGuid();
+        var command = new CreateComplaintCommand
+        {
+            CitizenId = citizenId,
+            Content = new string('a', 2001),
+            ReportId = null,
+            EnterpriseId = null
+        };
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<ArgumentException>(
+            () => _handler.Handle(command, CancellationToken.None));
+        
+        exception.ParamName.Should().Be("request");
+        exception.Message.Should().Contain("Complaint content cannot exceed 2000 characters");
+        
+        _mockComplaintRepository.Verify(
+            x => x.AddAsync(It.IsAny<Complaint>(), It.IsAny<CancellationToken>()),
+            Times.Never, "AddAsync should not be called when content exceeds limit");
+        _mockComplaintRepository.Verify(
+            x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
+            Times.Never, "SaveChangesAsync should not be called when content exceeds limit");
+    }
+
     #endregion
 
     #region DT-F12: Decision Table Testing — Complaint Creation (KIEM-7)
