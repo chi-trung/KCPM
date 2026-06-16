@@ -2,7 +2,7 @@
   "total": 2,
   "items": [
     {
-      "uid": "f22ca15fa1d4440485fc3beb83750063",
+      "uid": "7f8f6ca19d924553bcda7e683ff9911e",
       "name": "E2E – Text Not Found",
       "statistic": {
         "failed": 8,
@@ -14,7 +14,7 @@
       }
     },
     {
-      "uid": "d0735134fffb470ca01bcfd720c183ba",
+      "uid": "4ed2fa8062244d759973c6f905ed0d1b",
       "name": "Assertion Failure",
       "statistic": {
         "failed": 1,
