@@ -50,6 +50,11 @@ public class AdminAnalyticsController : ControllerBase
     [HttpGet("reports")]
     public async Task<IActionResult> GetReportAnalytics([FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null)
     {
+        if (startDate.HasValue && endDate.HasValue && startDate.Value > endDate.Value)
+        {
+            return BadRequest(new { message = "Start date must be less than or equal to end date" });
+        }
+
         try
         {
             var result = await _mediator.Send(new GetReportAnalyticsQuery 
@@ -103,6 +108,11 @@ public class AdminAnalyticsController : ControllerBase
     [HttpGet("waste")]
     public async Task<IActionResult> GetWasteAnalytics([FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null)
     {
+        if (startDate.HasValue && endDate.HasValue && startDate.Value > endDate.Value)
+        {
+            return BadRequest(new { message = "Start date must be less than or equal to end date" });
+        }
+
         try
         {
             var result = await _mediator.Send(new GetWasteAnalyticsQuery 
@@ -132,6 +142,10 @@ public class AdminAnalyticsController : ControllerBase
     [HttpGet("summary")]
     public async Task<IActionResult> GetAnalyticsSummary([FromQuery] DateTime? startDate = null, [FromQuery] DateTime? endDate = null)
     {
+        if (startDate.HasValue && endDate.HasValue && startDate.Value > endDate.Value)
+        {
+            return BadRequest(new { message = "Start date must be less than or equal to end date" });
+        }
         try
         {
             var result = await _mediator.Send(new GetAnalyticsSummaryQuery 
