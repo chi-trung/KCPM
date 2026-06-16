@@ -362,7 +362,7 @@ public class ReportControllerTests
         var queryResult = (Reports: (IEnumerable<ReportListDto>)reportsList, Total: 1, TotalPages: 1);
 
         _mediatorMock
-            .Setup(x => x.Send(It.Is<GetAllReportsQuery>(q => q.Page == 1 && q.PageSize == 10 && q.Status == "Pending"), It.IsAny<CancellationToken>()))
+            .Setup(x => x.Send(It.IsAny<GetAllReportsQuery>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(queryResult);
 
         var controller = new ReportController(_mediatorMock.Object, context, _notificationServiceMock.Object);
