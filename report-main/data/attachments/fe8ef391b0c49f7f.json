@@ -1,0 +1,9 @@
+{
+  "Token": "valid-jwt-token",
+  "User": {
+    "Id": "35bc0a53-42e5-4b0a-87f5-6dc6a010fb4d",
+    "FullName": "Valid User",
+    "Email": "valid@example.com",
+    "Role": "enterprise"
+  }
+}
