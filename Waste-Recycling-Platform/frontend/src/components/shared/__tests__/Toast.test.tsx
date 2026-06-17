@@ -16,21 +16,18 @@ vi.mock('lucide-react', () => ({
   Info: () => <span data-testid="icon-info">I</span>,
 }))
 
-// Polyfill/Mock crypto.randomUUID if not available in environment
-if (typeof global.crypto === 'undefined') {
-  // @ts-ignore
-  global.crypto = {}
+// Mock crypto.randomUUID to avoid TS errors with UUID template literal type
+let uuidCount = 0
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mockCrypto: any = {
+  randomUUID: () => `test-uuid-${uuidCount++}`,
 }
-if (typeof global.crypto.randomUUID !== 'function') {
-  global.crypto.randomUUID = (() => {
-    let count = 0
-    return () => `test-uuid-${count++}`
-  })()
-}
+vi.stubGlobal('crypto', mockCrypto)
 
 describe('Toast Component & Hook', () => {
   beforeEach(() => {
     vi.useFakeTimers()
+    uuidCount = 0
   })
 
   it('useToast hook manages toast messages state and auto-removes after 3s', () => {
