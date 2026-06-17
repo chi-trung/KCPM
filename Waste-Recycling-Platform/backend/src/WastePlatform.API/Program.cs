@@ -214,14 +214,14 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<WastePlatformDbContext>();
     try
     {
-        db.Database.EnsureCreated();
+        await db.Database.EnsureCreatedAsync();
         Console.WriteLine("✅ Database schema verified/created successfully.");
 
         // ── Auto-seed: Waste Categories ─────────────────────────────
-        if (!db.WasteCategories.Any())
+        if (!await db.WasteCategories.AnyAsync())
         {
             Console.WriteLine("🌱 Seeding waste categories...");
-            db.Database.ExecuteSqlRaw(@"
+            await db.Database.ExecuteSqlRawAsync(@"
                 INSERT INTO waste_categories (id, name, description) VALUES
                 (1, 'Rác thải sinh hoạt', 'Rác thải từ nhà ở, cơ quan, cửa hàng'),
                 (2, 'Rác thải thực phẩm', 'Thực phẩm thừa, xương, rau quả'),
@@ -234,7 +234,7 @@ using (var scope = app.Services.CreateScope())
 
         // ── Auto-seed: Sample user accounts ─────────────────────────
         // Check if seed accounts already exist (by looking for admin with Admin role)
-        var adminExists = db.Users.Any(u => u.Email == "admin@gmail.com" && u.Role == UserRole.Admin);
+        var adminExists = await db.Users.AnyAsync(u => u.Email == "admin@gmail.com" && u.Role == UserRole.Admin);
         if (!adminExists)
         {
             Console.WriteLine("🌱 Seeding sample user accounts...");
@@ -247,12 +247,12 @@ using (var scope = app.Services.CreateScope())
             var seedEmails = new[] { "admin@gmail.com", "nguyenvana@gmail.com", "lethib@gmail.com",
                 "tranvanc@gmail.com", "greenlife@gmail.com", "ecofriendly@gmail.com",
                 "collector1@gmail.com", "collector2@gmail.com" };
-            var existingSeedUsers = db.Users.Where(u => seedEmails.Contains(u.Email)).ToList();
+            var existingSeedUsers = await db.Users.Where(u => seedEmails.Contains(u.Email)).ToListAsync();
             if (existingSeedUsers.Any())
             {
                 Console.WriteLine($"🧹 Removing {existingSeedUsers.Count} incorrectly registered seed accounts...");
                 db.Users.RemoveRange(existingSeedUsers);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
 
             // Admin
@@ -272,7 +272,7 @@ using (var scope = app.Services.CreateScope())
             var collector2User = User.Create("collector2@gmail.com", passwordHash, "Lý Đại Nghĩa", UserRole.Collector, "0911000002");
 
             db.Users.AddRange(admin, citizen1, citizen2, citizen3, enterprise1User, enterprise2User, collector1User, collector2User);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
 
             // Enterprise profiles
             var ent1 = new Enterprise
@@ -295,7 +295,7 @@ using (var scope = app.Services.CreateScope())
             };
             db.Enterprises.Add(ent1);
             db.Enterprises.Add(ent2);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
 
             // Collector profiles
             db.Collectors.Add(new Collector
@@ -314,7 +314,7 @@ using (var scope = app.Services.CreateScope())
                 IsAvailable = true,
                 CreatedAt = DateTime.UtcNow
             });
-            db.SaveChanges();
+            await db.SaveChangesAsync();
 
             // Enterprise waste types
             db.EnterpriseWasteTypes.Add(new EnterpriseWasteType
@@ -329,7 +329,7 @@ using (var scope = app.Services.CreateScope())
                 EnterpriseId = ent2.Id,
                 WasteCategoryId = 2
             });
-            db.SaveChanges();
+            await db.SaveChangesAsync();
 
             Console.WriteLine("✅ Seeded 8 user accounts (1 admin, 3 citizens, 2 enterprises, 2 collectors).");
         }
@@ -383,4 +383,4 @@ app.MapControllers();
 // Map SignalR Hub
 app.MapHub<TaskHub>("/hubs/task");
 
-app.Run();
+await app.RunAsync();
