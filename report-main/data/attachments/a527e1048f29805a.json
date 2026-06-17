@@ -1,0 +1,24 @@
+{
+  "Id": "13552a64-8900-403f-9397-5e9e79f6da3c",
+  "ReportId": "aa5a4fed-2476-4d07-8c69-db4d6c36f70e",
+  "EnterpriseId": "94998788-6acd-42c1-97d4-157d6b526d5b",
+  "CollectorId": null,
+  "Status": 2,
+  "CollectedWeightKg": 12.5,
+  "Notes": "Collected at front gate",
+  "AssignedAt": "2026-06-17T14:33:35.5014176Z",
+  "CompletedAt": "2026-06-17T14:33:35.5325666Z",
+  "statusLogs": [
+    {
+      "TaskId": "13552a64-8900-403f-9397-5e9e79f6da3c",
+      "Status": 1,
+      "ChangedAt": "2026-06-17T14:33:35.5307745Z"
+    },
+    {
+      "TaskId": "13552a64-8900-403f-9397-5e9e79f6da3c",
+      "Status": 2,
+      "ChangedAt": "2026-06-17T14:33:35.5325684Z"
+    }
+  ],
+  "images": []
+}
