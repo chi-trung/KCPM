@@ -259,8 +259,7 @@ public class CollectionTaskImageBvaTests
     /// <returns>Tuple chứa các entity đã tạo: (Enterprise, Citizen, Category, Report, Collector, User, Task)</returns>
     private static (Enterprise, User, WasteCategory, WasteReport, Collector, User, CollectionTask) 
         SeedTestDataIntoDatabase(
-            WastePlatformDbContext dbContextInstanceToSeed,
-            Guid collectorUserIdToLink)
+            WastePlatformDbContext dbContextInstanceToSeed)
     {
         // Tạo Enterprise
         var enterpriseIdForTest = Guid.NewGuid();
@@ -281,10 +280,7 @@ public class CollectionTaskImageBvaTests
             email: "test-citizen@example.com",
             passwordHash: "hashedpassword",
             fullName: "Test Citizen",
-            role: UserRole.Citizen,
-            phone: "0987654321",
-            district: "District 1",
-            ward: "Ward 1"
+            role: UserRole.Citizen
         );
         var citizenIdForTest = citizenForTest.Id;
         
@@ -315,24 +311,20 @@ public class CollectionTaskImageBvaTests
         };
         
         // Tạo User (cho Collector)
-        var userForCollectorTest = new User
-        {
-            Id = collectorUserIdToLink,
-            Email = "test-collector@example.com",
-            FullName = "Test Collector",
-            Phone = "0111223344",
-            Role = UserRole.Collector,
-            CreatedAt = DateTime.UtcNow
-        };
+        var userForCollectorTest = User.Create(
+            email: "test-collector@example.com",
+            passwordHash: "hashedpassword",
+            fullName: "Test Collector",
+            role: UserRole.Collector
+        );
         
         // Tạo Collector
         var collectorIdForTest = Guid.NewGuid();
         var collectorForTest = new Collector
         {
             Id = collectorIdForTest,
-            UserId = collectorUserIdToLink,
+            UserId = userForCollectorTest.Id,
             EnterpriseId = enterpriseIdForTest,
-            Status = CollectorStatus.Active,
             CreatedAt = DateTime.UtcNow
         };
         
@@ -361,19 +353,13 @@ public class CollectionTaskImageBvaTests
             wasteReportId = wasteReportIdForTest,
             collectorId = collectorIdForTest,
             collectionTaskId = collectionTaskForTest.Id,
-            userId = collectorUserIdToLink
+            userId = userForCollectorTest.Id
         });
         
         return (enterpriseForTest, citizenForTest, wasteCategoryForTest, 
                 wasteReportForTest, collectorForTest, userForCollectorTest, collectionTaskForTest);
     }
     
-    /// <summary>
-    /// Tạo byte array với kích thước chính xác (hữu ích cho BVA boundary testing).
-    /// Dữ liệu được điền bằng pattern "0xFF" để giả lập dữ liệu nhị phân hình ảnh.
-    /// </summary>
-    /// <param name="sizeInBytes">Kích thước mong muốn của byte array</param>
-    /// <returns>Byte array với các byte có giá trị 0xFF</returns>
     private static byte[] CreateByteArrayOfExactSize(long sizeInBytes)
     {
         var byteArrayCreated = new byte[sizeInBytes];
@@ -465,15 +451,12 @@ public class CollectionTaskImageBvaTests
     /// </returns>
     private (WastePlatformDbContext, CollectorTaskController, Guid, Guid) InitializeCompleteTestEnvironment()
     {
-        // Lấy Collector User ID cần sử dụng
-        var collectorUserIdToUseInTest = Guid.NewGuid();
-        
         // Tạo In-Memory DbContext
         var dbContextInstanceForTest = CreateInMemoryDbContext();
         
         // Seed dữ liệu test vào database
         var (enterprise, citizen, category, report, collector, user, task) = 
-            SeedTestDataIntoDatabase(dbContextInstanceForTest, collectorUserIdToUseInTest);
+            SeedTestDataIntoDatabase(dbContextInstanceForTest);
         
         // Tạo mocks cho dependencies
         var hubContextMockForTest = CreateMockTaskHub();
@@ -487,19 +470,19 @@ public class CollectionTaskImageBvaTests
             mediatorMockForTest.Object,
             notificationServiceMockForTest.Object);
         
-        // Setup controller context với Collector role
-        var controllerContextForTest = CreateCollectorControllerContext(collectorUserIdToUseInTest);
+        // Setup controller context với Collector role bằng User ID được sinh ra
+        var controllerContextForTest = CreateCollectorControllerContext(user.Id);
         collectorTaskControllerForTest.ControllerContext = controllerContextForTest;
         
         AllureAttachmentHelper.AttachText("environment-initialization", 
             $"Initialized test environment:\n" +
-            $"- CollectorUserId: {collectorUserIdToUseInTest}\n" +
+            $"- CollectorUserId: {user.Id}\n" +
             $"- CollectionTaskId: {task.Id}\n" +
             $"- DbContext Type: SQLite In-Memory\n" +
             $"- Mocks: IHubContext<TaskHub>, INotificationService, IMediator\n" +
             $"- ControllerContext Role: Collector");
         
-        return (dbContextInstanceForTest, collectorTaskControllerForTest, task.Id, collectorUserIdToUseInTest);
+        return (dbContextInstanceForTest, collectorTaskControllerForTest, task.Id, user.Id);
     }
     
     // ==================== TEST CASES - BOUNDARY VALUE ANALYSIS ====================
