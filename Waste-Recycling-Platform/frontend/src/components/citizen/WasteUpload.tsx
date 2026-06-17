@@ -94,15 +94,16 @@ export const WasteUpload: React.FC = () => {
         
         {/* KHU VỰC UPLOAD ẢNH */}
         {!selectedImage ? (
-          <div 
+          <button 
+            type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-gray-300 rounded-xl p-10 text-center cursor-pointer hover:bg-gray-50 hover:border-blue-400 transition-all group"
+            className="w-full border-2 border-dashed border-gray-300 rounded-xl p-10 text-center cursor-pointer hover:bg-gray-50 hover:border-blue-400 transition-all group"
           >
             <div className="mx-auto w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
               <UploadCloud size={32} />
             </div>
-            <h3 className="text-lg font-medium text-gray-700 mb-1">Nhấn để tải ảnh lên</h3>
-            <p className="text-sm text-gray-400">Hỗ trợ JPG, PNG (Tối đa 5MB)</p>
+            <span className="text-lg font-medium text-gray-700 block mb-1">Nhấn để tải ảnh lên</span>
+            <span className="text-sm text-gray-400 block">Hỗ trợ JPG, PNG (Tối đa 5MB)</span>
             <input 
               type="file" 
               ref={fileInputRef} 
@@ -110,7 +111,7 @@ export const WasteUpload: React.FC = () => {
               accept="image/*" 
               className="hidden" 
             />
-          </div>
+          </button>
         ) : (
           <div className="relative rounded-xl overflow-hidden border border-gray-200 bg-gray-50">
             <img src={selectedImage} alt="Preview" className="w-full h-64 object-contain" />
@@ -155,23 +156,24 @@ export const WasteUpload: React.FC = () => {
 
                 {/* Phần người dùng xác nhận lại */}
                 <div className="bg-white p-4 rounded-lg border border-gray-200">
-                  <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                    <AlertCircle size={16} className="text-amber-500"/> 
+                  <span className="block text-sm font-medium text-gray-700 mb-2">
+                    <AlertCircle size={16} className="text-amber-500 inline mr-1"/>
                     Bạn có đồng ý với AI không? (Có thể chọn lại)
-                  </label>
+                  </span>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {WASTE_CATEGORIES.map(cat => (
-                      <div 
+                      <button 
+                        type="button"
                         key={cat.id}
                         onClick={() => setConfirmedCategory(cat.id)}
-                        className={`cursor-pointer text-center py-2 px-3 rounded-lg border text-sm font-medium transition-all ${
+                        className={`text-center py-2 px-3 rounded-lg border text-sm font-medium transition-all ${
                           confirmedCategory === cat.id 
                             ? `${cat.bg} ${cat.border} ${cat.color} shadow-sm ring-1 ring-current` 
                             : 'border-gray-200 text-gray-600 hover:bg-gray-50'
                         }`}
                       >
                         {cat.name}
-                      </div>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -182,8 +184,9 @@ export const WasteUpload: React.FC = () => {
 
         {/* KHU VỰC GHI CHÚ */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Ghi chú thêm (Không bắt buộc)</label>
+          <label htmlFor="waste-notes" className="block text-sm font-medium text-gray-700 mb-2">Ghi chú thêm (Không bắt buộc)</label>
           <textarea 
+            id="waste-notes"
             rows={3} 
             className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none resize-none"
             placeholder="Ví dụ: Rác nằm ở góc đường..."

@@ -62,7 +62,7 @@ export const CollectorDashboard: React.FC = () => {
   };
 
   const handleCompleteCollection = async (id: string) => {
-    if (!weightKg || isNaN(Number(weightKg))) {
+    if (!weightKg || Number.isNaN(Number(weightKg))) {
       alert("Vui lòng nhập khối lượng hợp lệ.");
       return;
     }

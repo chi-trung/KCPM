@@ -140,14 +140,15 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({ reportId, 
                         const fileUrl = fileName.startsWith("http") ? fileName : (fileName.startsWith("/") ? `${API_CONFIG.SERVER_URL}${fileName}` : `${API_CONFIG.SERVER_URL}/uploads/${fileName}`);
                         
                         return (
-                          <div 
+                          <button 
+                            type="button"
                             key={index}
                             onClick={() => setSelectedImage(fileUrl)} 
                             className="aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-200 group relative flex items-center justify-center cursor-pointer hover:border-emerald-500 transition-colors"
                           >
                             <img 
                               src={fileUrl} 
-                              alt={`Attachment ${index}`} 
+                              alt={`Ảnh đính kèm ${index + 1}`} 
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                               onError={(e) => {
                                 (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect width="400" height="400" fill="%23f3f4f6"/><text x="50%" y="50%" font-family="sans-serif" font-size="16" fill="%239ca3af" text-anchor="middle" dominant-baseline="middle">Lỗi tải ảnh</text></svg>';
@@ -156,7 +157,7 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({ reportId, 
                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
                               <ImageIcon size={24} className="text-white drop-shadow-md" />
                             </div>
-                          </div>
+                          </button>
                         );
                       })}
                     </div>
@@ -174,6 +175,7 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({ reportId, 
       {/* Full Screen Image Lightbox */}
       {selectedImage && (
         <div 
+          role="presentation"
           className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-4 animate-in fade-in"
           onClick={() => setSelectedImage(null)}
         >
@@ -185,7 +187,7 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({ reportId, 
           </button>
           <img 
             src={selectedImage} 
-            alt="Expanded view" 
+            alt="Xem chi tiết ảnh" 
             className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl animate-in zoom-in-95" 
             onClick={(e) => e.stopPropagation()} 
           />

@@ -70,16 +70,17 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
 
         {/* Vùng hiển thị ảnh chính */}
         <div 
+          role="presentation"
           className="relative w-full max-w-6xl h-full max-h-[85vh] p-4 flex items-center justify-center" 
-          onClick={onClose} /* Click ra ngoài viền ảnh để đóng */
+          onClick={onClose}
         >
           <img
             src={images[currentIndex]}
-            alt={`Gallery image ${currentIndex + 1}`}
+            alt={`Ảnh ${currentIndex + 1} / ${images.length}`}
             className="max-w-full max-h-full object-contain rounded-xl shadow-2xl animate-in zoom-in-95 duration-300"
-            onClick={(e) => e.stopPropagation()} // Click vào trong ảnh thì không bị đóng
+            onClick={(e) => e.stopPropagation()}
             onError={(e) => {
-              (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%231e293b' width='100' height='100'/%3E%3Ctext x='50%' y='50%' text-anchor='middle' dy='.3em' fill='%2394a3b8' font-size='10'%3ELỗi tải ảnh%3C/text%3E%3C/svg%3E";
+              (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%231e293b' width='100' height='100'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%2394a3b8' font-size='10'%3ELỗi tải ảnh%3C/text%3E%3C/svg%3E";
             }}
           />
 

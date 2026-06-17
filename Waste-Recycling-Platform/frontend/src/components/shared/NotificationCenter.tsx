@@ -185,10 +185,11 @@ export const NotificationCenter: React.FC = () => {
             </div>
           ) : (
             notifications.map((notif: Notification) => (
-              <div
+              <button
                 key={notif.id}
+                type="button"
                 onClick={() => handleNotificationClick(notif)}
-                className={`p-4 border-b hover:bg-gray-100 cursor-pointer transition-colors ${
+                className={`w-full text-left p-4 border-b hover:bg-gray-100 cursor-pointer transition-colors ${
                   !notif.isRead ? 'bg-blue-50' : 'bg-white'
                 }`}
               >
@@ -209,7 +210,7 @@ export const NotificationCenter: React.FC = () => {
                     </time>
                   </div>
                 </div>
-              </div>
+              </button>
             ))
           )}
         </div>
