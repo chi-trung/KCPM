@@ -108,8 +108,9 @@ export const CollectorDashboard: React.FC = () => {
           <p className="text-gray-600">Hoàn thành thu gom cho nhiệm vụ <b>#{selectedTask.id.substring(0,8)}</b>.</p>
           
           <div>
-             <label className="block text-sm font-medium text-gray-700 mb-1">Khối lượng (kg) *</label>
+             <label htmlFor="modal-weight" className="block text-sm font-medium text-gray-700 mb-1">Khối lượng (kg) *</label>
              <Input 
+               id="modal-weight"
                type="number"
                value={weightKg} 
                onChange={(e) => setWeightKg(e.target.value)} 
@@ -119,7 +120,7 @@ export const CollectorDashboard: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Hình ảnh xác nhận thu gom</label>
+            <label htmlFor="file-upload" className="block text-sm font-medium text-gray-700 mb-1">Hình ảnh xác nhận thu gom</label>
             <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-emerald-500 transition-colors cursor-pointer bg-gray-50">
                <div className="space-y-1 text-center">
                  <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
@@ -139,8 +140,9 @@ export const CollectorDashboard: React.FC = () => {
           </div>
 
           <div>
-             <label className="block text-sm font-medium text-gray-700 mb-1">Ghi chú (Tùy chọn)</label>
+             <label htmlFor="modal-notes" className="block text-sm font-medium text-gray-700 mb-1">Ghi chú (Tùy chọn)</label>
              <Input 
+               id="modal-notes"
                value={confirmNote} 
                onChange={(e) => setConfirmNote(e.target.value)} 
                placeholder="Nhập vấn đề phát sinh hoặc thông tin thêm..." 
