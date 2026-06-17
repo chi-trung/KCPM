@@ -156,13 +156,14 @@ export const RequestManagement: React.FC<RequestManagementProps> = ({ requests, 
            </p>
            
            <div>
-             <label className="block text-sm font-medium text-gray-700 mb-1">Select Collector</label>
-             <Select 
-               options={MOCK_COLLECTORS}
-               value={selectedCollector}
-               onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedCollector(e.target.value)}
-               placeholder="Choose a Collector..."
-             />
+              <label htmlFor="req-select-collector" className="block text-sm font-medium text-gray-700 mb-1">Select Collector</label>
+              <Select 
+                id="req-select-collector"
+                options={MOCK_COLLECTORS}
+                value={selectedCollector}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedCollector(e.target.value)}
+                placeholder="Choose a Collector..."
+              />
            </div>
         </div>
       </Modal>

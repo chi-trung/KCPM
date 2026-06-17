@@ -265,10 +265,11 @@ export const EnterpriseTaskManagement: React.FC = () => {
       <Card className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="ent-filter-status" className="block text-sm font-medium text-gray-700 mb-2">
               Filter by Status
             </label>
             <Select
+              id="ent-filter-status"
               options={[
                 { value: "all", label: "Tất cả trạng thái (All)" },
                 { value: "Assigned", label: "Đã gán (Assigned)" },
@@ -388,7 +389,7 @@ export const EnterpriseTaskManagement: React.FC = () => {
                         {task.status.toLowerCase() === "collected" && task.collectedWeightKg && (
                           <div className="text-xs text-green-700 font-medium bg-green-50 px-2 py-1 rounded inline-block border border-green-200">
                             Weight: {task.collectedWeightKg} kg
-                            {task.notes && <p className="text-green-600 break-words whitespace-normal">{task.notes}</p>}
+                            {task.notes && <span className="text-green-600 block break-words whitespace-normal">{task.notes}</span>}
                           </div>
                         )}
                       </div>
@@ -448,7 +449,7 @@ export const EnterpriseTaskManagement: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="ent-select-collector" className="block text-sm font-medium text-gray-700 mb-2">
                   Select Collector
                 </label>
                 {collectors.length === 0 ? (
@@ -457,6 +458,7 @@ export const EnterpriseTaskManagement: React.FC = () => {
                   </p>
                 ) : (
                   <Select
+                    id="ent-select-collector"
                     options={collectors.map((c) => ({
                       value: c.id,
                       label: `${c.name} (${c.taskCount} active task${c.taskCount !== 1 ? "s" : ""})`,
@@ -525,7 +527,7 @@ export const EnterpriseTaskManagement: React.FC = () => {
                         <div className="mt-3 flex gap-2 overflow-x-auto pb-2">
                           {event.images.map((img, i) => (
                             <a href={img} target="_blank" rel="noreferrer" key={i}>
-                              <img src={img} alt={`Collected ${i}`} className="h-20 w-20 object-cover rounded border border-gray-200" />
+                              <img src={img} alt={`Ảnh thu gom ${i + 1}`} className="h-20 w-20 object-cover rounded border border-gray-200" />
                             </a>
                           ))}
                         </div>

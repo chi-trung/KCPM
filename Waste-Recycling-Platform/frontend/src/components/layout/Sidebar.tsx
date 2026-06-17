@@ -100,6 +100,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Mobile backdrop */}
       {!isOpen && (
         <div
+          role="presentation"
           className="fixed inset-0 bg-black bg-opacity-50 md:hidden z-30"
           onClick={onClose}
         />

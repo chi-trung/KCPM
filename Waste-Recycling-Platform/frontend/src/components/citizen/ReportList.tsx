@@ -83,10 +83,11 @@ export const ReportList: React.FC = () => {
       ) : (
         <div className="grid gap-4">
           {reports.map((report) => (
-            <div 
+            <button 
+              type="button"
               key={report.id} 
               onClick={() => setSelectedReportId(report.id)}
-              className="bg-white border border-gray-100 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all cursor-pointer hover:border-emerald-200 group"
+              className="w-full text-left bg-white border border-gray-100 p-5 rounded-2xl shadow-sm hover:shadow-md transition-all cursor-pointer hover:border-emerald-200 group"
             >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex-1 space-y-3">
@@ -136,6 +137,7 @@ export const ReportList: React.FC = () => {
               {/* Feedback Form Expandable */}
               {feedbackOpen === report.id && (
                 <div 
+                  role="presentation"
                   className="mt-4 pt-4 border-t border-gray-100 bg-gray-50/50 rounded-xl p-4 animate-in fade-in slide-in-from-top-2"
                   onClick={(e) => e.stopPropagation()}
                 >
@@ -189,7 +191,7 @@ export const ReportList: React.FC = () => {
                   </div>
                 </div>
               )}
-            </div>
+            </button>
           ))}
         </div>
       )}
