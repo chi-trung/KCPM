@@ -112,6 +112,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+
       - name: Restore sonar-project.properties after .NET scan
         if: always()
         working-directory: Waste-Recycling-Platform
@@ -149,6 +150,23 @@ jobs:
         continue-on-error: true
         run: npx vitest run --coverage
 
+      - name: Fix lcov paths (Windows backslash → Linux forward slash)
+        if: always()
+        working-directory: Waste-Recycling-Platform/frontend
+        run: |
+          if [ -f coverage/lcov.info ]; then
+            echo "=== Fixing Windows paths in lcov.info ==="
+            # Replace backslash with forward slash in SF: lines
+            sed -i 's|SF:.*|&|; s|\\\\|/|g' coverage/lcov.info
+            # Also strip Windows absolute path prefix if present (e.g. C:/Users/.../frontend/)
+            # Keep only the relative path starting from 'src/'
+            sed -i 's|SF:.*/frontend/\(src/.*\)|SF:\1|g' coverage/lcov.info
+            echo "=== First 20 lines of fixed lcov.info ==="
+            head -20 coverage/lcov.info
+          else
+            echo "No lcov.info found, skipping path fix"
+          fi
+
       - name: Debug - Check coverage file
         if: always()
         working-directory: Waste-Recycling-Platform/frontend
@@ -170,10 +188,10 @@ jobs:
             -Dsonar.organization=chi-trung
             "-Dsonar.projectName=chi-trung_KCPM_frontend"
             -Dsonar.sources=frontend/src
-            -Dsonar.tests=frontend/e2e,frontend/src
-            -Dsonar.test.inclusions=frontend/e2e/**/*_test.js,frontend/src/**/__tests__/**/*.tsx,frontend/src/**/__tests__/**/*.ts
-            -Dsonar.exclusions=**/node_modules/**,**/.next/**,frontend/out/**,frontend/output/**,allure-results/**,allure-report/**,**/coverage/**,frontend/src/**/__tests__/**
-            -Dsonar.coverage.exclusions=frontend/e2e/**,frontend/src/app/**,frontend/src/components/admin/**,frontend/src/components/citizen/**,frontend/src/components/collector/**,frontend/src/components/enterprise/**,frontend/src/components/layout/**,frontend/src/components/NotificationToast.tsx,frontend/src/contexts/**,frontend/src/hooks/**,frontend/src/lib/**
+            -Dsonar.tests=frontend/src
+            -Dsonar.test.inclusions=frontend/src/**/__tests__/**/*.tsx,frontend/src/**/__tests__/**/*.ts,frontend/src/**/*.test.tsx,frontend/src/**/*.test.ts
+            -Dsonar.exclusions=**/node_modules/**,**/.next/**,frontend/out/**,frontend/output/**,allure-results/**,allure-report/**,**/coverage/**
+            -Dsonar.coverage.exclusions=frontend/e2e/**,frontend/src/app/**,frontend/src/contexts/**,frontend/src/hooks/**,frontend/src/lib/**
             -Dsonar.cpd.exclusions=frontend/e2e/**
             -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
 
@@ -206,6 +224,19 @@ jobs:
         working-directory: Waste-Recycling-Platform/frontend
         continue-on-error: true
         run: npx vitest run --coverage
+
+      - name: Fix lcov paths (Windows backslash → Linux forward slash)
+        if: always()
+        working-directory: Waste-Recycling-Platform/frontend
+        run: |
+          if [ -f coverage/lcov.info ]; then
+            echo "=== Fixing Windows paths in lcov.info ==="
+            sed -i 's|SF:.*/frontend/\(src/.*\)|SF:\1|g' coverage/lcov.info
+            echo "=== First 20 lines of fixed lcov.info ==="
+            head -20 coverage/lcov.info
+          else
+            echo "No lcov.info found, skipping path fix"
+          fi
 
       - name: Debug - Check coverage file
         if: always()
