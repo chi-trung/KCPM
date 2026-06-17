@@ -39,14 +39,14 @@ describe('ImageGallery', () => {
 
   it('renders image with correct alt text', () => {
     render(<ImageGallery {...defaultProps} />)
-    const img = screen.getByAlt('Ảnh 1 / 2')
+    const img = screen.getByAltText('Ảnh 1 / 2')
     expect(img).toBeInTheDocument()
     expect(img).toHaveAttribute('role', 'presentation')
   })
 
   it('image has onKeyDown handler for accessibility', () => {
     render(<ImageGallery {...defaultProps} />)
-    const img = screen.getByAlt('Ảnh 1 / 2')
+    const img = screen.getByAltText('Ảnh 1 / 2')
     
     // Should not throw when pressing Enter
     fireEvent.keyDown(img, { key: 'Enter' })
@@ -56,7 +56,7 @@ describe('ImageGallery', () => {
   it('image onClick stops propagation (does not close gallery)', () => {
     const onClose = vi.fn()
     render(<ImageGallery {...defaultProps} onClose={onClose} />)
-    const img = screen.getByAlt('Ảnh 1 / 2')
+    const img = screen.getByAltText('Ảnh 1 / 2')
     
     fireEvent.click(img)
     // onClose should NOT be called because click on img stops propagation
@@ -84,7 +84,7 @@ describe('ImageGallery', () => {
     const nextBtn = screen.getByTitle('Ảnh tiếp (Mũi tên phải)')
     fireEvent.click(nextBtn)
     
-    expect(screen.getByAlt('Ảnh 2 / 2')).toBeInTheDocument()
+    expect(screen.getByAltText('Ảnh 2 / 2')).toBeInTheDocument()
   })
 
   it('does not show navigation for single image', () => {
@@ -104,7 +104,7 @@ describe('ImageGallery', () => {
 
   it('handles image load error with fallback', () => {
     render(<ImageGallery {...defaultProps} />)
-    const img = screen.getByAlt('Ảnh 1 / 2')
+    const img = screen.getByAltText('Ảnh 1 / 2')
     
     fireEvent.error(img)
     // Should set fallback src
