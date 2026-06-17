@@ -185,8 +185,9 @@ export default function SettingsPage() {
                 ) : (
                   <form onSubmit={handleUpdateProfile} className="space-y-5">
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold text-gray-700">Họ và Tên *</label>
+                      <label htmlFor="settings-fullname" className="text-sm font-semibold text-gray-700">Họ và Tên *</label>
                       <input 
+                        id="settings-fullname"
                         type="text" 
                         value={updateForm.fullName}
                         onChange={(e) => handleInputChange('fullName', e.target.value)}
@@ -196,8 +197,9 @@ export default function SettingsPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold text-gray-700">Số điện thoại</label>
+                      <label htmlFor="settings-phone" className="text-sm font-semibold text-gray-700">Số điện thoại</label>
                       <input 
+                        id="settings-phone"
                         type="tel" 
                         value={updateForm.phone}
                         onChange={(e) => handleInputChange('phone', e.target.value)}
@@ -206,8 +208,9 @@ export default function SettingsPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold text-gray-700">Địa chỉ Email</label>
+                      <label htmlFor="settings-email" className="text-sm font-semibold text-gray-700">Địa chỉ Email</label>
                       <input 
+                        id="settings-email"
                         type="email" 
                         value={profile?.email || ""}
                         disabled
@@ -218,8 +221,9 @@ export default function SettingsPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                       <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">Quận/Huyện</label>
+                        <label htmlFor="settings-district" className="text-sm font-semibold text-gray-700">Quận/Huyện</label>
                         <input 
+                          id="settings-district"
                           type="text" 
                           value={updateForm.district}
                           onChange={(e) => handleInputChange('district', e.target.value)}
@@ -227,8 +231,9 @@ export default function SettingsPage() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">Phường/Xã</label>
+                        <label htmlFor="settings-ward" className="text-sm font-semibold text-gray-700">Phường/Xã</label>
                         <input 
+                          id="settings-ward"
                           type="text" 
                           value={updateForm.ward}
                           onChange={(e) => handleInputChange('ward', e.target.value)}
@@ -262,8 +267,9 @@ export default function SettingsPage() {
 
                 <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-gray-700">Mật khẩu hiện tại</label>
+                    <label htmlFor="settings-current-password" className="text-sm font-semibold text-gray-700">Mật khẩu hiện tại</label>
                     <input 
+                      id="settings-current-password"
                       type="password" 
                       placeholder="••••••••"
                       className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-800"
@@ -271,8 +277,9 @@ export default function SettingsPage() {
                   </div>
                   
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-gray-700">Mật khẩu mới</label>
+                    <label htmlFor="settings-new-password" className="text-sm font-semibold text-gray-700">Mật khẩu mới</label>
                     <input 
+                      id="settings-new-password"
                       type="password" 
                       placeholder="••••••••"
                       className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-800"
@@ -280,8 +287,9 @@ export default function SettingsPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-gray-700">Xác nhận mật khẩu mới</label>
+                    <label htmlFor="settings-confirm-password" className="text-sm font-semibold text-gray-700">Xác nhận mật khẩu mới</label>
                     <input 
+                      id="settings-confirm-password"
                       type="password" 
                       placeholder="••••••••"
                       className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 focus:bg-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all text-gray-800"
@@ -311,27 +319,27 @@ export default function SettingsPage() {
                     <h3 className="font-semibold text-gray-800 mb-4">Thông báo Email</h3>
                     <div className="space-y-3">
                       <label className="flex items-center justify-between cursor-pointer">
-                        <div>
-                          <p className="font-medium text-gray-700">Báo cáo mới được tiếp nhận</p>
-                          <p className="text-sm text-gray-500">Nhận email khi báo cáo rác được tiếp nhận</p>
-                        </div>
-                        <input type="checkbox" defaultChecked className="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500" />
+                        <span>
+                          <span className="font-medium text-gray-700 block">Báo cáo mới được tiếp nhận</span>
+                          <span className="text-sm text-gray-500 block">Nhận email khi báo cáo rác được tiếp nhận</span>
+                        </span>
+                        <input type="checkbox" defaultChecked aria-label="Báo cáo mới được tiếp nhận" className="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500" />
                       </label>
                       
                       <label className="flex items-center justify-between cursor-pointer">
-                        <div>
-                          <p className="font-medium text-gray-700">Báo cáo đã được thu gom</p>
-                          <p className="text-sm text-gray-500">Nhận email khi rác đã được thu gom thành công</p>
-                        </div>
-                        <input type="checkbox" defaultChecked className="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500" />
+                        <span>
+                          <span className="font-medium text-gray-700 block">Báo cáo đã được thu gom</span>
+                          <span className="text-sm text-gray-500 block">Nhận email khi rác đã được thu gom thành công</span>
+                        </span>
+                        <input type="checkbox" defaultChecked aria-label="Báo cáo đã được thu gom" className="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500" />
                       </label>
                       
                       <label className="flex items-center justify-between cursor-pointer">
-                        <div>
-                          <p className="font-medium text-gray-700">Cập nhật điểm thưởng</p>
-                          <p className="text-sm text-gray-500">Nhận email khi có thay đổi điểm thưởng</p>
-                        </div>
-                        <input type="checkbox" className="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500" />
+                        <span>
+                          <span className="font-medium text-gray-700 block">Cập nhật điểm thưởng</span>
+                          <span className="text-sm text-gray-500 block">Nhận email khi có thay đổi điểm thưởng</span>
+                        </span>
+                        <input type="checkbox" aria-label="Cập nhật điểm thưởng" className="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500" />
                       </label>
                     </div>
                   </div>
@@ -340,19 +348,19 @@ export default function SettingsPage() {
                     <h3 className="font-semibold text-gray-800 mb-4">Thông báo Push</h3>
                     <div className="space-y-3">
                       <label className="flex items-center justify-between cursor-pointer">
-                        <div>
-                          <p className="font-medium text-gray-700">Collector đang đến</p>
-                          <p className="text-sm text-gray-500">Nhận thông báo khi collector sắp đến địa điểm</p>
-                        </div>
-                        <input type="checkbox" defaultChecked className="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500" />
+                        <span>
+                          <span className="font-medium text-gray-700 block">Collector đang đến</span>
+                          <span className="text-sm text-gray-500 block">Nhận thông báo khi collector sắp đến địa điểm</span>
+                        </span>
+                        <input type="checkbox" defaultChecked aria-label="Collector đang đến" className="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500" />
                       </label>
                       
                       <label className="flex items-center justify-between cursor-pointer">
-                        <div>
-                          <p className="font-medium text-gray-700">Khuyến mãi & Ưu đãi</p>
-                          <p className="text-sm text-gray-500">Nhận thông báo về các chương trình khuyến mãi</p>
-                        </div>
-                        <input type="checkbox" className="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500" />
+                        <span>
+                          <span className="font-medium text-gray-700 block">Khuyến mãi & Ưu đãi</span>
+                          <span className="text-sm text-gray-500 block">Nhận thông báo về các chương trình khuyến mãi</span>
+                        </span>
+                        <input type="checkbox" aria-label="Khuyến mãi và Ưu đãi" className="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500" />
                       </label>
                     </div>
                   </div>

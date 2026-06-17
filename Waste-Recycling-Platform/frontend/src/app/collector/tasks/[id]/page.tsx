@@ -231,23 +231,25 @@ export default function TaskDetailPage() {
             <div className="space-y-4 max-w-md">
               <p className="text-sm text-gray-500">Vui lòng nhập khối lượng và hình ảnh xác minh để hoàn thành nhiệm vụ.</p>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Khối lượng (kg) *</label>
-                <Input type="number" min="0" step="0.1" value={weightKg} onChange={e => setWeightKg(e.target.value)} required />
+                <label htmlFor="task-weight" className="block text-sm font-medium text-gray-700 mb-1">Khối lượng (kg) *</label>
+                <Input id="task-weight" type="number" min="0" step="0.1" value={weightKg} onChange={e => setWeightKg(e.target.value)} required />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Hình ảnh xác minh * ({images.length} ảnh)</label>
+                <label htmlFor="task-images" className="block text-sm font-medium text-gray-700 mb-2">Hình ảnh xác minh * ({images.length} ảnh)</label>
                 
                 {/* Khu vực kéo thả */}
-                <div 
+                <button 
+                  type="button"
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
                   onClick={() => fileInputRef.current?.click()}
-                  className={`relative flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-xl cursor-pointer transition-colors ${
+                  className={`relative w-full flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-xl cursor-pointer transition-colors ${
                     isDragging ? 'border-emerald-500 bg-emerald-50' : 'border-gray-300 bg-gray-50 hover:bg-gray-100'
                   }`}
                 >
                   <input 
+                    id="task-images"
                     type="file" 
                     multiple 
                     accept="image/*"
@@ -256,9 +258,9 @@ export default function TaskDetailPage() {
                     className="hidden" 
                   />
                   <UploadCloud className={`w-10 h-10 mb-3 ${isDragging ? 'text-emerald-500' : 'text-gray-400'}`} />
-                  <p className="text-sm font-medium text-gray-700">Kéo thả ảnh vào đây để tải lên</p>
-                  <p className="text-xs text-gray-500 mt-1">hoặc nhấn để chọn file (.jpg, .png, .gif) - Hỗ trợ tải nhiều ảnh</p>
-                </div>
+                  <span className="text-sm font-medium text-gray-700">Kéo thả ảnh vào đây để tải lên</span>
+                  <span className="text-xs text-gray-500 mt-1">hoặc nhấn để chọn file (.jpg, .png, .gif) - Hỗ trợ tải nhiều ảnh</span>
+                </button>
 
                 {/* Danh sách ảnh đã chọn */}
                 {images.length > 0 && (
@@ -283,8 +285,8 @@ export default function TaskDetailPage() {
                 )}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Ghi chú thêm</label>
-                <Input value={notes} onChange={e => setNotes(e.target.value)} />
+                <label htmlFor="task-notes" className="block text-sm font-medium text-gray-700 mb-1">Ghi chú thêm</label>
+                <Input id="task-notes" value={notes} onChange={e => setNotes(e.target.value)} />
               </div>
               <Button onClick={handleComplete} className="w-full" disabled={!weightKg || images.length === 0}>
                 Hoàn thành thu gom (Đã thu gom)
