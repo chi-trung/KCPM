@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import React from 'react'
 import { NotificationCenter } from '../NotificationCenter'
 
@@ -89,7 +89,9 @@ describe('NotificationCenter', () => {
     expect(screen.queryByText('Thông báo')).not.toBeInTheDocument()
     
     // Click trigger to open dropdown
-    fireEvent.click(trigger)
+    await act(async () => {
+      fireEvent.click(trigger)
+    })
     
     await waitFor(() => {
       expect(screen.getByText('Thông báo')).toBeInTheDocument()
@@ -98,15 +100,21 @@ describe('NotificationCenter', () => {
     })
     
     // Click trigger again to close
-    fireEvent.click(trigger)
-    expect(screen.queryByText('Thông báo')).not.toBeInTheDocument()
+    await act(async () => {
+      fireEvent.click(trigger)
+    })
+    await waitFor(() => {
+      expect(screen.queryByText('Thông báo')).not.toBeInTheDocument()
+    })
   })
 
   it('marks notification as read and navigates when notification is clicked', async () => {
     render(<NotificationCenter />)
     
     const trigger = screen.getByRole('button')
-    fireEvent.click(trigger)
+    await act(async () => {
+      fireEvent.click(trigger)
+    })
     
     // Wait for the notification button to be rendered
     let notificationBtn: HTMLElement | null = null
@@ -116,34 +124,44 @@ describe('NotificationCenter', () => {
     })
 
     // Click on the notification button
-    fireEvent.click(notificationBtn!)
+    await act(async () => {
+      fireEvent.click(notificationBtn!)
+    })
+    
+    // Wait for the navigation to complete
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith('/citizen/complaints')
+    })
     
     // It should call fetch to mark it as read
     expect(global.fetch).toHaveBeenCalledWith(
       expect.stringContaining('/api/notifications/notif-1/read'),
       expect.objectContaining({ method: 'PUT' })
     )
-
-    // It should navigate to /citizen/complaints
-    expect(mockPush).toHaveBeenCalledWith('/citizen/complaints')
   })
 
   it('allows marking all notifications as read', async () => {
     render(<NotificationCenter />)
     
     const trigger = screen.getByRole('button')
-    fireEvent.click(trigger)
+    await act(async () => {
+      fireEvent.click(trigger)
+    })
     
     await waitFor(() => {
       expect(screen.getByText('Đánh dấu tất cả đã đọc')).toBeInTheDocument()
     })
     
-    fireEvent.click(screen.getByText('Đánh dấu tất cả đã đọc'))
+    await act(async () => {
+      fireEvent.click(screen.getByText('Đánh dấu tất cả đã đọc'))
+    })
     
-    expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/api/notifications/mark-all-read'),
-      expect.objectContaining({ method: 'PUT' })
-    )
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/api/notifications/mark-all-read'),
+        expect.objectContaining({ method: 'PUT' })
+      )
+    })
   })
 
   it('receives real-time notifications via SignalR', async () => {
@@ -157,12 +175,14 @@ describe('NotificationCenter', () => {
     })
 
     // Simulate incoming new notification from SignalR
-    signalRCallback({
-      id: 'notif-2',
-      title: 'New Task',
-      message: 'A new task assigned to you',
-      type: 'warning',
-      createdAt: '2026-06-17T09:00:00.000Z'
+    await act(async () => {
+      signalRCallback({
+        id: 'notif-2',
+        title: 'New Task',
+        message: 'A new task assigned to you',
+        type: 'warning',
+        createdAt: '2026-06-17T09:00:00.000Z'
+      })
     })
 
     // Unread count should go up to 2
@@ -180,14 +200,18 @@ describe('NotificationCenter', () => {
     )
 
     const trigger = screen.getByRole('button')
-    fireEvent.click(trigger)
+    await act(async () => {
+      fireEvent.click(trigger)
+    })
 
     await waitFor(() => {
       expect(screen.getByText('Thông báo')).toBeInTheDocument()
     })
 
     // Click outside
-    fireEvent.mouseDown(screen.getByTestId('outside-element'))
+    await act(async () => {
+      fireEvent.mouseDown(screen.getByTestId('outside-element'))
+    })
 
     await waitFor(() => {
       expect(screen.queryByText('Thông báo')).not.toBeInTheDocument()

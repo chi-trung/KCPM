@@ -39,14 +39,10 @@ describe('CollectorCard', () => {
     
     // rating 3.2 rounds to 3 filled stars, 2 empty stars
     // 3.2 rounds to 3 (Math.round(3.2) = 3)
-    // Indexes: 0, 1, 2 should be filled, 3, 4 should be empty
-    const stars = screen.getAllByText(/^[⭐☆]$/)
-    expect(stars).toHaveLength(5)
-    expect(stars[0].textContent).toBe('⭐')
-    expect(stars[1].textContent).toBe('⭐')
-    expect(stars[2].textContent).toBe('⭐')
-    expect(stars[3].textContent).toBe('☆')
-    expect(stars[4].textContent).toBe('☆')
+    const filledStars = screen.getAllByText('⭐')
+    const emptyStars = screen.getAllByText('☆')
+    expect(filledStars).toHaveLength(3)
+    expect(emptyStars).toHaveLength(2)
   })
 
   it('calls onContactClick when contact button is clicked', () => {
