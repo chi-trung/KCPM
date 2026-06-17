@@ -337,19 +337,9 @@ public class CollectionTaskImageBvaTests
         };
         
         // Tạo CollectionTask
-        var collectionTaskIdForTest = Guid.NewGuid();
-        var collectionTaskForTest = new CollectionTask
-        {
-            Id = collectionTaskIdForTest,
-            ReportId = wasteReportIdForTest,
-            EnterpriseId = enterpriseIdForTest,
-            CollectorId = collectorIdForTest,
-            Status = CollectionTaskStatus.OnTheWay,
-            AssignedAt = DateTime.UtcNow.AddHours(-2),
-            CompletedAt = null,
-            Notes = null,
-            CollectedWeightKg = null
-        };
+        var collectionTaskForTest = CollectionTask.Create(wasteReportIdForTest, enterpriseIdForTest);
+        collectionTaskForTest.AssignCollector(collectorIdForTest);
+        collectionTaskForTest.SetOnTheWay();
         
         // Add tất cả entities vào DbContext
         dbContextInstanceToSeed.Enterprises.Add(enterpriseForTest);
@@ -370,7 +360,7 @@ public class CollectionTaskImageBvaTests
             wasteCategoryId = wasteCategoryIdForTest,
             wasteReportId = wasteReportIdForTest,
             collectorId = collectorIdForTest,
-            collectionTaskId = collectionTaskIdForTest,
+            collectionTaskId = collectionTaskForTest.Id,
             userId = collectorUserIdToLink
         });
         
@@ -404,7 +394,7 @@ public class CollectionTaskImageBvaTests
     private static Mock<IHubContext<TaskHub>> CreateMockTaskHub()
     {
         var taskHubMockInstance = new Mock<IHubContext<TaskHub>>();
-        var clientsProxyMockInstance = new Mock<IHubCallerClients>();
+        var clientsProxyMockInstance = new Mock<IHubClients>();
         var allClientsProxyMockInstance = new Mock<IClientProxy>();
         
         clientsProxyMockInstance
@@ -416,7 +406,7 @@ public class CollectionTaskImageBvaTests
             .Returns(clientsProxyMockInstance.Object);
         
         allClientsProxyMockInstance
-            .Setup(proxy => proxy.SendAsync(It.IsAny<string>(), It.IsAny<object[]>(), It.IsAny<CancellationToken>()))
+            .Setup(proxy => proxy.SendCoreAsync(It.IsAny<string>(), It.IsAny<object?[]>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
         
         return taskHubMockInstance;
@@ -435,14 +425,16 @@ public class CollectionTaskImageBvaTests
             .Setup(svc => svc.NotifyCollectorOnTheWayAsync(
                 It.IsAny<Guid>(),
                 It.IsAny<Guid>(),
-                It.IsAny<string>()))
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
         
         notificationServiceMockInstance
-            .Setup(svc => svc.NotifyTaskCompletedAsync(
+            .Setup(svc => svc.NotifyReportCollectedAsync(
                 It.IsAny<Guid>(),
                 It.IsAny<Guid>(),
-                It.IsAny<string>()))
+                It.IsAny<int>(),
+                It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
         
         return notificationServiceMockInstance;
