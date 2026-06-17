@@ -1,4 +1,29 @@
 {
-  "total": 0,
-  "items": []
+  "total": 2,
+  "items": [
+    {
+      "uid": "9d1bab40ddf84192a4ffc31acc08ef2b",
+      "name": "Not Found",
+      "statistic": {
+        "failed": 1,
+        "broken": 0,
+        "skipped": 0,
+        "passed": 0,
+        "unknown": 0,
+        "total": 1
+      }
+    },
+    {
+      "uid": "91f9f7fcff034c9d9b535544905aee0b",
+      "name": "Product defects",
+      "statistic": {
+        "failed": 5,
+        "broken": 0,
+        "skipped": 0,
+        "passed": 0,
+        "unknown": 0,
+        "total": 5
+      }
+    }
+  ]
 }
