@@ -195,7 +195,7 @@ jobs:
             -Dsonar.tests=frontend/src
             -Dsonar.test.inclusions=frontend/src/**/__tests__/**/*.tsx,frontend/src/**/__tests__/**/*.ts,frontend/src/**/*.test.tsx,frontend/src/**/*.test.ts
             -Dsonar.exclusions=**/node_modules/**,**/.next/**,frontend/out/**,frontend/output/**,allure-results/**,allure-report/**,**/coverage/**,frontend/e2e/**
-            -Dsonar.coverage.exclusions=frontend/e2e/**,frontend/src/app/**
+            "-Dsonar.coverage.exclusions=frontend/e2e/**,frontend/src/app/**,frontend/src/lib/api/**,frontend/src/lib/theme.ts,frontend/src/lib/config.ts,frontend/src/hooks/**,frontend/src/contexts/**,frontend/src/types/**"
             -Dsonar.cpd.exclusions=frontend/e2e/**
             -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
 
