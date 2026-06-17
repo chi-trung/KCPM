@@ -328,7 +328,9 @@ export default function TaskDetailPage() {
             src={selectedImage} 
             alt="Ảnh phóng to" 
             className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
-            onClick={(e) => e.stopPropagation()} 
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => { if (e.key === 'Enter') e.stopPropagation(); }}
+            role="presentation"
           />
         </div>
       )}

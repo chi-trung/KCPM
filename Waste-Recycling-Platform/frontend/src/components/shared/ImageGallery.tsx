@@ -79,6 +79,8 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
             alt={`Ảnh ${currentIndex + 1} / ${images.length}`}
             className="max-w-full max-h-full object-contain rounded-xl shadow-2xl animate-in zoom-in-95 duration-300"
             onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => { if (e.key === 'Enter') e.stopPropagation(); }}
+            role="presentation"
             onError={(e) => {
               (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%231e293b' width='100' height='100'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%2394a3b8' font-size='10'%3ELỗi tải ảnh%3C/text%3E%3C/svg%3E";
             }}

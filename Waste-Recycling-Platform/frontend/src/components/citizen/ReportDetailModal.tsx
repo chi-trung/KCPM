@@ -189,7 +189,9 @@ export const ReportDetailModal: React.FC<ReportDetailModalProps> = ({ reportId, 
             src={selectedImage} 
             alt="Xem chi tiết ảnh" 
             className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl animate-in zoom-in-95" 
-            onClick={(e) => e.stopPropagation()} 
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => { if (e.key === 'Enter') e.stopPropagation(); }}
+            role="presentation"
           />
         </div>
       )}
