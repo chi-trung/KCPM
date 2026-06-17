@@ -417,6 +417,7 @@ public class ReportControllerTests
         GetPropertyValue<string>(okResult.Value!, "message").Should().Be("Report accepted successfully");
         GetPropertyValue<Guid>(okResult.Value!, "reportId").Should().Be(report.Id);
         GetPropertyValue<string>(okResult.Value!, "reportStatus").Should().Be("Accepted");
+        GetPropertyValue<Guid?>(okResult.Value!, "taskId").Should().NotBeNull().And.NotBe(Guid.Empty);
 
         // Verify state is saved
         var updatedReport = await context.WasteReports.FindAsync(report.Id);
@@ -474,6 +475,7 @@ public class ReportControllerTests
         // Assert
         var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
         GetPropertyValue<string>(okResult.Value!, "message").Should().Be("Report accepted successfully");
+        GetPropertyValue<Guid?>(okResult.Value!, "taskId").Should().NotBeNull().And.NotBe(Guid.Empty);
 
         var updatedReport = await context.WasteReports.FindAsync(report.Id);
         updatedReport!.Status.Should().Be(ReportStatus.Accepted);
