@@ -200,6 +200,7 @@ jobs:
             -Dsonar.cpd.exclusions=frontend/e2e/**
             -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
             -Dsonar.branch.name=main
+            -Dsonar.projectVersion=1.0
 
   # ─────────────────────────────────────────────────────────────
   # JOB 3: Combined project scan (keeps chi-trung_KCPM up to date)
