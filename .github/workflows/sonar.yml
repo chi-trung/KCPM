@@ -157,27 +157,23 @@ jobs:
           if [ -f coverage/lcov.info ]; then
             echo "=== Fixing paths in lcov.info ==="
             python3 - <<'PYEOF'
-          import re, sys
-          with open('coverage/lcov.info', 'r', encoding='utf-8') as f:
-              content = f.read()
-          def fix_sf(line):
-              if not line.startswith('SF:'):
-                  return line
-              path = line[3:].strip()
-              # Normalize Windows backslashes to forward slashes
-              path = path.replace('\\', '/')
-              # Strip absolute prefix, keep only from 'src/' onwards
-              idx = path.find('/src/')
-              if idx != -1:
-                  path = 'src/' + path[idx + 5:]
-              elif path.startswith('src/'):
-                  pass  # already relative
-              return 'SF:' + path
-          lines = [fix_sf(l) for l in content.splitlines(keepends=True)]
-          with open('coverage/lcov.info', 'w', encoding='utf-8') as f:
-              f.writelines(lines)
-          print('Done fixing lcov paths')
-          PYEOF
+import sys
+with open('coverage/lcov.info', 'r', encoding='utf-8') as f:
+    content = f.read()
+def fix_sf(line):
+    if not line.startswith('SF:'):
+        return line
+    path = line[3:].strip()
+    path = path.replace('\\', '/')
+    idx = path.find('/src/')
+    if idx != -1:
+        path = 'src/' + path[idx + 5:]
+    return 'SF:' + path + '\n'
+lines = [fix_sf(l) for l in content.splitlines(keepends=True)]
+with open('coverage/lcov.info', 'w', encoding='utf-8') as f:
+    f.writelines(lines)
+print('Done fixing lcov paths')
+PYEOF
             echo "=== First 20 lines of fixed lcov.info ==="
             head -20 coverage/lcov.info
           else
@@ -249,27 +245,23 @@ jobs:
           if [ -f coverage/lcov.info ]; then
             echo "=== Fixing paths in lcov.info ==="
             python3 - <<'PYEOF'
-          import re, sys
-          with open('coverage/lcov.info', 'r', encoding='utf-8') as f:
-              content = f.read()
-          def fix_sf(line):
-              if not line.startswith('SF:'):
-                  return line
-              path = line[3:].strip()
-              # Normalize Windows backslashes to forward slashes
-              path = path.replace('\\', '/')
-              # Strip absolute prefix, keep only from 'src/' onwards
-              idx = path.find('/src/')
-              if idx != -1:
-                  path = 'src/' + path[idx + 5:]
-              elif path.startswith('src/'):
-                  pass  # already relative
-              return 'SF:' + path
-          lines = [fix_sf(l) for l in content.splitlines(keepends=True)]
-          with open('coverage/lcov.info', 'w', encoding='utf-8') as f:
-              f.writelines(lines)
-          print('Done fixing lcov paths')
-          PYEOF
+import sys
+with open('coverage/lcov.info', 'r', encoding='utf-8') as f:
+    content = f.read()
+def fix_sf(line):
+    if not line.startswith('SF:'):
+        return line
+    path = line[3:].strip()
+    path = path.replace('\\', '/')
+    idx = path.find('/src/')
+    if idx != -1:
+        path = 'src/' + path[idx + 5:]
+    return 'SF:' + path + '\n'
+lines = [fix_sf(l) for l in content.splitlines(keepends=True)]
+with open('coverage/lcov.info', 'w', encoding='utf-8') as f:
+    f.writelines(lines)
+print('Done fixing lcov paths')
+PYEOF
             echo "=== First 20 lines of fixed lcov.info ==="
             head -20 coverage/lcov.info
           else
