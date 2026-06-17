@@ -144,12 +144,12 @@ jobs:
         working-directory: Waste-Recycling-Platform/frontend
         run: npm install --omit=optional
 
-      - name: Run unit tests with coverage (if available)
+      - name: Run unit tests with coverage
         working-directory: Waste-Recycling-Platform/frontend
         continue-on-error: true
         run: |
           if [ -f package.json ] && grep -q '"test"' package.json; then
-            npm test -- --coverage --coverageDirectory=./coverage --watchAll=false 2>/dev/null || true
+            npx vitest run --coverage 2>/dev/null || true
           else
             echo "No unit test script found – skipping coverage"
           fi
