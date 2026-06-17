@@ -74,8 +74,9 @@ export const CapacitySettings: React.FC<CapacitySettingsProps> = ({ profile, cat
 
         <div className="grid gap-6 lg:grid-cols-2">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Service Area</label>
+            <label htmlFor="cap-area" className="block text-sm font-medium text-gray-700 mb-1">Service Area</label>
             <Input
+              id="cap-area"
               value={serviceArea}
               onChange={(e) => setServiceArea(e.target.value)}
               placeholder="Enter service area or supported districts"
@@ -83,8 +84,9 @@ export const CapacitySettings: React.FC<CapacitySettingsProps> = ({ profile, cat
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Max Processing Capacity (kg/day)</label>
+            <label htmlFor="cap-kg" className="block text-sm font-medium text-gray-700 mb-1">Max Processing Capacity (kg/day)</label>
             <Input
+              id="cap-kg"
               type="number"
               value={capacityKgPerDay ?? ""}
               onChange={(e) => setCapacityKgPerDay(e.target.value ? Number.parseInt(e.target.value, 10) : null)}

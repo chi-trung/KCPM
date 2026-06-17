@@ -49,20 +49,20 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ profile, email
 
         <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Company Name</label>
-            <Input value={profile.companyName} disabled />
+            <label htmlFor="ent-company" className="mb-1 block text-sm font-medium text-gray-700">Company Name</label>
+            <Input id="ent-company" value={profile.companyName} disabled />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Email</label>
-            <Input value={email} disabled />
+            <label htmlFor="ent-email" className="mb-1 block text-sm font-medium text-gray-700">Email</label>
+            <Input id="ent-email" value={email} disabled />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Service Area</label>
-            <Input value={profile.serviceArea ?? ""} disabled />
+            <label htmlFor="ent-area" className="mb-1 block text-sm font-medium text-gray-700">Service Area</label>
+            <Input id="ent-area" value={profile.serviceArea ?? ""} disabled />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Capacity (kg/day)</label>
-            <Input value={String(profile.capacityKgPerDay ?? "")} disabled />
+            <label htmlFor="ent-capacity" className="mb-1 block text-sm font-medium text-gray-700">Capacity (kg/day)</label>
+            <Input id="ent-capacity" value={String(profile.capacityKgPerDay ?? "")} disabled />
           </div>
         </div>
       </Card>
@@ -79,24 +79,27 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ profile, email
 
         <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-3">
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Current Password</label>
+            <label htmlFor="ent-cur-pw" className="mb-1 block text-sm font-medium text-gray-700">Current Password</label>
             <Input
+              id="ent-cur-pw"
               type="password"
               value={currentPassword}
               onChange={(event) => setCurrentPassword(event.target.value)}
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">New Password</label>
+            <label htmlFor="ent-new-pw" className="mb-1 block text-sm font-medium text-gray-700">New Password</label>
             <Input
+              id="ent-new-pw"
               type="password"
               value={newPassword}
               onChange={(event) => setNewPassword(event.target.value)}
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Confirm Password</label>
+            <label htmlFor="ent-confirm-pw" className="mb-1 block text-sm font-medium text-gray-700">Confirm Password</label>
             <Input
+              id="ent-confirm-pw"
               type="password"
               value={confirmPassword}
               onChange={(event) => setConfirmPassword(event.target.value)}
