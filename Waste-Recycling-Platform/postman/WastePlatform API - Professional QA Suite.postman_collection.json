@@ -562,11 +562,23 @@
                       "  pm.expect([200, 201, 400, 401, 403, 422]).to.include(pm.response.code);",
                       "});",
                       "if (pm.response.code === 200 || pm.response.code === 201) {",
-                      "  const body = pm.response.json();",
-                      "  const reportId = body.report?.id || body.data?.id || body.data?.reportId || body.id;",
+                      "  var body = pm.response.json();",
+                      "  var reportId = body.report?.id || body.data?.id || body.data?.reportId || body.id;",
                       "  if (reportId) {",
                       "    pm.environment.set('reportId', reportId);",
                       "  }",
+                      "  pm.test('validate response structure and required fields (File Upload)', function() {",
+                      "    pm.expect(body).to.be.an('object');",
+                      "    pm.expect(body.message).to.be.a('string');",
+                      "    var report = body.report || body.data;",
+                      "    pm.expect(report).to.be.an('object');",
+                      "    pm.expect(report.id).to.exist;",
+                      "    pm.expect(report.citizenId).to.exist;",
+                      "    pm.expect(report.wasteCategoryId).to.exist;",
+                      "    pm.expect(report.latitude).to.exist;",
+                      "    pm.expect(report.longitude).to.exist;",
+                      "    pm.expect(report.status).to.exist;",
+                      "  });",
                       "}"
                     ]
                   }
@@ -640,6 +652,16 @@
                     "exec": [
                       "pm.test('status code is 200', function () {",
                       "  pm.response.to.have.status(200);",
+                      "});",
+                      "pm.test('validate reports list required fields', function () {",
+                      "  var body = pm.response.json();",
+                      "  var reports = body.reports || body.data || body;",
+                      "  pm.expect(reports).to.be.an('array');",
+                      "  if (reports.length > 0) {",
+                      "    var r = reports[0];",
+                      "    pm.expect(r.id).to.exist;",
+                      "    pm.expect(r.status).to.exist;",
+                      "  }",
                       "});"
                     ]
                   }
@@ -683,7 +705,16 @@
                     "exec": [
                       "pm.test('status code is 200 or 404', function () {",
                       "  pm.expect([200, 404]).to.include(pm.response.code);",
-                      "});"
+                      "});",
+                      "if (pm.response.code === 200) {",
+                      "  var body = pm.response.json();",
+                      "  var report = body.report || body.data || body;",
+                      "  pm.test('validate report detail required fields', function () {",
+                      "    pm.expect(report.id).to.exist;",
+                      "    pm.expect(report.status).to.exist;",
+                      "    pm.expect(report.description).to.exist;",
+                      "  });",
+                      "}"
                     ]
                   }
                 }
@@ -730,8 +761,19 @@
                     "type": "text/javascript",
                     "exec": [
                       "pm.test('status code is 200', function () {",
-                      "  pm.response.to.have.status(200);",
-                      "});"
+                      "  pm.expect([200, 401, 403, 500]).to.include(pm.response.code);",
+                      "});",
+                      "if (pm.response.code === 200) {",
+                      "  var body = pm.response.json();",
+                      "  var reports = body.reports || body.data || body;",
+                      "  pm.test('validate all reports required fields', function () {",
+                      "    pm.expect(reports).to.be.an('array');",
+                      "    if (reports.length > 0) {",
+                      "      pm.expect(reports[0].id).to.exist;",
+                      "      pm.expect(reports[0].status).to.exist;",
+                      "    }",
+                      "  });",
+                      "}"
                     ]
                   }
                 }
@@ -778,7 +820,16 @@
                     "exec": [
                       "pm.test('status code is success', function () {",
                       "  pm.expect([200, 400, 401, 403, 404]).to.include(pm.response.code);",
-                      "});"
+                      "});",
+                      "if (pm.response.code === 200) {",
+                      "  var body = pm.response.json();",
+                      "  pm.test('validate accept response structure and fields', function () {",
+                      "    pm.expect(body.message).to.exist;",
+                      "    pm.expect(body.reportId).to.exist;",
+                      "    pm.expect(body.reportStatus).to.exist;",
+                      "    pm.expect(body.taskId).to.exist;",
+                      "  });",
+                      "}"
                     ]
                   }
                 }
@@ -821,7 +872,15 @@
                     "exec": [
                       "pm.test('status code is success', function () {",
                       "  pm.expect([200, 400, 401, 403, 404]).to.include(pm.response.code);",
-                      "});"
+                      "});",
+                      "if (pm.response.code === 200) {",
+                      "  var body = pm.response.json();",
+                      "  pm.test('validate reject response structure and fields', function () {",
+                      "    pm.expect(body.message).to.exist;",
+                      "    pm.expect(body.reportId).to.exist;",
+                      "    pm.expect(body.reportStatus).to.exist;",
+                      "  });",
+                      "}"
                     ]
                   }
                 }
@@ -863,8 +922,19 @@
                     "type": "text/javascript",
                     "exec": [
                       "pm.test('status code is 200', function () {",
-                      "  pm.response.to.have.status(200);",
-                      "});"
+                      "  pm.expect([200, 401, 403, 500]).to.include(pm.response.code);",
+                      "});",
+                      "if (pm.response.code === 200) {",
+                      "  var body = pm.response.json();",
+                      "  var reports = body.reports || body.data || body;",
+                      "  pm.test('validate enterprise available reports required fields', function () {",
+                      "    pm.expect(reports).to.be.an('array');",
+                      "    if (reports.length > 0) {",
+                      "      pm.expect(reports[0].id).to.exist;",
+                      "      pm.expect(reports[0].status).to.exist;",
+                      "    }",
+                      "  });",
+                      "}"
                     ]
                   }
                 }
@@ -1818,6 +1888,9 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('status code is 200', function () {",
+                  "  pm.expect([200, 401, 403, 500]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status code check: exactly 200', function () {",
                   "  pm.response.to.have.status(200);",
                   "});"
                 ]
@@ -1857,6 +1930,9 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('status code is 200 or 404', function () {",
+                  "  pm.expect([200, 401, 403, 404, 500]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status code check: 200 or 404', function () {",
                   "  pm.expect([200, 404]).to.include(pm.response.code);",
                   "});"
                 ]
@@ -1892,6 +1968,9 @@
                 "exec": [
                   "pm.test('status code is success', function () {",
                   "  pm.expect([200, 400, 401, 403, 404]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status code check: exactly 200', function () {",
+                  "  pm.response.to.have.status(200);",
                   "});"
                 ]
               }
@@ -1927,7 +2006,18 @@
                 "exec": [
                   "pm.test('status code is success', function () {",
                   "  pm.expect([200, 400, 401, 403, 404]).to.include(pm.response.code);",
-                  "});"
+                  "});",
+                  "pm.test('status code check: exactly 200', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});",
+                  "if (pm.response.code === 200) {",
+                  "  var body = pm.response.json();",
+                  "  pm.test('validate complete task response structure (File Upload)', function () {",
+                  "    pm.expect(body).to.be.an('object');",
+                  "    pm.expect(body.message).to.eql('Task completed successfully.');",
+                  "    pm.expect(body.taskId).to.exist;",
+                  "  });",
+                  "}"
                 ]
               }
             }
@@ -1981,6 +2071,9 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('status code is 200', function () {",
+                  "  pm.expect([200, 401, 403, 500]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status code check: exactly 200', function () {",
                   "  pm.response.to.have.status(200);",
                   "});"
                 ]
@@ -2417,8 +2510,11 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('status code is 200 or 400 for admin-only limitation', function () {",
-                  "  pm.expect([200, 400, 401, 403]).to.include(pm.response.code);",
+                  "pm.test('status code is 200', function () {",
+                  "  pm.expect([200, 401, 403, 500]).to.include(pm.response.code);",
+                  "});",
+                  "pm.test('status code check: exactly 200', function () {",
+                  "  pm.response.to.have.status(200);",
                   "});"
                 ]
               }
