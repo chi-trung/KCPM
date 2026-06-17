@@ -1,0 +1,15 @@
+{
+  "Id": "b8dd8a79-b273-4b7c-9c83-0424dffd8d59",
+  "CitizenId": null,
+  "Type": 7,
+  "Channel": 0,
+  "Status": 0,
+  "Title": "Khiếu nại được chuyển lên Admin",
+  "Message": "Một khiếu nại đã được Citizen chuyển lên Admin xử lý.",
+  "ActionUrl": "/admin/complaints/94660e06-d57e-408f-882f-483437dbf7f1",
+  "RelatedEntityId": "94660e06-d57e-408f-882f-483437dbf7f1",
+  "RelatedEntityType": "Complaint",
+  "CreatedAt": "2026-06-17T14:43:23.2587951Z",
+  "ReadAt": null,
+  "Citizen": null
+}
