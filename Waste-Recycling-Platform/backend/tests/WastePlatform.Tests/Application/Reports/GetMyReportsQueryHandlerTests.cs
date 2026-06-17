@@ -42,9 +42,10 @@ public class GetMyReportsQueryHandlerTests
     #region Happy Path - Get My Reports
 
     [Fact]
+    [AllureDescription("H a n d l e - W i t h V a l i d U s e r I d S h o u l d R e t u r n O n l y U s e r R e p o r t s")]
     public async Task Handle_WithValidUserId_ShouldReturnOnlyUserReports()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-v-a-l-i-d-u-s-e-r-i-d_-s-h-o-", "Executed: Handle_WithValidUserId_ShouldReturnOnlyUserReports");
+        AllureAttachmentHelper.AttachText("test-scenario", "executed-test");
         // Arrange
         var userId = Guid.NewGuid();
         var otherUserId = Guid.NewGuid();
@@ -74,9 +75,10 @@ public class GetMyReportsQueryHandlerTests
     }
 
     [Fact]
+    [AllureDescription("H a n d l e - W i t h E m p t y R e s u l t S h o u l d R e t u r n E m p t y L i s t")]
     public async Task Handle_WithEmptyResult_ShouldReturnEmptyList()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-e-m-p-t-y-r-e-s-u-l-t_-s-h-o-", "Executed: Handle_WithEmptyResult_ShouldReturnEmptyList");
+        AllureAttachmentHelper.AttachText("test-scenario", "executed-test");
         // Arrange - User has no reports
         var userId = Guid.NewGuid();
 
@@ -100,9 +102,10 @@ public class GetMyReportsQueryHandlerTests
     #region Pagination Tests
 
     [Fact]
+    [AllureDescription("H a n d l e - W i t h C u s t o m P a g i n a t i o n S h o u l d A p p l y P a g i n a t i o n")]
     public async Task Handle_WithCustomPagination_ShouldApplyPagination()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-c-u-s-t-o-m-p-a-g-i-n-a-t-i-o", "Executed: Handle_WithCustomPagination_ShouldApplyPagination");
+        AllureAttachmentHelper.AttachText("test-scenario", "executed-test");
         // Arrange
         var userId = Guid.NewGuid();
         var reports = new List<WasteReport> { CreateReport(userId, ReportStatus.Pending) };
@@ -132,9 +135,10 @@ public class GetMyReportsQueryHandlerTests
     #region Data Transformation Tests
 
     [Fact]
+    [AllureDescription("H a n d l e - S h o u l d M a p R e p o r t T o R e p o r t L i s t D t o")]
     public async Task Handle_ShouldMapReportToReportListDto()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-s-h-o-u-l-d-m-a-p-r-e-p-o-r-t-t-o-r-e", "Executed: Handle_ShouldMapReportToReportListDto");
+        AllureAttachmentHelper.AttachText("test-scenario", "executed-test");
         // Arrange
         var userId = Guid.NewGuid();
         var citizen = User.Create("test@test.com", "password123", "Test Citizen", UserRole.Citizen, "0901234567");
@@ -228,3 +232,4 @@ public class GetMyReportsQueryHandlerTests
 
     #endregion
 }
+

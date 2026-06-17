@@ -12,6 +12,7 @@ using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
 using WastePlatform.Infrastructure.Persistence;
 using WastePlatform.Infrastructure.SignalR;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Controllers;
 
@@ -117,6 +118,8 @@ public class EnterpriseTaskControllerExtendedTests
         // Assert
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
         var json = JsonSerializer.Serialize(ok.Value);
+        AllureAttachmentHelper.AttachText("test-input", $"EnterpriseId: {enterprise.Id}");
+        AllureAttachmentHelper.AttachText("http-response", "Status: 200 OK — enterprise profile returned");
         json.Should().Contain(enterprise.Id.ToString());
     }
 
@@ -132,6 +135,7 @@ public class EnterpriseTaskControllerExtendedTests
         var result = await controller.GetProfile();
 
         // Assert
+        AllureAttachmentHelper.AttachText("error-details", "Role=Admin → 400 BadRequest (Admin cannot access enterprise profile)");
         result.Should().BeOfType<BadRequestObjectResult>();
     }
 
@@ -147,6 +151,7 @@ public class EnterpriseTaskControllerExtendedTests
         var result = await controller.GetProfile();
 
         // Assert
+        AllureAttachmentHelper.AttachText("error-details", "Random userId with no enterprise record → 401 Unauthorized");
         result.Should().BeOfType<UnauthorizedObjectResult>();
     }
 
@@ -175,6 +180,8 @@ public class EnterpriseTaskControllerExtendedTests
         // Assert
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
         var json = JsonSerializer.Serialize(ok.Value);
+        AllureAttachmentHelper.AttachJson("update-request", request);
+        AllureAttachmentHelper.AttachText("http-response", "Status: 200 OK — 'updated successfully'");
         json.Should().Contain("updated successfully");
     }
 
@@ -190,6 +197,7 @@ public class EnterpriseTaskControllerExtendedTests
         var result = await controller.UpdateProfile(new UpdateEnterpriseProfileRequest());
 
         // Assert
+        AllureAttachmentHelper.AttachText("error-details", "Role=Admin → 400 BadRequest (Admin cannot update enterprise profile)");
         result.Should().BeOfType<BadRequestObjectResult>();
     }
 
@@ -213,6 +221,7 @@ public class EnterpriseTaskControllerExtendedTests
         // Assert
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
         var json = JsonSerializer.Serialize(ok.Value);
+        AllureAttachmentHelper.AttachText("status-transition", "Enterprise status: Rejected → Pending after profile update");
         json.Should().Contain("Pending");
     }
 
@@ -228,6 +237,7 @@ public class EnterpriseTaskControllerExtendedTests
         var result = await controller.UpdateProfile(new UpdateEnterpriseProfileRequest());
 
         // Assert
+        AllureAttachmentHelper.AttachText("error-details", "Random userId with no enterprise → 401 Unauthorized");
         result.Should().BeOfType<UnauthorizedObjectResult>();
     }
 
@@ -253,6 +263,7 @@ public class EnterpriseTaskControllerExtendedTests
         // Assert
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
         var json = JsonSerializer.Serialize(ok.Value);
+        AllureAttachmentHelper.AttachText("http-response", "Status: 200 OK — response contains 'allCategories'");
         json.Should().Contain("allCategories");
     }
 
@@ -268,6 +279,7 @@ public class EnterpriseTaskControllerExtendedTests
         var result = await controller.GetWasteTypes();
 
         // Assert
+        AllureAttachmentHelper.AttachText("error-details", "Role=Admin → 400 BadRequest");
         result.Should().BeOfType<BadRequestObjectResult>();
     }
 
@@ -283,6 +295,7 @@ public class EnterpriseTaskControllerExtendedTests
         var result = await controller.GetWasteTypes();
 
         // Assert
+        AllureAttachmentHelper.AttachText("error-details", "Random userId with no enterprise → 401 Unauthorized");
         result.Should().BeOfType<UnauthorizedObjectResult>();
     }
 
@@ -312,6 +325,8 @@ public class EnterpriseTaskControllerExtendedTests
         // Assert
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
         var json = JsonSerializer.Serialize(ok.Value);
+        AllureAttachmentHelper.AttachText("test-input", "WasteCategoryIds: [1, 2] (both exist in DB)");
+        AllureAttachmentHelper.AttachText("http-response", "Status: 200 OK — 'updated successfully'");
         json.Should().Contain("updated successfully");
     }
 
@@ -327,6 +342,7 @@ public class EnterpriseTaskControllerExtendedTests
         var result = await controller.UpdateWasteTypes(new UpdateEnterpriseWasteTypesRequest());
 
         // Assert
+        AllureAttachmentHelper.AttachText("error-details", "Role=Admin → 400 BadRequest");
         result.Should().BeOfType<BadRequestObjectResult>();
     }
 
@@ -342,6 +358,7 @@ public class EnterpriseTaskControllerExtendedTests
         var result = await controller.UpdateWasteTypes(new UpdateEnterpriseWasteTypesRequest());
 
         // Assert
+        AllureAttachmentHelper.AttachText("error-details", "Random userId with no enterprise → 401 Unauthorized");
         result.Should().BeOfType<UnauthorizedObjectResult>();
     }
 
@@ -364,6 +381,7 @@ public class EnterpriseTaskControllerExtendedTests
         });
 
         // Assert
+        AllureAttachmentHelper.AttachText("invalid-input", "WasteCategoryIds: [1, 999] — categoryId 999 not found → 400 BadRequest");
         result.Should().BeOfType<BadRequestObjectResult>();
     }
 
@@ -386,6 +404,7 @@ public class EnterpriseTaskControllerExtendedTests
         // Assert
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
         var json = JsonSerializer.Serialize(ok.Value);
+        AllureAttachmentHelper.AttachText("http-response", "Status: 200 OK — stats contain TotalTasks");
         json.Should().Contain("TotalTasks");
     }
 
@@ -401,6 +420,7 @@ public class EnterpriseTaskControllerExtendedTests
         var result = await controller.GetStats();
 
         // Assert
+        AllureAttachmentHelper.AttachText("error-details", "Random userId with no enterprise → 401 Unauthorized");
         result.Should().BeOfType<UnauthorizedObjectResult>();
     }
 
@@ -433,6 +453,8 @@ public class EnterpriseTaskControllerExtendedTests
         // Assert
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
         var json = JsonSerializer.Serialize(ok.Value);
+        AllureAttachmentHelper.AttachText("test-input", $"TaskId: {task.Id}, EnterpriseId: {enterprise.Id}");
+        AllureAttachmentHelper.AttachText("http-response", "Status: 200 OK — response contains 'Timeline'");
         json.Should().Contain("Timeline");
     }
 
@@ -449,6 +471,7 @@ public class EnterpriseTaskControllerExtendedTests
         var result = await controller.GetTaskProgress(Guid.NewGuid());
 
         // Assert
+        AllureAttachmentHelper.AttachText("error-details", "Random taskId not found in enterprise → 404 NotFound");
         result.Should().BeOfType<NotFoundObjectResult>();
     }
 
@@ -464,6 +487,7 @@ public class EnterpriseTaskControllerExtendedTests
         var result = await controller.GetTaskProgress(Guid.NewGuid());
 
         // Assert
+        AllureAttachmentHelper.AttachText("error-details", "Random userId with no enterprise → 401 Unauthorized");
         result.Should().BeOfType<UnauthorizedObjectResult>();
     }
 

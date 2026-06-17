@@ -1,4 +1,4 @@
-using Xunit;
+﻿using Xunit;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -178,6 +178,7 @@ namespace WastePlatform.Tests.Integration
         /// Expected: 200 OK with all metrics
         /// </summary>
         [Fact]
+        [AllureDescription("A d m i n O v e r v i e w E n d p o i n t - G e t, R e t u r n s O v e r v i e w M e t r i c s")]
         public async Task AdminOverviewEndpoint_Get_ReturnsOverviewMetrics()
         {
             AllureAttachmentHelper.AttachText("test-a-d-m-i-n-o-v-e-r-v-i-e-w-e-n-d-p-o-i-n-t_-g-e-t_-", "Executed: AdminOverviewEndpoint_Get_ReturnsOverviewMetrics");
@@ -207,6 +208,7 @@ namespace WastePlatform.Tests.Integration
         /// Expected: 403 Forbidden
         /// </summary>
         [Fact]
+        [AllureDescription("A d m i n O v e r v i e w E n d p o i n t - W i t h C i t i z e n R o l e, R e t u r n s F o r b i d d e n")]
         public async Task AdminOverviewEndpoint_WithCitizenRole_ReturnsForbidden()
         {
             AllureAttachmentHelper.AttachText("test-a-d-m-i-n-o-v-e-r-v-i-e-w-e-n-d-p-o-i-n-t_-w-i-t-h", "Executed: AdminOverviewEndpoint_WithCitizenRole_ReturnsForbidden");
@@ -230,6 +232,7 @@ namespace WastePlatform.Tests.Integration
         /// Expected: Uses default range (last 1 month)
         /// </summary>
         [Fact]
+        [AllureDescription("A d m i n R e p o r t A n a l y t i c s E n d p o i n t - N o D a t e P a r a m s, U s e s D e f a u l t s")]
         public async Task AdminReportAnalyticsEndpoint_NoDateParams_UsesDefaults()
         {
             AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-o-", "Executed: AdminReportAnalyticsEndpoint_NoDateParams_UsesDefaults");
@@ -253,6 +256,7 @@ namespace WastePlatform.Tests.Integration
         /// Query: ?startDate=2026-01-01&endDate=2026-12-31
         /// </summary>
         [Fact]
+        [AllureDescription("A d m i n R e p o r t A n a l y t i c s E n d p o i n t - V a l i d D a t e R a n g e, R e t u r n s F i l t e r e d D a t a")]
         public async Task AdminReportAnalyticsEndpoint_ValidDateRange_ReturnsFilteredData()
         {
             AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-o-", "Executed: AdminReportAnalyticsEndpoint_ValidDateRange_ReturnsFilteredData");
@@ -273,6 +277,7 @@ namespace WastePlatform.Tests.Integration
         /// EndDate should default to today
         /// </summary>
         [Fact]
+        [AllureDescription("A d m i n R e p o r t A n a l y t i c s E n d p o i n t - O n l y S t a r t D a t e, D e f a u l t s E n d T o T o d a y")]
         public async Task AdminReportAnalyticsEndpoint_OnlyStartDate_DefaultsEndToToday()
         {
             AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-o-", "Executed: AdminReportAnalyticsEndpoint_OnlyStartDate_DefaultsEndToToday");
@@ -293,6 +298,7 @@ namespace WastePlatform.Tests.Integration
         /// StartDate should default to 1 month before endDate
         /// </summary>
         [Fact]
+        [AllureDescription("A d m i n R e p o r t A n a l y t i c s E n d p o i n t - O n l y E n d D a t e, D e f a u l t s S t a r t")]
         public async Task AdminReportAnalyticsEndpoint_OnlyEndDate_DefaultsStart()
         {
             AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-o-", "Executed: AdminReportAnalyticsEndpoint_OnlyEndDate_DefaultsStart");
@@ -313,6 +319,7 @@ namespace WastePlatform.Tests.Integration
         /// Expected: 400 Bad Request
         /// </summary>
         [Fact]
+        [AllureDescription("A d m i n R e p o r t A n a l y t i c s E n d p o i n t - I n v a l i d D a t e R a n g e, R e t u r n s B a d R e q u e s t")]
         public async Task AdminReportAnalyticsEndpoint_InvalidDateRange_ReturnsBadRequest()
         {
             AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-o-", "Executed: AdminReportAnalyticsEndpoint_InvalidDateRange_ReturnsBadRequest");
@@ -333,6 +340,7 @@ namespace WastePlatform.Tests.Integration
         /// Expected: 400 Bad Request
         /// </summary>
         [Fact]
+        [AllureDescription("A d m i n R e p o r t A n a l y t i c s E n d p o i n t - M a l f o r m e d D a t e F o r m a t, R e t u r n s B a d R e q u e s t")]
         public async Task AdminReportAnalyticsEndpoint_MalformedDateFormat_ReturnsBadRequest()
         {
             AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-o-", "Executed: AdminReportAnalyticsEndpoint_MalformedDateFormat_ReturnsBadRequest");
@@ -352,6 +360,7 @@ namespace WastePlatform.Tests.Integration
         /// Verify response has required fields
         /// </summary>
         [Fact]
+        [AllureDescription("A d m i n R e p o r t A n a l y t i c s E n d p o i n t - R e s p o n s e S t r u c t u r e, C o n t a i n s R e q u i r e d F i e l d s")]
         public async Task AdminReportAnalyticsEndpoint_ResponseStructure_ContainsRequiredFields()
         {
             AllureAttachmentHelper.AttachText("test-a-d-m-i-n-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-o-", "Executed: AdminReportAnalyticsEndpoint_ResponseStructure_ContainsRequiredFields");
@@ -430,6 +439,7 @@ namespace WastePlatform.Tests.Integration
         /// Endpoint: GET /api/admin/analytics/users
         /// </summary>
         [Fact]
+        [AllureDescription("A d m i n U s e r A n a l y t i c s E n d p o i n t - G e t, R e t u r n s U s e r M e t r i c s")]
         public async Task AdminUserAnalyticsEndpoint_Get_ReturnsUserMetrics()
         {
             AllureAttachmentHelper.AttachText("test-a-d-m-i-n-u-s-e-r-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-", "Executed: AdminUserAnalyticsEndpoint_Get_ReturnsUserMetrics");
@@ -537,6 +547,7 @@ namespace WastePlatform.Tests.Integration
         /// Expected: Uses default range
         /// </summary>
         [Fact]
+        [AllureDescription("A d m i n W a s t e A n a l y t i c s E n d p o i n t - N o D a t e P a r a m s, U s e s D e f a u l t s")]
         public async Task AdminWasteAnalyticsEndpoint_NoDateParams_UsesDefaults()
         {
             AllureAttachmentHelper.AttachText("test-a-d-m-i-n-w-a-s-t-e-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-", "Executed: AdminWasteAnalyticsEndpoint_NoDateParams_UsesDefaults");
@@ -556,6 +567,7 @@ namespace WastePlatform.Tests.Integration
         /// Query: ?startDate=2026-01-01&endDate=2026-06-30
         /// </summary>
         [Fact]
+        [AllureDescription("A d m i n W a s t e A n a l y t i c s E n d p o i n t - W i t h D a t e R a n g e, R e t u r n s F i l t e r e d D a t a")]
         public async Task AdminWasteAnalyticsEndpoint_WithDateRange_ReturnsFilteredData()
         {
             AllureAttachmentHelper.AttachText("test-a-d-m-i-n-w-a-s-t-e-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-", "Executed: AdminWasteAnalyticsEndpoint_WithDateRange_ReturnsFilteredData");
@@ -575,6 +587,7 @@ namespace WastePlatform.Tests.Integration
         /// Expected: 200 with empty results
         /// </summary>
         [Fact]
+        [AllureDescription("A d m i n W a s t e A n a l y t i c s E n d p o i n t - F u t u r e D a t e s, R e t u r n s E m p t y R e s u l t s")]
         public async Task AdminWasteAnalyticsEndpoint_FutureDates_ReturnsEmptyResults()
         {
             AllureAttachmentHelper.AttachText("test-a-d-m-i-n-w-a-s-t-e-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-", "Executed: AdminWasteAnalyticsEndpoint_FutureDates_ReturnsEmptyResults");
@@ -594,6 +607,7 @@ namespace WastePlatform.Tests.Integration
         /// Expected: 400 Bad Request
         /// </summary>
         [Fact]
+        [AllureDescription("A d m i n W a s t e A n a l y t i c s E n d p o i n t - I n v a l i d D a t e R a n g e, R e t u r n s B a d R e q u e s t")]
         public async Task AdminWasteAnalyticsEndpoint_InvalidDateRange_ReturnsBadRequest()
         {
             AllureAttachmentHelper.AttachText("test-a-d-m-i-n-w-a-s-t-e-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-", "Executed: AdminWasteAnalyticsEndpoint_InvalidDateRange_ReturnsBadRequest");
@@ -617,6 +631,7 @@ namespace WastePlatform.Tests.Integration
         /// Endpoint: GET /api/admin/analytics/summary
         /// </summary>
         [Fact]
+        [AllureDescription("A d m i n S u m m a r y E n d p o i n t - W i t h D a t e R a n g e, R e t u r n s C o m p r e h e n s i v e S u m m a r y")]
         public async Task AdminSummaryEndpoint_WithDateRange_ReturnsComprehensiveSummary()
         {
             AllureAttachmentHelper.AttachText("test-a-d-m-i-n-s-u-m-m-a-r-y-e-n-d-p-o-i-n-t_-w-i-t-h-d", "Executed: AdminSummaryEndpoint_WithDateRange_ReturnsComprehensiveSummary");
@@ -644,6 +659,7 @@ namespace WastePlatform.Tests.Integration
         /// Expected: 400 Bad Request
         /// </summary>
         [Fact]
+        [AllureDescription("A d m i n S u m m a r y E n d p o i n t - I n v a l i d D a t e R a n g e, R e t u r n s B a d R e q u e s t")]
         public async Task AdminSummaryEndpoint_InvalidDateRange_ReturnsBadRequest()
         {
             AllureAttachmentHelper.AttachText("test-a-d-m-i-n-s-u-m-m-a-r-y-e-n-d-p-o-i-n-t_-i-n-v-a-l", "Executed: AdminSummaryEndpoint_InvalidDateRange_ReturnsBadRequest");
@@ -668,6 +684,7 @@ namespace WastePlatform.Tests.Integration
         /// Data is scoped to that enterprise
         /// </summary>
         [Fact]
+        [AllureDescription("E n t e r p r i s e R e p o r t A n a l y t i c s E n d p o i n t - W i t h D a t e R a n g e, R e t u r n s S c o p e d D a t a")]
         public async Task EnterpriseReportAnalyticsEndpoint_WithDateRange_ReturnsScopedData()
         {
             AllureAttachmentHelper.AttachText("test-e-n-t-e-r-p-r-i-s-e-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-", "Executed: EnterpriseReportAnalyticsEndpoint_WithDateRange_ReturnsScopedData");
@@ -699,6 +716,7 @@ namespace WastePlatform.Tests.Integration
         /// Expected: 400 Bad Request
         /// </summary>
         [Fact]
+        [AllureDescription("E n t e r p r i s e R e p o r t A n a l y t i c s E n d p o i n t - I n v a l i d D a t e R a n g e, R e t u r n s B a d R e q u e s t")]
         public async Task EnterpriseReportAnalyticsEndpoint_InvalidDateRange_ReturnsBadRequest()
         {
             AllureAttachmentHelper.AttachText("test-e-n-t-e-r-p-r-i-s-e-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-", "Executed: EnterpriseReportAnalyticsEndpoint_InvalidDateRange_ReturnsBadRequest");
@@ -718,6 +736,7 @@ namespace WastePlatform.Tests.Integration
         /// Expected: 401 Unauthorized
         /// </summary>
         [Fact]
+        [AllureDescription("E n t e r p r i s e R e p o r t A n a l y t i c s E n d p o i n t - W i t h o u t A u t h, R e t u r n s U n a u t h o r i z e d")]
         public async Task EnterpriseReportAnalyticsEndpoint_WithoutAuth_ReturnsUnauthorized()
         {
             AllureAttachmentHelper.AttachText("test-e-n-t-e-r-p-r-i-s-e-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-", "Executed: EnterpriseReportAnalyticsEndpoint_WithoutAuth_ReturnsUnauthorized");
@@ -740,6 +759,7 @@ namespace WastePlatform.Tests.Integration
         /// Default: Last 3 months of data
         /// </summary>
         [Fact]
+        [AllureDescription("P u b l i c R e p o r t A n a l y t i c s E n d p o i n t - N o A u t h, R e t u r n s L a s t T h r e e M o n t h s")]
         public async Task PublicReportAnalyticsEndpoint_NoAuth_ReturnsLastThreeMonths()
         {
             AllureAttachmentHelper.AttachText("test-p-u-b-l-i-c-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-", "Executed: PublicReportAnalyticsEndpoint_NoAuth_ReturnsLastThreeMonths");
@@ -759,6 +779,7 @@ namespace WastePlatform.Tests.Integration
         /// Query: ?startDate=2026-01-01&endDate=2026-06-30
         /// </summary>
         [Fact]
+        [AllureDescription("P u b l i c R e p o r t A n a l y t i c s E n d p o i n t - W i t h D a t e R a n g e, R e t u r n s F i l t e r e d D a t a")]
         public async Task PublicReportAnalyticsEndpoint_WithDateRange_ReturnsFilteredData()
         {
             AllureAttachmentHelper.AttachText("test-p-u-b-l-i-c-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-", "Executed: PublicReportAnalyticsEndpoint_WithDateRange_ReturnsFilteredData");
@@ -778,6 +799,7 @@ namespace WastePlatform.Tests.Integration
         /// Expected: 400 Bad Request
         /// </summary>
         [Fact]
+        [AllureDescription("P u b l i c R e p o r t A n a l y t i c s E n d p o i n t - I n v a l i d D a t e R a n g e, R e t u r n s B a d R e q u e s t")]
         public async Task PublicReportAnalyticsEndpoint_InvalidDateRange_ReturnsBadRequest()
         {
             AllureAttachmentHelper.AttachText("test-p-u-b-l-i-c-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-", "Executed: PublicReportAnalyticsEndpoint_InvalidDateRange_ReturnsBadRequest");
@@ -798,6 +820,7 @@ namespace WastePlatform.Tests.Integration
         /// Expected: 200 with empty results
         /// </summary>
         [Fact]
+        [AllureDescription("P u b l i c R e p o r t A n a l y t i c s E n d p o i n t - H i s t o r i c a l D a t e s, R e t u r n s E m p t y R e s u l t s")]
         public async Task PublicReportAnalyticsEndpoint_HistoricalDates_ReturnsEmptyResults()
         {
             AllureAttachmentHelper.AttachText("test-p-u-b-l-i-c-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-", "Executed: PublicReportAnalyticsEndpoint_HistoricalDates_ReturnsEmptyResults");
@@ -821,6 +844,7 @@ namespace WastePlatform.Tests.Integration
         /// Query: ?startDate=2026-06-15&endDate=2026-06-15
         /// </summary>
         [Fact]
+        [AllureDescription("A n a l y t i c s E n d p o i n t - S a m e D a y R a n g e, R e t u r n s D a t a F o r T h a t D a y")]
         public async Task AnalyticsEndpoint_SameDayRange_ReturnsDataForThatDay()
         {
             AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-t_-s-a-m-e-d-a-y-r", "Executed: AnalyticsEndpoint_SameDayRange_ReturnsDataForThatDay");
@@ -840,6 +864,7 @@ namespace WastePlatform.Tests.Integration
         /// Query: ?startDate=2026-01-01T00:00:00Z&endDate=2026-01-31T23:59:59Z
         /// </summary>
         [Fact]
+        [AllureDescription("A n a l y t i c s E n d p o i n t - U t c T i m e s t a m p s, P a r s e s C o r r e c t l y")]
         public async Task AnalyticsEndpoint_UtcTimestamps_ParsesCorrectly()
         {
             AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-t_-u-t-c-t-i-m-e-s", "Executed: AnalyticsEndpoint_UtcTimestamps_ParsesCorrectly");
@@ -859,6 +884,7 @@ namespace WastePlatform.Tests.Integration
         /// Query: ?startDate=2026-01-01&endDate=2026-01-31
         /// </summary>
         [Fact]
+        [AllureDescription("A n a l y t i c s E n d p o i n t - Y e a r S t a r t B o u n d a r y, R e t u r n s J a n u a r y D a t a")]
         public async Task AnalyticsEndpoint_YearStartBoundary_ReturnsJanuaryData()
         {
             AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-t_-y-e-a-r-s-t-a-r", "Executed: AnalyticsEndpoint_YearStartBoundary_ReturnsJanuaryData");
@@ -878,6 +904,7 @@ namespace WastePlatform.Tests.Integration
         /// Query: ?startDate=2026-12-01&endDate=2026-12-31
         /// </summary>
         [Fact]
+        [AllureDescription("A n a l y t i c s E n d p o i n t - Y e a r E n d B o u n d a r y, R e t u r n s D e c e m b e r D a t a")]
         public async Task AnalyticsEndpoint_YearEndBoundary_ReturnsDecemberData()
         {
             AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-t_-y-e-a-r-e-n-d-b", "Executed: AnalyticsEndpoint_YearEndBoundary_ReturnsDecemberData");
@@ -898,6 +925,7 @@ namespace WastePlatform.Tests.Integration
         /// Expected: Response time is acceptable
         /// </summary>
         [Fact]
+        [AllureDescription("A n a l y t i c s E n d p o i n t - M u l t i Y e a r R a n g e, R e s p o n d s I n A c c e p t a b l e T i m e")]
         public async Task AnalyticsEndpoint_MultiYearRange_RespondsInAcceptableTime()
         {
             AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-t_-m-u-l-t-i-y-e-a", "Executed: AnalyticsEndpoint_MultiYearRange_RespondsInAcceptableTime");
@@ -918,6 +946,7 @@ namespace WastePlatform.Tests.Integration
         /// Expected: Response time is acceptable
         /// </summary>
         [Fact]
+        [AllureDescription("A n a l y t i c s E n d p o i n t - L a r g e D a t a s e t, P e r f o r m a n c e A c c e p t a b l e")]
         public async Task AnalyticsEndpoint_LargeDataset_PerformanceAcceptable()
         {
             AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-t_-l-a-r-g-e-d-a-t", "Executed: AnalyticsEndpoint_LargeDataset_PerformanceAcceptable");
@@ -938,6 +967,7 @@ namespace WastePlatform.Tests.Integration
         /// Expected: Uses defaults
         /// </summary>
         [Fact]
+        [AllureDescription("A n a l y t i c s E n d p o i n t - N u l l P a r a m e t e r s, U s e s D e f a u l t s")]
         public async Task AnalyticsEndpoint_NullParameters_UsesDefaults()
         {
             AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-t_-n-u-l-l-p-a-r-a", "Executed: AnalyticsEndpoint_NullParameters_UsesDefaults");
@@ -961,6 +991,7 @@ namespace WastePlatform.Tests.Integration
         /// Validate all required fields are present and have correct types
         /// </summary>
         [Fact]
+        [AllureDescription("A d m i n O v e r v i e w E n d p o i n t - R e s p o n s e S t r u c t u r e, V a l i d a t e A l l F i e l d s")]
         public async Task AdminOverviewEndpoint_ResponseStructure_ValidateAllFields()
         {
             AllureAttachmentHelper.AttachText("test-a-d-m-i-n-o-v-e-r-v-i-e-w-e-n-d-p-o-i-n-t_-r-e-s-p", "Executed: AdminOverviewEndpoint_ResponseStructure_ValidateAllFields");
@@ -990,6 +1021,7 @@ namespace WastePlatform.Tests.Integration
         /// Validate data structure and types
         /// </summary>
         [Fact]
+        [AllureDescription("R e p o r t A n a l y t i c s E n d p o i n t - R e s p o n s e S t r u c t u r e, V a l i d a t e D a t a T y p e s")]
         public async Task ReportAnalyticsEndpoint_ResponseStructure_ValidateDataTypes()
         {
             AllureAttachmentHelper.AttachText("test-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-t_-r-e", "Executed: ReportAnalyticsEndpoint_ResponseStructure_ValidateDataTypes");
@@ -1027,6 +1059,7 @@ namespace WastePlatform.Tests.Integration
         /// Verify error responses are meaningful
         /// </summary>
         [Fact]
+        [AllureDescription("A n a l y t i c s E n d p o i n t - I n v a l i d D a t e R a n g e, C o n t a i n s M e a n i n g f u l E r r o r M e s s a g e")]
         public async Task AnalyticsEndpoint_InvalidDateRange_ContainsMeaningfulErrorMessage()
         {
             AllureAttachmentHelper.AttachText("test-a-n-a-l-y-t-i-c-s-e-n-d-p-o-i-n-t_-i-n-v-a-l-i-d-d", "Executed: AnalyticsEndpoint_InvalidDateRange_ContainsMeaningfulErrorMessage");
@@ -1046,3 +1079,4 @@ namespace WastePlatform.Tests.Integration
         #endregion
     }
 }
+

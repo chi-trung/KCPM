@@ -1,8 +1,9 @@
-using Moq;
+﻿using Moq;
 using WastePlatform.Application.Complaints.Commands;
 using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Application.Complaints;
 
@@ -67,6 +68,7 @@ public class EnterpriseRespondToComplaintCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         result.Success.Should().BeFalse();
         result.Message.Should().Contain("not found");
         _mockComplaintRepository.Verify(
@@ -104,6 +106,7 @@ public class EnterpriseRespondToComplaintCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         result.Success.Should().BeFalse();
         result.Message.Should().Contain("not authorized");
         _mockComplaintRepository.Verify(
@@ -141,6 +144,7 @@ public class EnterpriseRespondToComplaintCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         result.Success.Should().BeFalse();
         result.Message.Should().Contain("Cannot respond");
         _mockComplaintRepository.Verify(
@@ -184,6 +188,7 @@ public class EnterpriseRespondToComplaintCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         result.Success.Should().BeTrue();
         result.Message.Should().Contain("escalated");
         result.NewStatus.Should().Be(ComplaintStatus.Escalated.ToString());
@@ -232,6 +237,7 @@ public class EnterpriseRespondToComplaintCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         result.Success.Should().BeTrue();
         result.Message.Should().Contain("resolved");
         result.NewStatus.Should().Be(ComplaintStatus.Resolved.ToString());
@@ -280,6 +286,7 @@ public class EnterpriseRespondToComplaintCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         result.Success.Should().BeTrue();
         result.Message.Should().Contain("Response added");
         result.NewStatus.Should().Be(ComplaintStatus.InProgress.ToString());
@@ -294,3 +301,5 @@ public class EnterpriseRespondToComplaintCommandHandlerTests
 
     #endregion
 }
+
+

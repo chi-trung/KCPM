@@ -4,6 +4,7 @@ using Moq;
 using WastePlatform.API.Controllers;
 using WastePlatform.Application.Admin.Analytics.DTOs;
 using WastePlatform.Application.Admin.Analytics.Queries;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Controllers;
 
@@ -50,6 +51,8 @@ public class AdminAnalyticsControllerTests
 
         // Assert
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+        AllureAttachmentHelper.AttachJson("analytics-overview", overview);
+        AllureAttachmentHelper.AttachText("http-response", $"Status: 200 OK, TotalReports={overview.TotalReports}, TotalUsers={overview.TotalUsers}");
         GetProp<string>(ok.Value!, "message").Should().Contain("successfully");
         _mediatorMock.Verify(x => x.Send(It.IsAny<GetAnalyticsOverviewQuery>(), It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -59,15 +62,17 @@ public class AdminAnalyticsControllerTests
     public async Task GetOverview_WhenMediatorThrows_ShouldReturn500()
     {
         // Arrange
+        var exMessage = "DB error";
         _mediatorMock
             .Setup(x => x.Send(It.IsAny<GetAnalyticsOverviewQuery>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new Exception("DB error"));
+            .ThrowsAsync(new Exception(exMessage));
 
         // Act
         var result = await _controller.GetOverview();
 
         // Assert
         var status = result.Should().BeOfType<ObjectResult>().Subject;
+        AllureAttachmentHelper.AttachText("error-handled", $"Exception: '{exMessage}' → HTTP {status.StatusCode}");
         status.StatusCode.Should().Be(500);
         GetProp<string>(status.Value!, "message").Should().Contain("Internal server error");
     }
@@ -91,6 +96,8 @@ public class AdminAnalyticsControllerTests
 
         // Assert
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+        AllureAttachmentHelper.AttachJson("report-analytics", reportAnalytics);
+        AllureAttachmentHelper.AttachText("http-response", $"Status: 200 OK, TotalReports={reportAnalytics.TotalReports}, AcceptedReports={reportAnalytics.AcceptedReports}");
         GetProp<string>(ok.Value!, "message").Should().Contain("successfully");
     }
 
@@ -107,6 +114,7 @@ public class AdminAnalyticsControllerTests
 
         // Assert
         var bad = result.Should().BeOfType<BadRequestObjectResult>().Subject;
+        AllureAttachmentHelper.AttachText("invalid-date-range", $"Start: {start:yyyy-MM-dd}, End: {end:yyyy-MM-dd} (start > end → BadRequest)");
         GetProp<string>(bad.Value!, "message").Should().Contain("Start date");
     }
 
@@ -115,15 +123,17 @@ public class AdminAnalyticsControllerTests
     public async Task GetReportAnalytics_WhenMediatorThrows_ShouldReturn500()
     {
         // Arrange
+        var exMessage = "DB error";
         _mediatorMock
             .Setup(x => x.Send(It.IsAny<GetReportAnalyticsQuery>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new Exception("DB error"));
+            .ThrowsAsync(new Exception(exMessage));
 
         // Act
         var result = await _controller.GetReportAnalytics();
 
         // Assert
         var status = result.Should().BeOfType<ObjectResult>().Subject;
+        AllureAttachmentHelper.AttachText("error-handled", $"Exception: '{exMessage}' → HTTP {status.StatusCode}");
         status.StatusCode.Should().Be(500);
     }
 
@@ -146,6 +156,8 @@ public class AdminAnalyticsControllerTests
 
         // Assert
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+        AllureAttachmentHelper.AttachJson("user-analytics", userAnalytics);
+        AllureAttachmentHelper.AttachText("http-response", $"Status: 200 OK, TotalCitizens={userAnalytics.TotalCitizens}");
         GetProp<string>(ok.Value!, "message").Should().Contain("successfully");
     }
 
@@ -154,15 +166,17 @@ public class AdminAnalyticsControllerTests
     public async Task GetUserAnalytics_WhenMediatorThrows_ShouldReturn500()
     {
         // Arrange
+        var exMessage = "Service error";
         _mediatorMock
             .Setup(x => x.Send(It.IsAny<GetUserAnalyticsQuery>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new Exception("Service error"));
+            .ThrowsAsync(new Exception(exMessage));
 
         // Act
         var result = await _controller.GetUserAnalytics();
 
         // Assert
         var status = result.Should().BeOfType<ObjectResult>().Subject;
+        AllureAttachmentHelper.AttachText("error-handled", $"Exception: '{exMessage}' → HTTP {status.StatusCode}");
         status.StatusCode.Should().Be(500);
     }
 
@@ -185,6 +199,8 @@ public class AdminAnalyticsControllerTests
 
         // Assert
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+        AllureAttachmentHelper.AttachJson("waste-analytics", wasteAnalytics);
+        AllureAttachmentHelper.AttachText("http-response", $"Status: 200 OK, TotalWasteKg={wasteAnalytics.TotalWasteKg}");
         GetProp<string>(ok.Value!, "message").Should().Contain("successfully");
     }
 
@@ -201,6 +217,7 @@ public class AdminAnalyticsControllerTests
 
         // Assert
         result.Should().BeOfType<BadRequestObjectResult>();
+        AllureAttachmentHelper.AttachText("invalid-date-range", $"Start: {start:yyyy-MM-dd}, End: {end:yyyy-MM-dd} (start > end → BadRequest)");
     }
 
     [Fact]
@@ -208,15 +225,17 @@ public class AdminAnalyticsControllerTests
     public async Task GetWasteAnalytics_WhenMediatorThrows_ShouldReturn500()
     {
         // Arrange
+        var exMessage = "DB error";
         _mediatorMock
             .Setup(x => x.Send(It.IsAny<GetWasteAnalyticsQuery>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new Exception("DB error"));
+            .ThrowsAsync(new Exception(exMessage));
 
         // Act
         var result = await _controller.GetWasteAnalytics();
 
         // Assert
         var status = result.Should().BeOfType<ObjectResult>().Subject;
+        AllureAttachmentHelper.AttachText("error-handled", $"Exception: '{exMessage}' → HTTP {status.StatusCode}");
         status.StatusCode.Should().Be(500);
     }
 
@@ -242,6 +261,8 @@ public class AdminAnalyticsControllerTests
 
         // Assert
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+        AllureAttachmentHelper.AttachJson("analytics-summary", summary);
+        AllureAttachmentHelper.AttachText("http-response", $"Status: 200 OK, TotalReports={summary.Overview?.TotalReports}");
         GetProp<string>(ok.Value!, "message").Should().Contain("successfully");
     }
 
@@ -258,6 +279,7 @@ public class AdminAnalyticsControllerTests
 
         // Assert
         result.Should().BeOfType<BadRequestObjectResult>();
+        AllureAttachmentHelper.AttachText("invalid-date-range", $"Start: {start:yyyy-MM-dd}, End: {end:yyyy-MM-dd} (start > end → BadRequest)");
     }
 
     [Fact]
@@ -265,15 +287,17 @@ public class AdminAnalyticsControllerTests
     public async Task GetAnalyticsSummary_WhenMediatorThrows_ShouldReturn500()
     {
         // Arrange
+        var exMessage = "Timeout";
         _mediatorMock
             .Setup(x => x.Send(It.IsAny<GetAnalyticsSummaryQuery>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new Exception("Timeout"));
+            .ThrowsAsync(new Exception(exMessage));
 
         // Act
         var result = await _controller.GetAnalyticsSummary();
 
         // Assert
         var status = result.Should().BeOfType<ObjectResult>().Subject;
+        AllureAttachmentHelper.AttachText("error-handled", $"Exception: '{exMessage}' → HTTP {status.StatusCode}");
         status.StatusCode.Should().Be(500);
     }
 

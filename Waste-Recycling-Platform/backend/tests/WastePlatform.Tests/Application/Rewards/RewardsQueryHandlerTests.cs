@@ -1,7 +1,8 @@
-using Moq;
+﻿using Moq;
 using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Application.Rewards.Queries;
 using WastePlatform.Domain.Entities;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Application.Rewards;
 
@@ -47,6 +48,7 @@ public class RewardsQueryHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         result.TotalPoints.Should().Be(expectedPoints);
         result.LastUpdated.Should().NotBeNull();
         _mockRepo.Verify(
@@ -72,6 +74,7 @@ public class RewardsQueryHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         result.TotalPoints.Should().Be(0);
     }
 
@@ -125,6 +128,7 @@ public class RewardsQueryHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         result.Items.Should().HaveCount(2);
         result.Total.Should().Be(total);
         result.Page.Should().Be(1);
@@ -151,6 +155,7 @@ public class RewardsQueryHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         result.Items.Should().BeEmpty();
         result.Total.Should().Be(0);
     }
@@ -182,6 +187,7 @@ public class RewardsQueryHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         result.Leaderboard.Should().HaveCount(2);
         result.Total.Should().Be(total);
         result.Page.Should().Be(1);
@@ -208,9 +214,12 @@ public class RewardsQueryHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         result.Leaderboard.Should().BeEmpty();
         result.Total.Should().Be(0);
     }
 
     #endregion
 }
+
+

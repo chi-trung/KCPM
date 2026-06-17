@@ -1,9 +1,10 @@
-using Moq;
+﻿using Moq;
 using WastePlatform.Application.Complaints.Queries;
 using WastePlatform.Application.Common.DTOs;
 using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Application.Complaints;
 
@@ -62,6 +63,7 @@ public class GetComplaintsQueriesHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().NotBeNull();
         result.Items.Should().HaveCount(2);
         result.Page.Should().Be(1);
@@ -165,6 +167,7 @@ public class GetComplaintsQueriesHandlerTests
         var (resultComplaints, resultTotal, resultPages) = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: resultComplaints");
         resultComplaints.Should().HaveCount(1);
         resultTotal.Should().Be(total);
         resultPages.Should().Be(1); // ceil(1/10) = 1
@@ -201,6 +204,7 @@ public class GetComplaintsQueriesHandlerTests
         var (_, _, totalPages) = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: totalPages");
         totalPages.Should().Be(5); // ceil(23/5) = 5
     }
 
@@ -227,6 +231,7 @@ public class GetComplaintsQueriesHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().NotBeNull();
         result!.Id.Should().Be(complaint.Id);
         result.CitizenId.Should().Be(citizenId);
@@ -252,9 +257,11 @@ public class GetComplaintsQueriesHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().BeNull();
         _mockRepo.Verify(x => x.GetByIdAsync(id, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     #endregion
 }
+

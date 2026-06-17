@@ -1,7 +1,8 @@
-using Moq;
+﻿using Moq;
 using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Application.Rewards.Commands;
 using WastePlatform.Domain.Entities;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Application.Rewards;
 
@@ -75,6 +76,7 @@ public class RewardPointsCommandHandlerTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().NotBeNull();
         result.RewardPointsId.Should().Be(createdPoints.Id);
         result.CitizenId.Should().Be(citizenId);
@@ -109,6 +111,7 @@ public class RewardPointsCommandHandlerTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().NotBeNull();
         result.Reason.Should().Be(defaultReason);
     }
@@ -139,3 +142,4 @@ public class RewardPointsCommandHandlerTests
 
     #endregion
 }
+

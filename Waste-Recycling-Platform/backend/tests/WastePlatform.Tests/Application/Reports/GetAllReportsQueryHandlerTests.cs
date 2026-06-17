@@ -42,9 +42,10 @@ public class GetAllReportsQueryHandlerTests
     #region Happy Path - Get All Reports
 
     [Fact]
+    [AllureDescription("H a n d l e - W i t h D e f a u l t P a g i n a t i o n S h o u l d R e t u r n R e p o r t s")]
     public async Task Handle_WithDefaultPagination_ShouldReturnReports()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-d-e-f-a-u-l-t-p-a-g-i-n-a-t-i", "Executed: Handle_WithDefaultPagination_ShouldReturnReports");
+        AllureAttachmentHelper.AttachText("test-scenario", "executed-test");
         // Arrange
         var reports = new List<WasteReport>
         {
@@ -69,9 +70,10 @@ public class GetAllReportsQueryHandlerTests
     }
 
     [Fact]
+    [AllureDescription("H a n d l e - W i t h C u s t o m P a g i n a t i o n S h o u l d R e t u r n C o r r e c t P a g e")]
     public async Task Handle_WithCustomPagination_ShouldReturnCorrectPage()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-c-u-s-t-o-m-p-a-g-i-n-a-t-i-o", "Executed: Handle_WithCustomPagination_ShouldReturnCorrectPage");
+        AllureAttachmentHelper.AttachText("test-scenario", "executed-test");
         // Arrange
         var reports = new List<WasteReport> { CreateReport(ReportStatus.Pending) };
 
@@ -100,6 +102,12 @@ public class GetAllReportsQueryHandlerTests
     [InlineData("Rejected", ReportStatus.Rejected)]
     [InlineData("Assigned", ReportStatus.Assigned)]
     [InlineData("Collected", ReportStatus.Collected)]
+    [AllureDescription("H a n d l e - W i t h S t a t u s F i l t e r S h o u l d F i l t e r B y S t a t u s")]
+    [InlineData("Pending", ReportStatus.Pending)]
+    [InlineData("Accepted", ReportStatus.Accepted)]
+    [InlineData("Rejected", ReportStatus.Rejected)]
+    [InlineData("Assigned", ReportStatus.Assigned)]
+    [InlineData("Collected", ReportStatus.Collected)]
     public async Task Handle_WithStatusFilter_ShouldFilterByStatus(string statusString, ReportStatus expectedStatus)
     {
         // Arrange
@@ -122,9 +130,10 @@ public class GetAllReportsQueryHandlerTests
     }
 
     [Fact]
+    [AllureDescription("H a n d l e - W i t h E m p t y S t a t u s F i l t e r S h o u l d N o t F i l t e r B y S t a t u s")]
     public async Task Handle_WithEmptyStatusFilter_ShouldNotFilterByStatus()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-e-m-p-t-y-s-t-a-t-u-s-f-i-l-t", "Executed: Handle_WithEmptyStatusFilter_ShouldNotFilterByStatus");
+        AllureAttachmentHelper.AttachText("test-scenario", "executed-test");
         // Arrange
         var reports = new List<WasteReport> { CreateReport(ReportStatus.Pending) };
 
@@ -144,9 +153,10 @@ public class GetAllReportsQueryHandlerTests
     }
 
     [Fact]
+    [AllureDescription("H a n d l e - W i t h I n v a l i d S t a t u s F i l t e r S h o u l d N o t F i l t e r B y S t a t u s")]
     public async Task Handle_WithInvalidStatusFilter_ShouldNotFilterByStatus()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-i-n-v-a-l-i-d-s-t-a-t-u-s-f-i", "Executed: Handle_WithInvalidStatusFilter_ShouldNotFilterByStatus");
+        AllureAttachmentHelper.AttachText("test-scenario", "executed-test");
         // Arrange - Invalid status string should be ignored
         var reports = new List<WasteReport> { CreateReport(ReportStatus.Pending) };
 
@@ -236,3 +246,4 @@ public class GetAllReportsQueryHandlerTests
 
     #endregion
 }
+

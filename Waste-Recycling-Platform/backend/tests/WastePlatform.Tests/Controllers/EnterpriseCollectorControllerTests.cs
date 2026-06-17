@@ -7,6 +7,7 @@ using WastePlatform.API.Controllers;
 using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
 using WastePlatform.Infrastructure.Persistence;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Controllers;
 
@@ -119,6 +120,8 @@ public class EnterpriseCollectorControllerTests
         // Assert
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
         var json = JsonSerializer.Serialize(ok.Value);
+        AllureAttachmentHelper.AttachText("test-input", $"EnterpriseId: {enterprise.Id}, CollectorId: {collector.Id}");
+        AllureAttachmentHelper.AttachText("http-response", $"Status: 200 OK — response contains collectorId");
         json.Should().Contain(collector.Id.ToString());
     }
 
@@ -137,6 +140,7 @@ public class EnterpriseCollectorControllerTests
         var result = await controller.GetCollectors();
 
         // Assert
+        AllureAttachmentHelper.AttachText("error-details", "No enterprise found for random userId → 401 Unauthorized");
         result.Should().BeOfType<UnauthorizedObjectResult>();
     }
 
@@ -171,6 +175,8 @@ public class EnterpriseCollectorControllerTests
 
         // Assert
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+        AllureAttachmentHelper.AttachJson("create-request", request);
+        AllureAttachmentHelper.AttachText("http-response", "Status: 200 OK — 'Collector account created successfully'");
         var json = JsonSerializer.Serialize(ok.Value);
         json.Should().Contain("Collector account created successfully");
     }
@@ -192,6 +198,7 @@ public class EnterpriseCollectorControllerTests
         });
 
         // Assert
+        AllureAttachmentHelper.AttachText("error-details", "No enterprise found for random userId → 401 Unauthorized");
         result.Should().BeOfType<UnauthorizedObjectResult>();
     }
 
@@ -217,6 +224,7 @@ public class EnterpriseCollectorControllerTests
 
         // Assert
         var bad = result.Should().BeOfType<BadRequestObjectResult>().Subject;
+        AllureAttachmentHelper.AttachText("invalid-input", "FullName='' (empty) → 400 BadRequest: required fields missing");
         GetProp<string>(bad.Value!, "message").Should().Contain("required");
     }
 
@@ -239,6 +247,7 @@ public class EnterpriseCollectorControllerTests
 
         // Assert
         var bad = result.Should().BeOfType<BadRequestObjectResult>().Subject;
+        AllureAttachmentHelper.AttachText("invalid-input", "TemporaryPassword='abc' (length=3, < 6) → 400 BadRequest");
         GetProp<string>(bad.Value!, "message").Should().Contain("6 characters");
     }
 
@@ -266,6 +275,7 @@ public class EnterpriseCollectorControllerTests
 
         // Assert
         var conflict = result.Should().BeOfType<ConflictObjectResult>().Subject;
+        AllureAttachmentHelper.AttachText("duplicate-email", $"Email '{collectorUser.Email}' already registered → 409 Conflict");
         GetProp<string>(conflict.Value!, "message").Should().Contain("Email");
     }
 
@@ -296,6 +306,8 @@ public class EnterpriseCollectorControllerTests
 
         // Assert
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+        AllureAttachmentHelper.AttachText("update-request", $"CollectorId: {collector.Id}, NewName: 'Updated Name'");
+        AllureAttachmentHelper.AttachText("http-response", "Status: 200 OK — response contains 'Updated Name'");
         var json = JsonSerializer.Serialize(ok.Value);
         json.Should().Contain("Updated Name");
     }
@@ -317,6 +329,7 @@ public class EnterpriseCollectorControllerTests
         });
 
         // Assert
+        AllureAttachmentHelper.AttachText("error-details", "No enterprise found for random userId → 401 Unauthorized");
         result.Should().BeOfType<UnauthorizedObjectResult>();
     }
 
@@ -339,6 +352,7 @@ public class EnterpriseCollectorControllerTests
         });
 
         // Assert
+        AllureAttachmentHelper.AttachText("error-details", "Random collectorId not belonging to enterprise → 404 NotFound");
         result.Should().BeOfType<NotFoundObjectResult>();
     }
 
@@ -366,6 +380,7 @@ public class EnterpriseCollectorControllerTests
 
         // Assert
         var bad = result.Should().BeOfType<BadRequestObjectResult>().Subject;
+        AllureAttachmentHelper.AttachText("invalid-input", "TemporaryPassword='abc' (length=3, < 6) → 400 BadRequest");
         GetProp<string>(bad.Value!, "message").Should().Contain("6 characters");
     }
 
@@ -392,6 +407,7 @@ public class EnterpriseCollectorControllerTests
 
         // Assert
         var ok = result.Should().BeOfType<OkObjectResult>().Subject;
+        AllureAttachmentHelper.AttachText("delete-result", $"CollectorId: {collector.Id} — deleted successfully (no active tasks)");
         GetProp<string>(ok.Value!, "message").Should().Contain("deleted successfully");
     }
 
@@ -409,6 +425,7 @@ public class EnterpriseCollectorControllerTests
         var result = await controller.DeleteCollector(Guid.NewGuid());
 
         // Assert
+        AllureAttachmentHelper.AttachText("error-details", "No enterprise for random userId → 401 Unauthorized");
         result.Should().BeOfType<UnauthorizedObjectResult>();
     }
 
@@ -428,6 +445,7 @@ public class EnterpriseCollectorControllerTests
         var result = await controller.DeleteCollector(Guid.NewGuid());
 
         // Assert
+        AllureAttachmentHelper.AttachText("error-details", "Random collectorId not found in enterprise → 404 NotFound");
         result.Should().BeOfType<NotFoundObjectResult>();
     }
 
@@ -461,6 +479,7 @@ public class EnterpriseCollectorControllerTests
 
         // Assert
         var bad = result.Should().BeOfType<BadRequestObjectResult>().Subject;
+        AllureAttachmentHelper.AttachText("block-reason", $"CollectorId: {collector.Id} has active task → 400 BadRequest: 'active tasks'");
         GetProp<string>(bad.Value!, "message").Should().Contain("active tasks");
     }
 

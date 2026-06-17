@@ -1,7 +1,8 @@
-using Moq;
+﻿using Moq;
 using WastePlatform.Application.Admin.Analytics.DTOs;
 using WastePlatform.Application.Admin.Analytics.Queries;
 using WastePlatform.Application.Common.Interfaces;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Application.Admin;
 
@@ -53,6 +54,7 @@ public class AdminAnalyticsQueryHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().NotBeNull();
         result.TotalReports.Should().Be(250);
         result.TotalComplaints.Should().Be(30);
@@ -235,6 +237,7 @@ public class AdminAnalyticsQueryHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().NotBeNull();
         result.Overview.TotalReports.Should().Be(500);
         result.UserAnalytics.TotalCitizens.Should().Be(200);
@@ -264,9 +267,11 @@ public class AdminAnalyticsQueryHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().NotBeNull();
         _mockRepo.Verify(x => x.GetSummaryAsync(start, end, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     #endregion
 }
+

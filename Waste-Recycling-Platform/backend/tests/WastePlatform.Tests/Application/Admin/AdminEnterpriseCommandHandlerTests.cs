@@ -1,10 +1,11 @@
-using Moq;
+﻿using Moq;
 using WastePlatform.Application.Admin.Dashboard.DTOs;
 using WastePlatform.Application.Admin.Dashboard.Queries;
 using WastePlatform.Application.Admin.Enterprises.Commands;
 using WastePlatform.Application.Admin.Enterprises.Commands.Handlers;
 using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Domain.Entities;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Application.Admin;
 
@@ -215,6 +216,7 @@ public class AdminEnterpriseCommandHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().NotBeNull();
         result.TotalUsers.Should().Be(100);
         result.TotalReports.Should().Be(500);
@@ -225,3 +227,4 @@ public class AdminEnterpriseCommandHandlerTests
 
     #endregion
 }
+

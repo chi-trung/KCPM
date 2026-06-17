@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -17,6 +17,8 @@ using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
 using WastePlatform.Infrastructure.Persistence;
 using Xunit;
+using WastePlatform.Tests.TestSupport;
+
 
 namespace WastePlatform.Tests.Controllers
 {
@@ -76,7 +78,7 @@ namespace WastePlatform.Tests.Controllers
         [AllureDescription("Report Lat BVA-1: Min valid Latitude (-90) should be accepted.")]
         public async Task CreateReport_WithMinLatitudeBoundary_ShouldSucceed()
         {
-            await using var context = CreateContext();
+            await using var context = CreateContext();
             var category = new WasteCategory { Id = 1, Name = "Plastic" };
             context.WasteCategories.Add(category);
             await context.SaveChangesAsync();
@@ -102,6 +104,7 @@ namespace WastePlatform.Tests.Controllers
 
             var result = await controller.CreateReport(form);
 
+            AllureAttachmentHelper.AttachText("bva-result", "Boundary accepted: result type validated");
             result.Should().BeOfType<CreatedAtActionResult>();
         }
 
@@ -110,6 +113,7 @@ namespace WastePlatform.Tests.Controllers
         public async Task CreateReport_WithMaxLatitudeBoundary_ShouldSucceed()
         {
             await using var context = CreateContext();
+
             var category = new WasteCategory { Id = 1, Name = "Plastic" };
             context.WasteCategories.Add(category);
             await context.SaveChangesAsync();
@@ -135,6 +139,7 @@ namespace WastePlatform.Tests.Controllers
 
             var result = await controller.CreateReport(form);
 
+            AllureAttachmentHelper.AttachText("bva-result", "Boundary accepted: result type validated");
             result.Should().BeOfType<CreatedAtActionResult>();
         }
 
@@ -162,6 +167,7 @@ namespace WastePlatform.Tests.Controllers
 
             var act = () => handler.Handle(cmd, CancellationToken.None);
 
+            AllureAttachmentHelper.AttachText("bva-exception", "Boundary violated: ArgumentException expected");
             await act.Should().ThrowAsync<ArgumentException>()
                 .WithMessage("Invalid latitude or longitude coordinates");
         }
@@ -190,6 +196,7 @@ namespace WastePlatform.Tests.Controllers
 
             var act = () => handler.Handle(cmd, CancellationToken.None);
 
+            AllureAttachmentHelper.AttachText("bva-exception", "Boundary violated: ArgumentException expected");
             await act.Should().ThrowAsync<ArgumentException>()
                 .WithMessage("Invalid latitude or longitude coordinates");
         }
@@ -199,6 +206,7 @@ namespace WastePlatform.Tests.Controllers
         public async Task CreateReport_WithMinLongitudeBoundary_ShouldSucceed()
         {
             await using var context = CreateContext();
+
             var category = new WasteCategory { Id = 1, Name = "Plastic" };
             context.WasteCategories.Add(category);
             await context.SaveChangesAsync();
@@ -224,6 +232,7 @@ namespace WastePlatform.Tests.Controllers
 
             var result = await controller.CreateReport(form);
 
+            AllureAttachmentHelper.AttachText("bva-result", "Boundary accepted: result type validated");
             result.Should().BeOfType<CreatedAtActionResult>();
         }
 
@@ -232,6 +241,7 @@ namespace WastePlatform.Tests.Controllers
         public async Task CreateReport_WithMaxLongitudeBoundary_ShouldSucceed()
         {
             await using var context = CreateContext();
+
             var category = new WasteCategory { Id = 1, Name = "Plastic" };
             context.WasteCategories.Add(category);
             await context.SaveChangesAsync();
@@ -257,6 +267,7 @@ namespace WastePlatform.Tests.Controllers
 
             var result = await controller.CreateReport(form);
 
+            AllureAttachmentHelper.AttachText("bva-result", "Boundary accepted: result type validated");
             result.Should().BeOfType<CreatedAtActionResult>();
         }
 
@@ -284,6 +295,7 @@ namespace WastePlatform.Tests.Controllers
 
             var act = () => handler.Handle(cmd, CancellationToken.None);
 
+            AllureAttachmentHelper.AttachText("bva-exception", "Boundary violated: ArgumentException expected");
             await act.Should().ThrowAsync<ArgumentException>()
                 .WithMessage("Invalid latitude or longitude coordinates");
         }
@@ -312,6 +324,7 @@ namespace WastePlatform.Tests.Controllers
 
             var act = () => handler.Handle(cmd, CancellationToken.None);
 
+            AllureAttachmentHelper.AttachText("bva-exception", "Boundary violated: ArgumentException expected");
             await act.Should().ThrowAsync<ArgumentException>()
                 .WithMessage("Invalid latitude or longitude coordinates");
         }
@@ -340,6 +353,7 @@ namespace WastePlatform.Tests.Controllers
 
             var act = () => handler.Handle(cmd, CancellationToken.None);
 
+            AllureAttachmentHelper.AttachText("bva-exception", "Boundary violated: ArgumentException expected");
             await act.Should().ThrowAsync<ArgumentException>()
                 .WithMessage("At least one image is required");
         }
@@ -380,6 +394,7 @@ namespace WastePlatform.Tests.Controllers
 
             var result = await handler.Handle(cmd, CancellationToken.None);
 
+            AllureAttachmentHelper.AttachText("bva-result", "Boundary accepted: result type validated");
             result.Should().NotBe(Guid.Empty);
         }
 
@@ -416,6 +431,7 @@ namespace WastePlatform.Tests.Controllers
 
             var act = () => handler.Handle(cmd, CancellationToken.None);
 
+            AllureAttachmentHelper.AttachText("bva-exception", "Boundary violated: ArgumentException expected");
             await act.Should().ThrowAsync<ArgumentException>()
                 .WithMessage("Maximum 5 images are allowed");
         }
@@ -435,3 +451,7 @@ namespace WastePlatform.Tests.Controllers
         #endregion
     }
 }
+
+
+
+

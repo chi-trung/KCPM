@@ -1,4 +1,5 @@
-using WastePlatform.Application.Tasks.Commands;
+﻿using WastePlatform.Application.Tasks.Commands;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Application.Tasks;
 
@@ -39,6 +40,7 @@ public class TaskCommandHandlerTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().NotBeNull();
         result.TaskId.Should().Be(taskId);
         result.CollectorId.Should().Be(collectorId);
@@ -70,3 +72,4 @@ public class TaskCommandHandlerTests
 
     #endregion
 }
+

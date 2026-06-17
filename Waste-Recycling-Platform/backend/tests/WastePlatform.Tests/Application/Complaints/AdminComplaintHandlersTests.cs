@@ -1,10 +1,11 @@
-using Moq;
+﻿using Moq;
 using WastePlatform.Application.Admin.Complaints.Commands;
 using WastePlatform.Application.Admin.Complaints.Commands.Handlers;
 using WastePlatform.Application.Admin.Complaints.Queries;
 using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Application.Complaints;
 
@@ -53,6 +54,7 @@ public class AdminComplaintHandlersTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying command handler result");
         result.Success.Should().BeFalse();
         result.Message.Should().Contain("not found");
         _mockRepo.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
@@ -88,6 +90,7 @@ public class AdminComplaintHandlersTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying command handler result");
         result.Success.Should().BeTrue();
         result.ComplaintId.Should().Be(complaint.Id);
         complaint.Status.Should().Be(ComplaintStatus.Rejected);
@@ -119,6 +122,7 @@ public class AdminComplaintHandlersTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying command handler result");
         result.Success.Should().BeFalse();
         result.Message.Should().Contain("not found");
         _mockRepo.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
@@ -154,6 +158,7 @@ public class AdminComplaintHandlersTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying command handler result");
         result.Success.Should().BeTrue();
         result.ComplaintId.Should().Be(complaint.Id);
         complaint.Status.Should().Be(ComplaintStatus.Resolved);
@@ -187,6 +192,7 @@ public class AdminComplaintHandlersTests
         var (resultComplaints, total, totalPages) = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying command handler result");
         resultComplaints.Should().HaveCount(2);
         total.Should().Be(2);
         totalPages.Should().Be(1);
@@ -260,6 +266,7 @@ public class AdminComplaintHandlersTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying command handler result");
         result.Should().NotBeNull();
         result!.Id.Should().Be(complaint.Id);
         result.CitizenId.Should().Be(citizenId);
@@ -285,8 +292,10 @@ public class AdminComplaintHandlersTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying command handler result");
         result.Should().BeNull();
     }
 
     #endregion
 }
+

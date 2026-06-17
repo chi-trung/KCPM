@@ -1,4 +1,4 @@
-using Moq;
+﻿using Moq;
 using WastePlatform.Application.Admin.Dashboard.Queries;
 using WastePlatform.Application.Admin.Users.Commands;
 using WastePlatform.Application.Admin.Users.Queries;
@@ -7,6 +7,7 @@ using WastePlatform.Application.Enterprise.Analytics.Queries;
 using WastePlatform.Application.Admin.Analytics.DTOs;
 using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Application.Admin;
 
@@ -62,6 +63,7 @@ public class AdminUserHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().HaveCount(2);
         result[0].Email.Should().Be("citizen@test.com");
         result[0].Role.Should().Be("citizen");
@@ -107,6 +109,7 @@ public class AdminUserHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().BeEmpty();
     }
 
@@ -142,6 +145,7 @@ public class AdminUserHandlerTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().Be(expectedId);
     }
 
@@ -167,6 +171,7 @@ public class AdminUserHandlerTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().BeTrue();
         _mockUserRepo.Verify(x => x.ToggleUserStatusAsync(userId, It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -193,6 +198,7 @@ public class AdminUserHandlerTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().BeTrue();
         _mockUserRepo.Verify(x => x.UpdateUserRoleAsync(userId, "enterprise", It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -229,6 +235,7 @@ public class AdminUserHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().NotBeNull();
         result.TotalReports.Should().Be(42);
         result.CollectedReports.Should().Be(35);
@@ -273,3 +280,4 @@ public class AdminUserHandlerTests
 
     #endregion
 }
+

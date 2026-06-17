@@ -1,4 +1,4 @@
-using Moq;
+﻿using Moq;
 using WastePlatform.Application.Citizens.Profile.Commands;
 using WastePlatform.Application.Citizens.Profile.DTOs;
 using WastePlatform.Application.Citizens.Profile.Queries;
@@ -6,6 +6,7 @@ using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Application.Enterprise.Queries;
 using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Application.Citizens;
 
@@ -65,6 +66,7 @@ public class CitizenProfileHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().NotBeNull();
         result.Id.Should().Be(user.Id);
         result.FullName.Should().Be("Nguyen Van A");
@@ -135,6 +137,7 @@ public class CitizenProfileHandlerTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().NotBeNull();
         result.FullName.Should().Be("Updated Name");
         result.Phone.Should().Be("0987654321");
@@ -174,6 +177,7 @@ public class CitizenProfileHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().NotBeNull();
         result!.CompanyName.Should().Be("Green Enterprise Co");
         result.IsVerified.Should().BeTrue();
@@ -197,8 +201,10 @@ public class CitizenProfileHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().BeNull();
     }
 
     #endregion
 }
+

@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,9 +42,10 @@ namespace WastePlatform.Tests.Integration
         }
 
         [Fact]
+        [AllureDescription("V a l i d S i g n e d T o k e n - A l l o w s A c c e s s T o P r o t e c t e d E n d p o i n t")]
         public async Task ValidSignedToken_AllowsAccess_ToProtectedEndpoint()
         {
-        AllureAttachmentHelper.AttachText("test-v-a-l-i-d-s-i-g-n-e-d-t-o-k-e-n_-a-l-l-o-w-s-a-c-c", "Executed: ValidSignedToken_AllowsAccess_ToProtectedEndpoint");
+        AllureAttachmentHelper.AttachText("test-scenario", "executed-test");
             var seededUserId = System.Guid.NewGuid();
 
             var factory = _factory.WithWebHostBuilder(builder =>
@@ -132,3 +133,4 @@ namespace WastePlatform.Tests.Integration
         }
     }
 }
+

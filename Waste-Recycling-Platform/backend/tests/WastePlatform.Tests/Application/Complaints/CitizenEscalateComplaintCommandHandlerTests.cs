@@ -1,8 +1,9 @@
-using Moq;
+﻿using Moq;
 using WastePlatform.Application.Complaints.Commands;
 using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Application.Complaints;
 
@@ -55,6 +56,7 @@ public class CitizenEscalateComplaintCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         result.Success.Should().BeFalse();
         result.Message.Should().Contain("Không tìm thấy khiếu nại");
         _mockComplaintRepository.Verify(
@@ -95,6 +97,7 @@ public class CitizenEscalateComplaintCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         result.Success.Should().BeFalse();
         result.Message.Should().Contain("không có quyền");
         _mockComplaintRepository.Verify(
@@ -130,6 +133,7 @@ public class CitizenEscalateComplaintCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         result.Success.Should().BeFalse();
         result.Message.Should().Contain("trạng thái hiện tại");
         _mockComplaintRepository.Verify(
@@ -171,6 +175,7 @@ public class CitizenEscalateComplaintCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         result.Success.Should().BeTrue();
         result.Message.Should().Contain("Admin");
         result.ComplaintId.Should().Be(complaint.Id);
@@ -216,6 +221,7 @@ public class CitizenEscalateComplaintCommandHandlerTests
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         result.Success.Should().BeTrue();
         result.ComplaintId.Should().Be(complaint.Id);
         _mockNotificationService.Verify(
@@ -225,3 +231,5 @@ public class CitizenEscalateComplaintCommandHandlerTests
 
     #endregion
 }
+
+

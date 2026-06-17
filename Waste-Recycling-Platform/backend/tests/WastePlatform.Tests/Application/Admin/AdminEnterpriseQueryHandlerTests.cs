@@ -1,7 +1,8 @@
-using Moq;
+﻿using Moq;
 using WastePlatform.Application.Admin.Enterprises.Queries;
 using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Domain.Entities;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Application.Admin;
 
@@ -65,6 +66,7 @@ public class AdminEnterpriseQueryHandlerTests
         var (result, total, totalPages) = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().HaveCount(2);
         total.Should().Be(2);
         totalPages.Should().Be(1);
@@ -93,6 +95,7 @@ public class AdminEnterpriseQueryHandlerTests
         var (result, total, _) = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().HaveCount(2);
         total.Should().Be(2);
         result.All(e => e.IsVerified).Should().BeTrue();
@@ -121,6 +124,7 @@ public class AdminEnterpriseQueryHandlerTests
         var (result, total, _) = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().HaveCount(2);
         total.Should().Be(2);
         result.All(e => e.CompanyName.Contains("Green")).Should().BeTrue();
@@ -146,6 +150,7 @@ public class AdminEnterpriseQueryHandlerTests
         var (result, total, totalPages) = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().HaveCount(5);
         total.Should().Be(15);
         totalPages.Should().Be(3); // ceil(15/5) = 3
@@ -174,6 +179,7 @@ public class AdminEnterpriseQueryHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().NotBeNull();
         result!.Id.Should().Be(enterprise.Id);
         result.CompanyName.Should().Be("Test Enterprise");
@@ -199,8 +205,10 @@ public class AdminEnterpriseQueryHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().BeNull();
     }
 
     #endregion
 }
+

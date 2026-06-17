@@ -1,7 +1,8 @@
-using Moq;
+﻿using Moq;
 using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Application.WasteCategories.Queries;
 using WastePlatform.Domain.Entities;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Application.WasteCategories;
 
@@ -61,6 +62,7 @@ public class WasteCategoryQueryHandlerTests
         var result = (await handler.Handle(query, CancellationToken.None)).ToList();
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().HaveCount(3);
         result[0].Id.Should().Be(1);
         result[0].Name.Should().Be("Organic");
@@ -107,6 +109,7 @@ public class WasteCategoryQueryHandlerTests
         var result = await handler.Handle(new GetAllCategoriesQuery(), CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().BeEmpty();
     }
 
@@ -132,6 +135,7 @@ public class WasteCategoryQueryHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().NotBeNull();
         result!.Id.Should().Be(5);
         result.Name.Should().Be("Electronic Waste");
@@ -154,6 +158,7 @@ public class WasteCategoryQueryHandlerTests
         var result = await handler.Handle(query, CancellationToken.None);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-subject", "Asserting: result");
         result.Should().BeNull();
     }
 
@@ -180,3 +185,4 @@ public class WasteCategoryQueryHandlerTests
 
     #endregion
 }
+

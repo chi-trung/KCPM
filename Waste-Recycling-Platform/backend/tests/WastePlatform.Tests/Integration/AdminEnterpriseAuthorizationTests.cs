@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -17,6 +17,7 @@ using WastePlatform.Application.Admin.Enterprises.DTOs;
 using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
 using WastePlatform.Infrastructure.Services;
+using WastePlatform.Tests.TestSupport;
 using Xunit;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
@@ -35,7 +36,7 @@ namespace WastePlatform.Tests.Integration;
 [Allure.Net.Commons.Attributes.AllureLabel("suite", "Integration")]
 [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "AdminEnterpriseAuthorizationTests")]
 [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Integration")]
-[AllureOwner("Hoàng Phụng")]
+[AllureOwner("HoÃ ng Phá»¥ng")]
 [AllureSeverity(SeverityLevel.normal)]
 [Allure.Net.Commons.Attributes.AllureTag("integration")]
 [Allure.Net.Commons.Attributes.AllureTag("security")]
@@ -50,16 +51,17 @@ public class AdminEnterpriseAuthorizationTests : IClassFixture<WebApplicationFac
     }
 
     [Fact]
+    [AllureDescription("GET /api/admin/enterprises without Authorization header should return 401 Unauthorized.")]
     public async System.Threading.Tasks.Task GetEnterprises_WithoutToken_ReturnsUnauthorized()
     {
 
         // Arrange: use test factory with in-memory DB and test auth
-        // Tạo host test riêng để thay DB thật bằng InMemory DB và tránh chạm MySQL.
+        // Táº¡o host test riÃªng Ä‘á»ƒ thay DB tháº­t báº±ng InMemory DB vÃ  trÃ¡nh cháº¡m MySQL.
         var factory = _factory.WithWebHostBuilder(builder =>
         {
             builder.ConfigureAppConfiguration((context, conf) =>
             {
-                // Ghi đè JWT settings để mọi test dùng cùng một bộ secret/issuer/audience.
+                // Ghi Ä‘Ã¨ JWT settings Ä‘á»ƒ má»i test dÃ¹ng cÃ¹ng má»™t bá»™ secret/issuer/audience.
                 var settings = new System.Collections.Generic.Dictionary<string, string?>
                 {
                     { "JwtSettings:SecretKey", "test-secret-key-which-is-long-enough" },
@@ -68,20 +70,20 @@ public class AdminEnterpriseAuthorizationTests : IClassFixture<WebApplicationFac
                     { "JwtSettings:ExpirationMinutes", "60" }
                 };
 
-                // Đưa config test vào pipeline thay cho config thật của ứng dụng.
+                // ÄÆ°a config test vÃ o pipeline thay cho config tháº­t cá»§a á»©ng dá»¥ng.
                 conf.AddInMemoryCollection(settings);
             });
 
             builder.ConfigureTestServices(services =>
             {
-                // Xóa DbContext gốc và thay bằng InMemory để test không cần database ngoài.
+                // XÃ³a DbContext gá»‘c vÃ  thay báº±ng InMemory Ä‘á»ƒ test khÃ´ng cáº§n database ngoÃ i.
                 services.RemoveAll(typeof(DbContextOptions<WastePlatform.Infrastructure.Persistence.WastePlatformDbContext>));
                 services.AddDbContext<WastePlatform.Infrastructure.Persistence.WastePlatformDbContext>(options =>
                     options.UseInMemoryDatabase("TestDb_NoToken"));
 
-                // Mock IMediator để controller trả dữ liệu giả, tránh phụ thuộc handler thật.
+                // Mock IMediator Ä‘á»ƒ controller tráº£ dá»¯ liá»‡u giáº£, trÃ¡nh phá»¥ thuá»™c handler tháº­t.
                 var mediatorMock = new Mock<IMediator>();
-                // Kết quả rỗng đại diện cho trường hợp không có enterprise nào được trả về.
+                // Káº¿t quáº£ rá»—ng Ä‘áº¡i diá»‡n cho trÆ°á»ng há»£p khÃ´ng cÃ³ enterprise nÃ o Ä‘Æ°á»£c tráº£ vá».
                 var emptyResult = ((System.Collections.Generic.IEnumerable<EnterpriseListDto>)new System.Collections.Generic.List<EnterpriseListDto>(), 0, 0);
                 mediatorMock
                     .Setup(m => m.Send(It.IsAny<GetEnterprisesQuery>(), It.IsAny<System.Threading.CancellationToken>()))
@@ -89,7 +91,7 @@ public class AdminEnterpriseAuthorizationTests : IClassFixture<WebApplicationFac
 
                 services.AddSingleton<IMediator>(mediatorMock.Object);
 
-                // Đăng ký auth scheme test để đọc claims từ token mà không cần verify signature.
+                // ÄÄƒng kÃ½ auth scheme test Ä‘á»ƒ Ä‘á»c claims tá»« token mÃ  khÃ´ng cáº§n verify signature.
                 services.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = "Test";
@@ -101,23 +103,25 @@ public class AdminEnterpriseAuthorizationTests : IClassFixture<WebApplicationFac
         var client = factory.CreateClient();
 
         // Act
-        // Không gửi header Authorization nên middleware phải chặn và trả về 401.
+        // KhÃ´ng gá»­i header Authorization nÃªn middleware pháº£i cháº·n vÃ  tráº£ vá» 401.
         var response = await client.GetAsync("/api/admin/enterprises");
 
         // Assert
+        AllureAttachmentHelper.AttachText("http-response", $"HTTP response: {response.StatusCode} Unauthorized");
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
+    [AllureDescription("GET /api/admin/enterprises with Citizen role JWT token should return 403 Forbidden.")]
     public async System.Threading.Tasks.Task GetEnterprises_WithCitizenToken_ReturnsForbidden()
     {
         // Arrange: configure factory to use test jwt settings
-        // Dựng host test riêng để mô phỏng request có token Citizen.
+        // Dá»±ng host test riÃªng Ä‘á»ƒ mÃ´ phá»ng request cÃ³ token Citizen.
         var factory = _factory.WithWebHostBuilder(builder =>
         {
             builder.ConfigureAppConfiguration((context, conf) =>
             {
-                // Cùng bộ JWT config test để token sinh ra và handler đọc token khớp nhau.
+                // CÃ¹ng bá»™ JWT config test Ä‘á»ƒ token sinh ra vÃ  handler Ä‘á»c token khá»›p nhau.
                 var settings = new System.Collections.Generic.Dictionary<string, string?>
                 {
                     { "JwtSettings:SecretKey", "test-secret-key-which-is-long-enough" },
@@ -132,15 +136,15 @@ public class AdminEnterpriseAuthorizationTests : IClassFixture<WebApplicationFac
             builder.ConfigureTestServices(services =>
             {
                 // replace real DB context with in-memory for tests
-                // Đổi sang DB ảo để controller/hub/middleware không phụ thuộc hạ tầng thật.
+                // Äá»•i sang DB áº£o Ä‘á»ƒ controller/hub/middleware khÃ´ng phá»¥ thuá»™c háº¡ táº§ng tháº­t.
                 services.RemoveAll(typeof(DbContextOptions<WastePlatform.Infrastructure.Persistence.WastePlatformDbContext>));
                 services.AddDbContext<WastePlatform.Infrastructure.Persistence.WastePlatformDbContext>(options =>
                     options.UseInMemoryDatabase("TestDb_Citizen"));
 
                 // Replace IMediator with a mock to avoid DB calls when admin is used
-                // Với test này, mediator chỉ cần trả dữ liệu mẫu để bước authorization đi qua.
+                // Vá»›i test nÃ y, mediator chá»‰ cáº§n tráº£ dá»¯ liá»‡u máº«u Ä‘á»ƒ bÆ°á»›c authorization Ä‘i qua.
                 var mediatorMock = new Mock<IMediator>();
-                // Trả về danh sách rỗng vì mục tiêu chính là kiểm tra quyền truy cập, không phải business data.
+                // Tráº£ vá» danh sÃ¡ch rá»—ng vÃ¬ má»¥c tiÃªu chÃ­nh lÃ  kiá»ƒm tra quyá»n truy cáº­p, khÃ´ng pháº£i business data.
                 var emptyResult = ((System.Collections.Generic.IEnumerable<EnterpriseListDto>)new System.Collections.Generic.List<EnterpriseListDto>(), 0, 0);
                 mediatorMock
                     .Setup(m => m.Send(It.IsAny<GetEnterprisesQuery>(), It.IsAny<System.Threading.CancellationToken>()))
@@ -149,7 +153,7 @@ public class AdminEnterpriseAuthorizationTests : IClassFixture<WebApplicationFac
                 services.AddSingleton<IMediator>(mediatorMock.Object);
 
                 // Replace authentication with a test scheme that reads JWT claims without validating signature
-                // Scheme này chỉ giải mã claim từ token để assert role-based authorization.
+                // Scheme nÃ y chá»‰ giáº£i mÃ£ claim tá»« token Ä‘á»ƒ assert role-based authorization.
                 services.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = "Test";
@@ -161,7 +165,7 @@ public class AdminEnterpriseAuthorizationTests : IClassFixture<WebApplicationFac
         var client = factory.CreateClient();
 
         // create a citizen token
-        // Sinh token có role Citizen để xác nhận endpoint admin phải từ chối truy cập.
+        // Sinh token cÃ³ role Citizen Ä‘á»ƒ xÃ¡c nháº­n endpoint admin pháº£i tá»« chá»‘i truy cáº­p.
         var jwtService = new JwtService(new ConfigurationBuilder().AddInMemoryCollection(new System.Collections.Generic.Dictionary<string, string?>
         {
             { "JwtSettings:SecretKey", "test-secret-key-which-is-long-enough" },
@@ -176,23 +180,25 @@ public class AdminEnterpriseAuthorizationTests : IClassFixture<WebApplicationFac
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         // Act
-        // Có token nhưng role không đủ nên middleware/authorize phải trả 403.
+        // CÃ³ token nhÆ°ng role khÃ´ng Ä‘á»§ nÃªn middleware/authorize pháº£i tráº£ 403.
         var response = await client.GetAsync("/api/admin/enterprises");
 
         // Assert
+        AllureAttachmentHelper.AttachText("http-response", $"HTTP response: {response.StatusCode} Forbidden");
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     [Fact]
+    [AllureDescription("GET /api/admin/enterprises with valid Admin role JWT token should return 200 OK.")]
     public async System.Threading.Tasks.Task GetEnterprises_WithAdminToken_ReturnsOk()
     {
         // Arrange: configure factory to use test jwt settings and mock mediator
-        // Đây là case happy path: token Admin hợp lệ và endpoint phải cho phép gọi.
+        // ÄÃ¢y lÃ  case happy path: token Admin há»£p lá»‡ vÃ  endpoint pháº£i cho phÃ©p gá»i.
         var factory = _factory.WithWebHostBuilder(builder =>
         {
             builder.ConfigureAppConfiguration((context, conf) =>
             {
-                // Tái sử dụng cùng bộ config JWT test để sinh và đọc token thống nhất.
+                // TÃ¡i sá»­ dá»¥ng cÃ¹ng bá»™ config JWT test Ä‘á»ƒ sinh vÃ  Ä‘á»c token thá»‘ng nháº¥t.
                 var settings = new System.Collections.Generic.Dictionary<string, string?>
                 {
                     { "JwtSettings:SecretKey", "test-secret-key-which-is-long-enough" },
@@ -207,12 +213,12 @@ public class AdminEnterpriseAuthorizationTests : IClassFixture<WebApplicationFac
             builder.ConfigureTestServices(services =>
             {
                 // replace real DB context with in-memory for tests
-                // Không cần DB thật cho test authorization nên dùng InMemory để cô lập môi trường.
+                // KhÃ´ng cáº§n DB tháº­t cho test authorization nÃªn dÃ¹ng InMemory Ä‘á»ƒ cÃ´ láº­p mÃ´i trÆ°á»ng.
                 services.RemoveAll(typeof(DbContextOptions<WastePlatform.Infrastructure.Persistence.WastePlatformDbContext>));
                 services.AddDbContext<WastePlatform.Infrastructure.Persistence.WastePlatformDbContext>(options =>
                     options.UseInMemoryDatabase("TestDb_Admin"));
 
-                // Mock danh sách enterprise để controller có dữ liệu trả về khi qua được bước auth.
+                // Mock danh sÃ¡ch enterprise Ä‘á»ƒ controller cÃ³ dá»¯ liá»‡u tráº£ vá» khi qua Ä‘Æ°á»£c bÆ°á»›c auth.
                 var mediatorMock = new Mock<IMediator>();
 
                 var dummyList = new System.Collections.Generic.List<EnterpriseListDto>
@@ -220,7 +226,7 @@ public class AdminEnterpriseAuthorizationTests : IClassFixture<WebApplicationFac
                     new EnterpriseListDto { Id = System.Guid.NewGuid(), CompanyName = "TestCo", IsVerified = true, ServiceArea = "Area", CreatedAt = System.DateTime.UtcNow }
                 };
 
-                // Tuple mô phỏng đúng shape return của GetEnterprisesQuery handler.
+                // Tuple mÃ´ phá»ng Ä‘Ãºng shape return cá»§a GetEnterprisesQuery handler.
                 var resultTuple = ((System.Collections.Generic.IEnumerable<EnterpriseListDto>)dummyList, dummyList.Count, 1);
                 mediatorMock
                     .Setup(m => m.Send(It.IsAny<GetEnterprisesQuery>(), It.IsAny<System.Threading.CancellationToken>()))
@@ -228,7 +234,7 @@ public class AdminEnterpriseAuthorizationTests : IClassFixture<WebApplicationFac
 
                 services.AddSingleton<IMediator>(mediatorMock.Object);
 
-                // Dùng test auth scheme để endpoint nhận ra role Admin từ token mẫu.
+                // DÃ¹ng test auth scheme Ä‘á»ƒ endpoint nháº­n ra role Admin tá»« token máº«u.
                 services.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = "Test";
@@ -240,7 +246,7 @@ public class AdminEnterpriseAuthorizationTests : IClassFixture<WebApplicationFac
         var client = factory.CreateClient();
 
         // create an admin token
-        // Token Admin phải đi qua authorize thành công và nhận được response 200.
+        // Token Admin pháº£i Ä‘i qua authorize thÃ nh cÃ´ng vÃ  nháº­n Ä‘Æ°á»£c response 200.
         var jwtService = new JwtService(new ConfigurationBuilder().AddInMemoryCollection(new System.Collections.Generic.Dictionary<string, string?>
         {
             { "JwtSettings:SecretKey", "test-secret-key-which-is-long-enough" },
@@ -255,16 +261,18 @@ public class AdminEnterpriseAuthorizationTests : IClassFixture<WebApplicationFac
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         // Act
-        // Request với role Admin hợp lệ nên controller phải trả OK.
+        // Request vá»›i role Admin há»£p lá»‡ nÃªn controller pháº£i tráº£ OK.
         var response = await client.GetAsync("/api/admin/enterprises");
 
         // Assert
+        AllureAttachmentHelper.AttachText("http-response", $"HTTP response: {response.StatusCode} OK");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain("Enterprises retrieved successfully");
     }
 
     [Fact]
+    [AllureDescription("GET /api/admin/enterprises with an expired JWT token should return 401 Unauthorized.")]
     public async System.Threading.Tasks.Task GetEnterprises_WithExpiredToken_ReturnsUnauthorized()
     {
         // Arrange: use real JwtBearer validation (do not replace auth scheme) and in-memory DB
@@ -322,10 +330,12 @@ public class AdminEnterpriseAuthorizationTests : IClassFixture<WebApplicationFac
         var response = await client.GetAsync("/api/admin/enterprises");
 
         // Assert - expired token should be rejected by JwtBearer middleware
+        AllureAttachmentHelper.AttachText("http-response", $"HTTP response: {response.StatusCode} Unauthorized");
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
+    [AllureDescription("GET /api/admin/enterprises with a malformed non-JWT token string should return 401 Unauthorized.")]
     public async System.Threading.Tasks.Task GetEnterprises_WithMalformedToken_ReturnsUnauthorized()
     {
         // Arrange: use real JwtBearer validation
@@ -369,10 +379,12 @@ public class AdminEnterpriseAuthorizationTests : IClassFixture<WebApplicationFac
         var response = await client.GetAsync("/api/admin/enterprises");
 
         // Assert
+        AllureAttachmentHelper.AttachText("http-response", $"HTTP response: {response.StatusCode} Unauthorized");
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
+    [AllureDescription("GET /api/enterprise/analytics/reports with Citizen role JWT token should return 403 Forbidden.")]
     public async System.Threading.Tasks.Task EnterpriseEndpoint_WithCitizenToken_ReturnsForbidden()
     {
         // Arrange: test auth handler to parse token claims and InMemory DB; target enterprise endpoint
@@ -426,10 +438,12 @@ public class AdminEnterpriseAuthorizationTests : IClassFixture<WebApplicationFac
         var response = await client.GetAsync("/api/enterprise/analytics/reports");
 
         // Assert - user with Citizen role should be forbidden from Enterprise endpoints
+        AllureAttachmentHelper.AttachText("http-response", $"HTTP response: {response.StatusCode} Forbidden");
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     [Fact]
+    [AllureDescription("GET /api/admin/enterprises with a real JwtBearer-validated Admin token should return 200 OK.")]
     public async System.Threading.Tasks.Task GetEnterprises_WithRealJwtBearerAdmin_ReturnsOk()
     {
         // Arrange: use real JwtBearer (do not replace authentication scheme), seed InMemory DB with admin user
@@ -553,6 +567,7 @@ public class AdminEnterpriseAuthorizationTests : IClassFixture<WebApplicationFac
         var response = await client.GetAsync("/api/admin/enterprises");
 
         // Assert - with real JwtBearer and seeded active admin user, request should succeed
+        AllureAttachmentHelper.AttachText("http-response", $"HTTP response: {response.StatusCode}");
         if (response.StatusCode != HttpStatusCode.OK)
         {
             var body = await response.Content.ReadAsStringAsync();
@@ -575,12 +590,12 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        // Nếu không có header Authorization thì coi như request chưa đăng nhập.
+        // Náº¿u khÃ´ng cÃ³ header Authorization thÃ¬ coi nhÆ° request chÆ°a Ä‘Äƒng nháº­p.
         if (!Request.Headers.TryGetValue("Authorization", out var authHeaders))
             return Task.FromResult(AuthenticateResult.NoResult());
 
         var authHeader = authHeaders.FirstOrDefault();
-        // Chỉ chấp nhận kiểu Bearer token vì đây là flow của JWT auth.
+        // Chá»‰ cháº¥p nháº­n kiá»ƒu Bearer token vÃ¬ Ä‘Ã¢y lÃ  flow cá»§a JWT auth.
         if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
             return Task.FromResult(AuthenticateResult.NoResult());
 
@@ -588,7 +603,7 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
 
         try
         {
-            // Chỉ đọc claim từ JWT để phục vụ test authorization, không verify chữ ký.
+            // Chá»‰ Ä‘á»c claim tá»« JWT Ä‘á»ƒ phá»¥c vá»¥ test authorization, khÃ´ng verify chá»¯ kÃ½.
             var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token);
             var claims = jwt.Claims.Select(c => new Claim(c.Type, c.Value)).ToList();
             
@@ -599,7 +614,7 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
                 claims.Add(new Claim(ClaimTypes.NameIdentifier, subClaim.Value));
             }
 
-            // Tạo principal test từ claim của JWT để ASP.NET Core áp dụng [Authorize(Roles=...)]
+            // Táº¡o principal test tá»« claim cá»§a JWT Ä‘á»ƒ ASP.NET Core Ã¡p dá»¥ng [Authorize(Roles=...)]
             var identity = new ClaimsIdentity(claims, "Test");
             var principal = new ClaimsPrincipal(identity);
             var ticket = new AuthenticationTicket(principal, "Test");
@@ -607,8 +622,10 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
         }
         catch (Exception ex)
         {
-            // Token sai định dạng sẽ bị coi là auth fail.
+            // Token sai Ä‘á»‹nh dáº¡ng sáº½ bá»‹ coi lÃ  auth fail.
             return Task.FromResult(AuthenticateResult.Fail(ex));
         }
     }
 }
+
+

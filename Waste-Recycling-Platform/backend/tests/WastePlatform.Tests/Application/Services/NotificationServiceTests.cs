@@ -1,7 +1,8 @@
-using Moq;
+﻿using Moq;
 using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Application.Services;
 using WastePlatform.Domain.Entities;
+using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Application.Services;
 
@@ -55,6 +56,7 @@ public class NotificationServiceTests
         await _service.NotifyReportCreatedAsync(citizenId, reportId);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         _mockNotifRepo.Verify(x => x.AddAsync(It.IsAny<Notification>(), It.IsAny<CancellationToken>()), Times.Once);
         _mockNotifRepo.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         _mockRealTimeNotifier.Verify(
@@ -77,6 +79,7 @@ public class NotificationServiceTests
         await _service.NotifyReportAcceptedAsync(citizenId, reportId);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         _mockNotifRepo.Verify(x => x.AddAsync(It.IsAny<Notification>(), It.IsAny<CancellationToken>()), Times.Once);
         _mockNotifRepo.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         _mockRealTimeNotifier.Verify(
@@ -100,6 +103,7 @@ public class NotificationServiceTests
         await _service.NotifyReportAssignedAsync(citizenId, reportId, collectorName);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         _mockNotifRepo.Verify(x => x.AddAsync(
             It.Is<Notification>(n => n.Message.Contains(collectorName)),
             It.IsAny<CancellationToken>()), Times.Once);
@@ -124,6 +128,7 @@ public class NotificationServiceTests
         await _service.NotifyCollectorOnTheWayAsync(citizenId, reportId, collectorName);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         _mockNotifRepo.Verify(x => x.AddAsync(It.IsAny<Notification>(), It.IsAny<CancellationToken>()), Times.Once);
         _mockRealTimeNotifier.Verify(
             x => x.NotifyUserAsync(citizenId, "NewNotification", It.IsAny<object>()), Times.Once);
@@ -146,6 +151,7 @@ public class NotificationServiceTests
         await _service.NotifyReportCollectedAsync(citizenId, reportId, points);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         _mockNotifRepo.Verify(x => x.AddAsync(
             It.Is<Notification>(n => n.Message.Contains("75")),
             It.IsAny<CancellationToken>()), Times.Once);
@@ -170,6 +176,7 @@ public class NotificationServiceTests
         await _service.NotifyReportRejectedAsync(citizenId, reportId, reason);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         _mockNotifRepo.Verify(x => x.AddAsync(
             It.Is<Notification>(n => n.Message.Contains(reason)),
             It.IsAny<CancellationToken>()), Times.Once);
@@ -187,6 +194,7 @@ public class NotificationServiceTests
         await _service.NotifyReportRejectedAsync(citizenId, reportId, null);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         _mockNotifRepo.Verify(x => x.AddAsync(
             It.Is<Notification>(n => !n.Message.Contains("Lý do:")),
             It.IsAny<CancellationToken>()), Times.Once);
@@ -204,6 +212,7 @@ public class NotificationServiceTests
         await _service.NotifyReportRejectedAsync(citizenId, reportId, string.Empty);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         _mockNotifRepo.Verify(x => x.AddAsync(
             It.Is<Notification>(n => !n.Message.Contains("Lý do:")),
             It.IsAny<CancellationToken>()), Times.Once);
@@ -226,6 +235,7 @@ public class NotificationServiceTests
         await _service.NotifyComplaintRepliedAsync(citizenId, complaintId, repliedBy);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         _mockNotifRepo.Verify(x => x.AddAsync(
             It.Is<Notification>(n => n.Message.Contains(repliedBy) && n.RelatedEntityType == "Complaint"),
             It.IsAny<CancellationToken>()), Times.Once);
@@ -248,6 +258,7 @@ public class NotificationServiceTests
         await _service.NotifyComplaintEscalatedAsync(complaintId);
 
         // Assert
+        AllureAttachmentHelper.AttachText("assert-result", "Verifying handler result");
         _mockNotifRepo.Verify(x => x.AddAsync(
             It.Is<Notification>(n => n.RelatedEntityId == complaintId && n.RelatedEntityType == "Complaint"),
             It.IsAny<CancellationToken>()), Times.Once);
@@ -259,3 +270,5 @@ public class NotificationServiceTests
 
     #endregion
 }
+
+

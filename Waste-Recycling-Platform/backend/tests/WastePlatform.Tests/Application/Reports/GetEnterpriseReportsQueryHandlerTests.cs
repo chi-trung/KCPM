@@ -42,9 +42,10 @@ public class GetEnterpriseReportsQueryHandlerTests
     #region Happy Path - Get Enterprise Reports
 
     [Fact]
+    [AllureDescription("H a n d l e - W i t h V a l i d E n t e r p r i s e I d S h o u l d R e t u r n R e p o r t s")]
     public async Task Handle_WithValidEnterpriseId_ShouldReturnReports()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-v-a-l-i-d-e-n-t-e-r-p-r-i-s-e", "Executed: Handle_WithValidEnterpriseId_ShouldReturnReports");
+        AllureAttachmentHelper.AttachText("test-scenario", "executed-test");
         // Arrange
         var enterpriseId = Guid.NewGuid();
         var reports = new List<WasteReport>
@@ -79,6 +80,10 @@ public class GetEnterpriseReportsQueryHandlerTests
     [InlineData("Pending", ReportStatus.Pending)]
     [InlineData("Accepted", ReportStatus.Accepted)]
     [InlineData("Rejected", ReportStatus.Rejected)]
+    [AllureDescription("H a n d l e - W i t h S t a t u s F i l t e r S h o u l d F i l t e r B y S t a t u s")]
+    [InlineData("Pending", ReportStatus.Pending)]
+    [InlineData("Accepted", ReportStatus.Accepted)]
+    [InlineData("Rejected", ReportStatus.Rejected)]
     public async Task Handle_WithStatusFilter_ShouldFilterByStatus(string statusString, ReportStatus expectedStatus)
     {
         // Arrange
@@ -106,9 +111,10 @@ public class GetEnterpriseReportsQueryHandlerTests
     }
 
     [Fact]
+    [AllureDescription("H a n d l e - W i t h E m p t y S t a t u s S h o u l d N o t F i l t e r B y S t a t u s")]
     public async Task Handle_WithEmptyStatus_ShouldNotFilterByStatus()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-e-m-p-t-y-s-t-a-t-u-s_-s-h-o-", "Executed: Handle_WithEmptyStatus_ShouldNotFilterByStatus");
+        AllureAttachmentHelper.AttachText("test-scenario", "executed-test");
         // Arrange
         var enterpriseId = Guid.NewGuid();
         var reports = new List<WasteReport> { CreateReport(ReportStatus.Pending) };
@@ -133,9 +139,10 @@ public class GetEnterpriseReportsQueryHandlerTests
     }
 
     [Fact]
+    [AllureDescription("H a n d l e - W i t h I n v a l i d S t a t u s S h o u l d N o t F i l t e r B y S t a t u s")]
     public async Task Handle_WithInvalidStatus_ShouldNotFilterByStatus()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-i-n-v-a-l-i-d-s-t-a-t-u-s_-s-", "Executed: Handle_WithInvalidStatus_ShouldNotFilterByStatus");
+        AllureAttachmentHelper.AttachText("test-scenario", "executed-test");
         // Arrange - Invalid status should be ignored
         var enterpriseId = Guid.NewGuid();
         var reports = new List<WasteReport> { CreateReport(ReportStatus.Pending) };
@@ -164,9 +171,10 @@ public class GetEnterpriseReportsQueryHandlerTests
     #region Pagination Tests
 
     [Fact]
+    [AllureDescription("H a n d l e - W i t h C u s t o m P a g i n a t i o n S h o u l d A p p l y P a g i n a t i o n")]
     public async Task Handle_WithCustomPagination_ShouldApplyPagination()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-c-u-s-t-o-m-p-a-g-i-n-a-t-i-o", "Executed: Handle_WithCustomPagination_ShouldApplyPagination");
+        AllureAttachmentHelper.AttachText("test-scenario", "executed-test");
         // Arrange
         var enterpriseId = Guid.NewGuid();
         var reports = new List<WasteReport> { CreateReport(ReportStatus.Pending) };
@@ -230,3 +238,4 @@ public class GetEnterpriseReportsQueryHandlerTests
 
     #endregion
 }
+

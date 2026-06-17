@@ -1,4 +1,4 @@
-﻿using Allure.Xunit.Attributes;
+using Allure.Xunit.Attributes;
 using FluentAssertions;
 using Moq;
 using WastePlatform.Application.Reports.Queries;
@@ -43,9 +43,10 @@ public class GetReportByIdQueryHandlerTests
     #region TC-REP-003: Happy Path - Get Existing Report
 
     [Fact]
+    [AllureDescription("Get report by ID returns the report DTO with all fields mapped correctly when report exists.")]
     public async Task Handle_WhenReportExists_ShouldReturnReportDto()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-r-e-p-o-r-t-e-x-i-s-t-s_-s-h-", "Executed: Handle_WhenReportExists_ShouldReturnReportDto");
+        AllureAttachmentHelper.AttachText("test-scenario", "TC-REP-003: Report exists with citizen, category, description and coordinates");
         // Arrange
         var reportId = Guid.NewGuid();
         var citizenId = Guid.NewGuid();
@@ -77,7 +78,8 @@ public class GetReportByIdQueryHandlerTests
 
         // Assert
         result.Should().NotBeNull();
-        result!.Id.Should().Be(report.Id);
+        AllureAttachmentHelper.AttachJson("result-dto", new { result!.Id, result.CitizenId, result.CitizenName, result.WasteCategoryId, result.CategoryName, result.Description, result.Status, result.AiSuggestion });
+        result.Id.Should().Be(report.Id);
         result.CitizenId.Should().Be(citizenId);
         result.CitizenName.Should().Be("Test Citizen");
         result.WasteCategoryId.Should().Be(1);
@@ -93,9 +95,10 @@ public class GetReportByIdQueryHandlerTests
     }
 
     [Fact]
+    [AllureDescription("Get report by ID returns image URLs mapped from report.Images collection.")]
     public async Task Handle_WhenReportExists_WithImages_ShouldReturnReportDtoWithImageUrls()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-r-e-p-o-r-t-e-x-i-s-t-s_-w-i-", "Executed: Handle_WhenReportExists_WithImages_ShouldReturnReportDtoWithImageUrls");
+        AllureAttachmentHelper.AttachText("test-scenario", "TC-REP-003: Report with 2 images; expects ImageUrls=[image1.jpg, image2.jpg]");
         // Arrange
         var reportId = Guid.NewGuid();
         var report = WasteReport.Create(
@@ -134,7 +137,8 @@ public class GetReportByIdQueryHandlerTests
 
         // Assert
         result.Should().NotBeNull();
-        result!.ImageUrls.Should().HaveCount(2);
+        AllureAttachmentHelper.AttachText("result-images", $"ImageUrls count: {result!.ImageUrls.Count}, urls: [image1.jpg, image2.jpg]");
+        result.ImageUrls.Should().HaveCount(2);
         result.ImageUrls.Should().Contain("image1.jpg");
         result.ImageUrls.Should().Contain("image2.jpg");
     }
@@ -144,9 +148,10 @@ public class GetReportByIdQueryHandlerTests
     #region TC-REP-004: Report Not Found
 
     [Fact]
+    [AllureDescription("Get report by ID returns null when the report does not exist in the repository.")]
     public async Task Handle_WhenReportDoesNotExist_ShouldReturnNull()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-r-e-p-o-r-t-d-o-e-s-n-o-t-e-x", "Executed: Handle_WhenReportDoesNotExist_ShouldReturnNull");
+        AllureAttachmentHelper.AttachText("test-scenario", "TC-REP-004: Non-existent reportId → repository returns null → handler returns null");
         // Arrange
         var nonExistentReportId = Guid.NewGuid();
 
@@ -168,6 +173,7 @@ public class GetReportByIdQueryHandlerTests
     #region TC-REP-003: Data Integrity Tests
 
     [Theory]
+    [AllureDescription("Get report by ID correctly maps the report status for all possible ReportStatus enum values.")]
     [InlineData(ReportStatus.Pending)]
     [InlineData(ReportStatus.Accepted)]
     [InlineData(ReportStatus.Rejected)]
@@ -217,7 +223,8 @@ public class GetReportByIdQueryHandlerTests
 
         // Assert
         result.Should().NotBeNull();
-        result!.Status.Should().Be(status);
+        AllureAttachmentHelper.AttachText("status-mapping", $"Input status: {status} → result.Status: {result!.Status} ✓");
+        result.Status.Should().Be(status);
     }
 
     #endregion
