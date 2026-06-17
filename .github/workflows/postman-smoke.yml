@@ -193,6 +193,7 @@ jobs:
             '--env-var', 'adminToken=${{ steps.prelogin.outputs.adminToken }}',
             '--env-var', 'collectorToken=${{ steps.prelogin.outputs.collectorToken }}',
             '--env-var', 'managementToken=${{ steps.prelogin.outputs.adminToken }}',
+            '--env-var', 'seedPassword=S33dP@ss!2026',
             '--reporters', 'cli,junit,json,allure',
             '--reporter-junit-export', './TestResults/postman-junit.xml',
             '--reporter-json-export', './TestResults/postman-report.json',

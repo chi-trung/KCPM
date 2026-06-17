@@ -149,6 +149,7 @@ jobs:
             --env-var "adminToken=${{ steps.prelogin.outputs.adminToken }}" \
             --env-var "collectorToken=${{ steps.prelogin.outputs.collectorToken }}" \
             --env-var "managementToken=${{ steps.prelogin.outputs.adminToken }}" \
+            --env-var "seedPassword=S33dP@ss!2026" \
             -r cli,allure \
             --reporter-allure-export allure-results \
             --reporter-allure-collection-as-parent-suite
