@@ -487,7 +487,7 @@ def main() -> None:
 
     <div class="cta-wrap">
       <a class="cta" href="{report_url}">Open Full Allure Report &rarr;</a>
-      <a class="cta cta-secondary" href="{root_url}reports/weekly/">📅 Weekly Report &rarr;</a>
+      <a class="cta cta-secondary" href="{root_url}reports/weekly/index.html">📅 Weekly Report &rarr;</a>
     </div>
 
     {f"""<section class="team">
