@@ -1,0 +1,7 @@
+"BROKEN","EPIC","FAILED","FEATURE","PASSED","SKIPPED","STORY","UNKNOWN"
+"0","Complaints","0","Complaint Query Handlers","7","0","Querying complaints by citizen, enterprise, and ID","0"
+"0","Admin","0","Admin Enterprise Query Handlers","6","0","Admin queries for enterprise listing and details","0"
+"0","Complaints","0","Admin Complaint Handlers","9","0","Admin managing complaints via reject, resolve and query operations","0"
+"0","Complaints","0","Citizen Escalate Complaint Handler","5","0","Citizen escalation of complaints to admin","0"
+"0","Complaints","0","Enterprise Respond To Complaint Handler","6","0","Enterprise responding to citizen complaints","0"
+"0","Rewards Module","0","Reward Query Handlers","6","0","Citizen reward point queries: total, history, leaderboard","0"
