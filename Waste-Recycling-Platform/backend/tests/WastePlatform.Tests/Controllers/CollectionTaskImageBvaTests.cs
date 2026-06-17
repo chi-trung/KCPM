@@ -28,7 +28,7 @@ namespace WastePlatform.Tests.Controllers;
 /// <summary>
 /// BVA (Boundary Value Analysis) Test Suite cho CollectionTask Image Upload API.
 /// KIEM-68: Kiểm thử biên giới cho tính năng upload hình ảnh xác nhận công việc thu gom rác.
-/// 
+ 
 /// Phạm vi kiểm thử:
 /// - Giới hạn kích thước tệp hình ảnh (0 bytes, 1 byte, max-1, max, max+1)
 /// - Loại tệp được phép (.jpg, .jpeg, .png, .gif) và không được phép (.exe, .pdf, .txt)
