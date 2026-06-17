@@ -1,5 +1,5 @@
 {
-  "uid": "7f1ee421fcc644f7af111199b7bb16df",
+  "uid": "45831a6fb3534180bb45b8454debc2f5",
   "name": "categories",
   "children": [
     {
@@ -9,9 +9,9 @@
           "name": "status code check: exactly 200",
           "children": [
             {
-              "name": "GET Task Stats",
-              "uid": "1f311d6ccdc748af",
-              "parentUid": "a80d5e5e9dcd4307",
+              "name": "GET My Tasks",
+              "uid": "94a5404cbd87409a",
+              "parentUid": "c8170afa0cfd47bb",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -23,7 +23,7 @@
               "parameters": [
                 {
                   "name": "Request",
-                  "value": "GET - http://localhost:8080/api/collector/tasks/stats"
+                  "value": "GET - http://localhost:8080/api/collector/tasks?status="
                 },
                 {
                   "name": "Response Code",
@@ -35,8 +35,8 @@
             },
             {
               "name": "GET Task Stats",
-              "uid": "97a63d5e2e644c84",
-              "parentUid": "a80d5e5e9dcd4307",
+              "uid": "7e74290c1f0446c0",
+              "parentUid": "c8170afa0cfd47bb",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -59,9 +59,9 @@
               "tags": []
             },
             {
-              "name": "GET My Tasks",
-              "uid": "d270bce123b54c41",
-              "parentUid": "a80d5e5e9dcd4307",
+              "name": "GET Task Stats",
+              "uid": "43c3f6a0c1804f93",
+              "parentUid": "c8170afa0cfd47bb",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -73,7 +73,7 @@
               "parameters": [
                 {
                   "name": "Request",
-                  "value": "GET - http://localhost:8080/api/collector/tasks?status="
+                  "value": "GET - http://localhost:8080/api/collector/tasks/stats"
                 },
                 {
                   "name": "Response Code",
@@ -84,10 +84,10 @@
               "tags": []
             }
           ],
-          "uid": "a80d5e5e9dcd4307"
+          "uid": "c8170afa0cfd47bb"
         }
       ],
-      "uid": "dc1ab95033e14f2b"
+      "uid": "7c99903e12894edf"
     },
     {
       "name": "Not Found",
@@ -97,8 +97,8 @@
           "children": [
             {
               "name": "GET Task By ID",
-              "uid": "e27400bffa244e21",
-              "parentUid": "ac17925135074264",
+              "uid": "74329d41aa9c48de",
+              "parentUid": "96a7d6c1f3724c84",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -121,10 +121,10 @@
               "tags": []
             }
           ],
-          "uid": "ac17925135074264"
+          "uid": "96a7d6c1f3724c84"
         }
       ],
-      "uid": "9dab602135a044bf"
+      "uid": "386f9744b20149b9"
     }
   ]
 }
