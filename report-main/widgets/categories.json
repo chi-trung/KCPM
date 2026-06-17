@@ -2,19 +2,7 @@
   "total": 2,
   "items": [
     {
-      "uid": "cdf23cb7dab54a7d9d8a52e0fb7c36df",
-      "name": "Not Found",
-      "statistic": {
-        "failed": 1,
-        "broken": 0,
-        "skipped": 0,
-        "passed": 0,
-        "unknown": 0,
-        "total": 1
-      }
-    },
-    {
-      "uid": "363245a7121b448db71fc6194514d6dd",
+      "uid": "5ebef03b08c74d778e0b462450f67d70",
       "name": "Product defects",
       "statistic": {
         "failed": 3,
@@ -23,6 +11,18 @@
         "passed": 0,
         "unknown": 0,
         "total": 3
+      }
+    },
+    {
+      "uid": "820d546cbc0d4394b8aed7abea0b7869",
+      "name": "Not Found",
+      "statistic": {
+        "failed": 1,
+        "broken": 0,
+        "skipped": 0,
+        "passed": 0,
+        "unknown": 0,
+        "total": 1
       }
     }
   ]
