@@ -257,7 +257,7 @@ public class CollectionTaskImageBvaTests
     /// <param name="dbContextInstanceToSeed">DbContext được dùng để insert dữ liệu</param>
     /// <param name="collectorUserIdToLink">ID của Collector User cần liên kết</param>
     /// <returns>Tuple chứa các entity đã tạo: (Enterprise, Citizen, Category, Report, Collector, User, Task)</returns>
-    private static (Enterprise, Citizen, WasteCategory, WasteReport, Collector, User, CollectionTask) 
+    private static (Enterprise, User, WasteCategory, WasteReport, Collector, User, CollectionTask) 
         SeedTestDataIntoDatabase(
             WastePlatformDbContext dbContextInstanceToSeed,
             Guid collectorUserIdToLink)
@@ -276,17 +276,17 @@ public class CollectionTaskImageBvaTests
             CreatedAt = DateTime.UtcNow
         };
         
-        // Tạo Citizen
-        var citizenIdForTest = Guid.NewGuid();
-        var citizenForTest = new Citizen
-        {
-            Id = citizenIdForTest,
-            UserId = Guid.NewGuid(),
-            FullName = "Test Citizen",
-            Phone = "0987654321",
-            Address = "456 Citizen Ave, Test City",
-            CreatedAt = DateTime.UtcNow
-        };
+        // Tạo Citizen (User)
+        var citizenForTest = User.Create(
+            email: "test-citizen@example.com",
+            passwordHash: "hashedpassword",
+            fullName: "Test Citizen",
+            role: UserRole.Citizen,
+            phone: "0987654321",
+            district: "District 1",
+            ward: "Ward 1"
+        );
+        var citizenIdForTest = citizenForTest.Id;
         
         // Tạo WasteCategory
         var wasteCategoryIdForTest = Guid.NewGuid();
@@ -353,7 +353,7 @@ public class CollectionTaskImageBvaTests
         
         // Add tất cả entities vào DbContext
         dbContextInstanceToSeed.Enterprises.Add(enterpriseForTest);
-        dbContextInstanceToSeed.Citizens.Add(citizenForTest);
+        dbContextInstanceToSeed.Users.Add(citizenForTest);
         dbContextInstanceToSeed.WasteCategories.Add(wasteCategoryForTest);
         dbContextInstanceToSeed.WasteReports.Add(wasteReportForTest);
         dbContextInstanceToSeed.Users.Add(userForCollectorTest);
