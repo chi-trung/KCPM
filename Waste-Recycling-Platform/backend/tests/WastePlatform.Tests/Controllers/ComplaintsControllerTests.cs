@@ -202,12 +202,11 @@ public class ComplaintsControllerTests
 
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<CitizenEscalateComplaintCommand>(), default))
-            .ReturnsAsync(new EscalateComplaintResult
+            .ReturnsAsync(new CitizenEscalateResult
             {
                 Success = true,
                 Message = "Escalated successfully",
-                ComplaintId = complaintId,
-                NewStatus = "EscalatedToAdmin"
+                ComplaintId = complaintId
             });
 
         var controller = CreateController(userId);
@@ -225,7 +224,7 @@ public class ComplaintsControllerTests
 
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<CitizenEscalateComplaintCommand>(), default))
-            .ReturnsAsync(new EscalateComplaintResult
+            .ReturnsAsync(new CitizenEscalateResult
             {
                 Success = false,
                 Message = "Cannot escalate at this stage"
