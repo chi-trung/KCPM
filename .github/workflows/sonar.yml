@@ -170,9 +170,9 @@ jobs:
             -Dsonar.organization=chi-trung
             "-Dsonar.projectName=chi-trung_KCPM_frontend"
             -Dsonar.sources=frontend/src
-            -Dsonar.tests=frontend/e2e
-            -Dsonar.test.inclusions=frontend/e2e/**/*_test.js
-            -Dsonar.exclusions=**/node_modules/**,**/.next/**,frontend/out/**,frontend/output/**,allure-results/**,allure-report/**,**/coverage/**
+            -Dsonar.tests=frontend/e2e,frontend/src
+            -Dsonar.test.inclusions=frontend/e2e/**/*_test.js,frontend/src/**/__tests__/**/*.tsx,frontend/src/**/__tests__/**/*.ts
+            -Dsonar.exclusions=**/node_modules/**,**/.next/**,frontend/out/**,frontend/output/**,allure-results/**,allure-report/**,**/coverage/**,frontend/src/**/__tests__/**
             -Dsonar.coverage.exclusions=frontend/e2e/**,frontend/src/app/**,frontend/src/components/admin/**,frontend/src/components/citizen/**,frontend/src/components/collector/**,frontend/src/components/enterprise/**,frontend/src/components/layout/**,frontend/src/components/NotificationToast.tsx,frontend/src/contexts/**,frontend/src/hooks/**,frontend/src/lib/**
             -Dsonar.cpd.exclusions=frontend/e2e/**
             -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
