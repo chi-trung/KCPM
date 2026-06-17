@@ -136,7 +136,7 @@ export default function LocationsPage() {
         filtered.sort((a, b) => {
           switch (sortBy) {
             case "distance":
-              return (parseFloat(a.distance || "999") || 999) - (parseFloat(b.distance || "999") || 999);
+              return (Number.parseFloat(a.distance || "999") || 999) - (Number.parseFloat(b.distance || "999") || 999);
             case "rating":
               return b.rating - a.rating;
             case "name":

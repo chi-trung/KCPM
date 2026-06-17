@@ -168,10 +168,11 @@ export const DisputesManagement: React.FC = () => {
                 <div>
                   <p className="font-bold text-lg text-gray-900">{dispute.number}</p>
                   <p className="text-sm text-gray-500 mt-0.5">
-                    Báo cáo gốc: 
+                    Báo cáo gốc:{' '}
                     <button 
+                      type="button"
                       onClick={() => setViewingReportId(dispute.reportId)}
-                      className="ml-1 font-bold text-emerald-600 hover:text-emerald-700 underline"
+                      className="font-bold text-emerald-600 hover:text-emerald-700 underline"
                     >
                       {dispute.reportNumber}
                     </button>

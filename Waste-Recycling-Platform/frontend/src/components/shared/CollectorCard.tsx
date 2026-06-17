@@ -61,7 +61,7 @@ export const CollectorCard: React.FC<CollectorCardProps> = ({
           {/* Rating */}
           <div className="flex items-center gap-2">
             <div className="flex gap-1">
-              {[...Array(5)].map((_, i) => (
+              {[...new Array(5)].map((_, i) => (
                 <span
                   key={i}
                   className={`text-xl ${i < Math.round(rating) ? "⭐" : "☆"}`}

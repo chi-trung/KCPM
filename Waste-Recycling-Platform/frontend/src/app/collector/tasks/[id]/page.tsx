@@ -106,7 +106,7 @@ export default function TaskDetailPage() {
               {task.status === "Collected" || task.status?.toLowerCase() === "collected" ? "Đã thu gom" : 
                task.status === "OnTheWay" || task.status?.toLowerCase() === "ontheway" ? "Đang di chuyển" : 
                task.status === "Assigned" || task.status?.toLowerCase() === "assigned" ? "Đã phân công" : 
-               task.status ? task.status.replace(/_/g, " ") : ""}
+               task.status ? task.status.replaceAll("_", " ") : ""}
             </Badge>
           </div>
 
@@ -153,14 +153,15 @@ export default function TaskDetailPage() {
               {task.report.imageUrls.map((fileName: string, index: number) => {
                 const fileUrl = fileName.startsWith("http") ? fileName : (fileName.startsWith("/") ? `${API_CONFIG.SERVER_URL}${fileName}` : `${API_CONFIG.SERVER_URL}/uploads/${fileName}`);
                 return (
-                  <div 
+                  <button 
+                    type="button"
                     key={index}
                     onClick={() => setSelectedImage(fileUrl)}
                     className="aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200 cursor-pointer hover:border-emerald-500 transition-colors group relative"
                   >
                     <img 
                       src={fileUrl} 
-                      alt={`Report image ${index + 1}`}
+                      alt={`Báo cáo #${index + 1}`}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="%23f3f4f6"/><text x="50%" y="50%" font-family="sans-serif" font-size="12" fill="%239ca3af" text-anchor="middle" dominant-baseline="middle">Lỗi</text></svg>';
@@ -169,7 +170,7 @@ export default function TaskDetailPage() {
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                       <ImageIcon className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" size={24} />
                     </div>
-                  </div>
+                  </button>
                 );
               })}
             </div>
@@ -189,14 +190,15 @@ export default function TaskDetailPage() {
                 const fileName = typeof imgObj === 'string' ? imgObj : (imgObj.imageUrl || imgObj.ImageUrl || '');
                 const fileUrl = fileName.startsWith("http") ? fileName : (fileName.startsWith("/") ? `${API_CONFIG.SERVER_URL}${fileName}` : `${API_CONFIG.SERVER_URL}/uploads/${fileName}`);
                 return (
-                  <div 
+                  <button 
+                    type="button"
                     key={index}
                     onClick={() => setSelectedImage(fileUrl)}
                     className="aspect-square bg-emerald-50 rounded-lg overflow-hidden border border-emerald-200 cursor-pointer hover:border-emerald-500 transition-colors group relative"
                   >
                     <img 
                       src={fileUrl} 
-                      alt={`Collection image ${index + 1}`}
+                      alt={`Thu gom #${index + 1}`}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="%23f3f4f6"/><text x="50%" y="50%" font-family="sans-serif" font-size="12" fill="%239ca3af" text-anchor="middle" dominant-baseline="middle">Lỗi</text></svg>';
@@ -205,7 +207,7 @@ export default function TaskDetailPage() {
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                       <ImageIcon className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" size={24} />
                     </div>
-                  </div>
+                  </button>
                 );
               })}
             </div>
@@ -306,8 +308,11 @@ export default function TaskDetailPage() {
       {/* Full Screen Image Lightbox */}
       {selectedImage && (
         <div 
+          role="dialog"
+          aria-modal="true"
           className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 p-4"
           onClick={() => setSelectedImage(null)}
+          onKeyDown={(e) => { if (e.key === 'Escape') setSelectedImage(null); }}
         >
           <button 
             className="absolute top-6 right-6 text-white/70 hover:text-white bg-black/40 hover:bg-black/60 rounded-full p-2 transition-colors"
@@ -319,7 +324,7 @@ export default function TaskDetailPage() {
           </button>
           <img 
             src={selectedImage} 
-            alt="Full size" 
+            alt="Ảnh phóng to" 
             className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
             onClick={(e) => e.stopPropagation()} 
           />

@@ -538,6 +538,22 @@ jobs:
           set -e
           python3 Waste-Recycling-Platform/scripts/build_validation_page.py
 
+      - name: Clean stale report files from gh-pages
+        if: always()
+        run: |
+          # Remove old report-main and report-extra from gh-pages checkout
+          # to prevent stale test-case JSON files from previous runs accumulating.
+          # keep_files: true would otherwise preserve old UIDs that clash with new data,
+          # causing Allure SPA to show corrupted suites.
+          if [ -d gh-pages/report-main ]; then
+            echo "Cleaning stale report-main from gh-pages..."
+            rm -rf gh-pages/report-main
+          fi
+          if [ -d gh-pages/report-extra ]; then
+            echo "Cleaning stale report-extra from gh-pages..."
+            rm -rf gh-pages/report-extra
+          fi
+
       - name: Assemble published site
         if: always()
         run: |
@@ -550,6 +566,11 @@ jobs:
           if [ -d report-extra ]; then
             mkdir -p site-output/report-extra
             cp -R report-extra/. site-output/report-extra/
+          fi
+          # Preserve last-history for Allure trend/history continuity
+          if [ -d gh-pages/last-history ]; then
+            mkdir -p site-output/last-history
+            cp -R gh-pages/last-history/. site-output/last-history/
           fi
           SCRIPT="Waste-Recycling-Platform/scripts/build_site_index.py"
           if [ -f "$SCRIPT" ]; then

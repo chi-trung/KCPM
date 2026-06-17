@@ -91,7 +91,7 @@ export const ReportForm: React.FC<ReportFormProps> = ({ onSubmit }) => {
       const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addr)}`);
       const data = await res.json();
       if (data && data.length > 0) {
-        return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
+        return { lat: Number.parseFloat(data[0].lat), lon: Number.parseFloat(data[0].lon) };
       }
     } catch (error) {
       console.error("Geocoding failed", error);

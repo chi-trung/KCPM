@@ -79,7 +79,7 @@ export const ReportDetailModal: React.FC<{ reportId: string; onClose: () => void
                   <h4 className="text-sm font-bold mb-3 flex items-center gap-2"><ImageIcon size={18} /> Hình ảnh</h4>
                   <div className="grid grid-cols-3 gap-2">
                     {report.formattedImages?.map((img: string, i: number) => (
-                      <img key={i} src={img} onClick={() => setGalleryOpen(true)} className="aspect-square object-cover rounded-lg cursor-pointer hover:opacity-80 border" />
+                      <img key={i} src={img} alt={`Ảnh báo cáo ${i + 1}`} onClick={() => setGalleryOpen(true)} className="aspect-square object-cover rounded-lg cursor-pointer hover:opacity-80 border" />
                     ))}
                   </div>
                 </div>
