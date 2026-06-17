@@ -142,17 +142,21 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: Waste-Recycling-Platform/frontend
-        run: npm install --omit=optional
+        run: npm install
 
       - name: Run unit tests with coverage
         working-directory: Waste-Recycling-Platform/frontend
         continue-on-error: true
+        run: npx vitest run --coverage
+
+      - name: Debug - Check coverage file
+        if: always()
+        working-directory: Waste-Recycling-Platform/frontend
         run: |
-          if [ -f package.json ] && grep -q '"test"' package.json; then
-            npx vitest run --coverage 2>/dev/null || true
-          else
-            echo "No unit test script found – skipping coverage"
-          fi
+          echo "=== Checking for coverage files ==="
+          ls -la coverage/ 2>/dev/null || echo "No coverage directory found"
+          ls -la coverage/lcov.info 2>/dev/null || echo "No lcov.info found"
+          head -20 coverage/lcov.info 2>/dev/null || echo "Cannot read lcov.info"
 
       - name: SonarCloud Scan (Frontend)
         uses: SonarSource/sonarcloud-github-action@master
@@ -196,17 +200,21 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: Waste-Recycling-Platform/frontend
-        run: npm install --omit=optional
+        run: npm install
 
       - name: Run unit tests with coverage
         working-directory: Waste-Recycling-Platform/frontend
         continue-on-error: true
+        run: npx vitest run --coverage
+
+      - name: Debug - Check coverage file
+        if: always()
+        working-directory: Waste-Recycling-Platform/frontend
         run: |
-          if [ -f package.json ] && grep -q '"test"' package.json; then
-            npx vitest run --coverage 2>/dev/null || true
-          else
-            echo "No unit test script found – skipping coverage"
-          fi
+          echo "=== Checking for coverage files ==="
+          ls -la coverage/ 2>/dev/null || echo "No coverage directory found"
+          ls -la coverage/lcov.info 2>/dev/null || echo "No lcov.info found"
+          head -20 coverage/lcov.info 2>/dev/null || echo "Cannot read lcov.info"
 
       - name: SonarCloud Scan (Combined)
         uses: SonarSource/sonarcloud-github-action@master
