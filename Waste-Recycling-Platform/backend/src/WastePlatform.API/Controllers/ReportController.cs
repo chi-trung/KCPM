@@ -243,6 +243,8 @@ public class ReportController : ControllerBase
             // Update report status to Accepted
             report.Accept();
             
+            CollectionTask? collectionTask = null;
+
             // Xử lý riêng cho Role Enterprise
             if (roleClaim != null && roleClaim.Value == "Enterprise")
             {
@@ -263,7 +265,7 @@ public class ReportController : ControllerBase
                     return BadRequest(new { message = "This report is outside your enterprise service area." });
 
                 // Create a collection task cho Enterprise
-                var collectionTask = CollectionTask.Create(id, enterprise.Id);
+                collectionTask = CollectionTask.Create(id, enterprise.Id);
                 _context.CollectionTasks.Add(collectionTask);
             }
             else if (roleClaim != null && roleClaim.Value == "Admin")
@@ -275,7 +277,7 @@ public class ReportController : ControllerBase
                 var firstEnterprise = await _context.Enterprises.FirstOrDefaultAsync();
                 if (firstEnterprise != null)
                 {
-                    var collectionTask = CollectionTask.Create(id, firstEnterprise.Id);
+                    collectionTask = CollectionTask.Create(id, firstEnterprise.Id);
                     _context.CollectionTasks.Add(collectionTask);
                 }
             }
@@ -290,7 +292,8 @@ public class ReportController : ControllerBase
             {
                 message = "Report accepted successfully",
                 reportId = id,
-                reportStatus = report.Status.ToString()
+                reportStatus = report.Status.ToString(),
+                taskId = collectionTask?.Id
             });
         }
         catch (InvalidOperationException ex)
