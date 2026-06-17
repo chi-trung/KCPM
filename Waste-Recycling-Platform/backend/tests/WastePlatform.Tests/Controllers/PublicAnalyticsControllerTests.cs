@@ -1,4 +1,4 @@
-﻿using Allure.Xunit.Attributes;
+using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -97,5 +97,19 @@ public class PublicAnalyticsControllerTests
 
         _mediatorMock.Verify(m => m.Send(It.Is<GetPublicReportAnalyticsQuery>(q =>
             q.StartDate == null && q.EndDate == null), default), Times.Once);
+    }
+
+    [Fact]
+    [AllureDescription("GetReportAnalytics returns BadRequest when startDate is after endDate.")]
+    public async Task GetReportAnalytics_WithInvalidDateRange_ShouldReturnBadRequest()
+    {
+        var start = new DateTime(2025, 12, 31);
+        var end = new DateTime(2025, 1, 1);
+
+        var controller = new PublicAnalyticsController(_mediatorMock.Object);
+
+        var result = await controller.GetReportAnalytics(startDate: start, endDate: end);
+
+        result.Should().BeOfType<BadRequestObjectResult>();
     }
 }
