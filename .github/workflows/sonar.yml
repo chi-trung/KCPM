@@ -187,6 +187,27 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: Waste-Recycling-Platform/frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: Waste-Recycling-Platform/frontend
+        run: npm install --omit=optional
+
+      - name: Run unit tests with coverage
+        working-directory: Waste-Recycling-Platform/frontend
+        continue-on-error: true
+        run: |
+          if [ -f package.json ] && grep -q '"test"' package.json; then
+            npx vitest run --coverage 2>/dev/null || true
+          else
+            echo "No unit test script found – skipping coverage"
+          fi
+
       - name: SonarCloud Scan (Combined)
         uses: SonarSource/sonarcloud-github-action@master
         env:
