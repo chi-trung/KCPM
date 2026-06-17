@@ -239,7 +239,7 @@ export const ReportForm: React.FC<ReportFormProps> = ({ onSubmit }) => {
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <Map className="text-emerald-500" size={20} />
-              <label className="text-lg font-bold text-gray-800">Vị trí thu gom</label>
+              <label htmlFor="report-address" className="text-lg font-bold text-gray-800">Vị trí thu gom</label>
             </div>
             
             <div className="flex flex-col sm:flex-row gap-3">
@@ -248,6 +248,7 @@ export const ReportForm: React.FC<ReportFormProps> = ({ onSubmit }) => {
                   <MapPin size={18} className="text-gray-400" />
                 </div>
                 <input 
+                  id="report-address"
                   type="text" 
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
@@ -276,7 +277,7 @@ export const ReportForm: React.FC<ReportFormProps> = ({ onSubmit }) => {
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <Recycle className="text-emerald-500" size={20} />
-              <label className="text-lg font-bold text-gray-800">Phân loại rác tại nguồn</label>
+              <span className="text-lg font-bold text-gray-800">Phân loại rác tại nguồn</span>
             </div>
             
             {isLoadingCat ? (
@@ -329,9 +330,10 @@ export const ReportForm: React.FC<ReportFormProps> = ({ onSubmit }) => {
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <FileText className="text-emerald-500" size={20} />
-              <label className="text-lg font-bold text-gray-800">Ghi chú thêm (Tùy chọn)</label>
+              <label htmlFor="report-notes" className="text-lg font-bold text-gray-800">Ghi chú thêm (Tùy chọn)</label>
             </div>
             <textarea 
+              id="report-notes"
               rows={3} 
               value={description}
               onChange={(e) => setDescription(e.target.value)}

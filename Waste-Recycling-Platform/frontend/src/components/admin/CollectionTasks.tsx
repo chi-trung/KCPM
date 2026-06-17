@@ -303,8 +303,9 @@ export const CollectionTasks: React.FC = () => {
               {/* PHÂN CÔNG NHÂN VIÊN */}
               {selectedTask.status === "pending" ? (
                 <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl space-y-3">
-                  <label className="block text-sm font-bold text-amber-900">Chọn nhân viên phân công:</label>
+                  <label htmlFor="task-assign-collector" className="block text-sm font-bold text-amber-900">Chọn nhân viên phân công:</label>
                   <select 
+                    id="task-assign-collector"
                     value={selectedCollectorId}
                     onChange={(e) => setSelectedCollectorId(e.target.value)}
                     className="w-full p-2.5 border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none"

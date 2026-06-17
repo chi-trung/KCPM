@@ -96,7 +96,7 @@ export const CapacitySettings: React.FC<CapacitySettingsProps> = ({ profile, cat
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-3">Accepted Waste Types</label>
+          <span className="block text-sm font-medium text-gray-700 mb-3">Accepted Waste Types</span>
           <div className="grid gap-3 sm:grid-cols-2">
             {categories.length === 0 ? (
               <p className="text-sm text-gray-500">Loading categories...</p>

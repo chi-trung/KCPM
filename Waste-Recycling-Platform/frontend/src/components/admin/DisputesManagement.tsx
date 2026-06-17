@@ -127,10 +127,11 @@ export const DisputesManagement: React.FC = () => {
       {/* Search & Filter Bar (Giữ nguyên của ông) */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col sm:flex-row gap-4 items-end">
           <div className="flex-1 w-full relative">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Tìm kiếm khiếu nại</label>
+            <label htmlFor="dispute-search" className="block text-sm font-semibold text-gray-700 mb-2">Tìm kiếm khiếu nại</label>
             <div className="relative">
               <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
+                id="dispute-search"
                 type="text"
                 placeholder="Nhập mã khiếu nại, tên người dân..."
                 value={searchTerm}
@@ -140,8 +141,9 @@ export const DisputesManagement: React.FC = () => {
             </div>
           </div>
           <div className="w-full sm:w-64">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Trạng thái</label>
+            <label htmlFor="dispute-filter-status" className="block text-sm font-semibold text-gray-700 mb-2">Trạng thái</label>
             <select
+              id="dispute-filter-status"
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
               className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 appearance-none bg-white cursor-pointer transition-all text-sm font-medium text-gray-700"

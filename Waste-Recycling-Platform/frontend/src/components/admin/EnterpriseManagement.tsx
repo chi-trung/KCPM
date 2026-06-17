@@ -259,10 +259,11 @@ export const EnterpriseManagement: React.FC = () => {
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <div className="flex flex-col sm:flex-row gap-4 items-end">
           <div className="flex-1 w-full relative">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Tìm kiếm doanh nghiệp</label>
+            <label htmlFor="ent-mgmt-search" className="block text-sm font-semibold text-gray-700 mb-2">Tìm kiếm doanh nghiệp</label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
               <input
+                id="ent-mgmt-search"
                 type="text"
                 placeholder="Nhập tên công ty cần tìm..."
                 value={searchTerm}
@@ -276,9 +277,10 @@ export const EnterpriseManagement: React.FC = () => {
           </div>
 
           <div className="w-full sm:w-64">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Trạng thái</label>
+            <label htmlFor="ent-mgmt-status" className="block text-sm font-semibold text-gray-700 mb-2">Trạng thái</label>
             <div className="relative">
               <select
+                id="ent-mgmt-status"
                 value={statusFilter}
                 onChange={(e) => {
                   setStatusFilter(e.target.value as any);
@@ -396,35 +398,35 @@ export const EnterpriseManagement: React.FC = () => {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="bg-white border border-gray-100 p-4 rounded-xl shadow-sm">
-                        <label className="flex items-center gap-1.5 text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-2">
+                        <span className="flex items-center gap-1.5 text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-2">
                           <MapPin size={14} className="text-emerald-500"/> Khu vực hoạt động
-                        </label>
+                        </span>
                         <p className="font-bold text-gray-900 text-sm">{detailData.serviceArea || 'Không xác định'}</p>
                       </div>
 
                       <div className="bg-white border border-gray-100 p-4 rounded-xl shadow-sm">
-                        <label className="text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-2 block">Năng lực xử lý</label>
+                        <span className="text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-2 block">Năng lực xử lý</span>
                         <p className="font-extrabold text-emerald-700 text-sm">
                           {detailData.capacityKgPerDay ? `${detailData.capacityKgPerDay.toLocaleString()} kg/ngày` : 'Chưa xác định'}
                         </p>
                       </div>
 
                       <div className="bg-white border border-gray-100 p-4 rounded-xl shadow-sm">
-                        <label className="text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-2 block">Nhân sự hiện tại</label>
+                        <span className="text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-2 block">Nhân sự hiện tại</span>
                         <p className="font-bold text-gray-900 text-sm">{detailData.collectorCount || 0} <span className="text-[10px] text-gray-500">thành viên</span></p>
                       </div>
 
                       <div className="bg-white border border-gray-100 p-4 rounded-xl shadow-sm">
-                        <label className="text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-2 block">Loại rác thu gom</label>
+                        <span className="text-xs font-extrabold text-gray-400 uppercase tracking-wider mb-2 block">Loại rác thu gom</span>
                         <p className="font-bold text-gray-900 text-sm">{detailData.wasteTypeCount || 0} <span className="text-[10px] text-gray-500">nhóm rác</span></p>
                       </div>
                     </div>
 
                     {detailData.rejectionReason && (
                       <div className="bg-red-50 border border-red-100 rounded-xl p-4">
-                        <label className="flex items-center gap-2 text-xs font-extrabold text-red-700 uppercase tracking-wider mb-2">
+                        <span className="flex items-center gap-2 text-xs font-extrabold text-red-700 uppercase tracking-wider mb-2">
                           <AlertTriangle size={14}/> Lịch sử từ chối
-                        </label>
+                        </span>
                         <p className="text-sm font-medium text-red-800 leading-relaxed italic">"{detailData.rejectionReason}"</p>
                       </div>
                     )}

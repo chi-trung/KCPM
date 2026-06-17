@@ -49,9 +49,9 @@ export const Dropdown: React.FC<DropdownProps> = ({
       className={`relative inline-block ${className || ""}`}
     >
       {/* Trigger */}
-      <div onClick={() => setIsOpen(!isOpen)} className="cursor-pointer">
+      <button type="button" onClick={() => setIsOpen(!isOpen)} className="cursor-pointer">
         {trigger}
-      </div>
+      </button>
 
       {/* Menu */}
       {isOpen && (
