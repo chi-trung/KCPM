@@ -2021,7 +2021,34 @@
                                                     }
                                                 ]
                                   }
-                              ]
+                              ],
+                     "event":  [
+                                   {
+                                       "listen":  "prerequest",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "// Auto-login if collectorToken is missing",
+                                                                   "var tok = pm.environment.get(\u0027collectorToken\u0027) || pm.collectionVariables.get(\u0027collectorToken\u0027);",
+                                                                   "if (!tok || tok.trim() === \u0027\u0027) {",
+                                                                   "    var base = pm.variables.get(\u0027baseUrl\u0027) || \u0027http://localhost:8080\u0027;",
+                                                                   "    var pwd = pm.variables.get(\u0027seedPassword\u0027) || pm.collectionVariables.get(\u0027seedPassword\u0027) || \u0027S33dP@ss!2026\u0027;",
+                                                                   "    pm.sendRequest({",
+                                                                   "        url: base + \u0027/api/auth/login\u0027,",
+                                                                   "        method: \u0027POST\u0027,",
+                                                                   "        header: { \u0027Content-Type\u0027: \u0027application/json\u0027 },",
+                                                                   "        body: { mode: \u0027raw\u0027, raw: JSON.stringify({ email: \u0027collector1@gmail.com\u0027, password: pwd }) }",
+                                                                   "    }, function(err, res) {",
+                                                                   "        if (!err \u0026\u0026 res \u0026\u0026 res.code === 200) {",
+                                                                   "            var b = res.json(); var t = b.token || b.accessToken;",
+                                                                   "            if (t) { pm.environment.set(\u0027collectorToken\u0027, t); console.log(\u0027[AUTH] collectorToken refreshed\u0027); }",
+                                                                   "        }",
+                                                                   "    });",
+                                                                   "}"
+                                                               ]
+                                                  }
+                                   }
+                               ]
                  },
                  {
                      "name":  "08 - Collector Tasks",
@@ -2280,7 +2307,34 @@
                                                     }
                                                 ]
                                   }
-                              ]
+                              ],
+                     "event":  [
+                                   {
+                                       "listen":  "prerequest",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "// Auto-login if collectorToken is missing",
+                                                                   "var tok = pm.environment.get(\u0027collectorToken\u0027) || pm.collectionVariables.get(\u0027collectorToken\u0027);",
+                                                                   "if (!tok || tok.trim() === \u0027\u0027) {",
+                                                                   "    var base = pm.variables.get(\u0027baseUrl\u0027) || \u0027http://localhost:8080\u0027;",
+                                                                   "    var pwd = pm.variables.get(\u0027seedPassword\u0027) || pm.collectionVariables.get(\u0027seedPassword\u0027) || \u0027S33dP@ss!2026\u0027;",
+                                                                   "    pm.sendRequest({",
+                                                                   "        url: base + \u0027/api/auth/login\u0027,",
+                                                                   "        method: \u0027POST\u0027,",
+                                                                   "        header: { \u0027Content-Type\u0027: \u0027application/json\u0027 },",
+                                                                   "        body: { mode: \u0027raw\u0027, raw: JSON.stringify({ email: \u0027collector1@gmail.com\u0027, password: pwd }) }",
+                                                                   "    }, function(err, res) {",
+                                                                   "        if (!err \u0026\u0026 res \u0026\u0026 res.code === 200) {",
+                                                                   "            var b = res.json(); var t = b.token || b.accessToken;",
+                                                                   "            if (t) { pm.environment.set(\u0027collectorToken\u0027, t); console.log(\u0027[AUTH] collectorToken refreshed\u0027); }",
+                                                                   "        }",
+                                                                   "    });",
+                                                                   "}"
+                                                               ]
+                                                  }
+                                   }
+                               ]
                  },
                  {
                      "name":  "09 - Enterprise API",
@@ -2981,7 +3035,34 @@
                                                     }
                                                 ]
                                   }
-                              ]
+                              ],
+                     "event":  [
+                                   {
+                                       "listen":  "prerequest",
+                                       "script":  {
+                                                      "type":  "text/javascript",
+                                                      "exec":  [
+                                                                   "// Auto-login if enterpriseToken is missing",
+                                                                   "var tok = pm.environment.get(\u0027enterpriseToken\u0027) || pm.collectionVariables.get(\u0027enterpriseToken\u0027);",
+                                                                   "if (!tok || tok.trim() === \u0027\u0027) {",
+                                                                   "    var base = pm.variables.get(\u0027baseUrl\u0027) || \u0027http://localhost:8080\u0027;",
+                                                                   "    var pwd = pm.variables.get(\u0027seedPassword\u0027) || pm.collectionVariables.get(\u0027seedPassword\u0027) || \u0027S33dP@ss!2026\u0027;",
+                                                                   "    pm.sendRequest({",
+                                                                   "        url: base + \u0027/api/auth/login\u0027,",
+                                                                   "        method: \u0027POST\u0027,",
+                                                                   "        header: { \u0027Content-Type\u0027: \u0027application/json\u0027 },",
+                                                                   "        body: { mode: \u0027raw\u0027, raw: JSON.stringify({ email: \u0027greenlife@gmail.com\u0027, password: pwd }) }",
+                                                                   "    }, function(err, res) {",
+                                                                   "        if (!err \u0026\u0026 res \u0026\u0026 res.code === 200) {",
+                                                                   "            var b = res.json(); var t = b.token || b.accessToken;",
+                                                                   "            if (t) { pm.environment.set(\u0027enterpriseToken\u0027, t); console.log(\u0027[AUTH] enterpriseToken refreshed\u0027); }",
+                                                                   "        }",
+                                                                   "    });",
+                                                                   "}"
+                                                               ]
+                                                  }
+                                   }
+                               ]
                  },
                  {
                      "name":  "10 - Admin API",
