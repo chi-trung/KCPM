@@ -150,17 +150,34 @@ jobs:
         continue-on-error: true
         run: npx vitest run --coverage
 
-      - name: Fix lcov paths (Windows backslash → Linux forward slash)
+      - name: Fix lcov paths (absolute → relative src/...)
         if: always()
         working-directory: Waste-Recycling-Platform/frontend
         run: |
           if [ -f coverage/lcov.info ]; then
-            echo "=== Fixing Windows paths in lcov.info ==="
-            # Replace backslash with forward slash in SF: lines
-            sed -i 's|SF:.*|&|; s|\\\\|/|g' coverage/lcov.info
-            # Also strip Windows absolute path prefix if present (e.g. C:/Users/.../frontend/)
-            # Keep only the relative path starting from 'src/'
-            sed -i 's|SF:.*/frontend/\(src/.*\)|SF:\1|g' coverage/lcov.info
+            echo "=== Fixing paths in lcov.info ==="
+            python3 - <<'PYEOF'
+          import re, sys
+          with open('coverage/lcov.info', 'r', encoding='utf-8') as f:
+              content = f.read()
+          def fix_sf(line):
+              if not line.startswith('SF:'):
+                  return line
+              path = line[3:].strip()
+              # Normalize Windows backslashes to forward slashes
+              path = path.replace('\\', '/')
+              # Strip absolute prefix, keep only from 'src/' onwards
+              idx = path.find('/src/')
+              if idx != -1:
+                  path = 'src/' + path[idx + 5:]
+              elif path.startswith('src/'):
+                  pass  # already relative
+              return 'SF:' + path
+          lines = [fix_sf(l) for l in content.splitlines(keepends=True)]
+          with open('coverage/lcov.info', 'w', encoding='utf-8') as f:
+              f.writelines(lines)
+          print('Done fixing lcov paths')
+          PYEOF
             echo "=== First 20 lines of fixed lcov.info ==="
             head -20 coverage/lcov.info
           else
@@ -190,8 +207,8 @@ jobs:
             -Dsonar.sources=frontend/src
             -Dsonar.tests=frontend/src
             -Dsonar.test.inclusions=frontend/src/**/__tests__/**/*.tsx,frontend/src/**/__tests__/**/*.ts,frontend/src/**/*.test.tsx,frontend/src/**/*.test.ts
-            -Dsonar.exclusions=**/node_modules/**,**/.next/**,frontend/out/**,frontend/output/**,allure-results/**,allure-report/**,**/coverage/**
-            -Dsonar.coverage.exclusions=frontend/e2e/**,frontend/src/app/**,frontend/src/contexts/**,frontend/src/hooks/**,frontend/src/lib/**
+            -Dsonar.exclusions=**/node_modules/**,**/.next/**,frontend/out/**,frontend/output/**,allure-results/**,allure-report/**,**/coverage/**,frontend/e2e/**
+            -Dsonar.coverage.exclusions=frontend/e2e/**,frontend/src/app/**
             -Dsonar.cpd.exclusions=frontend/e2e/**
             -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
 
@@ -225,13 +242,34 @@ jobs:
         continue-on-error: true
         run: npx vitest run --coverage
 
-      - name: Fix lcov paths (Windows backslash → Linux forward slash)
+      - name: Fix lcov paths (absolute → relative src/...)
         if: always()
         working-directory: Waste-Recycling-Platform/frontend
         run: |
           if [ -f coverage/lcov.info ]; then
-            echo "=== Fixing Windows paths in lcov.info ==="
-            sed -i 's|SF:.*/frontend/\(src/.*\)|SF:\1|g' coverage/lcov.info
+            echo "=== Fixing paths in lcov.info ==="
+            python3 - <<'PYEOF'
+          import re, sys
+          with open('coverage/lcov.info', 'r', encoding='utf-8') as f:
+              content = f.read()
+          def fix_sf(line):
+              if not line.startswith('SF:'):
+                  return line
+              path = line[3:].strip()
+              # Normalize Windows backslashes to forward slashes
+              path = path.replace('\\', '/')
+              # Strip absolute prefix, keep only from 'src/' onwards
+              idx = path.find('/src/')
+              if idx != -1:
+                  path = 'src/' + path[idx + 5:]
+              elif path.startswith('src/'):
+                  pass  # already relative
+              return 'SF:' + path
+          lines = [fix_sf(l) for l in content.splitlines(keepends=True)]
+          with open('coverage/lcov.info', 'w', encoding='utf-8') as f:
+              f.writelines(lines)
+          print('Done fixing lcov paths')
+          PYEOF
             echo "=== First 20 lines of fixed lcov.info ==="
             head -20 coverage/lcov.info
           else
@@ -254,3 +292,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           projectBaseDir: Waste-Recycling-Platform
+          args: >
+            -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
+            -Dsonar.coverage.exclusions=frontend/e2e/**,frontend/src/app/**
