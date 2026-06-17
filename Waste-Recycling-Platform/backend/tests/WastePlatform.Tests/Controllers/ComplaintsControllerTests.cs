@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using MediatR;
@@ -191,6 +191,80 @@ public class ComplaintsControllerTests
         var result = await controller.GetComplaintDetail(Guid.NewGuid());
 
         result.Should().BeOfType<ForbidResult>();
+    }
+
+    [Fact]
+    [AllureDescription("EscalateToAdmin returns Ok when escalation succeeds.")]
+    public async Task EscalateToAdmin_WhenSuccessful_ShouldReturnOk()
+    {
+        var userId = Guid.NewGuid();
+        var complaintId = Guid.NewGuid();
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<CitizenEscalateComplaintCommand>(), default))
+            .ReturnsAsync(new EscalateComplaintResult
+            {
+                Success = true,
+                Message = "Escalated successfully",
+                ComplaintId = complaintId,
+                NewStatus = "EscalatedToAdmin"
+            });
+
+        var controller = CreateController(userId);
+
+        var result = await controller.EscalateToAdmin(complaintId, new CitizenEscalateRequest { Reason = "Not resolved" });
+
+        result.Should().BeOfType<OkObjectResult>();
+    }
+
+    [Fact]
+    [AllureDescription("EscalateToAdmin returns BadRequest when escalation fails.")]
+    public async Task EscalateToAdmin_WhenFails_ShouldReturnBadRequest()
+    {
+        var userId = Guid.NewGuid();
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<CitizenEscalateComplaintCommand>(), default))
+            .ReturnsAsync(new EscalateComplaintResult
+            {
+                Success = false,
+                Message = "Cannot escalate at this stage"
+            });
+
+        var controller = CreateController(userId);
+
+        var result = await controller.EscalateToAdmin(Guid.NewGuid(), new CitizenEscalateRequest());
+
+        result.Should().BeOfType<BadRequestObjectResult>();
+    }
+
+    [Fact]
+    [AllureDescription("EscalateToAdmin returns Unauthorized when user ID is missing.")]
+    public async Task EscalateToAdmin_WhenNoAuth_ShouldReturnUnauthorized()
+    {
+        var controller = CreateControllerWithoutAuth();
+
+        var result = await controller.EscalateToAdmin(Guid.NewGuid(), new CitizenEscalateRequest());
+
+        result.Should().BeOfType<UnauthorizedObjectResult>();
+    }
+
+    [Fact]
+    [AllureDescription("EscalateToAdmin returns 500 when mediator throws an exception.")]
+    public async Task EscalateToAdmin_WhenException_ShouldReturn500()
+    {
+        var userId = Guid.NewGuid();
+
+        _mediatorMock
+            .Setup(m => m.Send(It.IsAny<CitizenEscalateComplaintCommand>(), default))
+            .ThrowsAsync(new Exception("Database failure"));
+
+        var controller = CreateController(userId);
+
+        var result = await controller.EscalateToAdmin(Guid.NewGuid(), new CitizenEscalateRequest());
+
+        var statusResult = result.Should().BeOfType<ObjectResult>().Subject;
+        statusResult.StatusCode.Should().Be(500);
     }
 
     private ComplaintsController CreateController(Guid userId)
