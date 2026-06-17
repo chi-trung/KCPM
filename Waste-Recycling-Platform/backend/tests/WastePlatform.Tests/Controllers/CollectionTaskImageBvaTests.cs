@@ -285,30 +285,26 @@ public class CollectionTaskImageBvaTests
         var citizenIdForTest = citizenForTest.Id;
         
         // Tạo WasteCategory
-        var wasteCategoryIdForTest = Guid.NewGuid();
+        var wasteCategoryIdForTest = 1;
         var wasteCategoryForTest = new WasteCategory
         {
             Id = wasteCategoryIdForTest,
             Name = "Plastic Waste",
-            Description = "All types of plastic waste",
-            CreatedAt = DateTime.UtcNow
+            Description = "All types of plastic waste"
         };
         
         // Tạo WasteReport
-        var wasteReportIdForTest = Guid.NewGuid();
-        var wasteReportForTest = new WasteReport
-        {
-            Id = wasteReportIdForTest,
-            CitizenId = citizenIdForTest,
-            EnterpriseId = enterpriseIdForTest,
-            WasteCategoryId = wasteCategoryIdForTest,
-            Description = "Large pile of plastic bottles",
-            Address = "456 Citizen Ave, Test City",
-            Latitude = 10.7769M,
-            Longitude = 106.6966M,
-            Status = ReportStatus.Assigned,
-            CreatedAt = DateTime.UtcNow
-        };
+        var wasteReportForTest = WasteReport.Create(
+            citizenId: citizenIdForTest,
+            wasteCategoryId: wasteCategoryIdForTest,
+            latitude: 10.7769M,
+            longitude: 106.6966M,
+            description: "Large pile of plastic bottles",
+            address: "456 Citizen Ave, Test City"
+        );
+        wasteReportForTest.Accept();
+        wasteReportForTest.Assign();
+        var wasteReportIdForTest = wasteReportForTest.Id;
         
         // Tạo User (cho Collector)
         var userForCollectorTest = User.Create(
