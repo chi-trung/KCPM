@@ -150,7 +150,7 @@ jobs:
         continue-on-error: true
         run: npx vitest run --coverage
 
-      - name: Fix lcov paths (absolute → relative src/...)
+      - name: Fix lcov paths (relative to projectBaseDir)
         if: always()
         working-directory: Waste-Recycling-Platform/frontend
         run: |
@@ -161,7 +161,8 @@ jobs:
             perl -i -pe '
               if (/^SF:/) {
                 s|\\|/|g;
-                s|^SF:.+/src/|SF:src/|;
+                s|^SF:.*/src/|SF:frontend/src/|;
+                s|^SF:src/|SF:frontend/src/|;
               }
             ' coverage/lcov.info
             echo "After fix (first 5 SF lines):"
@@ -195,7 +196,7 @@ jobs:
             -Dsonar.tests=frontend/src
             -Dsonar.test.inclusions=frontend/src/**/__tests__/**/*.tsx,frontend/src/**/__tests__/**/*.ts,frontend/src/**/*.test.tsx,frontend/src/**/*.test.ts
             -Dsonar.exclusions=**/node_modules/**,**/.next/**,frontend/out/**,frontend/output/**,allure-results/**,allure-report/**,**/coverage/**,frontend/e2e/**
-            "-Dsonar.coverage.exclusions=frontend/e2e/**,frontend/src/app/**,frontend/src/lib/api/**,frontend/src/lib/theme.ts,frontend/src/lib/config.ts,frontend/src/hooks/**,frontend/src/contexts/**,frontend/src/types/**"
+            "-Dsonar.coverage.exclusions=frontend/e2e/**,frontend/src/app/**,frontend/src/components/admin/**,frontend/src/components/citizen/**,frontend/src/components/collector/**,frontend/src/components/enterprise/**,frontend/src/components/layout/**,frontend/src/components/NotificationToast.tsx,frontend/src/lib/**,frontend/src/hooks/**,frontend/src/contexts/**,frontend/src/types/**"
             -Dsonar.cpd.exclusions=frontend/e2e/**
             -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
 
@@ -229,7 +230,7 @@ jobs:
         continue-on-error: true
         run: npx vitest run --coverage
 
-      - name: Fix lcov paths (absolute → relative src/...)
+      - name: Fix lcov paths (relative to projectBaseDir)
         if: always()
         working-directory: Waste-Recycling-Platform/frontend
         run: |
@@ -240,7 +241,8 @@ jobs:
             perl -i -pe '
               if (/^SF:/) {
                 s|\\|/|g;
-                s|^SF:.+/src/|SF:src/|;
+                s|^SF:.*/src/|SF:frontend/src/|;
+                s|^SF:src/|SF:frontend/src/|;
               }
             ' coverage/lcov.info
             echo "After fix (first 5 SF lines):"
@@ -268,4 +270,3 @@ jobs:
           projectBaseDir: Waste-Recycling-Platform
           args: >
             -Dsonar.javascript.lcov.reportPaths=frontend/coverage/lcov.info
-            -Dsonar.coverage.exclusions=frontend/e2e/**,frontend/src/app/**

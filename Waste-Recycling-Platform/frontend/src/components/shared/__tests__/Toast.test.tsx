@@ -35,7 +35,7 @@ describe('Toast Component & Hook', () => {
 
   it('useToast hook manages toast messages state and auto-removes after 3s', () => {
     let testHookResult: any = {}
-    
+
     const TestComponent = () => {
       const result = useToast()
       testHookResult = result
@@ -67,7 +67,7 @@ describe('Toast Component & Hook', () => {
     act(() => {
       vi.advanceTimersByTime(3000)
     })
-    
+
     // Toasts should be auto-removed
     expect(testHookResult.toasts).toHaveLength(0)
   })
