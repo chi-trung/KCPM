@@ -1203,8 +1203,8 @@ public class CollectionTaskImageBvaTests
         var testEnvironmentTupleResultForOversizedFile = InitializeCompleteTestEnvironment();
         var dbContextInstanceForOversizedFileTest = testEnvironmentTupleResultForOversizedFile.Item1;
         var controllerInstanceForOversizedFileTest = testEnvironmentTupleResultForOversizedFile.Item2;
-        var collectionTaskIdForOversizedFileTest = testEnvironmentTupleResultForOversizedFileTest.Item3;
-        var collectorUserIdForOversizedFileTest = testEnvironmentTupleResultForOversizedFileTest.Item4;
+        var collectionTaskIdForOversizedFileTest = testEnvironmentTupleResultForOversizedFile.Item3;
+        var collectorUserIdForOversizedFileTest = testEnvironmentTupleResultForOversizedFile.Item4;
         
         AllureAttachmentHelper.AttachJson("test-environment-initialization", new
         {
@@ -1876,8 +1876,8 @@ public class CollectionTaskImageBvaTests
             errorMessageFound = errorMessageFoundForExtensionValidation,
             matchedKeyword = matchedKeywordForExtensionError,
             matchedKeywordPosition = matchedKeywordPositionForExtensionError,
-            responsePreview = responseValueAsJsonStringForInvalidExt.Substring(
-                0, Math.Min(400, responseValueAsJsonStringForInvalidExt.Length)),
+            responsePreview = responseValueAsJsonStringForInvalidExt?.Substring(
+                0, Math.Min(400, responseValueAsJsonStringForInvalidExt.Length)) ?? string.Empty,
             validationStatus = errorMessageFoundForExtensionValidation ? 
                 "PASSED - Exact extension error message matched" : 
                 "FAILED - Exact extension error message mismatch"
@@ -1915,7 +1915,7 @@ public class CollectionTaskImageBvaTests
             {
                 messageFound = errorMessageFoundForExtensionValidation,
                 matchedKeyword = matchedKeywordForExtensionError,
-                expectedKeywords = expectedErrorMessageKeywordsForExtension
+                expectedKeywords = new[] { expectedErrorMessage }
             },
             responseContent = responseValueAsJsonStringForInvalidExt,
             testResult = "PASSED - Invalid extension rejected successfully",
