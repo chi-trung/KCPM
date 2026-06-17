@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, Button, Input } from "../ui";
 
 interface CapacitySettingsProps {
@@ -87,7 +87,7 @@ export const CapacitySettings: React.FC<CapacitySettingsProps> = ({ profile, cat
             <Input
               type="number"
               value={capacityKgPerDay ?? ""}
-              onChange={(e) => setCapacityKgPerDay(e.target.value ? parseInt(e.target.value, 10) : null)}
+              onChange={(e) => setCapacityKgPerDay(e.target.value ? Number.parseInt(e.target.value, 10) : null)}
               placeholder="Enter capacity in kg/day"
             />
           </div>

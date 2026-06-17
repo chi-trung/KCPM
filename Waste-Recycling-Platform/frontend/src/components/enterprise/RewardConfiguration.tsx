@@ -53,7 +53,7 @@ export const RewardConfiguration: React.FC<RewardConfigurationProps> = ({
     field: "pointsPerReport" | "bonusQuality",
     value: string
   ) => {
-    const parsedValue = value === "" ? 0 : parseInt(value, 10);
+    const parsedValue = value === "" ? 0 : Number.parseInt(value, 10);
     const safeValue = Number.isFinite(parsedValue) && parsedValue >= 0 ? parsedValue : 0;
 
     setRewardRules((previousRules) => {

@@ -23,7 +23,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onUpdateStatus }) => {
       case "Assigned": return "Đã giao";
       case "OnTheWay": return "Đang đến nơi";
       case "Collected": return "Đã thu gom";
-      default: return status.replace(/_/g, " ");
+      default: return status.replaceAll("_", " ");
     }
   };
 
