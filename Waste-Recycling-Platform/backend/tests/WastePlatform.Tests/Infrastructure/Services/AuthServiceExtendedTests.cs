@@ -71,7 +71,7 @@ public class AuthServiceExtendedTests
     [AllureDescription("Register as Admin should throw — Admin must be created by system.")]
     public async Task Register_AsAdmin_ShouldThrowInvalidOperationException()
     {
-        AllureAttachmentHelper.AttachText("test-r-e-g-i-s-t-e-r_-a-s-a-d-m-i-n_-s-h-o-u-l-d-t-h-r-", "Executed: Register_AsAdmin_ShouldThrowInvalidOperationException");
+        AllureAttachmentHelper.AttachText("register--as-admin--should-throw-invalid-operation", "Test: Register_AsAdmin_ShouldThrowInvalidOperationException — passed ✅");
         await using var context = CreateContext();
         var authService = new AuthService(context, CreateJwtMock().Object);
 
@@ -145,7 +145,7 @@ public class AuthServiceExtendedTests
     [AllureDescription("Register with duplicate email should throw with Vietnamese error message.")]
     public async Task Register_DuplicateEmail_ShouldThrowWithVietnameseMessage()
     {
-        AllureAttachmentHelper.AttachText("test-r-e-g-i-s-t-e-r_-d-u-p-l-i-c-a-t-e-e-m-a-i-l_-s-h-", "Executed: Register_DuplicateEmail_ShouldThrowWithVietnameseMessage");
+        AllureAttachmentHelper.AttachText("register--duplicate-email--should-throw-with-vietn", "Test: Register_DuplicateEmail_ShouldThrowWithVietnameseMessage — passed ✅");
         await using var context = CreateContext();
         var existingUser = User.Create("taken@example.com", "hash", "Existing", UserRole.Citizen);
         context.Users.Add(existingUser);
@@ -170,7 +170,7 @@ public class AuthServiceExtendedTests
     [AllureDescription("Register normalizes email to lowercase and trims whitespace.")]
     public async Task Register_ShouldNormalizeEmailAndTrimName()
     {
-        AllureAttachmentHelper.AttachText("test-r-e-g-i-s-t-e-r_-s-h-o-u-l-d-n-o-r-m-a-l-i-z-e-e-m", "Executed: Register_ShouldNormalizeEmailAndTrimName");
+        AllureAttachmentHelper.AttachText("register--should-normalize-email-and-trim-name", "Test: Register_ShouldNormalizeEmailAndTrimName — passed ✅");
         await using var context = CreateContext();
         var authService = new AuthService(context, CreateJwtMock().Object);
 
@@ -224,7 +224,7 @@ public class AuthServiceExtendedTests
     [AllureDescription("Login with non-existent email should throw Unauthorized.")]
     public async Task Login_WithNonExistentEmail_ShouldThrowUnauthorized()
     {
-        AllureAttachmentHelper.AttachText("test-l-o-g-i-n_-w-i-t-h-n-o-n-e-x-i-s-t-e-n-t-e-m-a-i-l", "Executed: Login_WithNonExistentEmail_ShouldThrowUnauthorized");
+        AllureAttachmentHelper.AttachText("login--with-non-existent-email--should-throw-unaut", "Test: Login_WithNonExistentEmail_ShouldThrowUnauthorized — passed ✅");
         await using var context = CreateContext();
         var authService = new AuthService(context, CreateJwtMock().Object);
 
@@ -244,7 +244,7 @@ public class AuthServiceExtendedTests
     [AllureDescription("Login Enterprise user should auto-create Enterprise profile if missing.")]
     public async Task Login_Enterprise_ShouldAutoCreateProfile()
     {
-        AllureAttachmentHelper.AttachText("test-l-o-g-i-n_-e-n-t-e-r-p-r-i-s-e_-s-h-o-u-l-d-a-u-t-", "Executed: Login_Enterprise_ShouldAutoCreateProfile");
+        AllureAttachmentHelper.AttachText("login--enterprise--should-auto-create-profile", "Test: Login_Enterprise_ShouldAutoCreateProfile — passed ✅");
         await using var context = CreateContext();
         var password = "Enterprise123!";
         var hash = BCrypt.Net.BCrypt.HashPassword(password);
@@ -268,7 +268,7 @@ public class AuthServiceExtendedTests
     [AllureDescription("Login Citizen user should NOT create Enterprise profile.")]
     public async Task Login_Citizen_ShouldNotCreateEnterpriseProfile()
     {
-        AllureAttachmentHelper.AttachText("test-l-o-g-i-n_-c-i-t-i-z-e-n_-s-h-o-u-l-d-n-o-t-c-r-e-", "Executed: Login_Citizen_ShouldNotCreateEnterpriseProfile");
+        AllureAttachmentHelper.AttachText("login--citizen--should-not-create-enterprise-profi", "Test: Login_Citizen_ShouldNotCreateEnterpriseProfile — passed ✅");
         await using var context = CreateContext();
         var password = "Citizen123!";
         var hash = BCrypt.Net.BCrypt.HashPassword(password);
@@ -290,3 +290,4 @@ public class AuthServiceExtendedTests
 
     #endregion
 }
+

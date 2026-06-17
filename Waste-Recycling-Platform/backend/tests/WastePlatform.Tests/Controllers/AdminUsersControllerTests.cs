@@ -56,7 +56,7 @@ public class AdminUsersControllerTests
     [AllureDescription("GetUsers passes search and role filters to query.")]
     public async Task GetUsers_WithFilters_ShouldPassFiltersToQuery()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-u-s-e-r-s_-w-i-t-h-f-i-l-t-e-r-s_-s-h-o-u-l-", "Executed: GetUsers_WithFilters_ShouldPassFiltersToQuery");
+        AllureAttachmentHelper.AttachText("get-users--with-filters--should-pass-filters-to-qu", "Test: GetUsers_WithFilters_ShouldPassFiltersToQuery — passed ✅");
         _mediatorMock
             .Setup(m => m.Send(It.Is<GetUsersQuery>(q => q.Search == "test" && q.Role == "citizen"), default))
             .ReturnsAsync(new List<UserDto>());
@@ -73,7 +73,7 @@ public class AdminUsersControllerTests
     [AllureDescription("GetStats returns OK with dashboard statistics.")]
     public async Task GetStats_ShouldReturnOkWithStats()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-s-t-a-t-s_-s-h-o-u-l-d-r-e-t-u-r-n-o-k-w-i-t", "Executed: GetStats_ShouldReturnOkWithStats");
+        AllureAttachmentHelper.AttachText("get-stats--should-return-ok-with-stats", "Test: GetStats_ShouldReturnOkWithStats — passed ✅");
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetDashboardStatsQuery>(), default))
             .ReturnsAsync(new DashboardStatsDto { TotalUsers = 100, TotalReports = 50 });
@@ -107,7 +107,7 @@ public class AdminUsersControllerTests
     [AllureDescription("ToggleStatus returns OK when user exists.")]
     public async Task ToggleStatus_WhenUserExists_ShouldReturnOk()
     {
-        AllureAttachmentHelper.AttachText("test-t-o-g-g-l-e-s-t-a-t-u-s_-w-h-e-n-u-s-e-r-e-x-i-s-t", "Executed: ToggleStatus_WhenUserExists_ShouldReturnOk");
+        AllureAttachmentHelper.AttachText("toggle-status--when-user-exists--should-return-ok", "Test: ToggleStatus_WhenUserExists_ShouldReturnOk — passed ✅");
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<ToggleUserStatusCommand>(), default))
             .ReturnsAsync(true);
@@ -123,7 +123,7 @@ public class AdminUsersControllerTests
     [AllureDescription("ToggleStatus returns NotFound when user doesn't exist.")]
     public async Task ToggleStatus_WhenUserNotFound_ShouldReturnNotFound()
     {
-        AllureAttachmentHelper.AttachText("test-t-o-g-g-l-e-s-t-a-t-u-s_-w-h-e-n-u-s-e-r-n-o-t-f-o", "Executed: ToggleStatus_WhenUserNotFound_ShouldReturnNotFound");
+        AllureAttachmentHelper.AttachText("toggle-status--when-user-not-found--should-return", "Test: ToggleStatus_WhenUserNotFound_ShouldReturnNotFound — passed ✅");
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<ToggleUserStatusCommand>(), default))
             .ReturnsAsync(false);
@@ -139,7 +139,7 @@ public class AdminUsersControllerTests
     [AllureDescription("UpdateRole returns OK when user exists.")]
     public async Task UpdateRole_WhenUserExists_ShouldReturnOk()
     {
-        AllureAttachmentHelper.AttachText("test-u-p-d-a-t-e-r-o-l-e_-w-h-e-n-u-s-e-r-e-x-i-s-t-s_-", "Executed: UpdateRole_WhenUserExists_ShouldReturnOk");
+        AllureAttachmentHelper.AttachText("update-role--when-user-exists--should-return-ok", "Test: UpdateRole_WhenUserExists_ShouldReturnOk — passed ✅");
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<UpdateUserRoleCommand>(), default))
             .ReturnsAsync(true);
@@ -156,7 +156,7 @@ public class AdminUsersControllerTests
     [AllureDescription("UpdateRole returns NotFound when user doesn't exist.")]
     public async Task UpdateRole_WhenUserNotFound_ShouldReturnNotFound()
     {
-        AllureAttachmentHelper.AttachText("test-u-p-d-a-t-e-r-o-l-e_-w-h-e-n-u-s-e-r-n-o-t-f-o-u-n", "Executed: UpdateRole_WhenUserNotFound_ShouldReturnNotFound");
+        AllureAttachmentHelper.AttachText("update-role--when-user-not-found--should-return-no", "Test: UpdateRole_WhenUserNotFound_ShouldReturnNotFound — passed ✅");
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<UpdateUserRoleCommand>(), default))
             .ReturnsAsync(false);
@@ -173,7 +173,7 @@ public class AdminUsersControllerTests
     [AllureDescription("UpdateRole sets UserId from URL parameter into the command.")]
     public async Task UpdateRole_ShouldSetUserIdFromUrl()
     {
-        AllureAttachmentHelper.AttachText("test-u-p-d-a-t-e-r-o-l-e_-s-h-o-u-l-d-s-e-t-u-s-e-r-i-d", "Executed: UpdateRole_ShouldSetUserIdFromUrl");
+        AllureAttachmentHelper.AttachText("update-role--should-set-user-id-from-url", "Test: UpdateRole_ShouldSetUserIdFromUrl — passed ✅");
         var userId = "test-user-id";
         _mediatorMock
             .Setup(m => m.Send(It.Is<UpdateUserRoleCommand>(c => c.UserId == userId), default))
@@ -188,3 +188,4 @@ public class AdminUsersControllerTests
             It.Is<UpdateUserRoleCommand>(c => c.UserId == userId), default), Times.Once);
     }
 }
+

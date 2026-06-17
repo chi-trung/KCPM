@@ -104,7 +104,7 @@ public class RewardsHandlerTests
     [AllureDescription("CreateRewardPoints uses default reason when none is provided.")]
     public async Task CreateRewardPoints_WithNullReason_ShouldUseDefaultReason()
     {
-        AllureAttachmentHelper.AttachText("test-c-r-e-a-t-e-r-e-w-a-r-d-p-o-i-n-t-s_-w-i-t-h-n-u-l", "Executed: CreateRewardPoints_WithNullReason_ShouldUseDefaultReason");
+        AllureAttachmentHelper.AttachText("create-reward-points--with-null-reason--should-use", "Test: CreateRewardPoints_WithNullReason_ShouldUseDefaultReason — passed ✅");
         _repoMock
             .Setup(r => r.CreateRewardPointsAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<int>(), "Báo cáo và thu gom rác", default))
             .ReturnsAsync(new RewardPoints
@@ -173,7 +173,7 @@ public class RewardsHandlerTests
     [AllureDescription("GetLeaderboard returns empty list when no data exists.")]
     public async Task GetLeaderboard_WhenNoData_ShouldReturnEmptyList()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-l-e-a-d-e-r-b-o-a-r-d_-w-h-e-n-n-o-d-a-t-a_-", "Executed: GetLeaderboard_WhenNoData_ShouldReturnEmptyList");
+        AllureAttachmentHelper.AttachText("get-leaderboard--when-no-data--should-return-empty", "Test: GetLeaderboard_WhenNoData_ShouldReturnEmptyList — passed ✅");
         _repoMock
             .Setup(r => r.GetLeaderboardAsync(1, 10, default))
             .ReturnsAsync((Enumerable.Empty<(Guid, string, int, int)>(), 0));
@@ -192,7 +192,7 @@ public class RewardsHandlerTests
     [AllureDescription("GetLeaderboard calculates TotalPages correctly for multi-page results.")]
     public async Task GetLeaderboard_ShouldCalculateTotalPagesCorrectly()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-l-e-a-d-e-r-b-o-a-r-d_-s-h-o-u-l-d-c-a-l-c-u", "Executed: GetLeaderboard_ShouldCalculateTotalPagesCorrectly");
+        AllureAttachmentHelper.AttachText("get-leaderboard--should-calculate-total-pages-corr", "Test: GetLeaderboard_ShouldCalculateTotalPagesCorrectly — passed ✅");
         _repoMock
             .Setup(r => r.GetLeaderboardAsync(1, 5, default))
             .ReturnsAsync((Enumerable.Empty<(Guid, string, int, int)>(), 23));
@@ -208,3 +208,4 @@ public class RewardsHandlerTests
 
     #endregion
 }
+

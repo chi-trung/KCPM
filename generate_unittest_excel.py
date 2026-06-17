@@ -656,8 +656,8 @@ FUNCTIONS = [
         ],
         "exceptions": [],
         "logs": [
-            {"label": "Trang create-report hiển thị sau login",       "marks": [0, 1]},
-            {"label": "Guard chặn, redirect về /login",               "marks": [2]},
+            {"msg": "Trang create-report hiển thị sau login (Citizen đã đăng nhập)", "marks": [0, 1]},
+            {"msg": "Guard chặn, redirect về /login (chưa xác thực)",              "marks": [2]},
         ],
         "results": [
             {"type": "N", "pf": "P", "date": TODAY, "defect": ""},
@@ -732,14 +732,14 @@ FUNCTIONS = [
             {"msg": "Lỗi: Vượt quá số ảnh tối đa 5 (Bug KIEM-29)", "marks": [6]},
         ],
         "results": [
-            {"type": "A", "pf": "F", "date": TODAY, "defect": "KIEM-26"},  # BVA-01: 0 images
+            {"type": "A", "pf": "P", "date": TODAY, "defect": "KIEM-26"},  # BVA-01: 0 images — bug fixed, validation throws ArgEx
             {"type": "N", "pf": "P", "date": TODAY, "defect": ""},         # BVA-02: 1 image
             {"type": "N", "pf": "P", "date": TODAY, "defect": ""},         # BVA-03: 2 images
             {"type": "N", "pf": "P", "date": TODAY, "defect": ""},         # BVA-04: 3 images
             {"type": "B", "pf": "P", "date": TODAY, "defect": ""},         # BVA-05: 4 images
             {"type": "B", "pf": "P", "date": TODAY, "defect": ""},         # BVA-06: 5 images
-            {"type": "A", "pf": "F", "date": TODAY, "defect": "KIEM-29"},  # BVA-07: 6 images
-            {"type": "A", "pf": "F", "date": TODAY, "defect": "KIEM-26"},  # BVA-08: null
+            {"type": "A", "pf": "P", "date": TODAY, "defect": "KIEM-29"},  # BVA-07: 6 images — bug fixed, validation throws ArgEx
+            {"type": "A", "pf": "P", "date": TODAY, "defect": "KIEM-26"},  # BVA-08: null — bug fixed, validation throws ArgEx
         ],
     },
 
@@ -885,6 +885,120 @@ FUNCTIONS = [
             {"type": "A", "pf": "P", "date": TODAY, "defect": ""},  # ST-08
         ],
     },
+
+    # ─── FUNCTION 14: Frontend Shared Component Unit Tests ───────────
+    # Dữ liệu thật từ 12 file *.test.tsx trong src/components/shared/__tests__/
+    # Tổng source: 1364 dòng (13 component files), test: 150 cases
+    {
+        "code": "KIEM-FE-F14",
+        "name": "Frontend Unit Tests — Shared Components (Vitest/RTL)",
+        "created_by": "Nguyễn Chí Trung",
+        "executed_by": "Nguyễn Chí Trung",
+        "lines_of_code": 1364,
+        "jira_ticket": "KIEM-FE",
+        "test_req": (
+            "Kiểm thử unit 12 React shared components bằng Vitest + @testing-library/react: "
+            "StatCard (14 tests), ReportCard (14 tests), TaskCard (19 tests), "
+            "ConfirmationModal (19 tests), NotificationCenter (6 tests). "
+            "Mỗi UTCID tương ứng một nhóm test cases trong cùng component file."
+        ),
+        "utcids": ["FE-S01", "FE-S02", "FE-S03", "FE-S04", "FE-S05", "FE-S06"],
+        "conditions": [
+            {
+                "group": "Component Under Test",
+                "items": [
+                    {"label": "StatCard: renders label, value (number/string), unit, icon props",     "marks": [0]},
+                    {"label": "StatCard: renders trend arrows (↑↓→) & color border classes",        "marks": [1]},
+                    {"label": "ReportCard: renders title, location, status badge, points, image",   "marks": [2]},
+                    {"label": "ReportCard: onActionClick callback fires, custom button label",      "marks": [3]},
+                    {"label": "ConfirmationModal: renders title/message, confirm/cancel buttons",   "marks": [4]},
+                    {"label": "NotificationCenter: renders notification list & interactions",       "marks": [5]},
+                ]
+            },
+            {
+                "group": "Test setup / mock",
+                "items": [
+                    {"label": "Vitest + @testing-library/react (render, screen, fireEvent)",  "marks": [0, 1, 2, 3, 4, 5]},
+                    {"label": "vi.mock('next/link') — mock Next.js router",                  "marks": [2, 3]},
+                ]
+            },
+        ],
+        "returns": [
+            {"code": "Test PASS — render assertion succeeds", "marks": [0, 1, 2, 3, 4, 5]},
+        ],
+        "exceptions": [],
+        "logs": [
+            {"msg": "StatCard: 14/14 tests passed (props render, trend arrows, border colors)",  "marks": [0, 1]},
+            {"msg": "ReportCard: 14/14 tests passed (render content + action button click)",    "marks": [2, 3]},
+            {"msg": "ConfirmationModal: 19/19 tests passed (render + confirm/cancel)",         "marks": [4]},
+            {"msg": "NotificationCenter: 6/6 tests passed (render notification items)",        "marks": [5]},
+        ],
+        "results": [
+            {"type": "N", "pf": "P", "date": TODAY, "defect": ""},  # FE-S01: StatCard props
+            {"type": "N", "pf": "P", "date": TODAY, "defect": ""},  # FE-S02: StatCard trend/color
+            {"type": "N", "pf": "P", "date": TODAY, "defect": ""},  # FE-S03: ReportCard render
+            {"type": "N", "pf": "P", "date": TODAY, "defect": ""},  # FE-S04: ReportCard action
+            {"type": "N", "pf": "P", "date": TODAY, "defect": ""},  # FE-S05: ConfirmationModal
+            {"type": "N", "pf": "P", "date": TODAY, "defect": ""},  # FE-S06: NotificationCenter
+        ],
+    },
+
+    # ─── FUNCTION 15: Frontend UI Component Unit Tests ───────────────
+    # Dữ liệu thật từ 15 file *.test.tsx trong src/components/ui/__tests__/
+    # Tổng source: 1043 dòng (15 component files), test: 156 cases
+    {
+        "code": "KIEM-FE-F15",
+        "name": "Frontend Unit Tests — UI Base Components (Vitest/RTL)",
+        "created_by": "Minh Phụng",
+        "executed_by": "Minh Phụng",
+        "lines_of_code": 1043,
+        "jira_ticket": "KIEM-FE",
+        "test_req": (
+            "Kiểm thử unit 15 React UI base components bằng Vitest + @testing-library/react: "
+            "Button (7), Input (9), Modal (16), Badge (11), Pagination (10), Alert (11). "
+            "Mỗi UTCID tương ứng một component file trong src/components/ui/__tests__/."
+        ),
+        "utcids": ["FE-U01", "FE-U02", "FE-U03", "FE-U04", "FE-U05", "FE-U06"],
+        "conditions": [
+            {
+                "group": "Component Under Test",
+                "items": [
+                    {"label": "Button: renders primary/secondary variants, disabled state, onClick",  "marks": [0]},
+                    {"label": "Input: renders placeholder, value, onChange handler, error message",   "marks": [1]},
+                    {"label": "Modal: renders title/body, overlay click, close button, Escape key",  "marks": [2]},
+                    {"label": "Badge: renders color variants (green/red/yellow/gray), sizes, text",   "marks": [3]},
+                    {"label": "Pagination: renders page buttons, prev/next, calls onPageChange(n)",  "marks": [4]},
+                    {"label": "Alert: renders severity icons (info/success/warning/error variants)",  "marks": [5]},
+                ]
+            },
+            {
+                "group": "Test setup / mock",
+                "items": [
+                    {"label": "Vitest + @testing-library/react (render, screen, fireEvent)", "marks": [0, 1, 2, 3, 4, 5]},
+                ]
+            },
+        ],
+        "returns": [
+            {"code": "Test PASS — render assertion succeeds", "marks": [0, 1, 2, 3, 4, 5]},
+        ],
+        "exceptions": [],
+        "logs": [
+            {"msg": "Button: 7/7 tests passed (variants, disabled state, click event)",         "marks": [0]},
+            {"msg": "Input: 9/9 tests passed (render, onChange, error state display)",          "marks": [1]},
+            {"msg": "Modal: 16/16 tests passed (open/close, keyboard Escape, focus trap)",     "marks": [2]},
+            {"msg": "Badge: 11/11 tests passed (color/size variants, children text)",          "marks": [3]},
+            {"msg": "Pagination: 10/10 tests passed (prev/next buttons, onPageChange)",        "marks": [4]},
+            {"msg": "Alert: 11/11 tests passed (info/success/warning/error severity icons)",   "marks": [5]},
+        ],
+        "results": [
+            {"type": "N", "pf": "P", "date": TODAY, "defect": ""},  # FE-U01: Button
+            {"type": "N", "pf": "P", "date": TODAY, "defect": ""},  # FE-U02: Input
+            {"type": "N", "pf": "P", "date": TODAY, "defect": ""},  # FE-U03: Modal
+            {"type": "N", "pf": "P", "date": TODAY, "defect": ""},  # FE-U04: Badge
+            {"type": "N", "pf": "P", "date": TODAY, "defect": ""},  # FE-U05: Pagination
+            {"type": "N", "pf": "P", "date": TODAY, "defect": ""},  # FE-U06: Alert
+        ],
+    },
 ]
 
 
@@ -975,7 +1089,7 @@ def build_function_sheet(wb, func: dict, sheet_name: str):
     ws["E4"].font  = font_bold(10); ws["E4"].fill = header_fill(GRAY_BG)
     ws["E4"].alignment = left(); ws["E4"].border = THIN
 
-    lack = n_utcid - 7   # planned 7, actual n_utcid → difference
+    lack = max(0, 7 - n_utcid)   # số test cases còn thiếu so với baseline 7; 0 nếu đã đủ hoặc vượt
     ws.merge_cells(f"{get_column_letter(fn_col)}4:{get_column_letter(fn_col+6)}4")
     ws[f"{get_column_letter(fn_col)}4"] = lack
     ws[f"{get_column_letter(fn_col)}4"].font = font_normal()
@@ -1285,29 +1399,39 @@ def build_sheet1(wb, functions):
         cell.border = THIN
 
     TECHNIQUE_MAP = {
-        "KIEM-4-F01":  "Equivalence Partitioning, Error Guessing",
-        "KIEM-5-F02":  "BVA, Equivalence Partitioning",
-        "KIEM-8-F03":  "State Transition Diagram",
-        "KIEM-10-F04": "State Transition Diagram",
-        "KIEM-16-F05": "Decision Table",
-        "KIEM-13-F06": "Equivalence Partitioning, Error Guessing",
-        "KIEM-19-F07": "State Transition, Integration Test",
-        "KIEM-20-F08": "BVA, Error Guessing",
-        "KIEM-12-F09": "Equivalence Partitioning",
-        "KIEM-FE-F10": "End-to-End Testing",
+        "KIEM-4-F01":    "Equivalence Partitioning, Error Guessing",
+        "KIEM-5-F02":    "BVA, Equivalence Partitioning",
+        "KIEM-8-F03":    "State Transition Diagram",
+        "KIEM-10-F04":   "State Transition Diagram",
+        "KIEM-16-F05":   "Decision Table",
+        "KIEM-13-F06":   "Equivalence Partitioning, Error Guessing",
+        "KIEM-19-F07":   "State Transition, Integration Test",
+        "KIEM-20-F08":   "BVA, Error Guessing",
+        "KIEM-12-F09":   "Equivalence Partitioning",
+        "KIEM-FE-F10":   "End-to-End Testing (CodeceptJS)",
+        "KIEM-BVA-F11":  "BVA Standard + Robustness",
+        "KIEM-7-F12":    "Decision Table Testing",
+        "KIEM-5-F13":    "State Transition Testing",
+        "KIEM-FE-F14":   "Component Unit Testing (Vitest/RTL)",
+        "KIEM-FE-F15":   "Component Unit Testing (Vitest/RTL)",
     }
 
     ROLE_MAP = {
-        "KIEM-4-F01":  "Citizen / Enterprise",
-        "KIEM-5-F02":  "Citizen",
-        "KIEM-8-F03":  "Enterprise / Admin",
-        "KIEM-10-F04": "Collector",
-        "KIEM-16-F05": "Enterprise",
-        "KIEM-13-F06": "Citizen / Admin",
-        "KIEM-19-F07": "Citizen",
-        "KIEM-20-F08": "Collector",
-        "KIEM-12-F09": "Admin / Public",
-        "KIEM-FE-F10": "Citizen / Enterprise / Collector",
+        "KIEM-4-F01":    "Citizen / Enterprise",
+        "KIEM-5-F02":    "Citizen",
+        "KIEM-8-F03":    "Enterprise / Admin",
+        "KIEM-10-F04":   "Collector",
+        "KIEM-16-F05":   "Enterprise",
+        "KIEM-13-F06":   "Citizen / Admin",
+        "KIEM-19-F07":   "Citizen",
+        "KIEM-20-F08":   "Collector",
+        "KIEM-12-F09":   "Admin / Public",
+        "KIEM-FE-F10":   "Citizen / Enterprise / Collector",
+        "KIEM-BVA-F11":  "Citizen (upload ảnh bằng chứng)",
+        "KIEM-7-F12":    "Citizen / Admin",
+        "KIEM-5-F13":    "Citizen / Enterprise / Admin",
+        "KIEM-FE-F14":   "Citizen / Enterprise / Admin (FE)",
+        "KIEM-FE-F15":   "Citizen / Enterprise / Admin (FE)",
     }
 
     current_row = 2

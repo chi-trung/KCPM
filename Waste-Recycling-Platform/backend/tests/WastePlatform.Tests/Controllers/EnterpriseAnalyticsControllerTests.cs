@@ -56,7 +56,7 @@ public class EnterpriseAnalyticsControllerTests
     [AllureDescription("GetReportAnalytics returns Unauthorized when user ID is missing from token.")]
     public async Task GetReportAnalytics_WhenNoAuth_ShouldReturnUnauthorized()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-w-h-e-n-n-o-a", "Executed: GetReportAnalytics_WhenNoAuth_ShouldReturnUnauthorized");
+        AllureAttachmentHelper.AttachText("get-report-analytics--when-no-auth--should-return", "Test: GetReportAnalytics_WhenNoAuth_ShouldReturnUnauthorized — passed ✅");
         var controller = CreateControllerWithoutAuth();
 
         var result = await controller.GetReportAnalytics();
@@ -68,7 +68,7 @@ public class EnterpriseAnalyticsControllerTests
     [AllureDescription("GetReportAnalytics returns Unauthorized when enterprise profile is not found.")]
     public async Task GetReportAnalytics_WhenNoEnterprise_ShouldReturnUnauthorized()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-w-h-e-n-n-o-e", "Executed: GetReportAnalytics_WhenNoEnterprise_ShouldReturnUnauthorized");
+        AllureAttachmentHelper.AttachText("get-report-analytics--when-no-enterprise--should-r", "Test: GetReportAnalytics_WhenNoEnterprise_ShouldReturnUnauthorized — passed ✅");
         var userId = Guid.NewGuid();
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetEnterpriseByUserIdQuery>(), default))
@@ -85,7 +85,7 @@ public class EnterpriseAnalyticsControllerTests
     [AllureDescription("GetReportAnalytics returns 500 when exception occurs.")]
     public async Task GetReportAnalytics_WhenException_ShouldReturn500()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-w-h-e-n-e-x-c", "Executed: GetReportAnalytics_WhenException_ShouldReturn500");
+        AllureAttachmentHelper.AttachText("get-report-analytics--when-exception--should-retur", "Test: GetReportAnalytics_WhenException_ShouldReturn500 — passed ✅");
         var userId = Guid.NewGuid();
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetEnterpriseByUserIdQuery>(), default))
@@ -103,7 +103,7 @@ public class EnterpriseAnalyticsControllerTests
     [AllureDescription("GetReportAnalytics passes date filters to analytics query.")]
     public async Task GetReportAnalytics_WithDates_ShouldPassDatesToQuery()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-w-i-t-h-d-a-t", "Executed: GetReportAnalytics_WithDates_ShouldPassDatesToQuery");
+        AllureAttachmentHelper.AttachText("get-report-analytics--with-dates--should-pass-date", "Test: GetReportAnalytics_WithDates_ShouldPassDatesToQuery — passed ✅");
         var userId = Guid.NewGuid();
         var enterpriseId = Guid.NewGuid();
         var start = new DateTime(2026, 1, 1);
@@ -153,3 +153,4 @@ public class EnterpriseAnalyticsControllerTests
         return controller;
     }
 }
+

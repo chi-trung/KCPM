@@ -90,7 +90,7 @@ jobs:
       - name: Show container status
         run: docker compose -f ./Waste-Recycling-Platform/docker-compose.yml ps
 
-      - name: Wait for API health
+      - name: Wait for API health + seed stabilization
         run: |
           $maxAttempts = 60
           $attempt = 0
@@ -101,6 +101,9 @@ jobs:
               $response = Invoke-WebRequest -Uri 'http://localhost:8080/api/health' -UseBasicParsing -TimeoutSec 5
               if ($response.StatusCode -eq 200) {
                 Write-Host 'API is healthy ✓'
+                # Extra wait to ensure DB seeding completes before pre-login
+                Write-Host 'Waiting 12s for DB seed to stabilize...'
+                Start-Sleep -Seconds 12
                 exit 0
               }
             } catch {
@@ -146,18 +149,27 @@ jobs:
           $seedPwd = "S33dP@ss!2026"
 
           function Get-Token($email, $password) {
-            try {
-              $body = @{ email = $email; password = $password } | ConvertTo-Json
-              $resp = Invoke-RestMethod -Method POST -Uri "$base/api/auth/login" `
-                -ContentType "application/json" -Body $body -TimeoutSec 10 -ErrorAction Stop
-              return $resp.token
-            } catch {
-              Write-Host "::warning::Login failed for $email — $($_.Exception.Message)"
-              return ""
+            # Retry up to 10 times (2s apart) to handle DB seed stabilization timing
+            for ($i = 1; $i -le 10; $i++) {
+              try {
+                $body = @{ email = $email; password = $password } | ConvertTo-Json
+                $resp = Invoke-RestMethod -Method POST -Uri "$base/api/auth/login" `
+                  -ContentType "application/json" -Body $body -TimeoutSec 10 -ErrorAction Stop
+                if ($resp.token) {
+                  Write-Host "  [attempt $i] ✅ Login OK for $email"
+                  return $resp.token
+                }
+              } catch {
+                Write-Host "  [attempt $i] Login failed for $email — $($_.Exception.Message)"
+                if ($i -lt 10) { Start-Sleep -Seconds 2 }
+              }
             }
+            Write-Host "::warning::All 10 login attempts failed for $email — DB seed may not have completed."
+            return ""
           }
 
           # Login with the actual seeded accounts from Program.cs
+          Write-Host "--- Pre-login: obtaining JWT tokens ---"
           $citizenToken    = Get-Token "nguyenvana@gmail.com"    $seedPwd
           $enterpriseToken = Get-Token "greenlife@gmail.com"     $seedPwd
           $adminToken      = Get-Token "admin@gmail.com"         $seedPwd
@@ -177,6 +189,14 @@ jobs:
           Write-Host "enterpriseToken = $(if($enterpriseToken){'✅ obtained'}else{'❌ empty'})"
           Write-Host "adminToken      = $(if($adminToken){'✅ obtained'}else{'❌ empty'})"
           Write-Host "collectorToken  = $(if($collectorToken){'✅ obtained'}else{'❌ empty'})"
+
+          # Warn clearly if any token is missing
+          if (-not $citizenToken -or -not $collectorToken -or -not $enterpriseToken -or -not $adminToken) {
+            Write-Host "::error::One or more tokens are EMPTY after 10 retries. Newman will run with missing auth — secured endpoints will get 401."
+          } else {
+            Write-Host "✅ All 4 tokens obtained successfully. Newman ready."
+          }
+
 
       - name: Run Postman collection
         id: run_postman

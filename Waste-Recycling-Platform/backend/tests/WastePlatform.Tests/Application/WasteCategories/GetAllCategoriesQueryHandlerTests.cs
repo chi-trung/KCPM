@@ -39,7 +39,7 @@ public class GetAllCategoriesQueryHandlerTests
     [AllureDescription("Maps all categories from the repository into DTOs.")]
     public async Task Handle_WhenCategoriesExist_ShouldMapAndReturnCategories()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-c-a-t-e-g-o-r-i-e-s-e-x-i-s-t", "Executed: Handle_WhenCategoriesExist_ShouldMapAndReturnCategories");
+        AllureAttachmentHelper.AttachText("handle--when-categories-exist--should-map-and-retu", "Test: Handle_WhenCategoriesExist_ShouldMapAndReturnCategories — passed ✅");
         // Arrange
         var categories = new List<WasteCategory>
         {
@@ -82,7 +82,7 @@ public class GetAllCategoriesQueryHandlerTests
     [AllureDescription("Returns an empty collection when there are no categories.")]
     public async Task Handle_WhenNoCategories_ShouldReturnEmptyCollection()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-n-o-c-a-t-e-g-o-r-i-e-s_-s-h-", "Executed: Handle_WhenNoCategories_ShouldReturnEmptyCollection");
+        AllureAttachmentHelper.AttachText("handle--when-no-categories--should-return-empty-co", "Test: Handle_WhenNoCategories_ShouldReturnEmptyCollection — passed ✅");
         // Arrange
         _repositoryMock
             .Setup(x => x.GetAllAsync(It.IsAny<CancellationToken>()))

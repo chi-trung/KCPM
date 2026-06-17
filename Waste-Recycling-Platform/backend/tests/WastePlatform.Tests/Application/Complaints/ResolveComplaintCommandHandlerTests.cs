@@ -141,7 +141,7 @@ public class ResolveComplaintCommandHandlerTests
     [AllureDescription("Returns the complaint id in the success result after resolution.")]
     public async Task Handle_WithValidData_ShouldReturnCorrectComplaintIdInResult()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-v-a-l-i-d-d-a-t-a_-s-h-o-u-l-", "Executed: Handle_WithValidData_ShouldReturnCorrectComplaintIdInResult");
+        AllureAttachmentHelper.AttachText("handle--with-valid-data--should-return-correct-com", "Test: Handle_WithValidData_ShouldReturnCorrectComplaintIdInResult — passed ✅");
         // Arrange
         var complaintId = Guid.NewGuid();
         var citizenId = Guid.NewGuid();
@@ -176,7 +176,7 @@ public class ResolveComplaintCommandHandlerTests
     [AllureDescription("Stores each admin response correctly for different complaint resolutions.")]
     public async Task Handle_WithDifferentAdminResponses_ShouldStoreEachResponseCorrectly()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-d-i-f-f-e-r-e-n-t-a-d-m-i-n-r", "Executed: Handle_WithDifferentAdminResponses_ShouldStoreEachResponseCorrectly");
+        AllureAttachmentHelper.AttachText("handle--with-different-admin-responses--should-sto", "Test: Handle_WithDifferentAdminResponses_ShouldStoreEachResponseCorrectly — passed ✅");
         // Arrange
         var responses = new[] 
         { 
@@ -265,7 +265,7 @@ public class ResolveComplaintCommandHandlerTests
     [AllureDescription("Returns a not-found style failure when the complaint id is empty.")]
     public async Task Handle_WithEmptyComplaintId_ShouldReturnNotFoundResult()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-e-m-p-t-y-c-o-m-p-l-a-i-n-t-i", "Executed: Handle_WithEmptyComplaintId_ShouldReturnNotFoundResult");
+        AllureAttachmentHelper.AttachText("handle--with-empty-complaint-id--should-return-not", "Test: Handle_WithEmptyComplaintId_ShouldReturnNotFoundResult — passed ✅");
         // Arrange
         var complaintId = Guid.Empty;
         
@@ -295,7 +295,7 @@ public class ResolveComplaintCommandHandlerTests
     [Fact]
     public async Task Handle_WithMultipleNonExistentIds_ShouldReturnFailureForEach()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-m-u-l-t-i-p-l-e-n-o-n-e-x-i-s", "Executed: Handle_WithMultipleNonExistentIds_ShouldReturnFailureForEach");
+        AllureAttachmentHelper.AttachText("handle--with-multiple-non-existent-ids--should-ret", "Test: Handle_WithMultipleNonExistentIds_ShouldReturnFailureForEach — passed ✅");
         // Arrange
         var nonExistentIds = new[] 
         { 
@@ -382,7 +382,7 @@ public class ResolveComplaintCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldCallRepositoryMethodsInCorrectOrder()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-s-h-o-u-l-d-c-a-l-l-r-e-p-o-s-i-t-o-r", "Executed: Handle_ShouldCallRepositoryMethodsInCorrectOrder");
+        AllureAttachmentHelper.AttachText("handle--should-call-repository-methods-in-correct", "Test: Handle_ShouldCallRepositoryMethodsInCorrectOrder — passed ✅");
         // Arrange
         var complaintId = Guid.NewGuid();
         var citizenId = Guid.NewGuid();
@@ -419,7 +419,7 @@ public class ResolveComplaintCommandHandlerTests
     [Fact]
     public async Task Handle_WithMultipleResolutionAttempts_ShouldAllowSecondResolution()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-m-u-l-t-i-p-l-e-r-e-s-o-l-u-t", "Executed: Handle_WithMultipleResolutionAttempts_ShouldAllowSecondResolution");
+        AllureAttachmentHelper.AttachText("handle--with-multiple-resolution-attempts--should", "Test: Handle_WithMultipleResolutionAttempts_ShouldAllowSecondResolution — passed ✅");
         // Arrange - First resolution
         var complaintId = Guid.NewGuid();
         var citizenId = Guid.NewGuid();
@@ -470,7 +470,7 @@ public class ResolveComplaintCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldNotThrowException_WhenRepositoryThrowsAndComplaintNotFound()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-s-h-o-u-l-d-n-o-t-t-h-r-o-w-e-x-c-e-p", "Executed: Handle_ShouldNotThrowException_WhenRepositoryThrowsAndComplaintNotFound");
+        AllureAttachmentHelper.AttachText("handle--should-not-throw-exception--when-repositor", "Test: Handle_ShouldNotThrowException_WhenRepositoryThrowsAndComplaintNotFound — passed ✅");
         // Arrange
         var complaintId = Guid.NewGuid();
         
@@ -494,7 +494,7 @@ public class ResolveComplaintCommandHandlerTests
     [Fact]
     public async Task Handle_WithValidComplaint_ShouldVerifyDataPersistence()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-v-a-l-i-d-c-o-m-p-l-a-i-n-t_-", "Executed: Handle_WithValidComplaint_ShouldVerifyDataPersistence");
+        AllureAttachmentHelper.AttachText("handle--with-valid-complaint--should-verify-data-p", "Test: Handle_WithValidComplaint_ShouldVerifyDataPersistence — passed ✅");
         // Arrange
         var complaintId = Guid.NewGuid();
         var citizenId = Guid.NewGuid();
@@ -532,3 +532,4 @@ public class ResolveComplaintCommandHandlerTests
 
     #endregion
 }
+

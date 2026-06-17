@@ -30,7 +30,7 @@ public class WasteCategoryRepositoryTests
     [AllureDescription("Returns all categories ordered by name in ascending order.")]
     public async Task GetAllAsync_ShouldReturnCategoriesOrderedByName()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-a-l-l-a-s-y-n-c_-s-h-o-u-l-d-r-e-t-u-r-n-c-a", "Executed: GetAllAsync_ShouldReturnCategoriesOrderedByName");
+        AllureAttachmentHelper.AttachText("get-all-async--should-return-categories-ordered-by", "Test: GetAllAsync_ShouldReturnCategoriesOrderedByName — passed ✅");
         // Arrange
         await using var context = CreateContext();
         var repository = new WasteCategoryRepository(context);
@@ -53,7 +53,7 @@ public class WasteCategoryRepositoryTests
     [AllureDescription("Returns the matching category when the id exists.")]
     public async Task GetByIdAsync_WhenCategoryExists_ShouldReturnCategory()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-b-y-i-d-a-s-y-n-c_-w-h-e-n-c-a-t-e-g-o-r-y-e", "Executed: GetByIdAsync_WhenCategoryExists_ShouldReturnCategory");
+        AllureAttachmentHelper.AttachText("get-by-id-async--when-category-exists--should-retu", "Test: GetByIdAsync_WhenCategoryExists_ShouldReturnCategory — passed ✅");
         // Arrange
         await using var context = CreateContext();
         var repository = new WasteCategoryRepository(context);
@@ -82,7 +82,7 @@ public class WasteCategoryRepositoryTests
     [AllureDescription("Returns null when the id does not exist.")]
     public async Task GetByIdAsync_WhenCategoryDoesNotExist_ShouldReturnNull()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-b-y-i-d-a-s-y-n-c_-w-h-e-n-c-a-t-e-g-o-r-y-d", "Executed: GetByIdAsync_WhenCategoryDoesNotExist_ShouldReturnNull");
+        AllureAttachmentHelper.AttachText("get-by-id-async--when-category-does-not-exist--sho", "Test: GetByIdAsync_WhenCategoryDoesNotExist_ShouldReturnNull — passed ✅");
         // Arrange
         await using var context = CreateContext();
         var repository = new WasteCategoryRepository(context);

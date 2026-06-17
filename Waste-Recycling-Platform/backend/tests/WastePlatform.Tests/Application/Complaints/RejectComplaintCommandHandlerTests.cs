@@ -147,7 +147,7 @@ public class RejectComplaintCommandHandlerTests
     [AllureDescription("Returns the complaint id in the rejection result.")]
     public async Task Handle_WithValidData_ShouldReturnCorrectComplaintIdInResult()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-v-a-l-i-d-d-a-t-a_-s-h-o-u-l-", "Executed: Handle_WithValidData_ShouldReturnCorrectComplaintIdInResult");
+        AllureAttachmentHelper.AttachText("handle--with-valid-data--should-return-correct-com", "Test: Handle_WithValidData_ShouldReturnCorrectComplaintIdInResult — passed ✅");
         // Arrange
         var complaintId = Guid.NewGuid();
         var citizenId = Guid.NewGuid();
@@ -222,7 +222,7 @@ public class RejectComplaintCommandHandlerTests
     [AllureDescription("Returns a not-found style failure when the complaint id is empty.")]
     public async Task Handle_WithEmptyComplaintId_ShouldReturnNotFoundResult()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-e-m-p-t-y-c-o-m-p-l-a-i-n-t-i", "Executed: Handle_WithEmptyComplaintId_ShouldReturnNotFoundResult");
+        AllureAttachmentHelper.AttachText("handle--with-empty-complaint-id--should-return-not", "Test: Handle_WithEmptyComplaintId_ShouldReturnNotFoundResult — passed ✅");
         // Arrange
         var complaintId = Guid.Empty;
         
@@ -301,7 +301,7 @@ public class RejectComplaintCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldCallRepositoryMethodsInCorrectOrder()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-s-h-o-u-l-d-c-a-l-l-r-e-p-o-s-i-t-o-r", "Executed: Handle_ShouldCallRepositoryMethodsInCorrectOrder");
+        AllureAttachmentHelper.AttachText("handle--should-call-repository-methods-in-correct", "Test: Handle_ShouldCallRepositoryMethodsInCorrectOrder — passed ✅");
         // Arrange
         var complaintId = Guid.NewGuid();
         var citizenId = Guid.NewGuid();
@@ -338,7 +338,7 @@ public class RejectComplaintCommandHandlerTests
     [Fact]
     public async Task Handle_WithMultipleRejectionAttempts_ShouldAllowSecondRejection()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-m-u-l-t-i-p-l-e-r-e-j-e-c-t-i", "Executed: Handle_WithMultipleRejectionAttempts_ShouldAllowSecondRejection");
+        AllureAttachmentHelper.AttachText("handle--with-multiple-rejection-attempts--should-a", "Test: Handle_WithMultipleRejectionAttempts_ShouldAllowSecondRejection — passed ✅");
         // Arrange - First rejection
         var complaintId = Guid.NewGuid();
         var citizenId = Guid.NewGuid();
@@ -388,3 +388,4 @@ public class RejectComplaintCommandHandlerTests
 
     #endregion
 }
+

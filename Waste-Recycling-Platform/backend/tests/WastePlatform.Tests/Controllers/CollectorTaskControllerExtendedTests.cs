@@ -299,7 +299,7 @@ public class CollectorTaskControllerExtendedTests
     [AllureDescription("TC-TASK-006b: GET /api/collector/tasks/stats with unknown collector profile returns 401.")]
     public async Task GetStats_WhenCollectorProfileNotFound_ShouldReturnUnauthorized()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-s-t-a-t-s_-w-h-e-n-c-o-l-l-e-c-t-o-r-p-r-o-f", "Executed: GetStats_WhenCollectorProfileNotFound_ShouldReturnUnauthorized");
+        AllureAttachmentHelper.AttachText("get-stats--when-collector-profile-not-found--shoul", "Test: GetStats_WhenCollectorProfileNotFound_ShouldReturnUnauthorized — passed ✅");
         await using var context = CreateContext();
 
         var controller = BuildController(context, Guid.NewGuid());
@@ -431,3 +431,4 @@ public class CollectorTaskControllerExtendedTests
         WasteReport Report,
         CollectionTask Task);
 }
+

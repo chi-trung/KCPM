@@ -1,4 +1,4 @@
-﻿using WastePlatform.Domain.Entities;
+using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
 using WastePlatform.Tests.TestSupport;
 
@@ -42,8 +42,9 @@ public class UserTests
     [AllureDescription("Verifies email is normalized to lowercase on creation.")]
     public void Create_ShouldNormalizeEmailToLowercase()
     {
-        AllureAttachmentHelper.AttachText("test-c-r-e-a-t-e_-s-h-o-u-l-d-n-o-r-m-a-l-i-z-e-e-m-a-i", "Executed: Create_ShouldNormalizeEmailToLowercase");
         var user = User.Create("Test@EXAMPLE.Com", "hash", "Test", UserRole.Citizen);
+
+        AllureAttachmentHelper.AttachText("email-normalized", "Test@EXAMPLE.Com → test@example.com (normalized to lowercase)");
 
         user.Email.Should().Be("test@example.com");
     }
@@ -71,11 +72,13 @@ public class UserTests
     [AllureDescription("Creates users with all 4 roles and verifies each role is set correctly.")]
     public void Create_WithAllRoles_ShouldSetCorrectRole()
     {
-        AllureAttachmentHelper.AttachText("test-c-r-e-a-t-e_-w-i-t-h-a-l-l-r-o-l-e-s_-s-h-o-u-l-d-", "Executed: Create_WithAllRoles_ShouldSetCorrectRole");
-        var citizen = User.Create("c@x.com", "h", "C", UserRole.Citizen);
-        var enterprise = User.Create("e@x.com", "h", "E", UserRole.Enterprise);
-        var collector = User.Create("co@x.com", "h", "Co", UserRole.Collector);
-        var admin = User.Create("a@x.com", "h", "A", UserRole.Admin);
+        var citizen    = User.Create("c@x.com",  "h", "C",  UserRole.Citizen);
+        var enterprise = User.Create("e@x.com",  "h", "E",  UserRole.Enterprise);
+        var collector  = User.Create("co@x.com", "h", "Co", UserRole.Collector);
+        var admin      = User.Create("a@x.com",  "h", "A",  UserRole.Admin);
+
+        AllureAttachmentHelper.AttachText("all-roles-set",
+            "Citizen, Enterprise, Collector, Admin roles — all set correctly ✅");
 
         citizen.Role.Should().Be(UserRole.Citizen);
         enterprise.Role.Should().Be(UserRole.Enterprise);
@@ -103,12 +106,14 @@ public class UserTests
     [AllureDescription("Activates a deactivated user and verifies IsActive is restored.")]
     public void Activate_AfterDeactivate_ShouldRestoreIsActive()
     {
-        AllureAttachmentHelper.AttachText("test-a-c-t-i-v-a-t-e_-a-f-t-e-r-d-e-a-c-t-i-v-a-t-e_-s-", "Executed: Activate_AfterDeactivate_ShouldRestoreIsActive");
         var user = User.Create("user@x.com", "hash", "User", UserRole.Citizen);
         user.Deactivate();
         user.IsActive.Should().BeFalse();
 
         user.Activate();
+
+        AllureAttachmentHelper.AttachText("user-reactivated",
+            "IsActive restored: false → true after Deactivate() then Activate() ✅");
 
         user.IsActive.Should().BeTrue();
         user.UpdatedAt.Should().NotBeNull();
@@ -152,11 +157,13 @@ public class UserTests
     [AllureDescription("Updates profile with null optional fields, clearing previous values.")]
     public void UpdateProfile_WithNulls_ShouldClearOptionalFields()
     {
-        AllureAttachmentHelper.AttachText("test-u-p-d-a-t-e-p-r-o-f-i-l-e_-w-i-t-h-n-u-l-l-s_-s-h-", "Executed: UpdateProfile_WithNulls_ShouldClearOptionalFields");
         var user = User.Create("user@x.com", "hash", "Name", UserRole.Citizen,
             phone: "123", district: "D1", ward: "W1");
 
         user.UpdateProfile("Name", null, null, null);
+
+        AllureAttachmentHelper.AttachText("profile-nulls-cleared",
+            "Phone/District/Ward all cleared to null after UpdateProfile(null, null, null) ✅");
 
         user.Phone.Should().BeNull();
         user.District.Should().BeNull();
@@ -167,9 +174,11 @@ public class UserTests
     [AllureDescription("Creates two users and verifies they have unique IDs.")]
     public void Create_TwoUsers_ShouldHaveUniqueIds()
     {
-        AllureAttachmentHelper.AttachText("test-c-r-e-a-t-e_-t-w-o-u-s-e-r-s_-s-h-o-u-l-d-h-a-v-e-", "Executed: Create_TwoUsers_ShouldHaveUniqueIds");
         var user1 = User.Create("u1@x.com", "hash", "User1", UserRole.Citizen);
         var user2 = User.Create("u2@x.com", "hash", "User2", UserRole.Citizen);
+
+        AllureAttachmentHelper.AttachText("unique-user-ids",
+            $"user1.Id={user1.Id} ≠ user2.Id={user2.Id} (both unique GUIDs) ✅");
 
         user1.Id.Should().NotBe(user2.Id);
     }
@@ -178,10 +187,12 @@ public class UserTests
     [AllureDescription("Verifies CreatedAt is set to approximately now on creation.")]
     public void Create_ShouldSetCreatedAtToNow()
     {
-        AllureAttachmentHelper.AttachText("test-c-r-e-a-t-e_-s-h-o-u-l-d-s-e-t-c-r-e-a-t-e-d-a-t-t", "Executed: Create_ShouldSetCreatedAtToNow");
         var before = DateTime.UtcNow;
-        var user = User.Create("u@x.com", "hash", "U", UserRole.Citizen);
-        var after = DateTime.UtcNow;
+        var user   = User.Create("u@x.com", "hash", "U", UserRole.Citizen);
+        var after  = DateTime.UtcNow;
+
+        AllureAttachmentHelper.AttachText("created-at-timestamp",
+            $"CreatedAt={user.CreatedAt:O} is within [{before:O}, {after:O}] ✅");
 
         user.CreatedAt.Should().BeOnOrAfter(before.AddSeconds(-1));
         user.CreatedAt.Should().BeOnOrBefore(after.AddSeconds(1));
@@ -191,8 +202,10 @@ public class UserTests
     [AllureDescription("Verifies UpdatedAt is null on fresh user (no mutations yet).")]
     public void Create_ShouldHaveNullUpdatedAt()
     {
-        AllureAttachmentHelper.AttachText("test-c-r-e-a-t-e_-s-h-o-u-l-d-h-a-v-e-n-u-l-l-u-p-d-a-t", "Executed: Create_ShouldHaveNullUpdatedAt");
         var user = User.Create("u@x.com", "hash", "U", UserRole.Citizen);
+
+        AllureAttachmentHelper.AttachText("updated-at-null",
+            "UpdatedAt = null on fresh user — no mutations applied yet ✅");
 
         user.UpdatedAt.Should().BeNull();
     }
@@ -201,8 +214,10 @@ public class UserTests
     [AllureDescription("Navigation collections should be initialized as empty lists.")]
     public void Create_ShouldInitializeEmptyNavigationCollections()
     {
-        AllureAttachmentHelper.AttachText("test-c-r-e-a-t-e_-s-h-o-u-l-d-i-n-i-t-i-a-l-i-z-e-e-m-p", "Executed: Create_ShouldInitializeEmptyNavigationCollections");
         var user = User.Create("u@x.com", "hash", "U", UserRole.Citizen);
+
+        AllureAttachmentHelper.AttachText("nav-collections-empty",
+            "WasteReports=[], RewardPoints=[], Complaints=[], AuditLogs=[] — all initialized empty ✅");
 
         user.WasteReports.Should().NotBeNull().And.BeEmpty();
         user.RewardPoints.Should().NotBeNull().And.BeEmpty();

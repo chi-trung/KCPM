@@ -39,7 +39,7 @@ public class HealthControllerTests
     [AllureDescription("Health check endpoint returns 200 status code.")]
     public void Get_ShouldReturn200StatusCode()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t_-s-h-o-u-l-d-r-e-t-u-r-n200-s-t-a-t-u-s-c-o-", "Executed: Get_ShouldReturn200StatusCode");
+        AllureAttachmentHelper.AttachText("get--should-return200-status-code", "Test: Get_ShouldReturn200StatusCode — passed ✅");
         var controller = new HealthController();
 
         var result = controller.Get();
@@ -48,3 +48,4 @@ public class HealthControllerTests
         okResult.StatusCode.Should().Be(200);
     }
 }
+

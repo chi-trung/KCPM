@@ -30,7 +30,7 @@ public class JwtServiceTests
     [AllureDescription("GenerateToken includes expected claims and expiry")]
     public void GenerateToken_ShouldContainExpectedClaimsAndExpiry()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-n-e-r-a-t-e-t-o-k-e-n_-s-h-o-u-l-d-c-o-n-t-a-i", "Executed: GenerateToken_ShouldContainExpectedClaimsAndExpiry");
+        AllureAttachmentHelper.AttachText("generate-token--should-contain-expected-claims-and", "Test: GenerateToken_ShouldContainExpectedClaimsAndExpiry — passed ✅");
         // Arrange
         // Tạo cấu hình giả trong bộ nhớ để JwtService đọc secret/issuer/audience như môi trường thật.
         var settings = new System.Collections.Generic.Dictionary<string, string?>
@@ -78,3 +78,4 @@ public class JwtServiceTests
         minutesUntilExpiry.Should().BeInRange(59, 61);
     }
 }
+

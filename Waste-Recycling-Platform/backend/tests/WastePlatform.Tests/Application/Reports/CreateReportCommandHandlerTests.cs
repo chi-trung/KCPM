@@ -1,4 +1,4 @@
-using FluentAssertions;
+﻿using FluentAssertions;
 using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using Microsoft.AspNetCore.Http;
@@ -396,7 +396,7 @@ public class CreateReportCommandHandlerTests
     [Fact]
     public async Task Handle_WithImages_ShouldUploadFilesAndAddImageEntities()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-i-m-a-g-e-s_-s-h-o-u-l-d-u-p-", "Executed: Handle_WithImages_ShouldUploadFilesAndAddImageEntities");
+        AllureAttachmentHelper.AttachText("handle--with-images--should-upload-files-and-add-i", "Test: Handle_WithImages_ShouldUploadFilesAndAddImageEntities — passed ✅");
         // Arrange
         var citizenId = Guid.NewGuid();
         var categoryId = 1;
@@ -465,7 +465,7 @@ public class CreateReportCommandHandlerTests
     [Fact]
     public async Task Handle_WhenUploadFails_ShouldThrowException()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-u-p-l-o-a-d-f-a-i-l-s_-s-h-o-", "Executed: Handle_WhenUploadFails_ShouldThrowException");
+        AllureAttachmentHelper.AttachText("handle--when-upload-fails--should-throw-exception", "Test: Handle_WhenUploadFails_ShouldThrowException — passed ✅");
         // Arrange
         var mockFile = new Mock<IFormFile>();
         mockFile.Setup(f => f.FileName).Returns("test.jpg");
@@ -512,7 +512,7 @@ public class CreateReportCommandHandlerTests
     [Fact]
     public async Task Handle_WhenCancelled_ShouldThrowTaskCanceledException()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-c-a-n-c-e-l-l-e-d_-s-h-o-u-l-", "Executed: Handle_WhenCancelled_ShouldThrowTaskCanceledException");
+        AllureAttachmentHelper.AttachText("handle--when-cancelled--should-throw-task-canceled", "Test: Handle_WhenCancelled_ShouldThrowTaskCanceledException — passed ✅");
         // Arrange
         var command = new CreateReportCommand
         {
@@ -575,7 +575,7 @@ public class CreateReportCommandHandlerTests
     [AllureDescription("BVA-02: BVA Standard — 1 ảnh (đúng min) phải được chấp nhận (KIEM-26 fix)")]
     public async Task Handle_WithExactlyOneImage_ShouldCreateReportSuccessfully_BVA_Min()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-e-x-a-c-t-l-y-o-n-e-i-m-a-g-e", "Executed: Handle_WithExactlyOneImage_ShouldCreateReportSuccessfully_BVA_Min");
+        AllureAttachmentHelper.AttachText("handle--with-exactly-one-image--should-create-repo", "Test: Handle_WithExactlyOneImage_ShouldCreateReportSuccessfully_BVA_Min — passed ✅");
         // Arrange — BVA: images = 1 (minimum boundary, valid)
         var command = new CreateReportCommand
         {
@@ -618,7 +618,7 @@ public class CreateReportCommandHandlerTests
     [AllureDescription("BVA-06: BVA Standard — 5 ảnh (đúng max) phải được chấp nhận (KIEM-29 boundary)")]
     public async Task Handle_WithExactlyFiveImages_ShouldCreateReportSuccessfully_BVA_Max()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-i-t-h-e-x-a-c-t-l-y-f-i-v-e-i-m-a-g", "Executed: Handle_WithExactlyFiveImages_ShouldCreateReportSuccessfully_BVA_Max");
+        AllureAttachmentHelper.AttachText("handle--with-exactly-five-images--should-create-re", "Test: Handle_WithExactlyFiveImages_ShouldCreateReportSuccessfully_BVA_Max — passed ✅");
         // Arrange — BVA: images = 5 (maximum boundary, valid)
         var command = new CreateReportCommand
         {
@@ -736,3 +736,4 @@ public class CreateReportCommandHandlerTests
 
     #endregion
 }
+

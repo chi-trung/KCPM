@@ -67,7 +67,7 @@ public class AdminComplaintsControllerTests
     [AllureDescription("GetComplaints passes filter parameters to query.")]
     public async Task GetComplaints_WithFilters_ShouldPassToQuery()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-c-o-m-p-l-a-i-n-t-s_-w-i-t-h-f-i-l-t-e-r-s_-", "Executed: GetComplaints_WithFilters_ShouldPassToQuery");
+        AllureAttachmentHelper.AttachText("get-complaints--with-filters--should-pass-to-query", "Test: GetComplaints_WithFilters_ShouldPassToQuery — passed ✅");
         _mediatorMock
             .Setup(m => m.Send(It.Is<GetComplaintsQuery>(q =>
                 q.Page == 2 && q.PageSize == 5 && q.Status == "Open" && q.SearchTerm == "test"), default))
@@ -85,7 +85,7 @@ public class AdminComplaintsControllerTests
     [AllureDescription("GetComplaints returns 500 on exception.")]
     public async Task GetComplaints_WhenException_ShouldReturn500()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-c-o-m-p-l-a-i-n-t-s_-w-h-e-n-e-x-c-e-p-t-i-o", "Executed: GetComplaints_WhenException_ShouldReturn500");
+        AllureAttachmentHelper.AttachText("get-complaints--when-exception--should-return500", "Test: GetComplaints_WhenException_ShouldReturn500 — passed ✅");
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetComplaintsQuery>(), default))
             .ThrowsAsync(new Exception("DB error"));
@@ -106,7 +106,7 @@ public class AdminComplaintsControllerTests
     [AllureDescription("GetComplaintDetail returns OK when complaint exists.")]
     public async Task GetComplaintDetail_WhenExists_ShouldReturnOk()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-c-o-m-p-l-a-i-n-t-d-e-t-a-i-l_-w-h-e-n-e-x-i", "Executed: GetComplaintDetail_WhenExists_ShouldReturnOk");
+        AllureAttachmentHelper.AttachText("get-complaint-detail--when-exists--should-return-o", "Test: GetComplaintDetail_WhenExists_ShouldReturnOk — passed ✅");
         var complaintId = Guid.NewGuid();
         _mediatorMock
             .Setup(m => m.Send(It.Is<GetComplaintDetailQuery>(q => q.ComplaintId == complaintId), default))
@@ -128,7 +128,7 @@ public class AdminComplaintsControllerTests
     [AllureDescription("GetComplaintDetail returns NotFound when complaint doesn't exist.")]
     public async Task GetComplaintDetail_WhenNotFound_ShouldReturnNotFound()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-c-o-m-p-l-a-i-n-t-d-e-t-a-i-l_-w-h-e-n-n-o-t", "Executed: GetComplaintDetail_WhenNotFound_ShouldReturnNotFound");
+        AllureAttachmentHelper.AttachText("get-complaint-detail--when-not-found--should-retur", "Test: GetComplaintDetail_WhenNotFound_ShouldReturnNotFound — passed ✅");
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetComplaintDetailQuery>(), default))
             .ReturnsAsync((AdminComplaintDto?)null);
@@ -148,7 +148,7 @@ public class AdminComplaintsControllerTests
     [AllureDescription("ResolveComplaint returns BadRequest when admin response is empty.")]
     public async Task ResolveComplaint_EmptyResponse_ShouldReturnBadRequest()
     {
-        AllureAttachmentHelper.AttachText("test-r-e-s-o-l-v-e-c-o-m-p-l-a-i-n-t_-e-m-p-t-y-r-e-s-p", "Executed: ResolveComplaint_EmptyResponse_ShouldReturnBadRequest");
+        AllureAttachmentHelper.AttachText("resolve-complaint--empty-response--should-return-b", "Test: ResolveComplaint_EmptyResponse_ShouldReturnBadRequest — passed ✅");
         var controller = CreateController();
         var request = new ComplaintResponseRequest { AdminResponse = "  " };
 
@@ -161,7 +161,7 @@ public class AdminComplaintsControllerTests
     [AllureDescription("ResolveComplaint returns OK when successful.")]
     public async Task ResolveComplaint_WithValidData_ShouldReturnOk()
     {
-        AllureAttachmentHelper.AttachText("test-r-e-s-o-l-v-e-c-o-m-p-l-a-i-n-t_-w-i-t-h-v-a-l-i-d", "Executed: ResolveComplaint_WithValidData_ShouldReturnOk");
+        AllureAttachmentHelper.AttachText("resolve-complaint--with-valid-data--should-return", "Test: ResolveComplaint_WithValidData_ShouldReturnOk — passed ✅");
         var complaintId = Guid.NewGuid();
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<ResolveComplaintCommand>(), default))
@@ -189,7 +189,7 @@ public class AdminComplaintsControllerTests
     [AllureDescription("ResolveComplaint returns NotFound when complaint doesn't exist.")]
     public async Task ResolveComplaint_WhenNotFound_ShouldReturnNotFound()
     {
-        AllureAttachmentHelper.AttachText("test-r-e-s-o-l-v-e-c-o-m-p-l-a-i-n-t_-w-h-e-n-n-o-t-f-o", "Executed: ResolveComplaint_WhenNotFound_ShouldReturnNotFound");
+        AllureAttachmentHelper.AttachText("resolve-complaint--when-not-found--should-return-n", "Test: ResolveComplaint_WhenNotFound_ShouldReturnNotFound — passed ✅");
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<ResolveComplaintCommand>(), default))
             .ReturnsAsync(new ResolveComplaintResult { Success = false, Message = "Not found" });
@@ -210,7 +210,7 @@ public class AdminComplaintsControllerTests
     [AllureDescription("RejectComplaint returns BadRequest when admin response is empty.")]
     public async Task RejectComplaint_EmptyResponse_ShouldReturnBadRequest()
     {
-        AllureAttachmentHelper.AttachText("test-r-e-j-e-c-t-c-o-m-p-l-a-i-n-t_-e-m-p-t-y-r-e-s-p-o", "Executed: RejectComplaint_EmptyResponse_ShouldReturnBadRequest");
+        AllureAttachmentHelper.AttachText("reject-complaint--empty-response--should-return-ba", "Test: RejectComplaint_EmptyResponse_ShouldReturnBadRequest — passed ✅");
         var controller = CreateController();
         var request = new ComplaintResponseRequest { AdminResponse = "" };
 
@@ -223,7 +223,7 @@ public class AdminComplaintsControllerTests
     [AllureDescription("RejectComplaint returns OK when successful.")]
     public async Task RejectComplaint_WithValidData_ShouldReturnOk()
     {
-        AllureAttachmentHelper.AttachText("test-r-e-j-e-c-t-c-o-m-p-l-a-i-n-t_-w-i-t-h-v-a-l-i-d-d", "Executed: RejectComplaint_WithValidData_ShouldReturnOk");
+        AllureAttachmentHelper.AttachText("reject-complaint--with-valid-data--should-return-o", "Test: RejectComplaint_WithValidData_ShouldReturnOk — passed ✅");
         var complaintId = Guid.NewGuid();
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<RejectComplaintCommand>(), default))
@@ -246,7 +246,7 @@ public class AdminComplaintsControllerTests
     [AllureDescription("RejectComplaint returns NotFound when complaint doesn't exist.")]
     public async Task RejectComplaint_WhenNotFound_ShouldReturnNotFound()
     {
-        AllureAttachmentHelper.AttachText("test-r-e-j-e-c-t-c-o-m-p-l-a-i-n-t_-w-h-e-n-n-o-t-f-o-u", "Executed: RejectComplaint_WhenNotFound_ShouldReturnNotFound");
+        AllureAttachmentHelper.AttachText("reject-complaint--when-not-found--should-return-no", "Test: RejectComplaint_WhenNotFound_ShouldReturnNotFound — passed ✅");
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<RejectComplaintCommand>(), default))
             .ReturnsAsync(new RejectComplaintResult { Success = false, Message = "Not found" });
@@ -261,3 +261,4 @@ public class AdminComplaintsControllerTests
 
     #endregion
 }
+

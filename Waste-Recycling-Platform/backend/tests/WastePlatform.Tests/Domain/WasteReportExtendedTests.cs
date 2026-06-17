@@ -41,7 +41,7 @@ public class WasteReportExtendedTests
     [AllureDescription("Pending → Rejected is a valid transition.")]
     public void Reject_WhenPending_ShouldSucceed()
     {
-        AllureAttachmentHelper.AttachText("test-r-e-j-e-c-t_-w-h-e-n-p-e-n-d-i-n-g_-s-h-o-u-l-d-s-", "Executed: Reject_WhenPending_ShouldSucceed");
+        AllureAttachmentHelper.AttachText("pending-to-rejected", "Pending → Reject() → Rejected ✅");
         var report = CreateReport();
 
         report.Reject();
@@ -57,7 +57,7 @@ public class WasteReportExtendedTests
     [AllureDescription("Pending → Assigned is invalid (must Accept first).")]
     public void Assign_WhenPending_ShouldThrow()
     {
-        AllureAttachmentHelper.AttachText("test-a-s-s-i-g-n_-w-h-e-n-p-e-n-d-i-n-g_-s-h-o-u-l-d-t-", "Executed: Assign_WhenPending_ShouldThrow");
+        AllureAttachmentHelper.AttachText("invalid-pending-to-assigned", "Pending → Assign() throws InvalidOperationException (must Accept first) ❌");
         var report = CreateReport();
 
         var act = () => report.Assign();
@@ -70,7 +70,7 @@ public class WasteReportExtendedTests
     [AllureDescription("Rejected → Accepted is invalid (rejected is a terminal state for accept).")]
     public void Accept_WhenRejected_ShouldThrow()
     {
-        AllureAttachmentHelper.AttachText("test-a-c-c-e-p-t_-w-h-e-n-r-e-j-e-c-t-e-d_-s-h-o-u-l-d-", "Executed: Accept_WhenRejected_ShouldThrow");
+        AllureAttachmentHelper.AttachText("invalid-rejected-to-accepted", "Rejected → Accept() throws InvalidOperationException (rejected is terminal for accept) ❌");
         var report = CreateReport();
         report.Reject();
 
@@ -83,7 +83,7 @@ public class WasteReportExtendedTests
     [AllureDescription("Rejected → Assigned is invalid.")]
     public void Assign_WhenRejected_ShouldThrow()
     {
-        AllureAttachmentHelper.AttachText("test-a-s-s-i-g-n_-w-h-e-n-r-e-j-e-c-t-e-d_-s-h-o-u-l-d-", "Executed: Assign_WhenRejected_ShouldThrow");
+        AllureAttachmentHelper.AttachText("invalid-rejected-to-assigned", "Rejected → Assign() throws InvalidOperationException ❌");
         var report = CreateReport();
         report.Reject();
 
@@ -96,7 +96,7 @@ public class WasteReportExtendedTests
     [AllureDescription("Rejected → Collected is invalid.")]
     public void Collect_WhenRejected_ShouldThrow()
     {
-        AllureAttachmentHelper.AttachText("test-c-o-l-l-e-c-t_-w-h-e-n-r-e-j-e-c-t-e-d_-s-h-o-u-l-", "Executed: Collect_WhenRejected_ShouldThrow");
+        AllureAttachmentHelper.AttachText("invalid-rejected-to-collected", "Rejected → Collect() throws InvalidOperationException ❌");
         var report = CreateReport();
         report.Reject();
 
@@ -109,7 +109,7 @@ public class WasteReportExtendedTests
     [AllureDescription("Rejected → Rejected is invalid (double reject).")]
     public void Reject_WhenRejected_ShouldThrow()
     {
-        AllureAttachmentHelper.AttachText("test-r-e-j-e-c-t_-w-h-e-n-r-e-j-e-c-t-e-d_-s-h-o-u-l-d-", "Executed: Reject_WhenRejected_ShouldThrow");
+        AllureAttachmentHelper.AttachText("invalid-double-reject", "Rejected → Reject() throws InvalidOperationException (double reject) ❌");
         var report = CreateReport();
         report.Reject();
 
@@ -122,7 +122,7 @@ public class WasteReportExtendedTests
     [AllureDescription("Assigned → Accepted is invalid (cannot go backwards).")]
     public void Accept_WhenAssigned_ShouldThrow()
     {
-        AllureAttachmentHelper.AttachText("test-a-c-c-e-p-t_-w-h-e-n-a-s-s-i-g-n-e-d_-s-h-o-u-l-d-", "Executed: Accept_WhenAssigned_ShouldThrow");
+        AllureAttachmentHelper.AttachText("invalid-assigned-to-accepted", "Assigned → Accept() throws InvalidOperationException (no backward transition) ❌");
         var report = CreateReport();
         report.Accept();
         report.Assign();
@@ -136,7 +136,7 @@ public class WasteReportExtendedTests
     [AllureDescription("Assigned → Assigned is invalid (double assign).")]
     public void Assign_WhenAssigned_ShouldThrow()
     {
-        AllureAttachmentHelper.AttachText("test-a-s-s-i-g-n_-w-h-e-n-a-s-s-i-g-n-e-d_-s-h-o-u-l-d-", "Executed: Assign_WhenAssigned_ShouldThrow");
+        AllureAttachmentHelper.AttachText("invalid-double-assign", "Assigned → Assign() throws InvalidOperationException (double assign) ❌");
         var report = CreateReport();
         report.Accept();
         report.Assign();
@@ -150,7 +150,7 @@ public class WasteReportExtendedTests
     [AllureDescription("Collected → Accepted is invalid (final state).")]
     public void Accept_WhenCollected_ShouldThrow()
     {
-        AllureAttachmentHelper.AttachText("test-a-c-c-e-p-t_-w-h-e-n-c-o-l-l-e-c-t-e-d_-s-h-o-u-l-", "Executed: Accept_WhenCollected_ShouldThrow");
+        AllureAttachmentHelper.AttachText("invalid-collected-to-accepted", "Collected → Accept() throws InvalidOperationException (Collected is final state) ❌");
         var report = CreateReport();
         report.Accept();
         report.Assign();
@@ -165,7 +165,7 @@ public class WasteReportExtendedTests
     [AllureDescription("Collected → Assigned is invalid (final state).")]
     public void Assign_WhenCollected_ShouldThrow()
     {
-        AllureAttachmentHelper.AttachText("test-a-s-s-i-g-n_-w-h-e-n-c-o-l-l-e-c-t-e-d_-s-h-o-u-l-", "Executed: Assign_WhenCollected_ShouldThrow");
+        AllureAttachmentHelper.AttachText("invalid-collected-to-assigned", "Collected → Assign() throws InvalidOperationException (Collected is final state) ❌");
         var report = CreateReport();
         report.Accept();
         report.Assign();
@@ -180,7 +180,7 @@ public class WasteReportExtendedTests
     [AllureDescription("Collected → Collected is invalid (double collect).")]
     public void Collect_WhenCollected_ShouldThrow()
     {
-        AllureAttachmentHelper.AttachText("test-c-o-l-l-e-c-t_-w-h-e-n-c-o-l-l-e-c-t-e-d_-s-h-o-u-", "Executed: Collect_WhenCollected_ShouldThrow");
+        AllureAttachmentHelper.AttachText("invalid-double-collect", "Collected → Collect() throws InvalidOperationException (double collect) ❌");
         var report = CreateReport();
         report.Accept();
         report.Assign();
@@ -195,7 +195,7 @@ public class WasteReportExtendedTests
     [AllureDescription("Collected → Rejected is invalid (final state).")]
     public void Reject_WhenCollected_ShouldThrow()
     {
-        AllureAttachmentHelper.AttachText("test-r-e-j-e-c-t_-w-h-e-n-c-o-l-l-e-c-t-e-d_-s-h-o-u-l-", "Executed: Reject_WhenCollected_ShouldThrow");
+        AllureAttachmentHelper.AttachText("invalid-collected-to-rejected", "Collected → Reject() throws InvalidOperationException (Collected is final state) ❌");
         var report = CreateReport();
         report.Accept();
         report.Assign();
@@ -214,7 +214,7 @@ public class WasteReportExtendedTests
     [AllureDescription("Create with null description should set Description to null.")]
     public void Create_WithNullDescription_ShouldBeNull()
     {
-        AllureAttachmentHelper.AttachText("test-c-r-e-a-t-e_-w-i-t-h-n-u-l-l-d-e-s-c-r-i-p-t-i-o-n", "Executed: Create_WithNullDescription_ShouldBeNull");
+        AllureAttachmentHelper.AttachText("create-null-description", "Description = null when not provided to WasteReport.Create ✅");
         var report = WasteReport.Create(Guid.NewGuid(), 1, 10m, 106m, description: null);
 
         report.Description.Should().BeNull();
@@ -224,7 +224,7 @@ public class WasteReportExtendedTests
     [AllureDescription("Create with null address should set Address to null.")]
     public void Create_WithNullAddress_ShouldBeNull()
     {
-        AllureAttachmentHelper.AttachText("test-c-r-e-a-t-e_-w-i-t-h-n-u-l-l-a-d-d-r-e-s-s_-s-h-o-", "Executed: Create_WithNullAddress_ShouldBeNull");
+        AllureAttachmentHelper.AttachText("create-null-address", "Address = null when not provided to WasteReport.Create ✅");
         var report = WasteReport.Create(Guid.NewGuid(), 1, 10m, 106m, address: null);
 
         report.Address.Should().BeNull();
@@ -234,7 +234,7 @@ public class WasteReportExtendedTests
     [AllureDescription("Create initializes empty navigation collections.")]
     public void Create_ShouldInitializeEmptyCollections()
     {
-        AllureAttachmentHelper.AttachText("test-c-r-e-a-t-e_-s-h-o-u-l-d-i-n-i-t-i-a-l-i-z-e-e-m-p", "Executed: Create_ShouldInitializeEmptyCollections");
+        AllureAttachmentHelper.AttachText("report-nav-collections-empty", "Images=[], RewardPoints=[], Complaints=[] — all initialized empty ✅");
         var report = CreateReport();
 
         report.Images.Should().NotBeNull().And.BeEmpty();
@@ -246,7 +246,7 @@ public class WasteReportExtendedTests
     [AllureDescription("Two reports created in sequence should have unique IDs.")]
     public void Create_TwoReports_ShouldHaveUniqueIds()
     {
-        AllureAttachmentHelper.AttachText("test-c-r-e-a-t-e_-t-w-o-r-e-p-o-r-t-s_-s-h-o-u-l-d-h-a-", "Executed: Create_TwoReports_ShouldHaveUniqueIds");
+        AllureAttachmentHelper.AttachText("unique-report-ids", "r1.Id ≠ r2.Id (both unique GUIDs) ✅");
         var r1 = CreateReport();
         var r2 = CreateReport();
 
@@ -267,3 +267,4 @@ public class WasteReportExtendedTests
             aiSuggestion: "Mixed");
     }
 }
+

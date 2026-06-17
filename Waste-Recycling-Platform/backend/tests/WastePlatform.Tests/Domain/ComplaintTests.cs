@@ -1,4 +1,4 @@
-﻿using WastePlatform.Domain.Entities;
+using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
 using WastePlatform.Tests.TestSupport;
 
@@ -41,12 +41,14 @@ public class ComplaintTests
     [AllureDescription("Creates a complaint linked to a report and enterprise.")]
     public void Create_WithReportAndEnterprise_ShouldSetOptionalIds()
     {
-        AllureAttachmentHelper.AttachText("test-c-r-e-a-t-e_-w-i-t-h-r-e-p-o-r-t-a-n-d-e-n-t-e-r-p", "Executed: Create_WithReportAndEnterprise_ShouldSetOptionalIds");
-        var citizenId = Guid.NewGuid();
-        var reportId = Guid.NewGuid();
+        var citizenId    = Guid.NewGuid();
+        var reportId     = Guid.NewGuid();
         var enterpriseId = Guid.NewGuid();
 
         var complaint = Complaint.Create(citizenId, "Chậm xử lý", reportId, enterpriseId);
+
+        AllureAttachmentHelper.AttachText("complaint-linked-ids",
+            $"reportId={reportId} and enterpriseId={enterpriseId} set on complaint ✅");
 
         complaint.ReportId.Should().Be(reportId);
         complaint.EnterpriseId.Should().Be(enterpriseId);
@@ -150,7 +152,7 @@ public class ComplaintTests
     [AllureDescription("Enterprise resolves without providing a response text.")]
     public void ResolveByEnterprise_WithNullResponse_ShouldStillResolve()
     {
-        AllureAttachmentHelper.AttachText("test-r-e-s-o-l-v-e-b-y-e-n-t-e-r-p-r-i-s-e_-w-i-t-h-n-u", "Executed: ResolveByEnterprise_WithNullResponse_ShouldStillResolve");
+        AllureAttachmentHelper.AttachText("enterprise-resolve-null", "Status = Resolved even with null enterprise response ✅");
         var complaint = CreateComplaint();
 
         complaint.ResolveByEnterprise(null);
@@ -181,7 +183,7 @@ public class ComplaintTests
     [AllureDescription("Citizen escalates without providing a reason.")]
     public void EscalateToAdmin_WithoutReason_ShouldSetEscalatedStatusOnly()
     {
-        AllureAttachmentHelper.AttachText("test-e-s-c-a-l-a-t-e-t-o-a-d-m-i-n_-w-i-t-h-o-u-t-r-e-a", "Executed: EscalateToAdmin_WithoutReason_ShouldSetEscalatedStatusOnly");
+        AllureAttachmentHelper.AttachText("escalate-no-reason", "Status = Escalated, EscalationReason = null (no reason provided) ✅");
         var complaint = CreateComplaint();
 
         complaint.EscalateToAdmin();

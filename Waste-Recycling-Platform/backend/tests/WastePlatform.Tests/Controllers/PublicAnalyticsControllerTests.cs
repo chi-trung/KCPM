@@ -1,4 +1,4 @@
-using Allure.Xunit.Attributes;
+﻿using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -46,7 +46,7 @@ public class PublicAnalyticsControllerTests
     [AllureDescription("GetReportAnalytics passes date filters to query.")]
     public async Task GetReportAnalytics_WithDateFilters_ShouldPassToQuery()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-w-i-t-h-d-a-t", "Executed: GetReportAnalytics_WithDateFilters_ShouldPassToQuery");
+        AllureAttachmentHelper.AttachText("get-report-analytics--with-date-filters--should-pa", "Test: GetReportAnalytics_WithDateFilters_ShouldPassToQuery — passed ✅");
         var start = new DateTime(2026, 1, 1);
         var end = new DateTime(2026, 6, 30);
 
@@ -68,7 +68,7 @@ public class PublicAnalyticsControllerTests
     [AllureDescription("GetReportAnalytics returns 500 when mediator throws.")]
     public async Task GetReportAnalytics_WhenException_ShouldReturn500()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-w-h-e-n-e-x-c", "Executed: GetReportAnalytics_WhenException_ShouldReturn500");
+        AllureAttachmentHelper.AttachText("get-report-analytics--when-exception--should-retur", "Test: GetReportAnalytics_WhenException_ShouldReturn500 — passed ✅");
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetPublicReportAnalyticsQuery>(), default))
             .ThrowsAsync(new Exception("Database error"));
@@ -85,7 +85,7 @@ public class PublicAnalyticsControllerTests
     [AllureDescription("GetReportAnalytics works without date filters (defaults).")]
     public async Task GetReportAnalytics_WithoutFilters_ShouldSendNullDates()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-r-e-p-o-r-t-a-n-a-l-y-t-i-c-s_-w-i-t-h-o-u-t", "Executed: GetReportAnalytics_WithoutFilters_ShouldSendNullDates");
+        AllureAttachmentHelper.AttachText("get-report-analytics--without-filters--should-send", "Test: GetReportAnalytics_WithoutFilters_ShouldSendNullDates — passed ✅");
         _mediatorMock
             .Setup(m => m.Send(It.Is<GetPublicReportAnalyticsQuery>(q =>
                 q.StartDate == null && q.EndDate == null), default))
@@ -113,3 +113,4 @@ public class PublicAnalyticsControllerTests
         result.Should().BeOfType<BadRequestObjectResult>();
     }
 }
+

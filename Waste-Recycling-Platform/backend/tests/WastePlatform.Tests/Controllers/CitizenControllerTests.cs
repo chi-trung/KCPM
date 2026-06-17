@@ -56,7 +56,7 @@ public class CitizenControllerTests
     [AllureDescription("GetTotalRewards returns Unauthorized when user ID is missing from token.")]
     public async Task GetTotalRewards_WhenNoUserId_ShouldReturnUnauthorized()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-t-o-t-a-l-r-e-w-a-r-d-s_-w-h-e-n-n-o-u-s-e-r", "Executed: GetTotalRewards_WhenNoUserId_ShouldReturnUnauthorized");
+        AllureAttachmentHelper.AttachText("get-total-rewards--when-no-user-id--should-return", "Test: GetTotalRewards_WhenNoUserId_ShouldReturnUnauthorized — passed ✅");
         var controller = CreateControllerWithoutAuth();
 
         var result = await controller.GetTotalRewards();
@@ -85,7 +85,7 @@ public class CitizenControllerTests
     [AllureDescription("GetRewardHistory returns BadRequest when page < 1.")]
     public async Task GetRewardHistory_WithInvalidPage_ShouldReturnBadRequest()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-r-e-w-a-r-d-h-i-s-t-o-r-y_-w-i-t-h-i-n-v-a-l", "Executed: GetRewardHistory_WithInvalidPage_ShouldReturnBadRequest");
+        AllureAttachmentHelper.AttachText("get-reward-history--with-invalid-page--should-retu", "Test: GetRewardHistory_WithInvalidPage_ShouldReturnBadRequest — passed ✅");
         var controller = CreateController(Guid.NewGuid());
 
         var result = await controller.GetRewardHistory(page: 0, pageSize: 10);
@@ -97,7 +97,7 @@ public class CitizenControllerTests
     [AllureDescription("GetRewardHistory returns BadRequest when pageSize < 1.")]
     public async Task GetRewardHistory_WithInvalidPageSize_ShouldReturnBadRequest()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-r-e-w-a-r-d-h-i-s-t-o-r-y_-w-i-t-h-i-n-v-a-l", "Executed: GetRewardHistory_WithInvalidPageSize_ShouldReturnBadRequest");
+        AllureAttachmentHelper.AttachText("get-reward-history--with-invalid-page-size--should", "Test: GetRewardHistory_WithInvalidPageSize_ShouldReturnBadRequest — passed ✅");
         var controller = CreateController(Guid.NewGuid());
 
         var result = await controller.GetRewardHistory(page: 1, pageSize: 0);
@@ -131,7 +131,7 @@ public class CitizenControllerTests
     [AllureDescription("GetLeaderboard returns BadRequest with invalid pagination.")]
     public async Task GetLeaderboard_WithInvalidPagination_ShouldReturnBadRequest()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-l-e-a-d-e-r-b-o-a-r-d_-w-i-t-h-i-n-v-a-l-i-d", "Executed: GetLeaderboard_WithInvalidPagination_ShouldReturnBadRequest");
+        AllureAttachmentHelper.AttachText("get-leaderboard--with-invalid-pagination--should-r", "Test: GetLeaderboard_WithInvalidPagination_ShouldReturnBadRequest — passed ✅");
         var controller = CreateController(Guid.NewGuid());
 
         var result = await controller.GetLeaderboard(page: -1, pageSize: 10);
@@ -143,7 +143,7 @@ public class CitizenControllerTests
     [AllureDescription("GetAreaLeaderboard returns BadRequest with invalid pagination.")]
     public async Task GetAreaLeaderboard_WithInvalidPagination_ShouldReturnBadRequest()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-a-r-e-a-l-e-a-d-e-r-b-o-a-r-d_-w-i-t-h-i-n-v", "Executed: GetAreaLeaderboard_WithInvalidPagination_ShouldReturnBadRequest");
+        AllureAttachmentHelper.AttachText("get-area-leaderboard--with-invalid-pagination--sho", "Test: GetAreaLeaderboard_WithInvalidPagination_ShouldReturnBadRequest — passed ✅");
         var controller = CreateController(Guid.NewGuid());
 
         var result = await controller.GetAreaLeaderboard(page: 0, pageSize: 0);
@@ -155,7 +155,7 @@ public class CitizenControllerTests
     [AllureDescription("GetProfile returns OK with user profile.")]
     public async Task GetProfile_WhenAuthenticated_ShouldReturnOk()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-p-r-o-f-i-l-e_-w-h-e-n-a-u-t-h-e-n-t-i-c-a-t", "Executed: GetProfile_WhenAuthenticated_ShouldReturnOk");
+        AllureAttachmentHelper.AttachText("get-profile--when-authenticated--should-return-ok", "Test: GetProfile_WhenAuthenticated_ShouldReturnOk — passed ✅");
         var userId = Guid.NewGuid();
         _mediatorMock
             .Setup(m => m.Send(It.Is<GetProfileQuery>(q => q.UserId == userId), default))
@@ -172,7 +172,7 @@ public class CitizenControllerTests
     [AllureDescription("GetProfile returns Unauthorized when user ID is missing.")]
     public async Task GetProfile_WhenNoAuth_ShouldReturnUnauthorized()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-p-r-o-f-i-l-e_-w-h-e-n-n-o-a-u-t-h_-s-h-o-u-", "Executed: GetProfile_WhenNoAuth_ShouldReturnUnauthorized");
+        AllureAttachmentHelper.AttachText("get-profile--when-no-auth--should-return-unauthori", "Test: GetProfile_WhenNoAuth_ShouldReturnUnauthorized — passed ✅");
         var controller = CreateControllerWithoutAuth();
 
         var result = await controller.GetProfile();
@@ -184,7 +184,7 @@ public class CitizenControllerTests
     [AllureDescription("GetProfile returns NotFound when user doesn't exist.")]
     public async Task GetProfile_WhenUserNotFound_ShouldReturnNotFound()
     {
-        AllureAttachmentHelper.AttachText("test-g-e-t-p-r-o-f-i-l-e_-w-h-e-n-u-s-e-r-n-o-t-f-o-u-n", "Executed: GetProfile_WhenUserNotFound_ShouldReturnNotFound");
+        AllureAttachmentHelper.AttachText("get-profile--when-user-not-found--should-return-no", "Test: GetProfile_WhenUserNotFound_ShouldReturnNotFound — passed ✅");
         var userId = Guid.NewGuid();
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<GetProfileQuery>(), default))
@@ -201,7 +201,7 @@ public class CitizenControllerTests
     [AllureDescription("UpdateProfile returns OK when updating with valid data.")]
     public async Task UpdateProfile_WithValidData_ShouldReturnOk()
     {
-        AllureAttachmentHelper.AttachText("test-u-p-d-a-t-e-p-r-o-f-i-l-e_-w-i-t-h-v-a-l-i-d-d-a-t", "Executed: UpdateProfile_WithValidData_ShouldReturnOk");
+        AllureAttachmentHelper.AttachText("update-profile--with-valid-data--should-return-ok", "Test: UpdateProfile_WithValidData_ShouldReturnOk — passed ✅");
         var userId = Guid.NewGuid();
         _mediatorMock
             .Setup(m => m.Send(It.IsAny<UpdateProfileCommand>(), default))
@@ -219,7 +219,7 @@ public class CitizenControllerTests
     [AllureDescription("UpdateProfile returns BadRequest when FullName is empty.")]
     public async Task UpdateProfile_WithEmptyFullName_ShouldReturnBadRequest()
     {
-        AllureAttachmentHelper.AttachText("test-u-p-d-a-t-e-p-r-o-f-i-l-e_-w-i-t-h-e-m-p-t-y-f-u-l", "Executed: UpdateProfile_WithEmptyFullName_ShouldReturnBadRequest");
+        AllureAttachmentHelper.AttachText("update-profile--with-empty-full-name--should-retur", "Test: UpdateProfile_WithEmptyFullName_ShouldReturnBadRequest — passed ✅");
         var controller = CreateController(Guid.NewGuid());
         var profile = new UpdateProfileDto { FullName = "  " };
 
@@ -232,7 +232,7 @@ public class CitizenControllerTests
     [AllureDescription("UpdateProfile returns Unauthorized when user ID is missing.")]
     public async Task UpdateProfile_WhenNoAuth_ShouldReturnUnauthorized()
     {
-        AllureAttachmentHelper.AttachText("test-u-p-d-a-t-e-p-r-o-f-i-l-e_-w-h-e-n-n-o-a-u-t-h_-s-", "Executed: UpdateProfile_WhenNoAuth_ShouldReturnUnauthorized");
+        AllureAttachmentHelper.AttachText("update-profile--when-no-auth--should-return-unauth", "Test: UpdateProfile_WhenNoAuth_ShouldReturnUnauthorized — passed ✅");
         var controller = CreateControllerWithoutAuth();
         var profile = new UpdateProfileDto { FullName = "Test" };
 
@@ -275,3 +275,4 @@ public class CitizenControllerTests
         return prop is null ? default : (T?)prop.GetValue(obj);
     }
 }
+

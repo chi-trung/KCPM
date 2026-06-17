@@ -181,7 +181,7 @@ public class AcceptReportCommandHandlerV2Tests
     [AllureDescription("TC-REP-005: Verifies repository is queried exactly once with the correct reportId.")]
     public async Task Handle_WhenReportIsPending_ShouldCallRepositoryOnce()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-r-e-p-o-r-t-i-s-p-e-n-d-i-n-g", "Executed: Handle_WhenReportIsPending_ShouldCallRepositoryOnce");
+        AllureAttachmentHelper.AttachText("handle--when-report-is-pending--should-call-reposi", "Test: Handle_WhenReportIsPending_ShouldCallRepositoryOnce — passed ✅");
         // ── ARRANGE ─────────────────────────────────────────────────────────────
         var reportId = Guid.NewGuid();
         var report   = CreatePendingReport();
@@ -214,7 +214,7 @@ public class AcceptReportCommandHandlerV2Tests
     [AllureDescription("TC-REP-005: Notification mock is not invoked in current handler — documents upgrade requirement.")]
     public async Task Handle_WhenPendingReport_NotificationServiceShouldBeCalledAfterUpgrade()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-p-e-n-d-i-n-g-r-e-p-o-r-t_-n-", "Executed: Handle_WhenPendingReport_NotificationServiceShouldBeCalledAfterUpgrade");
+        AllureAttachmentHelper.AttachText("handle--when-pending-report--notification-service", "Test: Handle_WhenPendingReport_NotificationServiceShouldBeCalledAfterUpgrade — passed ✅");
         // ── ARRANGE ─────────────────────────────────────────────────────────────
         var reportId = Guid.NewGuid();
         var report   = CreatePendingReport();
@@ -327,7 +327,7 @@ public class AcceptReportCommandHandlerV2Tests
     [AllureDescription("TC-REP-007: Report đã Rejected — Accept bị chặn, trạng thái Rejected được expose trong message.")]
     public async Task Handle_WhenReportIsRejected_ShouldThrowWithRejectedStatusInMessage()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-r-e-p-o-r-t-i-s-r-e-j-e-c-t-e", "Executed: Handle_WhenReportIsRejected_ShouldThrowWithRejectedStatusInMessage");
+        AllureAttachmentHelper.AttachText("handle--when-report-is-rejected--should-throw-with", "Test: Handle_WhenReportIsRejected_ShouldThrowWithRejectedStatusInMessage — passed ✅");
         // ── ARRANGE ─────────────────────────────────────────────────────────────
         var reportId = Guid.NewGuid();
         var report   = CreatePendingReport();
@@ -365,7 +365,7 @@ public class AcceptReportCommandHandlerV2Tests
     [AllureDescription("TC-REP-007: Report đã Collected (terminal state) — Accept bị chặn hoàn toàn.")]
     public async Task Handle_WhenReportIsCollected_ShouldThrowWithCollectedStatusInMessage()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-r-e-p-o-r-t-i-s-c-o-l-l-e-c-t", "Executed: Handle_WhenReportIsCollected_ShouldThrowWithCollectedStatusInMessage");
+        AllureAttachmentHelper.AttachText("handle--when-report-is-collected--should-throw-wit", "Test: Handle_WhenReportIsCollected_ShouldThrowWithCollectedStatusInMessage — passed ✅");
         // ── ARRANGE ─────────────────────────────────────────────────────────────
         var reportId = Guid.NewGuid();
         var report   = CreatePendingReport();
@@ -400,7 +400,7 @@ public class AcceptReportCommandHandlerV2Tests
     [AllureDescription("TC-REP-007: Double-accept — Report đã Accepted không thể Accept thêm lần nữa.")]
     public async Task Handle_WhenReportIsAlreadyAccepted_ShouldThrowWithAcceptedStatusInMessage()
     {
-        AllureAttachmentHelper.AttachText("test-h-a-n-d-l-e_-w-h-e-n-r-e-p-o-r-t-i-s-a-l-r-e-a-d-y", "Executed: Handle_WhenReportIsAlreadyAccepted_ShouldThrowWithAcceptedStatusInMessage");
+        AllureAttachmentHelper.AttachText("handle--when-report-is-already-accepted--should-th", "Test: Handle_WhenReportIsAlreadyAccepted_ShouldThrowWithAcceptedStatusInMessage — passed ✅");
         // ── ARRANGE ─────────────────────────────────────────────────────────────
         var reportId = Guid.NewGuid();
         var report   = CreatePendingReport();
@@ -572,3 +572,4 @@ public class AcceptReportCommandHandlerV2Tests
             address:         "Test address",
             aiSuggestion:    "Recyclable");
 }
+
