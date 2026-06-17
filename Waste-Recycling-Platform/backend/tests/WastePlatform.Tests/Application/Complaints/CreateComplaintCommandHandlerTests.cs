@@ -522,5 +522,49 @@ public class CreateComplaintCommandHandlerTests
         result.Should().NotBe(Guid.Empty, "BVA max boundary (2000 chars) phải được chấp nhận");
     }
 
+    [Fact]
+    [AllureDescription("BR-05: Rejects complaint creation when a complaint already exists for the referenced report.")]
+    [AllureOwner("Nguyễn Minh Phụng")]
+    public async Task Handle_WhenComplaintAlreadyExistsForReport_ShouldThrowInvalidOperationException()
+    {
+        // Arrange
+        var citizenId = Guid.NewGuid();
+        var reportId = Guid.NewGuid();
+        var enterpriseId = Guid.NewGuid();
+        var content = "Second complaint about the same report.";
+
+        var command = new CreateComplaintCommand
+        {
+            CitizenId = citizenId,
+            Content = content,
+            ReportId = reportId,
+            EnterpriseId = null
+        };
+
+        var report = WasteReport.Create(citizenId, 1, 10.5m, 20.5m, "Test description");
+        report.Accept();
+        report.Assign();
+        typeof(WasteReport).GetProperty(nameof(WasteReport.Id))?.SetValue(report, reportId);
+        var collectionTask = CollectionTask.Create(reportId, enterpriseId);
+        typeof(WasteReport).GetProperty(nameof(WasteReport.CollectionTask))?.SetValue(report, collectionTask);
+
+        _mockReportRepository
+            .Setup(x => x.GetByIdAsync(reportId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(report);
+
+        // Mock GetByCitizenIdAsync to return an existing complaint for this report
+        var existingComplaint = Complaint.Create(citizenId, "First complaint", reportId, enterpriseId);
+        _mockComplaintRepository
+            .Setup(x => x.GetByCitizenIdAsync(citizenId, It.IsAny<int>(), It.IsAny<int>(), It.IsAny<ComplaintStatus?>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((new List<Complaint> { existingComplaint }, 1));
+
+        // Act & Assert
+        var act = async () => await _handler.Handle(command, CancellationToken.None);
+
+        AllureAttachmentHelper.AttachJson("existing-complaint-command", command);
+        await act.Should().ThrowAsync<InvalidOperationException>(
+            "BR-05: Citizen chỉ gửi được 1 khiếu nại cho 1 report.");
+    }
+
     #endregion
 }

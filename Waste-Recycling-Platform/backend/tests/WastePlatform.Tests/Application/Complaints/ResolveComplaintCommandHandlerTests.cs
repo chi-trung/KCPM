@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using Moq;
@@ -338,7 +338,9 @@ public class ResolveComplaintCommandHandlerTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public async Task Handle_WithNullOrEmptyAdminResponse_ShouldStillProcessResolution(string? adminResponse)
+    [AllureDescription("Rejects resolving the complaint when the admin response is empty or whitespace.")]
+    [AllureOwner("Nguyễn Minh Phụng")]
+    public async Task Handle_WithNullOrEmptyAdminResponse_ShouldThrowArgumentException(string? adminResponse)
     {
         // Arrange
         var complaintId = Guid.NewGuid();
@@ -359,20 +361,12 @@ public class ResolveComplaintCommandHandlerTests
             .Setup(x => x.GetByIdAsync(complaintId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(complaint);
 
-        _mockComplaintRepository
-            .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
-
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        var act = async () => await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        // The handler doesn't explicitly validate AdminResponse, so it should still resolve
-        result.Success.Should().BeTrue("Handler should process resolution even with empty response");
-        
-        _mockComplaintRepository.Verify(
-            x => x.SaveChangesAsync(It.IsAny<CancellationToken>()),
-            Times.Once, "SaveChangesAsync should be called even with empty response");
+        AllureAttachmentHelper.AttachJson("resolve-empty-response-command", command);
+        await act.Should().ThrowAsync<ArgumentException>("Phản hồi không được để trống khi giải quyết khiếu nại");
     }
 
     #endregion
