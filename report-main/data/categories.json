@@ -1,44 +1,7 @@
 {
-  "uid": "d5426d179d5d4e86b95a5c575a9a917a",
+  "uid": "b434a367c5fe4d2897bb2a4da44475d1",
   "name": "categories",
   "children": [
-    {
-      "name": "Not Found",
-      "children": [
-        {
-          "name": "status code check: 200 or 404",
-          "children": [
-            {
-              "name": "GET Task By ID",
-              "uid": "e55cf34b7db84664",
-              "parentUid": "2fdb5928d23e4ad5",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [
-                {
-                  "name": "Request",
-                  "value": "GET - http://localhost:8080/api/collector/tasks/"
-                },
-                {
-                  "name": "Response Code",
-                  "value": "401",
-                  "excluded": true
-                }
-              ],
-              "tags": []
-            }
-          ],
-          "uid": "2fdb5928d23e4ad5"
-        }
-      ],
-      "uid": "22b86d932f274e5f"
-    },
     {
       "name": "Product defects",
       "children": [
@@ -47,33 +10,8 @@
           "children": [
             {
               "name": "GET Task Stats",
-              "uid": "5c24dc71e5a44a0f",
-              "parentUid": "f3e40481eb644fbb",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [
-                {
-                  "name": "Request",
-                  "value": "GET - http://localhost:8080/api/enterprise/tasks/stats"
-                },
-                {
-                  "name": "Response Code",
-                  "value": "401",
-                  "excluded": true
-                }
-              ],
-              "tags": []
-            },
-            {
-              "name": "GET Task Stats",
-              "uid": "9de1e3d93c1e4afc",
-              "parentUid": "f3e40481eb644fbb",
+              "uid": "23c51f0ad74d4dd7",
+              "parentUid": "9eddb2e67da54a89",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -96,9 +34,34 @@
               "tags": []
             },
             {
+              "name": "GET Task Stats",
+              "uid": "afa82f7a08ba4c23",
+              "parentUid": "9eddb2e67da54a89",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [
+                {
+                  "name": "Request",
+                  "value": "GET - http://localhost:8080/api/enterprise/tasks/stats"
+                },
+                {
+                  "name": "Response Code",
+                  "value": "401",
+                  "excluded": true
+                }
+              ],
+              "tags": []
+            },
+            {
               "name": "GET My Tasks",
-              "uid": "478726bb754245f8",
-              "parentUid": "f3e40481eb644fbb",
+              "uid": "81b01d325d944b03",
+              "parentUid": "9eddb2e67da54a89",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -121,10 +84,10 @@
               "tags": []
             }
           ],
-          "uid": "f3e40481eb644fbb"
+          "uid": "9eddb2e67da54a89"
         }
       ],
-      "uid": "10b0585e89ac44e0"
+      "uid": "f5f64b40d99e4a51"
     },
     {
       "name": "E2E – Element Not Found",
@@ -135,7 +98,7 @@
             {
               "name": "#4 Collector login fails with wrong password (negative test – error guessing) Frontend Role",
               "uid": "8b6fbe8b732c4918",
-              "parentUid": "487e53a2d19b4aa3",
+              "parentUid": "77edb06b39044aa8",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -148,10 +111,47 @@
               "tags": []
             }
           ],
-          "uid": "487e53a2d19b4aa3"
+          "uid": "77edb06b39044aa8"
         }
       ],
-      "uid": "9f2bd977511c4dbc"
+      "uid": "104bd509fd614575"
+    },
+    {
+      "name": "Not Found",
+      "children": [
+        {
+          "name": "status code check: 200 or 404",
+          "children": [
+            {
+              "name": "GET Task By ID",
+              "uid": "ff5ba4eceed54431",
+              "parentUid": "e80a10b660b943c3",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [
+                {
+                  "name": "Request",
+                  "value": "GET - http://localhost:8080/api/collector/tasks/"
+                },
+                {
+                  "name": "Response Code",
+                  "value": "401",
+                  "excluded": true
+                }
+              ],
+              "tags": []
+            }
+          ],
+          "uid": "e80a10b660b943c3"
+        }
+      ],
+      "uid": "08ab1e98796049cf"
     }
   ]
 }
