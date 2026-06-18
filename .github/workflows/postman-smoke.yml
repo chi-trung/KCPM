@@ -145,8 +145,11 @@ jobs:
         continue-on-error: true
         run: |
           $base = "http://localhost:8080"
-          # Seed password from Program.cs (SEED_PASSWORD env or default)
-          $seedPwd = "S33dP@ss!2026"
+          # Seed password from V6__sample_data.sql (MySQL init scripts run BEFORE .NET seeding)
+          # V6 SQL seeds all accounts with BCrypt hash of "password".
+          # The .NET Program.cs seeding block is SKIPPED because admin already exists from V6.
+          # Therefore DB passwords are ALWAYS "password" in CI environments.
+          $seedPwd = "password"
 
           function Get-Token($email, $password) {
             # Retry up to 10 times (2s apart) to handle DB seed stabilization timing
@@ -213,7 +216,7 @@ jobs:
             '--env-var', 'adminToken=${{ steps.prelogin.outputs.adminToken }}',
             '--env-var', 'collectorToken=${{ steps.prelogin.outputs.collectorToken }}',
             '--env-var', 'managementToken=${{ steps.prelogin.outputs.adminToken }}',
-            '--env-var', 'seedPassword=S33dP@ss!2026',
+            '--env-var', 'seedPassword=password',  # Must match V6__sample_data.sql BCrypt hash
             '--reporters', 'cli,junit,json,allure',
             '--reporter-junit-export', './TestResults/postman-junit.xml',
             '--reporter-json-export', './TestResults/postman-report.json',
