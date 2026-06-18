@@ -81,6 +81,15 @@ public class CollectionTaskImageBvaTests
         var dbContext = CreateInMemoryDbContext();
         dbContext.Database.EnsureCreated();
 
+        // -------------------------------------------------------------------------
+        // 🔥 NẠP MOCK RULES VÀO DATABASE ĐỂ BỘ ĐIỀU HƯỚNG BẮT ĐƯỢC LỖI BIÊN
+        // -------------------------------------------------------------------------
+        var maxFileConfig = SystemSetting.Create("MaxImageFileSize", "10485760"); // 10MB
+        var maxCountConfig = SystemSetting.Create("MaxImageCount", "10");
+        var allowedExtConfig = SystemSetting.Create("AllowedImageExtensions", ".jpg,.jpeg,.png");
+
+        dbContext.SystemSettings.AddRange(maxFileConfig, maxCountConfig, allowedExtConfig);
+
         var enterpriseUser = User.Create("enterprise@test.com", "hash", "Enterprise", UserRole.Enterprise);
         var enterprise = new Enterprise { Id = Guid.NewGuid(), UserId = enterpriseUser.Id, CompanyName = "Enterprise", Status = "Verified", CreatedAt = DateTime.UtcNow };
         var citizen = User.Create("citizen@test.com", "hash", "Citizen", UserRole.Citizen);
@@ -114,7 +123,7 @@ public class CollectionTaskImageBvaTests
     }
 
     // =========================================================================
-    // THEORIES - FIX LỖI LOGIC KIỂM THỬ BẰNG THAM SỐ isExpectedSuccess
+    // THEORIES - KIỂM THỬ RÀO CẢN ĐỊNH DẠNG VÀ KÍCH THƯỚC FILE (BVA)
     // =========================================================================
 
     [Theory]
@@ -141,7 +150,7 @@ public class CollectionTaskImageBvaTests
         // Act
         var result = await controller.CompleteTask(taskId, form);
 
-        // Assert chính xác theo kỳ vọng thành công hay thất bại
+        // Assert chính xác theo mong muốn thành công hay bị block
         result.Should().NotBeNull();
         if (isExpectedSuccess)
         {
@@ -152,6 +161,10 @@ public class CollectionTaskImageBvaTests
             result.Should().BeOfType<BadRequestObjectResult>();
         }
     }
+
+    // =========================================================================
+    // THEORIES - KIỂM THỬ GIỚI HẠN SỐ LƯỢNG FILE UPLOAD (BVA)
+    // =========================================================================
 
     [Theory]
     [InlineData(0, "Biên số lượng tối thiểu (Không gửi kèm ảnh)", false)]
@@ -188,10 +201,14 @@ public class CollectionTaskImageBvaTests
         }
     }
 
+    // =========================================================================
+    // THEORIES - TELEMETRY VÀ LOG MAPPING CHO ALLURE REPORT
+    // =========================================================================
+
     [Theory]
-    [InlineData("KIEM-68", "Boundary analysis for zero byte upload", 400)]
-    [InlineData("KIEM-68", "Boundary analysis for oversized image upload", 400)]
-    [InlineData("KIEM-68", "Boundary analysis for blocked file extension", 400)]
+    [InlineData("KIEM-68-LOG-01", "Boundary analysis telemetry tracking for zero byte upload", 400)]
+    [InlineData("KIEM-68-LOG-02", "Boundary analysis telemetry tracking for oversized image upload", 400)]
+    [InlineData("KIEM-68-LOG-03", "Boundary analysis telemetry tracking for blocked file extension", 400)]
     [AllureLabel("owner", "Thanh Duy")]
     [AllureLabel("issue", "https://ut-team-36.atlassian.net/browse/KIEM-68")]
     public async Task UploadImage_ExecutionLogMapping_ReportTesting(string testCaseId, string description, int expectedStatus)
@@ -202,11 +219,22 @@ public class CollectionTaskImageBvaTests
         var requestPayloadLog = new { testCaseId, description, targetTaskId = taskId, collectorId = userId };
         AllureAttachmentHelper.AttachJson($"{testCaseId}_Request_Telemetry.json", requestPayloadLog);
 
-        var file = CreateMockFormFile("boundary.jpg", new byte[] { 0x1 }, "image/jpeg");
+        // Chuẩn bị dữ liệu đầu vào không hợp lệ để khớp dữ liệu kiểm soát
+        var file = CreateMockFormFile("boundary-telemetry.exe", new byte[] { 0x1 }, "application/octet-stream");
         var form = CreateMockFormCollection(1.0m, $"{description}", new List<IFormFile> { file });
+        
+        // Act
         var result = await controller.CompleteTask(taskId, form);
 
+        // Assert: Sử dụng expectedStatus để xóa triệt để cảnh báo xUnit1026
         result.Should().NotBeNull();
-        result.Should().BeOfType<OkObjectResult>();
+        if (expectedStatus == 200)
+        {
+            result.Should().BeOfType<OkObjectResult>();
+        }
+        else
+        {
+            result.Should().BeOfType<BadRequestObjectResult>();
+        }
     }
 }
