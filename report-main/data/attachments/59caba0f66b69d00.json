@@ -1,0 +1,10 @@
+{
+  "Id": "47e0a1e5-a622-4020-ac37-fc50f7f4da2f",
+  "CitizenId": "3a1c44be-735f-478d-9a8d-fae7b23bfba2",
+  "CitizenName": "Test Citizen",
+  "WasteCategoryId": 1,
+  "CategoryName": "Rác hữu cơ",
+  "Description": "Rác thải sinh hoạt",
+  "Status": 0,
+  "AiSuggestion": "Recyclable"
+}

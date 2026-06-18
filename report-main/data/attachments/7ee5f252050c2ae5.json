@@ -1,0 +1,11 @@
+{
+  "Id": "18184bb5-0e9f-439b-a36f-50bd20cc1647",
+  "CitizenId": "098ff088-45df-46b4-bd9c-49a143b665f1",
+  "WasteCategoryId": 7,
+  "Status": 0,
+  "Latitude": 10.1234,
+  "Longitude": 106.5678,
+  "Description": "Báo cáo rác thải",
+  "Address": "Q1, TP.HCM",
+  "AiSuggestion": "Recyclable"
+}
