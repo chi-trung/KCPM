@@ -1,17 +1,17 @@
 {
-  "uid": "6ec64a2bf8b74562a66ef22c195d5d31",
+  "uid": "d5426d179d5d4e86b95a5c575a9a917a",
   "name": "categories",
   "children": [
     {
-      "name": "Product defects",
+      "name": "Not Found",
       "children": [
         {
-          "name": "status code check: exactly 200",
+          "name": "status code check: 200 or 404",
           "children": [
             {
-              "name": "GET My Tasks",
-              "uid": "833bc41a2fbe44aa",
-              "parentUid": "6ce048beda054fdd",
+              "name": "GET Task By ID",
+              "uid": "e55cf34b7db84664",
+              "parentUid": "2fdb5928d23e4ad5",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -23,7 +23,7 @@
               "parameters": [
                 {
                   "name": "Request",
-                  "value": "GET - http://localhost:8080/api/collector/tasks?status="
+                  "value": "GET - http://localhost:8080/api/collector/tasks/"
                 },
                 {
                   "name": "Response Code",
@@ -32,11 +32,23 @@
                 }
               ],
               "tags": []
-            },
+            }
+          ],
+          "uid": "2fdb5928d23e4ad5"
+        }
+      ],
+      "uid": "22b86d932f274e5f"
+    },
+    {
+      "name": "Product defects",
+      "children": [
+        {
+          "name": "status code check: exactly 200",
+          "children": [
             {
               "name": "GET Task Stats",
-              "uid": "bf6d53f26a26491c",
-              "parentUid": "6ce048beda054fdd",
+              "uid": "5c24dc71e5a44a0f",
+              "parentUid": "f3e40481eb644fbb",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -60,8 +72,8 @@
             },
             {
               "name": "GET Task Stats",
-              "uid": "9d549fb2fcca43c2",
-              "parentUid": "6ce048beda054fdd",
+              "uid": "9de1e3d93c1e4afc",
+              "parentUid": "f3e40481eb644fbb",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -82,23 +94,11 @@
                 }
               ],
               "tags": []
-            }
-          ],
-          "uid": "6ce048beda054fdd"
-        }
-      ],
-      "uid": "388665faef8e4e42"
-    },
-    {
-      "name": "Not Found",
-      "children": [
-        {
-          "name": "status code check: 200 or 404",
-          "children": [
+            },
             {
-              "name": "GET Task By ID",
-              "uid": "1411b14012a74508",
-              "parentUid": "b6e376cfd2f24496",
+              "name": "GET My Tasks",
+              "uid": "478726bb754245f8",
+              "parentUid": "f3e40481eb644fbb",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -110,7 +110,7 @@
               "parameters": [
                 {
                   "name": "Request",
-                  "value": "GET - http://localhost:8080/api/collector/tasks/"
+                  "value": "GET - http://localhost:8080/api/collector/tasks?status="
                 },
                 {
                   "name": "Response Code",
@@ -121,10 +121,37 @@
               "tags": []
             }
           ],
-          "uid": "b6e376cfd2f24496"
+          "uid": "f3e40481eb644fbb"
         }
       ],
-      "uid": "6df7866e2deb42e2"
+      "uid": "10b0585e89ac44e0"
+    },
+    {
+      "name": "E2E – Element Not Found",
+      "children": [
+        {
+          "name": "element (.bg-red-50) still not present on page after 10 sec\nlocator.waitFor: Timeout 10000ms exceeded.\nCall log:\n  - wai",
+          "children": [
+            {
+              "name": "#4 Collector login fails with wrong password (negative test – error guessing) Frontend Role",
+              "uid": "8b6fbe8b732c4918",
+              "parentUid": "487e53a2d19b4aa3",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [],
+              "tags": []
+            }
+          ],
+          "uid": "487e53a2d19b4aa3"
+        }
+      ],
+      "uid": "9f2bd977511c4dbc"
     }
   ]
 }
