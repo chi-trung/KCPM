@@ -1,6 +1,6 @@
 # 📋 KCPM — Tài Liệu Quy Trình CI/CD Chi Tiết
 
-> **Môn**: Kiểm Chứng Phần Mềm | **Team**: UIT Team 36  
+> **Môn**: Kiểm Chứng Phần Mềm | **Team**: Team 36  
 > **Cập nhật lần cuối**: 2026-06-13
 
 ---

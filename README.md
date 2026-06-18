@@ -1,6 +1,6 @@
 # ♻️ KCPM — Waste Recycling Platform
 
-> **Kiểm Chứng Phần Mềm** 
+> **Kiểm Chứng Phần Mềm** | Team 36
 
 [![Backend Tests](https://github.com/chi-trung/KCPM/actions/workflows/backend-tests.yml/badge.svg)](https://github.com/chi-trung/KCPM/actions/workflows/backend-tests.yml)
 [![Frontend E2E](https://github.com/chi-trung/KCPM/actions/workflows/frontend-e2e.yml/badge.svg)](https://github.com/chi-trung/KCPM/actions/workflows/frontend-e2e.yml)
