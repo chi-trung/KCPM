@@ -66,6 +66,12 @@ var jwtSecret = builder.Configuration["JwtSettings:SecretKey"]
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        // Fix: .NET 8 JwtBearerHandler uses JsonWebTokenHandler which does NOT auto-map
+        // JWT standard claims (sub, email) to CLR types (ClaimTypes.NameIdentifier).
+        // Set MapInboundClaims = true to restore the classic mapping so that
+        // User.FindFirst(ClaimTypes.NameIdentifier) correctly resolves the "sub" claim.
+        options.MapInboundClaims = true;
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer           = true,
