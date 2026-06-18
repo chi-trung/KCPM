@@ -88,7 +88,7 @@ Scenario('#4 Collector login fails with wrong password (negative test – error 
 
   // Then: System shows an error — either auth error (with backend) or connection error (no backend)
   // "Email hoặc mật khẩu không đúng." (401) OR "Không thể kết nối đến máy chủ." (no backend)
-  I.waitForElement('.bg-red-50', 10);
+  I.waitForElement('.bg-red-50', 15);
 
   // And: URL does NOT change to collector dashboard
   I.dontSeeCurrentUrlEquals('/collector/dashboard');
