@@ -1,0 +1,19 @@
+{
+  "Id": "e722470b-181d-4b24-b69e-d81ea70f0517",
+  "ReportId": "5b0750fb-dfaa-49de-9542-ebb57bdf5be7",
+  "EnterpriseId": "ce735c36-7ef2-4e86-b566-4d98cfea0b4e",
+  "CollectorId": null,
+  "Status": 1,
+  "CollectedWeightKg": null,
+  "Notes": null,
+  "AssignedAt": "2026-06-18T02:10:13.266914Z",
+  "CompletedAt": null,
+  "statusLogs": [
+    {
+      "TaskId": "e722470b-181d-4b24-b69e-d81ea70f0517",
+      "Status": 1,
+      "ChangedAt": "2026-06-18T02:10:13.266916Z"
+    }
+  ],
+  "images": []
+}
