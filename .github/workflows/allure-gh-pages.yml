@@ -109,7 +109,7 @@ jobs:
         run: |
           BASE="http://localhost:8080"
           # Seed password from Program.cs (SEED_PASSWORD env or default)
-          SEED_PWD="S33dP@ss!2026"
+          SEED_PWD="password"  # Must match BCrypt hash in V6__sample_data.sql
 
           get_token() {
             local email="$1"
@@ -149,7 +149,7 @@ jobs:
             --env-var "adminToken=${{ steps.prelogin.outputs.adminToken }}" \
             --env-var "collectorToken=${{ steps.prelogin.outputs.collectorToken }}" \
             --env-var "managementToken=${{ steps.prelogin.outputs.adminToken }}" \
-            --env-var "seedPassword=S33dP@ss!2026" \
+            --env-var "seedPassword=password" \
             -r cli,allure \
             --reporter-allure-export allure-results \
             --reporter-allure-collection-as-parent-suite
