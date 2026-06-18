@@ -306,4 +306,4 @@ KCPM/
 
 ## 📄 License
 
-This project is for educational purposes — UIT Software Verification course (Kiểm Chứng Phần Mềm).
+This project is for educational purposes — Software Verification course (Kiểm Chứng Phần Mềm).
