@@ -1,0 +1,15 @@
+{
+  "message": "Public report analytics retrieved successfully",
+  "data": {
+    "TotalReports": 0,
+    "AcceptedReports": 0,
+    "PendingReports": 0,
+    "RejectedReports": 0,
+    "CollectedReports": 0,
+    "ReportsByCategory": {},
+    "AverageReportsPerDay": 0,
+    "WasteByArea": [],
+    "WasteByType": [],
+    "MonthlyTrends": []
+  }
+}

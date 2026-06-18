@@ -1,0 +1,19 @@
+{
+  "CitizenId": "1c9125f9-9e9f-4836-9fae-905a19b55149",
+  "WasteCategoryId": 1,
+  "Latitude": 10.7769,
+  "Longitude": 106.7009,
+  "Description": "Rác thải sinh hoạt tại vỉa hè",
+  "Address": "123 Nguyễn Trãi, P.1, Q.1",
+  "AiSuggestion": null,
+  "Images": [
+    {
+      "ContentType": "image/jpeg",
+      "ContentDisposition": null,
+      "Headers": null,
+      "Length": 1024,
+      "Name": null,
+      "FileName": "report.jpg"
+    }
+  ]
+}

@@ -1,44 +1,7 @@
 {
-  "uid": "9bedbc5aa52a42348ef0d414a7348a36",
+  "uid": "6ec64a2bf8b74562a66ef22c195d5d31",
   "name": "categories",
   "children": [
-    {
-      "name": "Not Found",
-      "children": [
-        {
-          "name": "status code check: 200 or 404",
-          "children": [
-            {
-              "name": "GET Task By ID",
-              "uid": "f6fc461762fa4df2",
-              "parentUid": "a9bed9ae50e6428e",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [
-                {
-                  "name": "Request",
-                  "value": "GET - http://localhost:8080/api/collector/tasks/"
-                },
-                {
-                  "name": "Response Code",
-                  "value": "401",
-                  "excluded": true
-                }
-              ],
-              "tags": []
-            }
-          ],
-          "uid": "a9bed9ae50e6428e"
-        }
-      ],
-      "uid": "b3edfb69f4b94ca7"
-    },
     {
       "name": "Product defects",
       "children": [
@@ -46,34 +9,9 @@
           "name": "status code check: exactly 200",
           "children": [
             {
-              "name": "GET Task Stats",
-              "uid": "b76323a2d19843ed",
-              "parentUid": "8a22521a98544a19",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [
-                {
-                  "name": "Request",
-                  "value": "GET - http://localhost:8080/api/collector/tasks/stats"
-                },
-                {
-                  "name": "Response Code",
-                  "value": "401",
-                  "excluded": true
-                }
-              ],
-              "tags": []
-            },
-            {
               "name": "GET My Tasks",
-              "uid": "ce8db6437f5f4261",
-              "parentUid": "8a22521a98544a19",
+              "uid": "833bc41a2fbe44aa",
+              "parentUid": "6ce048beda054fdd",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -97,8 +35,8 @@
             },
             {
               "name": "GET Task Stats",
-              "uid": "9f5fdd67044c4213",
-              "parentUid": "8a22521a98544a19",
+              "uid": "bf6d53f26a26491c",
+              "parentUid": "6ce048beda054fdd",
               "status": "failed",
               "time": {},
               "flaky": false,
@@ -119,12 +57,74 @@
                 }
               ],
               "tags": []
+            },
+            {
+              "name": "GET Task Stats",
+              "uid": "9d549fb2fcca43c2",
+              "parentUid": "6ce048beda054fdd",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [
+                {
+                  "name": "Request",
+                  "value": "GET - http://localhost:8080/api/collector/tasks/stats"
+                },
+                {
+                  "name": "Response Code",
+                  "value": "401",
+                  "excluded": true
+                }
+              ],
+              "tags": []
             }
           ],
-          "uid": "8a22521a98544a19"
+          "uid": "6ce048beda054fdd"
         }
       ],
-      "uid": "d62e34e7b1f344e4"
+      "uid": "388665faef8e4e42"
+    },
+    {
+      "name": "Not Found",
+      "children": [
+        {
+          "name": "status code check: 200 or 404",
+          "children": [
+            {
+              "name": "GET Task By ID",
+              "uid": "1411b14012a74508",
+              "parentUid": "b6e376cfd2f24496",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [
+                {
+                  "name": "Request",
+                  "value": "GET - http://localhost:8080/api/collector/tasks/"
+                },
+                {
+                  "name": "Response Code",
+                  "value": "401",
+                  "excluded": true
+                }
+              ],
+              "tags": []
+            }
+          ],
+          "uid": "b6e376cfd2f24496"
+        }
+      ],
+      "uid": "6df7866e2deb42e2"
     }
   ]
 }
