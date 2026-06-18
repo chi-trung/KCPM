@@ -1,0 +1,12 @@
+{
+  "testCaseId": "KIEM-68-LOG-03",
+  "description": "Boundary analysis telemetry tracking for blocked file extension",
+  "targetTaskId": "d3915001-d5cf-4ee5-b20d-5f7d30e61246",
+  "collectorId": "438c70a7-ffb7-4f6c-a23a-aa59cd2f2f55",
+  "labels": [
+    {
+      "name": "owner",
+      "value": "Thanh Duy"
+    }
+  ]
+}
