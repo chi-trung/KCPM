@@ -25,19 +25,15 @@ using Xunit;
 
 namespace WastePlatform.Tests.Controllers;
 
-[AllureEpic("Quality Assurance Practices")]
-[AllureFeature("CollectionTask Boundary Value Analysis")]
-[Allure.Net.Commons.Attributes.AllureLabel("story", "Image Upload Boundary Value Testing")]
-[Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
-[Allure.Net.Commons.Attributes.AllureLabel("suite", "Controllers")]
-[Allure.Net.Commons.Attributes.AllureLabel("subSuite", "CollectionTaskImageBvaTests")]
-[Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Controllers")]
-[AllureOwner("Thanh Duy")]
-[AllureSeverity(SeverityLevel.critical)]
-[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-68")]
+[AllureLabel("epic", "Quality Assurance Practices")]
+[AllureLabel("feature", "CollectionTask Boundary Value Analysis")]
+[AllureLabel("story", "Image Upload Boundary Value Testing")]
+[AllureLabel("parentSuite", "xUnit Backend Tests")]
+[AllureLabel("suite", "Controllers")]
+[AllureLabel("package", "WastePlatform.Tests.Controllers")]
 public class CollectionTaskImageBvaTests
 {
-    private const long MAX_IMAGE_FILE_SIZE_BYTES = 10_485_760;
+    private const long MAX_IMAGE_FILE_SIZE_BYTES = 10_485_760; // 10 MB
 
     private static WastePlatformDbContext CreateInMemoryDbContext()
     {
@@ -118,20 +114,20 @@ public class CollectionTaskImageBvaTests
     }
 
     // =========================================================================
-    // THEORIES - ĐÃ FIX THAM SỐ THÀNH CÔNG/THẤT BẠI (isExpectedSuccess)
+    // THEORIES - FIX LỖI LOGIC KIỂM THỬ BẰNG THAM SỐ isExpectedSuccess
     // =========================================================================
 
     [Theory]
-    // Các case HỢP LỆ -> Trả về OK (true)
     [InlineData("tiny.jpg", 1, "image/jpeg", "Biên dưới sát hạn định (1 byte)", true)]
     [InlineData("normal.jpg", 1024, "image/jpeg", "Kích thước tệp hợp lệ thông thường", true)]
     [InlineData("large.jpg", 10_485_759, "image/jpeg", "Biên trên sát trần (MAX - 1 byte)", true)]
     [InlineData("max-boundary.jpg", 10_485_760, "image/jpeg", "Biên trên khít trần (MAX bytes)", true)]
-    // Các case KHÔNG HỢP LỆ -> Phải trả về BadRequest (false)
     [InlineData("empty.jpg", 0, "image/jpeg", "Biên dưới tối thiểu tuyệt đối (0 bytes)", false)]
     [InlineData("oversized.jpg", 10_485_761, "image/jpeg", "Biên trên vượt ngưỡng (MAX + 1 byte)", false)]
     [InlineData("malware.exe", 1024, "application/octet-stream", "Kiểm tra bảo mật: Chặn tệp nguy hại .exe", false)]
     [InlineData("report.pdf", 2048, "application/pdf", "Kiểm tra định dạng: Chặn tệp tài liệu sai cấu trúc .pdf", false)]
+    [AllureLabel("owner", "Thanh Duy")]
+    [AllureLabel("issue", "https://ut-team-36.atlassian.net/browse/KIEM-68")]
     public async Task CompleteTask_FileConstraints_BoundaryTesting(string fileName, long fileSize, string contentType, string scenarioDesc, bool isExpectedSuccess)
     {
         // Arrange
@@ -145,7 +141,7 @@ public class CollectionTaskImageBvaTests
         // Act
         var result = await controller.CompleteTask(taskId, form);
 
-        // Assert chính xác theo từng loại dữ liệu đầu vào
+        // Assert chính xác theo kỳ vọng thành công hay thất bại
         result.Should().NotBeNull();
         if (isExpectedSuccess)
         {
@@ -158,10 +154,12 @@ public class CollectionTaskImageBvaTests
     }
 
     [Theory]
-    [InlineData(0, "Biên số lượng tối thiểu (Không gửi kèm ảnh)", false)] // Không có ảnh xác nhận thu gom -> Thất bại
+    [InlineData(0, "Biên số lượng tối thiểu (Không gửi kèm ảnh)", false)]
     [InlineData(1, "Biên số lượng hợp lệ thấp nhất (Gửi 1 ảnh)", true)]
     [InlineData(10, "Biên số lượng đạt trần cấu hình (Gửi 10 ảnh)", true)]
-    [InlineData(11, "Biên số lượng vượt quá cấu hình cho phép (Gửi 11 ảnh)", false)] // Vượt giới hạn số lượng -> Thất bại
+    [InlineData(11, "Biên số lượng vượt quá cấu hình cho phép (Gửi 11 ảnh)", false)]
+    [AllureLabel("owner", "Thanh Duy")]
+    [AllureLabel("issue", "https://ut-team-36.atlassian.net/browse/KIEM-68")]
     public async Task CompleteTask_ImageCountConstraints_BoundaryTesting(int count, string scenarioDesc, bool isExpectedSuccess)
     {
         // Arrange
@@ -191,23 +189,23 @@ public class CollectionTaskImageBvaTests
     }
 
     [Theory]
-    [InlineData("KIEM-68-TC01", "Boundary analysis for zero byte upload", 400)]
-    [InlineData("KIEM-68-TC02", "Boundary analysis for oversized image upload", 400)]
-    [InlineData("KIEM-68-TC03", "Boundary analysis for blocked file extension", 400)]
+    [InlineData("KIEM-68", "Boundary analysis for zero byte upload", 400)]
+    [InlineData("KIEM-68", "Boundary analysis for oversized image upload", 400)]
+    [InlineData("KIEM-68", "Boundary analysis for blocked file extension", 400)]
+    [AllureLabel("owner", "Thanh Duy")]
+    [AllureLabel("issue", "https://ut-team-36.atlassian.net/browse/KIEM-68")]
     public async Task UploadImage_ExecutionLogMapping_ReportTesting(string testCaseId, string description, int expectedStatus)
     {
         // Arrange
         var (_, controller, taskId, userId) = InitializeTestEnvironment();
-        var requestPayloadLog = new { testCaseId, description, targetTaskId = taskId, collectorId = userId };
 
-        // Act & Assert Telemetry
+        var requestPayloadLog = new { testCaseId, description, targetTaskId = taskId, collectorId = userId };
         AllureAttachmentHelper.AttachJson($"{testCaseId}_Request_Telemetry.json", requestPayloadLog);
 
         var file = CreateMockFormFile("boundary.jpg", new byte[] { 0x1 }, "image/jpeg");
         var form = CreateMockFormCollection(1.0m, $"{description}", new List<IFormFile> { file });
         var result = await controller.CompleteTask(taskId, form);
 
-        // Giả định log mapping luôn trả về phản hồi hợp lệ cho luồng điều hướng
         result.Should().NotBeNull();
         result.Should().BeOfType<OkObjectResult>();
     }
