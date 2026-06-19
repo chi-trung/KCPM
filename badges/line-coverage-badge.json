@@ -1,6 +1,6 @@
 {
-  "color": "brightgreen",
   "label": "line coverage",
-  "message": "80.3%",
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "color": "brightgreen",
+  "message": "81.9%"
 }
