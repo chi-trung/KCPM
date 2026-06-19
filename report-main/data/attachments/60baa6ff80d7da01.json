@@ -1,0 +1,16 @@
+[
+  {
+    "Id": "935bac9d-f03d-4c45-9e31-5b72085d1f33",
+    "WasteCategoryId": 1,
+    "PointsPerReport": 18,
+    "BonusQuality": 6,
+    "IsActive": false
+  },
+  {
+    "Id": "a7af87f7-5ce6-4043-b2a8-9ffc0cccd8e9",
+    "WasteCategoryId": 2,
+    "PointsPerReport": 8,
+    "BonusQuality": 1,
+    "IsActive": true
+  }
+]

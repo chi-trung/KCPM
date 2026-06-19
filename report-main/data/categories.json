@@ -1,33 +1,5 @@
 {
-  "uid": "6518df9c5fc941b6b74281d302317a4d",
+  "uid": "8ddb7798530e4ee285bf2014eb759b50",
   "name": "categories",
-  "children": [
-    {
-      "name": "Assertion Failure",
-      "children": [
-        {
-          "name": "expected web application to include \"Email\"",
-          "children": [
-            {
-              "name": "#1 Login form shows validation errors for empty fields (DT-01) Frontend Validation",
-              "uid": "a463465161294665",
-              "parentUid": "3a929d4a8a314226",
-              "status": "failed",
-              "time": {},
-              "flaky": false,
-              "newFailed": false,
-              "newPassed": false,
-              "newBroken": false,
-              "retriesCount": 0,
-              "retriesStatusChange": false,
-              "parameters": [],
-              "tags": []
-            }
-          ],
-          "uid": "3a929d4a8a314226"
-        }
-      ],
-      "uid": "7ae54d08a8594884"
-    }
-  ]
+  "children": []
 }
