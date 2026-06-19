@@ -15,13 +15,15 @@ Scenario('#1 Login form shows validation errors for empty fields (DT-01)', async
   // When: User clicks submit without filling any fields
   I.click('button[type="submit"]');
 
-  // Then: Validation errors are shown for required fields
-  I.waitForElement('body', 5);
-  I.see('Email');
-  I.see('Mật khẩu');
+  // Then: Form does not submit — user stays on login page with fields still visible
+  I.waitForElement('input[name="email"]', 5);
+  I.seeElement('input[name="password"]');
+  I.seeElement('button[type="submit"]');
 
-  // And: User stays on the login page
+  // And: User stays on the login page — no redirect occurred
   I.seeInCurrentUrl('/login');
+  I.dontSeeInCurrentUrl('/citizen');
+  I.dontSeeInCurrentUrl('/admin');
 })
   .tag('@allure.label.epic:E2E Frontend')
   .tag('@allure.label.feature:Authentication')
