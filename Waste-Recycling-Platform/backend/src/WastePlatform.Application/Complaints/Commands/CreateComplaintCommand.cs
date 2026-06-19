@@ -1,4 +1,4 @@
-using MediatR;
+﻿using MediatR;
 using WastePlatform.Application.Common.DTOs;
 using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Domain.Enums;
@@ -26,13 +26,27 @@ public class CreateComplaintCommandHandler : IRequestHandler<CreateComplaintComm
 
     public async Task<Guid> Handle(CreateComplaintCommand request, CancellationToken cancellationToken)
     {
+        Console.WriteLine($"[DEBUG] CreateComplaintCommandHandler.Handle invoked, ReportId.HasValue={request.ReportId.HasValue}");
         if (string.IsNullOrWhiteSpace(request.Content))
             throw new ArgumentException("Complaint content cannot be empty", nameof(request));
 
         // Fix bug: CreateComplaintCommandHandler chưa validate content length > 2000
-        // Fixed by: Nguyễn Minh Phụng (KIEM-7)
+        // Fixed by: Nguyễn Hoàng Phụng (KIEM-7)
         if (request.Content.Length > 2000)
             throw new ArgumentException("Complaint content cannot exceed 2000 characters", nameof(request));
+
+        // Debug: write a file so we know this handler is executed
+        System.IO.File.WriteAllText(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "CreateComplaintCommandHandlerDebug.txt"), "Handler invoked");
+
+        // BR-05: Check if citizen already has a complaint for this report
+        if (request.ReportId.HasValue)
+        {
+            var reportId = request.ReportId.Value;
+            if (await _complaintRepository.ExistsByCitizenAndReportAsync(request.CitizenId, reportId, cancellationToken))
+            {
+                throw new InvalidOperationException("Citizen chỉ gửi được 1 khiếu nại cho 1 report.");
+            }
+        }
 
         // If EnterpriseId was not provided, try to infer it from the referenced report's collection task
         Guid? enterpriseId = request.EnterpriseId;

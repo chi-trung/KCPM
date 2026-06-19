@@ -85,6 +85,12 @@ public class ComplaintRepository : IComplaintRepository
         return (complaints, total);
     }
 
+    public async Task<bool> ExistsByCitizenAndReportAsync(Guid citizenId, Guid reportId, CancellationToken cancellationToken = default)
+    {
+        return await _context.Complaints
+            .AnyAsync(c => c.CitizenId == citizenId && c.ReportId == reportId, cancellationToken);
+    }
+
     public async Task<(IEnumerable<Complaint> Complaints, int Total)> GetByEnterpriseIdAsync(Guid enterpriseId, int page, int pageSize, ComplaintStatus? status, CancellationToken cancellationToken = default)
     {
         var query = _context.Complaints
