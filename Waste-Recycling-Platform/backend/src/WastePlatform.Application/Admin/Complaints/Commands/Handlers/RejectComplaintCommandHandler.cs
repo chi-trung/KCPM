@@ -15,6 +15,11 @@ public class RejectComplaintCommandHandler : IRequestHandler<RejectComplaintComm
 
     public async Task<RejectComplaintResult> Handle(RejectComplaintCommand request, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(request.AdminResponse))
+        {
+            throw new ArgumentException("Phản hồi không được để trống khi đóng khiếu nại.");
+        }
+
         var complaint = await _complaintRepository.GetByIdAsync(request.ComplaintId, cancellationToken);
 
         if (complaint == null)
