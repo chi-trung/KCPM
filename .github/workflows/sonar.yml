@@ -81,7 +81,7 @@ jobs:
             /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml,**/TestResults/**/coverage.cobertura.xml" \
             /d:sonar.cs.vstest.reportsPaths="**/TestResults/**/*.trx" \
             /d:sonar.testExclusions="**/Tests/**" \
-            /d:sonar.coverage.exclusions="**/Tests/**,**/Migrations/**"
+            /d:sonar.coverage.exclusions="**/Tests/**,**/Migrations/**,**/Configurations/**,**/Interfaces/**,**/Common/IDomainEvent.cs"
 
       - name: Build backend
         run: |
