@@ -1,0 +1,6 @@
+{
+  "fileName": "oversized.jpg",
+  "fileSize": 10485761,
+  "contentType": "image/jpeg",
+  "scenarioDesc": "Biên trên vượt ngưỡng (MAX + 1 byte)"
+}
