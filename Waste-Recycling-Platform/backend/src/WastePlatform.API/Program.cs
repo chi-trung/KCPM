@@ -210,18 +210,28 @@ builder.Services.AddSwaggerGen(
 
 var app = builder.Build();
 
-// ── Database auto-migration + seed ──────────────────────────────────────────
-// EnsureCreated creates all tables from the EF Core model if they don't exist.
+// ── Database migration + seed ────────────────────────────────────────────
+// Uses EF Core Migrations for proper schema versioning.
+// Falls back to EnsureCreated if no migrations are found (backward-compatible).
 // Then we seed essential data (categories, sample accounts) if tables are empty.
-// This is needed for cloud deployments (Render + Aiven MySQL) where Docker Compose
-// is not available to mount SQL migration scripts.
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<WastePlatformDbContext>();
     try
     {
-        await db.Database.EnsureCreatedAsync();
-        Console.WriteLine("✅ Database schema verified/created successfully.");
+        var pendingMigrations = await db.Database.GetPendingMigrationsAsync();
+        if (pendingMigrations.Any())
+        {
+            Console.WriteLine($"🔄 Applying {pendingMigrations.Count()} pending migration(s)...");
+            await db.Database.MigrateAsync();
+            Console.WriteLine("✅ Database migrations applied successfully.");
+        }
+        else
+        {
+            // Fallback: EnsureCreated for environments without migrations
+            await db.Database.EnsureCreatedAsync();
+            Console.WriteLine("✅ Database schema verified/created successfully.");
+        }
 
         // ── Auto-seed: Waste Categories ─────────────────────────────
         if (!await db.WasteCategories.AnyAsync())
