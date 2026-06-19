@@ -1,0 +1,12 @@
+{
+  "testCaseId": "KIEM-68-LOG-02",
+  "description": "Boundary analysis telemetry tracking for oversized image upload",
+  "targetTaskId": "43f458ce-0297-4445-85d9-e25d9f3b5cbd",
+  "collectorId": "eb0e62a9-a2dd-48e9-8ee1-3d8cd8817391",
+  "labels": [
+    {
+      "name": "owner",
+      "value": "Thanh Duy"
+    }
+  ]
+}
