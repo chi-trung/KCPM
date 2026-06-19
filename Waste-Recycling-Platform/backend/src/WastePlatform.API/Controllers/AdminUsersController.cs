@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WastePlatform.Application.Admin.Users.Queries;
 using WastePlatform.Application.Admin.Users.Commands;
@@ -8,7 +9,7 @@ namespace WastePlatform.API.Controllers
 {
     [Route("api/admin/users")]
     [ApiController]
-    // [Authorize(Roles = "Admin")] // Uncomment this line when the project has finished JWT Auth setup
+    [Authorize(Roles = "Admin")]
     public class AdminUsersController : ControllerBase
     {
         private readonly IMediator _mediator;
