@@ -1,0 +1,10 @@
+{
+  "message": "Task completed successfully.",
+  "taskId": "a8a39000-ae60-444e-98af-2f3f204715fd",
+  "reward": {
+    "rewardPointsId": "c25a1b8c-46c1-48b3-af9d-c2301cf576cc",
+    "points": 15,
+    "reason": "Reward for collected waste report fa140bee-32d1-4d6a-a4f1-4712c371aa5b",
+    "notificationMessage": "✅ Thu gom thành công! +15 điểm thưởng"
+  }
+}
