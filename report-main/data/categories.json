@@ -1,5 +1,60 @@
 {
-  "uid": "122a1730adff4935816b87d2ebcd39ba",
+  "uid": "b7c0f321798b4fb28402514af549bc37",
   "name": "categories",
-  "children": []
+  "children": [
+    {
+      "name": "E2E – Element Not Found",
+      "children": [
+        {
+          "name": "element (.bg-red-50) still not present on page after 15 sec\nlocator.waitFor: Timeout 15000ms exceeded.\nCall log:\n  - wai",
+          "children": [
+            {
+              "name": "#4 Admin login fails with incorrect password (Error Guessing) Frontend Role",
+              "uid": "2fa1293643d2489b",
+              "parentUid": "a8ad64e45edd4f36",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [],
+              "tags": []
+            }
+          ],
+          "uid": "a8ad64e45edd4f36"
+        }
+      ],
+      "uid": "660f8bf459ee41a9"
+    },
+    {
+      "name": "Assertion Failure",
+      "children": [
+        {
+          "name": "expected web application to include \"Email\"",
+          "children": [
+            {
+              "name": "#1 Login form shows validation errors for empty fields (DT-01) Frontend Validation",
+              "uid": "0d54371254604cf9",
+              "parentUid": "45bd86ab3ca34efb",
+              "status": "failed",
+              "time": {},
+              "flaky": false,
+              "newFailed": false,
+              "newPassed": false,
+              "newBroken": false,
+              "retriesCount": 0,
+              "retriesStatusChange": false,
+              "parameters": [],
+              "tags": []
+            }
+          ],
+          "uid": "45bd86ab3ca34efb"
+        }
+      ],
+      "uid": "2ed4a8d27a444e78"
+    }
+  ]
 }

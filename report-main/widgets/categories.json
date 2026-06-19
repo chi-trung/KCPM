@@ -1,4 +1,29 @@
 {
-  "total": 0,
-  "items": []
+  "total": 2,
+  "items": [
+    {
+      "uid": "977887ac5df04c07906e23c91eec174b",
+      "name": "E2E – Element Not Found",
+      "statistic": {
+        "failed": 1,
+        "broken": 0,
+        "skipped": 0,
+        "passed": 0,
+        "unknown": 0,
+        "total": 1
+      }
+    },
+    {
+      "uid": "8239aa08016a405f896f04d60afc4e70",
+      "name": "Assertion Failure",
+      "statistic": {
+        "failed": 1,
+        "broken": 0,
+        "skipped": 0,
+        "passed": 0,
+        "unknown": 0,
+        "total": 1
+      }
+    }
+  ]
 }
