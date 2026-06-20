@@ -69,10 +69,17 @@ public class EnterpriseRespondToComplaintCommandHandler : IRequestHandler<Enterp
             };
         }
 
+        if (!request.EscalateToAdmin && string.IsNullOrWhiteSpace(request.Response))
+        {
+            throw new ArgumentException("Phản hồi không được để trống.");
+        }
+
+        var response = request.Response;
+
         // Handle escalation to admin
         if (request.EscalateToAdmin)
         {
-            complaint.EscalateToAdmin(request.Response);
+            complaint.EscalateToAdmin(response);
             await _complaintRepository.SaveChangesAsync(cancellationToken);
             
             // Notify citizen
@@ -90,7 +97,7 @@ public class EnterpriseRespondToComplaintCommandHandler : IRequestHandler<Enterp
         // Handle immediate resolution by enterprise
         if (request.ResolveImmediately)
         {
-            complaint.ResolveByEnterprise(request.Response);
+            complaint.ResolveByEnterprise(response);
             await _complaintRepository.SaveChangesAsync(cancellationToken);
             
             // Notify citizen
@@ -106,7 +113,12 @@ public class EnterpriseRespondToComplaintCommandHandler : IRequestHandler<Enterp
         }
 
         // Just add response without resolving
-        complaint.AddEnterpriseResponse(request.Response);
+        if (string.IsNullOrWhiteSpace(response))
+        {
+            throw new ArgumentException("Phản hồi không được để trống.");
+        }
+
+        complaint.AddEnterpriseResponse(response);
         await _complaintRepository.SaveChangesAsync(cancellationToken);
         
         // Notify citizen

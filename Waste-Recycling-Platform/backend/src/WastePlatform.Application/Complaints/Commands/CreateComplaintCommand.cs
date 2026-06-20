@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using WastePlatform.Application.Common.DTOs;
 using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Domain.Enums;
@@ -31,7 +31,7 @@ public class CreateComplaintCommandHandler : IRequestHandler<CreateComplaintComm
             throw new ArgumentException("Complaint content cannot be empty", nameof(request));
 
         // Fix bug: CreateComplaintCommandHandler chưa validate content length > 2000
-        // Fixed by: Nguyễn Hoàng Phụng (KIEM-7)
+        // Fixed by: Nguyễn Minh Phụng (KIEM-7)
         if (request.Content.Length > 2000)
             throw new ArgumentException("Complaint content cannot exceed 2000 characters", nameof(request));
 
