@@ -1,0 +1,10 @@
+{
+  "message": "Leaderboard retrieved successfully",
+  "data": [],
+  "pagination": {
+    "page": 1,
+    "pageSize": 10,
+    "total": 0,
+    "totalPages": 0
+  }
+}
