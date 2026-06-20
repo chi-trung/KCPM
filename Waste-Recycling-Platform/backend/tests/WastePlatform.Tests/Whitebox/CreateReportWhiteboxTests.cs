@@ -14,7 +14,7 @@ namespace WastePlatform.Tests.Whitebox;
 /// Whitebox Testing — CreateReportCommandHandler.Handle()
 /// 
 /// Kỹ thuật áp dụng theo Chương 4 (Kiểm Thử Hộp Trắng):
-///   1. Control Flow Graph (CFG)     → Xem docs/WHITEBOX_TESTING_ANALYSIS.md
+///   1. Control Flow Graph (CFG)     → Xem docs/01-testing/05-WHITEBOX_ANALYSIS.md
 ///   2. Cyclomatic Complexity V(G)   → V(G) = 6 (P+1 = 5+1)
 ///   3. Independent Paths            → 6 paths (P1-P6)
 ///   4. Statement Coverage           → 100% (10/10 statements)
