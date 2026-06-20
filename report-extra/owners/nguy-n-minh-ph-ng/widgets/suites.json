@@ -1,4 +1,1 @@
-{
-  "total" : 0,
-  "items" : [ ]
-}
+{"total":1,"items":[{"uid":"458acf4a77b6bb47157f1f6f02f65f39","name":"Backend Tests (xUnit)","statistic":{"failed":0,"broken":0,"skipped":0,"passed":43,"unknown":0,"total":43}}]}
