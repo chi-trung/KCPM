@@ -1,0 +1,12 @@
+{
+  "testCaseId": "KIEM-68-LOG-01",
+  "description": "Boundary analysis telemetry tracking for zero byte upload",
+  "targetTaskId": "6e6add30-fd80-4302-9b22-38e25d899cc6",
+  "collectorId": "a2cdc119-df75-4574-b6b8-bcb40047dd1f",
+  "labels": [
+    {
+      "name": "owner",
+      "value": "Thanh Duy"
+    }
+  ]
+}
