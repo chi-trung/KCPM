@@ -1,4 +1,4 @@
-name: Backend Tests
+﻿name: Backend Tests
 
 on:
   push:
@@ -326,27 +326,27 @@ jobs:
 
           | KIEM Issue | Module | Assignee |
           |-----------|--------|----------|
-          | [KIEM-4](https://ut-team-36.atlassian.net/browse/KIEM-4) | Auth Module | Nguyễn Chí Trung |
-          | [KIEM-5](https://ut-team-36.atlassian.net/browse/KIEM-5) | Reports Module | Minh Phụng |
-          | [KIEM-6](https://ut-team-36.atlassian.net/browse/KIEM-6) | Notifications Module | Nguyễn Hoàng Phụng |
-          | [KIEM-7](https://ut-team-36.atlassian.net/browse/KIEM-7) | Complaints Module | Thanh Duy |
-          | [KIEM-8](https://ut-team-36.atlassian.net/browse/KIEM-8) | Admin Module | 11A6_03_Đăng |
-          | [KIEM-9](https://ut-team-36.atlassian.net/browse/KIEM-9) | Analytics Module | 11A6_03_Đăng |
-          | [KIEM-10](https://ut-team-36.atlassian.net/browse/KIEM-10) | Public Analytics | Thanh Duy |
-          | [KIEM-12](https://ut-team-36.atlassian.net/browse/KIEM-12) | WasteCategory Module | Nguyễn Hoàng Phụng |
-          | [KIEM-13](https://ut-team-36.atlassian.net/browse/KIEM-13) | Citizen Module | 11A6_03_Đăng |
-          | [KIEM-15](https://ut-team-36.atlassian.net/browse/KIEM-15) | CollectorTask Module | Minh Phụng |
-          | [KIEM-16](https://ut-team-36.atlassian.net/browse/KIEM-16) | Enterprise Task Module | Nguyễn Chí Trung |
-          | [KIEM-17](https://ut-team-36.atlassian.net/browse/KIEM-17) | Enterprise Reward Rules | Nguyễn Chí Trung |
-          | [KIEM-18](https://ut-team-36.atlassian.net/browse/KIEM-18) | CollectionTask/Image | Thanh Duy |
-          | [KIEM-19](https://ut-team-36.atlassian.net/browse/KIEM-19) | SignalR Real-time | Nguyễn Chí Trung |
-          | [KIEM-20](https://ut-team-36.atlassian.net/browse/KIEM-20) | File Uploads & Storage | Minh Phụng |
-          | [KIEM-22](https://ut-team-36.atlassian.net/browse/KIEM-22) | AuditLog & Error Paths | Thanh Duy |
-          | [KIEM-23](https://ut-team-36.atlassian.net/browse/KIEM-23) | Search, Pagination & Filters | 11A6_03_Đăng |
+          | KIEM-4 | Auth Module | Nguyễn Chí Trung |
+          | KIEM-5 | Reports Module | Minh Phụng |
+          | KIEM-6 | Notifications Module | Nguyễn Hoàng Phụng |
+          | KIEM-7 | Complaints Module | Thanh Duy |
+          | KIEM-8 | Admin Module | Đăng |
+          | KIEM-9 | Analytics Module | Đăng |
+          | KIEM-10 | Public Analytics | Thanh Duy |
+          | KIEM-12 | WasteCategory Module | Nguyễn Hoàng Phụng |
+          | KIEM-13 | Citizen Module | Đăng |
+          | KIEM-15 | CollectorTask Module | Minh Phụng |
+          | KIEM-16 | Enterprise Task Module | Nguyễn Chí Trung |
+          | KIEM-17 | Enterprise Reward Rules | Nguyễn Chí Trung |
+          | KIEM-18 | CollectionTask/Image | Thanh Duy |
+          | KIEM-19 | SignalR Real-time | Nguyễn Chí Trung |
+          | KIEM-20 | File Uploads & Storage | Minh Phụng |
+          | KIEM-22 | AuditLog & Error Paths | Thanh Duy |
+          | KIEM-23 | Search, Pagination & Filters | Đăng |
 
           ### 🔗 Links
           - [📊 Allure Report](https://chi-trung.github.io/KCPM/report-main/)
-          - [🎯 Jira Board](https://ut-team-36.atlassian.net/jira/software/projects/KIEM/boards/3)
+          - Jira Board
           - [🔧 GitHub Actions Run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
           "@
 

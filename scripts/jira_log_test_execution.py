@@ -65,7 +65,7 @@ TIMESTAMP    = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
 # ── Jira issue mapping ────────────────────────────────────────────────────────
 # Map TEST_TYPE -> Jira issue keys to comment on.
-# Board: https://ut-team-36.atlassian.net/jira/software/projects/KIEM/boards/3
+# Board: Jira Board
 #
 # COMPLETE KIEM issue map (verified 2026-06-12, 24 total issues):
 #
@@ -74,11 +74,11 @@ TIMESTAMP    = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 #   KIEM-5  = WRP-BE-TESTS-002 - Reports Module Testing                  (Minh Phụng)
 #   KIEM-6  = WRP-BE-TESTS-003 - Notifications Module Testing            (Nguyễn Hoàng Phụng)
 #   KIEM-7  = WRP-BE-TESTS-004 - Complaints Module Testing               (Thanh Duy)
-#   KIEM-8  = WRP-BE-TESTS-005 - Admin Module Testing                    (11A6_03_Đăng)
-#   KIEM-9  = WRP-BE-TESTS-006 - Analytics Module Testing                (11A6_03_Đăng)
+#   KIEM-8  = WRP-BE-TESTS-005 - Admin Module Testing                    (Đăng)
+#   KIEM-9  = WRP-BE-TESTS-006 - Analytics Module Testing                (Đăng)
 #   KIEM-10 = WRP-BE-TESTS-007 - Public Analytics Testing               (Thanh Duy)
 #   KIEM-12 = WRP-BE-TESTS-009 - WasteCategory Module Testing           (Nguyễn Hoàng Phụng)
-#   KIEM-13 = WRP-BE-TESTS-010 - Citizen Module Testing                 (11A6_03_Đăng)
+#   KIEM-13 = WRP-BE-TESTS-010 - Citizen Module Testing                 (Đăng)
 #   KIEM-14 = WRP-BE-TESTS-011 - Collector Module Testing               (Nguyễn Chí Trung)
 #   KIEM-15 = WRP-BE-TESTS-012 - CollectorTask Module Testing           (Minh Phụng)
 #   KIEM-16 = WRP-BE-TESTS-013 - Enterprise Task Module Testing         (Nguyễn Chí Trung)
@@ -88,7 +88,7 @@ TIMESTAMP    = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 #   KIEM-20 = WRP-BE-TESTS-017 - File Uploads & Storage Tests          (Minh Phụng)
 #   KIEM-21 = WRP-BE-TESTS-018 - Security & Role-based Access Tests    (Nguyễn Hoàng Phụng)
 #   KIEM-22 = WRP-BE-TESTS-019 - AuditLog & Error Path Tests           (Thanh Duy)
-#   KIEM-23 = WRP-BE-TESTS-020 - Search, Pagination & Filters Tests    (11A6_03_Đăng)
+#   KIEM-23 = WRP-BE-TESTS-020 - Search, Pagination & Filters Tests    (Đăng)
 #
 # Non-test issues (BUGs/features - NOT auto-logged):
 #   KIEM-3  = WRP-BE-TESTS parent epic (IN PROGRESS)

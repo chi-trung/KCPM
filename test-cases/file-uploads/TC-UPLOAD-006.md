@@ -1,7 +1,7 @@
 # TC-UPLOAD-006 — IO Exception Propagation on Disk Write Failure
 
 **Module:** File Uploads & Storage  
-**Jira:** [KIEM-20](https://ut-team-36.atlassian.net/browse/KIEM-20)  
+**Jira:** [KIEM-20](KIEM-20)  
 **Type:** Negative / Abnormal Case  
 **Severity:** Critical  
 **Owner:** Nguyễn Minh Phụng

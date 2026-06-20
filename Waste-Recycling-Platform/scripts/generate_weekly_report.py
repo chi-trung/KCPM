@@ -132,7 +132,7 @@ def load_owners():
     # Final fallback: hardcoded known team members
     if not owners:
         owners = [
-            '11A6_03_Đăng',
+            'Đăng',
             'Minh Phụng',
             'Nguyễn Chí Trung',
             'Nguyễn Hoàng Phụng-CNTT',
@@ -423,7 +423,7 @@ def generate_html(backend, postman, owners, now):
     <table>
       <tr><td>📊 Full Allure Report</td><td><a href="{allure_url}">View Report →</a></td></tr>
       <tr><td>🔧 GitHub Actions Run</td><td><a href="{gh_run_url}">Run #{run_number} →</a></td></tr>
-      <tr><td>🎯 Jira Board</td><td><a href="https://ut-team-36.atlassian.net/jira/software/projects/KIEM/boards/3">KCPM Board →</a></td></tr>
+      <tr><td>🎯 Jira Board</td><td><a href="Jira Board">KCPM Board →</a></td></tr>
       <tr><td>🏠 Dashboard</td><td><a href="https://chi-trung.github.io/KCPM/">KCPM Dashboard →</a></td></tr>
     </table>
   </div>

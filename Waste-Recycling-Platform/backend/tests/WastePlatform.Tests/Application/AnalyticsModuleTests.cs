@@ -1,4 +1,4 @@
-﻿using Xunit;
+using Xunit;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -26,12 +26,12 @@ namespace WastePlatform.Tests.Application.Analytics
     [Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
     [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "AnalyticsModuleTests")]
     [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Analytics")]
-    [AllureOwner("11A6_03_Ä Äƒng")]
+    [AllureOwner("Đăng")]
     [AllureSeverity(SeverityLevel.normal)]
     [Allure.Net.Commons.Attributes.AllureTag("unit")]
     [Allure.Net.Commons.Attributes.AllureTag("backend")]
     [Allure.Net.Commons.Attributes.AllureTag("analytics")]
-    [Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-9")]
+    [Allure.Net.Commons.Attributes.AllureIssue("KIEM-9")]
     public class AnalyticsModuleTests
     {
         #region Admin Analytics - Overview

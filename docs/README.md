@@ -1,6 +1,5 @@
 # 📁 Tài Liệu Dự Án KCPM — Waste Recycling Platform
 
-> **Nhóm:** 11A6 — KiemChungPhanMem  
 > **Cập nhật:** 2026-06-20
 
 ---

@@ -36,7 +36,7 @@ Use a consistent set of class-level labels for every xUnit test class:
 - `AllureOwner("auth" | "backend" | "qa")`
 - `AllureSeverity(...)`
 - `AllureTag(...)`
-- `AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-xx")`
+- `AllureIssue("JIRA_BASE_URL/browse/KIEM-xx")`
 
 ## The Most Important Rule
 
@@ -45,7 +45,7 @@ If the test belongs to a Jira task, put the Jira key in a supported issue field.
 Good:
 
 ```csharp
-[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-4")]
+[Allure.Net.Commons.Attributes.AllureIssue("KIEM-4")]
 ```
 
 Not enough for owner sync:
@@ -95,7 +95,7 @@ Result:
 
 Fix:
 
-- Add `AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-13")`.
+- Add `AllureIssue("KIEM-13")`.
 
 ### 3. Using The Wrong Label Name
 
@@ -193,7 +193,7 @@ If Jira is temporarily unavailable, use `local-owner-map.json` as a fallback, bu
 
 Use this comment when reviewing a pulled PR:
 
-> Please add a real `AllureOwner(...)` and `AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-xx")` to each xUnit class so Jira owner sync can map the report correctly. Custom labels like `KIEM` or `WRP` are not enough for the current pipeline.
+> Please add a real `AllureOwner(...)` and `AllureIssue("JIRA_BASE_URL/browse/KIEM-xx")` to each xUnit class so Jira owner sync can map the report correctly. Custom labels like `KIEM` or `WRP` are not enough for the current pipeline.
 
 ## What To Tell An Agent
 

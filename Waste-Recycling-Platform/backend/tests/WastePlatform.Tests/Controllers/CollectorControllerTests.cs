@@ -25,7 +25,7 @@ namespace WastePlatform.Tests.Controllers;
 [Allure.Net.Commons.Attributes.AllureTag("api")]
 [Allure.Net.Commons.Attributes.AllureTag("collector")]
 [Allure.Net.Commons.Attributes.AllureTag("profile")]
-[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-14")]
+[Allure.Net.Commons.Attributes.AllureIssue("KIEM-14")]
 public class CollectorControllerTests
 {
     [Fact]

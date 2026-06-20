@@ -1,4 +1,4 @@
-﻿using WastePlatform.Domain.Entities;
+using WastePlatform.Domain.Entities;
 using WastePlatform.Domain.Enums;
 using WastePlatform.Tests.TestSupport;
 

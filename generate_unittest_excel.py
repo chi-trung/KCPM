@@ -242,8 +242,8 @@ FUNCTIONS = [
     {
         "code": "KIEM-8-F03",
         "name": "Duyệt / Từ chối báo cáo (Enterprise/Admin)",
-        "created_by": "11A6_03_Đăng",
-        "executed_by": "11A6_03_Đăng",
+        "created_by": "Đăng",
+        "executed_by": "Đăng",
         "lines_of_code": 180,
         "jira_ticket": "KIEM-8",
         "test_req": (
@@ -407,8 +407,8 @@ FUNCTIONS = [
     {
         "code": "KIEM-13-F06",
         "name": "Quản lý khiếu nại (Complaints)",
-        "created_by": "11A6_03_Đăng",
-        "executed_by": "11A6_03_Đăng",
+        "created_by": "Đăng",
+        "executed_by": "Đăng",
         "lines_of_code": 300,
         "jira_ticket": "KIEM-13",
         "test_req": (
@@ -1530,7 +1530,7 @@ def main():
     print(f"[OK] Generated: {out_path}")
     print(f"   Sheets: Sheet1 + {len(FUNCTIONS)} Function sheets")
     print(f"   Total test cases: {total_tc} | Passed: {total_pass} | Failed: {total_fail}")
-    print(f"   Members: Nguyen Chi Trung, Minh Phung, Nguyen Hoang Phung, 11A6_03_Dang, Thanh Duy")
+    print(f"   Members: Nguyen Chi Trung, Minh Phung, Nguyen Hoang Phung, Đăng, Thanh Duy")
 
 
 if __name__ == "__main__":

@@ -21,7 +21,7 @@ namespace WastePlatform.Tests.Application.Notifications;
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("backend")]
 [Allure.Net.Commons.Attributes.AllureTag("notifications")]
-[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-6")]
+[Allure.Net.Commons.Attributes.AllureIssue("KIEM-6")]
 public class NotificationServiceTests
 {
     private readonly Mock<INotificationRepository> _mockNotificationRepository;

@@ -11,7 +11,7 @@
 | **Assignee**                 | Thanh Duy                                                             |
 | **Reporter**                 | Nguyễn Chí Trung                                                      |
 | **Quality Dashboard Links**  | https://chi-trung.github.io/KCPM/                                     |
-| **Project Management Board** | https://ut-team-36.atlassian.net/jira/software/projects/KIEM/boards/3 |
+| **Project Management Board** | Jira Board |
 
 ---
 

@@ -1,4 +1,4 @@
-﻿using Xunit;
+using Xunit;
 using Moq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -21,12 +21,12 @@ namespace WastePlatform.Tests.Application.Admin
     [Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
     [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "AdminModuleTests")]
     [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Admin")]
-    [AllureOwner("11A6_03_Đăng")]
+    [AllureOwner("Đăng")]
     [AllureSeverity(SeverityLevel.normal)]
     [Allure.Net.Commons.Attributes.AllureTag("unit")]
     [Allure.Net.Commons.Attributes.AllureTag("backend")]
     [Allure.Net.Commons.Attributes.AllureTag("admin")]
-    [Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-8")]
+    [Allure.Net.Commons.Attributes.AllureIssue("KIEM-8")]
     public class AdminModuleTests
     {
         #region User Management Tests

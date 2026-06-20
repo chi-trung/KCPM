@@ -67,7 +67,7 @@ Tất cả tài khoản dùng password: `password`
 | Report | URL |
 |--------|-----|
 | **Allure Report (Live)** | [chi-trung.github.io/KCPM/report-main](https://chi-trung.github.io/KCPM/report-main/) |
-| **Jira Board** | [ut-team-36.atlassian.net](https://ut-team-36.atlassian.net/jira/software/projects/KIEM/boards/3) |
+| **Jira Board** | KIEM Board |
 | **SonarCloud** | [sonarcloud.io/chi-trung_KCPM](https://sonarcloud.io/summary/overall?id=chi-trung_KCPM) |
 
 ---
@@ -185,7 +185,7 @@ graph LR
 | **Nguyễn Chí Trung** | Team Lead, CI/CD, Architect | KIEM-3, KIEM-4, KIEM-41, KIEM-42, KIEM-43 | KIEM-14, KIEM-16, KIEM-17, KIEM-19, KIEM-45, KIEM-51 | KIEM-55, KIEM-59, KIEM-65 |
 | **Minh Phụng** | Backend Testing, Reports | KIEM-5, KIEM-44 | KIEM-15, KIEM-20, KIEM-46, KIEM-52, KIEM-54 | KIEM-32, KIEM-33, KIEM-38, KIEM-63, KIEM-64, KIEM-66 |
 | **Nguyễn Hoàng Phụng** | Security, Notifications | KIEM-6, KIEM-12 | KIEM-21 | KIEM-31, KIEM-34, KIEM-39, KIEM-70 |
-| **11A6_03_Đăng** | Admin, Analytics | KIEM-8, KIEM-9 | KIEM-49 | KIEM-61 |
+| **Đăng** | Admin, Analytics | KIEM-8, KIEM-9 | KIEM-49 | KIEM-61 |
 | **Thanh Duy** | Complaints, CollectorTask | KIEM-7, KIEM-10 | KIEM-18, KIEM-22, KIEM-47, KIEM-48, KIEM-53 | KIEM-35, KIEM-56, KIEM-60, KIEM-67, KIEM-68, KIEM-69, KIEM-71 |
 
 ### Chi tiết phụ trách
@@ -195,10 +195,10 @@ graph LR
 | **Nguyễn Chí Trung** | Auth, Collector, Enterprise Collectors, WasteCategory, SignalR, Security & Role-based | Unit Tests (xUnit), E2E Tests, CI/CD Pipeline, SonarCloud, Deployment |
 | **Minh Phụng** | Reports, File Upload, CollectorTask, Citizen + Search | Unit Tests (xUnit), Postman Collection, Security Hotspot fixes |
 | **Nguyễn Hoàng Phụng** | Notifications, WasteCategory, Security & Role-based | Unit Tests (xUnit), SonarCloud Quality Gate fixes |
-| **11A6_03_Đăng** | Admin Module, Analytics, Traceability Matrix | Unit Tests (xUnit), Manual Test Cases |
+| **Đăng** | Admin Module, Analytics, Traceability Matrix | Unit Tests (xUnit), Manual Test Cases |
 | **Thanh Duy** | Complaints, CollectionTask, AuditLog, Public Analytics | Unit Tests (xUnit), BVA Tests, Manual Test Cases (Excel) |
 
-> 📌 **Tổng cộng 61+ Jira tasks** được chia đều cho 5 thành viên qua 3 sprints. Xem chi tiết trên [Jira Board](https://ut-team-36.atlassian.net/jira/software/projects/KIEM/boards/3).
+> 📌 **Tổng cộng 61+ Jira tasks** được chia đều cho 5 thành viên qua 3 sprints. Xem chi tiết trên Jira Board.
 
 ---
 
@@ -247,7 +247,7 @@ newman run WastePlatform.postman_collection.json
 
 | Secret | Description |
 |--------|-------------|
-| `JIRA_BASE_URL` | `https://ut-team-36.atlassian.net` |
+| `JIRA_BASE_URL` | Jira base URL |
 | `JIRA_API_EMAIL` | Atlassian account email |
 | `JIRA_API_TOKEN` | [Tạo API token](https://id.atlassian.com/manage-profile/security/api-tokens) |
 | `SONAR_TOKEN` | SonarCloud project token |

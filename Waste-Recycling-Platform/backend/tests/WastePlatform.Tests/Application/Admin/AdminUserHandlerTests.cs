@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using WastePlatform.Application.Admin.Dashboard.Queries;
 using WastePlatform.Application.Admin.Users.Commands;
 using WastePlatform.Application.Admin.Users.Queries;

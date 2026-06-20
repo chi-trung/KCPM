@@ -61,7 +61,7 @@ graph TB
 | **Coverage Badges** | GitHub Pages | https://chi-trung.github.io/KCPM/badges/ | `gh-pages` | Auto update sau Backend Tests |
 | **Swagger API Docs** | Render.com | https://kcpm-backend.onrender.com/swagger | `main` | Đi kèm Backend |
 | **SonarCloud** | SonarCloud | https://sonarcloud.io/summary/overall?id=chi-trung_KCPM | — | Auto scan khi push/PR |
-| **Jira Board** | Atlassian | https://ut-team-36.atlassian.net/jira/software/projects/KIEM | — | Auto update từ CI |
+| **Jira Board** | Atlassian | JIRA_BASE_URL/jira/software/projects/KIEM | — | Auto update từ CI |
 
 ---
 
@@ -655,7 +655,7 @@ t=15min  All deployments complete ✅
 | Secret | Workflow(s) | Mô tả | Bắt buộc? |
 |--------|------------|-------|-----------|
 | **`SONAR_TOKEN`** | SonarCloud | SonarCloud authentication token | ✅ Cho static analysis |
-| **`JIRA_BASE_URL`** | Postman Smoke, Backend Tests, Frontend E2E, Allure Pages | VD: `https://ut-team-36.atlassian.net` | ✅ Cho Jira integration |
+| **`JIRA_BASE_URL`** | Postman Smoke, Backend Tests, Frontend E2E, Allure Pages | VD: `JIRA_BASE_URL` | ✅ Cho Jira integration |
 | **`JIRA_API_EMAIL`** | (same as above) | Email tài khoản Atlassian | ✅ Cho Jira integration |
 | **`JIRA_API_TOKEN`** | (same as above) | Jira API token | ✅ Cho Jira integration |
 | **`DEPLOY_HOST`** | CI CD Deploy Server | IP/hostname server SSH | ⚠️ Chỉ cho self-hosted deploy |
@@ -806,7 +806,7 @@ Vào repo → Settings → Secrets and variables → Actions → New repository 
 |--------|-------|
 | `RENDER_DEPLOY_HOOK_URL` | (từ Render Dashboard) |
 | `SONAR_TOKEN` | (từ SonarCloud) |
-| `JIRA_BASE_URL` | `https://ut-team-36.atlassian.net` |
+| `JIRA_BASE_URL` | `JIRA_BASE_URL` |
 | `JIRA_API_EMAIL` | (email Atlassian) |
 | `JIRA_API_TOKEN` | (từ Atlassian Account Settings → API tokens) |
 

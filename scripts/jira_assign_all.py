@@ -59,7 +59,7 @@ def find_members():
         "phungm": ["minh ph"],
         "phungnh": ["hoang", "hoàng ph"],
         "duyyt": ["duy", "thanh d"],
-        "dang": ["đăng", "dang", "11a6"],
+        "dang": ["đăng", "dang", "dang"],
     }
 
     for user in resp:

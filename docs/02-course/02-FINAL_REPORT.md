@@ -1,5 +1,4 @@
 # 📊 Báo cáo Tổng kết Kiểm thử — Waste Recycling Platform
-# Nhóm 11A6 — KiemChungPhanMem (KCPM)
 
 **Ngày báo cáo:** 13/06/2026  
 **Phiên bản:** 6.0  
@@ -33,7 +32,7 @@
 | 🟢 Developer/Tester | **Minh Phụng** | Reports, CollectorTask, File Uploads | KIEM-5, 15, 20 |
 | 🟡 Developer/Tester | **Nguyễn Hoàng Phụng** | Notifications, WasteCategory, Security | KIEM-6, 12, 21 |
 | 🟠 Developer/Tester | **Thanh Duy** | CollectionTask, Complaints, Public Analytics | KIEM-7, 10, 18, 22 |
-| 🔴 Developer/Tester | **11A6_03_Đăng** | Admin, Analytics, Citizen, Search | KIEM-8, 9, 13, 23 |
+| 🔴 Developer/Tester | **Đăng** | Admin, Analytics, Citizen, Search | KIEM-8, 9, 13, 23 |
 
 > ⚠️ **Nguyên tắc độc lập kiểm thử** (Ch.6): Người tìm bug ≠ Người fix bug. Member1 test → Log Jira → Member2 fix → Commit (ID-Task).
 
@@ -273,5 +272,5 @@ Git Push → GitHub Actions → Tests Pass → Auto-deploy
 
 ---
 
-*Báo cáo này được tạo tự động bởi CI/CD pipeline của nhóm 11A6 KCPM.*  
+*Báo cáo này được tạo tự động bởi CI/CD pipeline của KCPM.*  
 *Dữ liệu cập nhật: 12/06/2026*

@@ -1,7 +1,7 @@
 # TC-UPLOAD-009 — Collector Evidence: Empty File Rejected
 
 **Module:** File Uploads & Storage — Collector Evidence  
-**Jira:** [KIEM-20](https://ut-team-36.atlassian.net/browse/KIEM-20)  
+**Jira:** [KIEM-20](KIEM-20)  
 **Type:** Negative  
 **Severity:** Critical  
 **Owner:** Nguyễn Minh Phụng

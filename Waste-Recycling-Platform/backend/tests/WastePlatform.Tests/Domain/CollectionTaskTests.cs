@@ -15,7 +15,7 @@ namespace WastePlatform.Tests.Domain;
 [AllureSeverity(SeverityLevel.minor)]
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("domain")]
-[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-18")]
+[Allure.Net.Commons.Attributes.AllureIssue("KIEM-18")]
 public class CollectionTaskTests
 {
     [Fact]

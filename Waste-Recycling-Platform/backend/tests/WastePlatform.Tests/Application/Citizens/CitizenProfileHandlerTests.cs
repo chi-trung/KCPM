@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using WastePlatform.Application.Citizens.Profile.Commands;
 using WastePlatform.Application.Citizens.Profile.DTOs;
 using WastePlatform.Application.Citizens.Profile.Queries;

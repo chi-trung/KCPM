@@ -1,7 +1,7 @@
 # TC-UPLOAD-008 — Collector Evidence Upload: Invalid Extension Rejected / SRS Gap Documented
 
 **Module:** File Uploads & Storage — Collector Evidence  
-**Jira:** [KIEM-20](https://ut-team-36.atlassian.net/browse/KIEM-20)  
+**Jira:** [KIEM-20](KIEM-20)  
 **Type:** Negative + SRS Gap  
 **Severity:** Critical  
 **Owner:** Nguyễn Minh Phụng

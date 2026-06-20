@@ -200,7 +200,7 @@
   - [ ] Tất cả pass trên CI
 
 ### [Task] KIEM-SP2-05: Viết Unit Tests cho Admin + Analytics Module
-- **Assignee**: 11A6_03_Đăng
+- **Assignee**: Đăng
 - **Priority**: High
 - **Labels**: sprint-2, unit-test, admin, analytics
 - **Description**:
@@ -305,7 +305,7 @@
   - [ ] Error path coverage
 
 ### [Task] KIEM-SP2-10: Viết Unit Tests cho Citizen + Search/Pagination
-- **Assignee**: 11A6_03_Đăng
+- **Assignee**: Đăng
 - **Priority**: Medium
 - **Labels**: sprint-2, unit-test, citizen, search
 - **Description**:
@@ -417,7 +417,7 @@
   - [ ] Test counts chính xác (451 xUnit, 19 E2E, 74 Postman)
 
 ### [Task] KIEM-SP3-06: Viết Manual Test Cases (Excel)
-- **Assignee**: 11A6_03_Đăng
+- **Assignee**: Đăng
 - **Priority**: Medium
 - **Labels**: sprint-3, manual-testing, documentation
 - **Description**:
@@ -480,4 +480,4 @@
 | Minh Phụng | SP1-05 | SP2-02, 08 | SP3-03 | **4** |
 | Nguyễn Hoàng Phụng | — | SP2-03, 07 | SP3-04, 07 | **4** |
 | Thanh Duy | — | SP2-04, 09 | SP3-02 | **3** |
-| 11A6_03_Đăng | — | SP2-05, 10 | SP3-06 | **3** |
+| Đăng | — | SP2-05, 10 | SP3-06 | **3** |

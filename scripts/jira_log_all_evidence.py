@@ -567,7 +567,7 @@ ALL_EVIDENCE = {
         ],
         "c": ["Not yet fixed — pending KIEM-57"],
         "l": [
-            ("KIEM-57 on Jira", "https://ut-team-36.atlassian.net/browse/KIEM-57"),
+            ("KIEM-57 on Jira", "KIEM-57"),
         ],
     },
     "KIEM-30": {
@@ -741,7 +741,7 @@ ALL_EVIDENCE = {
         ],
         "l": [
             ("Allure Report", ALLURE),
-            ("Jira Board", "https://ut-team-36.atlassian.net/jira/software/projects/KIEM/boards/3"),
+            ("Jira Board", "Jira Board"),
             ("Backend Tests Workflow", f"{REPO_URL}/blob/main/.github/workflows/backend-tests.yml"),
             ("Test Project", f"{REPO_URL}/tree/main/Waste-Recycling-Platform/backend/tests/WastePlatform.Tests"),
         ],

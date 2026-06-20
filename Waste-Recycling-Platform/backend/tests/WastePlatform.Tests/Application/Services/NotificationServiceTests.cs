@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Application.Services;
 using WastePlatform.Domain.Entities;

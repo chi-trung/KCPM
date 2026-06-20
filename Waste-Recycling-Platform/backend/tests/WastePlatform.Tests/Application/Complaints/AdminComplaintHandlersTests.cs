@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using WastePlatform.Application.Admin.Complaints.Commands;
 using WastePlatform.Application.Admin.Complaints.Commands.Handlers;
 using WastePlatform.Application.Admin.Complaints.Queries;

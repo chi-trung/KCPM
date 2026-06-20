@@ -33,7 +33,7 @@ namespace WastePlatform.Tests.Infrastructure;
 [Allure.Net.Commons.Attributes.AllureTag("backend")]
 [Allure.Net.Commons.Attributes.AllureTag("file-upload")]
 [Allure.Net.Commons.Attributes.AllureTag("storage")]
-[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-20")]
+[Allure.Net.Commons.Attributes.AllureIssue("KIEM-20")]
 public class LocalFileStorageServiceTests : IDisposable
 {
     private readonly string _tempRoot;

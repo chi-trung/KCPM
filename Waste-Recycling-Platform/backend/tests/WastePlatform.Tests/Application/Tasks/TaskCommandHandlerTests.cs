@@ -1,4 +1,4 @@
-﻿using WastePlatform.Application.Tasks.Commands;
+using WastePlatform.Application.Tasks.Commands;
 using WastePlatform.Tests.TestSupport;
 
 namespace WastePlatform.Tests.Application.Tasks;

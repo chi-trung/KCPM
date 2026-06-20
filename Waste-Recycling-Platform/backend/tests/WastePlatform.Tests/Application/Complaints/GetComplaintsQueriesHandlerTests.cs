@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using WastePlatform.Application.Complaints.Queries;
 using WastePlatform.Application.Common.DTOs;
 using WastePlatform.Application.Common.Interfaces;

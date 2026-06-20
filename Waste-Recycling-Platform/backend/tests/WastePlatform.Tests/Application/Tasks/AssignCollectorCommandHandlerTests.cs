@@ -15,7 +15,7 @@ namespace WastePlatform.Tests.Application.Tasks;
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("backend")]
 [Allure.Net.Commons.Attributes.AllureTag("task")]
-[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-16")]
+[Allure.Net.Commons.Attributes.AllureIssue("KIEM-16")]
 public class AssignCollectorCommandHandlerTests
 {
     private readonly AssignCollectorCommandHandler _handler = new();

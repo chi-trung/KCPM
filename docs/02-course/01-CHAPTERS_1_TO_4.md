@@ -1,5 +1,5 @@
 # 📚 Áp Dụng Kiến Thức Chương 1-4 Vào Project KCPM
-## Môn: Kiểm Chứng Phần Mềm (KCPM) — Nhóm 11A6
+## Môn: Kiểm Chứng Phần Mềm (KCPM)
 
 > **Project:** Waste Recycling Platform  
 > **Tech Stack:** .NET 8 (Backend) + Next.js 14 (Frontend)  

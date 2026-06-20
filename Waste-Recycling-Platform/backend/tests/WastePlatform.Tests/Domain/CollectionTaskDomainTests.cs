@@ -19,7 +19,7 @@ namespace WastePlatform.Tests.Domain;
 [AllureSeverity(SeverityLevel.critical)]
 [Allure.Net.Commons.Attributes.AllureTag("domain")]
 [Allure.Net.Commons.Attributes.AllureTag("persistence")]
-[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-18")]
+[Allure.Net.Commons.Attributes.AllureIssue("KIEM-18")]
 public class CollectionTaskDomainTests
 {
     private sealed class TestDbContextFactory

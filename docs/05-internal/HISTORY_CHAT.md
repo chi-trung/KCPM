@@ -435,7 +435,7 @@ edb073a fix(cors): use SetIsOriginAllowed to support all *.vercel.app subdomains
 | Minh Phụng | 4 tasks (Postman, Reports, CollectorTask, KIEM-28 fix) |
 | Nguyễn Hoàng Phụng | 4 tasks (Notifications, Category, E2E Allure, Traceability) |
 | Thanh Duy | 3 tasks (Complaints, CollectionTask, KIEM-29 fix) |
-| 11A6_03_Đăng | 3 tasks (Admin, Citizen, Manual Tests) |
+| Đăng | 3 tasks (Admin, Citizen, Manual Tests) |
 
 ### Files tạo mới/sửa
 

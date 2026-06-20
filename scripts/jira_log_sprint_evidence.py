@@ -30,7 +30,7 @@ JIRA_TOKEN = os.environ.get("JIRA_API_TOKEN", "")
 REPO = "chi-trung/KCPM"
 REPO_URL = f"https://github.com/{REPO}"
 ALLURE_URL = "https://chi-trung.github.io/KCPM/report-main/"
-JIRA_BOARD = "https://ut-team-36.atlassian.net/jira/software/projects/KIEM/boards/3"
+JIRA_BOARD = "Jira Board"
 TIMESTAMP = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
 

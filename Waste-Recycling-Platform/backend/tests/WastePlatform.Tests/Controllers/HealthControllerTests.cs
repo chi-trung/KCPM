@@ -1,4 +1,4 @@
-﻿using Allure.Xunit.Attributes;
+using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using Microsoft.AspNetCore.Mvc;
 using WastePlatform.API.Controllers;

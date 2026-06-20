@@ -4,7 +4,7 @@ create_jira_issues.py — Batch-create Jira issues from jira.md
 Reads sprint/task definitions and creates them via Jira REST API.
 
 Environment variables required:
-  JIRA_BASE_URL   — e.g. https://ut-team-36.atlassian.net
+  JIRA_BASE_URL   — e.g. JIRA_BASE_URL
   JIRA_API_EMAIL  — Jira account email
   JIRA_API_TOKEN  — Jira API token
   JIRA_PROJECT_KEY — e.g. KIEM

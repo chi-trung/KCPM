@@ -23,7 +23,7 @@ namespace WastePlatform.Tests.Controllers;
 [Allure.Net.Commons.Attributes.AllureTag("api")]
 [Allure.Net.Commons.Attributes.AllureTag("enterprise")]
 [Allure.Net.Commons.Attributes.AllureTag("rules")]
-[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-17")]
+[Allure.Net.Commons.Attributes.AllureIssue("KIEM-17")]
 public class EnterpriseRewardRuleControllerTests
 {
     [Fact]

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -33,7 +33,7 @@ namespace WastePlatform.Tests.Controllers
     [AllureSeverity(SeverityLevel.critical)]
     [Allure.Net.Commons.Attributes.AllureTag("api")]
     [Allure.Net.Commons.Attributes.AllureTag("reports")]
-    [Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-5")]
+    [Allure.Net.Commons.Attributes.AllureIssue("KIEM-5")]
     public class ValidationBvaEpTests
     {
         private readonly Mock<INotificationService> _mockNotificationService;

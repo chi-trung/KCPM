@@ -1,6 +1,6 @@
 # File Uploads & Storage — Test Case Overview
 
-**Jira:** [KIEM-20](https://ut-team-36.atlassian.net/browse/KIEM-20)  
+**Jira:** [KIEM-20](KIEM-20)  
 **Mã công việc:** `WRP-BE-TESTS-017`  
 **Owner:** Nguyễn Minh Phụng  
 **Module:** `LocalFileStorageService` (Infrastructure) + Upload endpoints (API)

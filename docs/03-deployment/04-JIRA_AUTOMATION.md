@@ -5,7 +5,7 @@ This automation creates Jira issues using the `jira.md` file in the repository r
 Setup (GitHub repository):
 
 1. Add the following repository secrets (Settings → Secrets → Actions):
-   - `JIRA_BASE_URL` — e.g. `https://ut-team-36.atlassian.net`
+   - `JIRA_BASE_URL` — e.g. `JIRA_BASE_URL`
    - `JIRA_API_EMAIL` — Jira account email used to create an API token
    - `JIRA_API_TOKEN` — Jira API token
    - `JIRA_PROJECT_KEY` — Jira project key (e.g. `KIEM`)

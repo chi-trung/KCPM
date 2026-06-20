@@ -1,4 +1,4 @@
-﻿using Allure.Xunit.Attributes;
+using Allure.Xunit.Attributes;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using System.IdentityModel.Tokens.Jwt;
@@ -12,7 +12,7 @@ using WastePlatform.Tests.TestSupport;
 namespace WastePlatform.Tests.Infrastructure.Services;
 
 [AllureEpic("KIEM-4: Auth Module Testing")]
-[Allure.Net.Commons.Attributes.AllureTag("https://ut-team-36.atlassian.net/browse/KIEM-4")]
+[Allure.Net.Commons.Attributes.AllureTag("KIEM-4")]
 [AllureFeature("JwtService")]
 [Allure.Net.Commons.Attributes.AllureLabel("story", "JWT token generation and claims verification")]
 [Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
@@ -23,7 +23,7 @@ namespace WastePlatform.Tests.Infrastructure.Services;
 [AllureSeverity(SeverityLevel.normal)]
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("security")]
-[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-4")]
+[Allure.Net.Commons.Attributes.AllureIssue("KIEM-4")]
 public class JwtServiceTests
 {
     [Fact]

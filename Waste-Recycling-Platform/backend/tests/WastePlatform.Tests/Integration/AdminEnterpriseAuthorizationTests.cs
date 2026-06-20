@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -29,7 +29,7 @@ using Microsoft.Extensions.Logging;
 namespace WastePlatform.Tests.Integration;
 
 [AllureEpic("KIEM-21: Security & Role-based Access Tests")]
-[Allure.Net.Commons.Attributes.AllureTag("https://ut-team-36.atlassian.net/browse/KIEM-21")]
+[Allure.Net.Commons.Attributes.AllureTag("KIEM-21")]
 [AllureFeature("Admin Enterprise Controller Authorization")]
 [Allure.Net.Commons.Attributes.AllureLabel("story", "Role-based authorization for admin enterprise endpoints")]
 [Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
@@ -40,7 +40,7 @@ namespace WastePlatform.Tests.Integration;
 [AllureSeverity(SeverityLevel.normal)]
 [Allure.Net.Commons.Attributes.AllureTag("integration")]
 [Allure.Net.Commons.Attributes.AllureTag("security")]
-[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-21")]
+[Allure.Net.Commons.Attributes.AllureIssue("KIEM-21")]
 public class AdminEnterpriseAuthorizationTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;
@@ -580,7 +580,7 @@ public class AdminEnterpriseAuthorizationTests : IClassFixture<WebApplicationFac
     }
 }
 
-[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-21")]
+[Allure.Net.Commons.Attributes.AllureIssue("KIEM-21")]
 public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
     public TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, System.Text.Encodings.Web.UrlEncoder encoder, ISystemClock clock)

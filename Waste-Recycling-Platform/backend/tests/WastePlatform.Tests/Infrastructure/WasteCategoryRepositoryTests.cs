@@ -1,4 +1,4 @@
-﻿using Allure.Xunit.Attributes;
+using Allure.Xunit.Attributes;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using WastePlatform.Domain.Entities;
@@ -19,11 +19,11 @@ namespace WastePlatform.Tests.Infrastructure;
 [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Infrastructure")]
 [AllureOwner("Hoàng Phụng")]
 [AllureSeverity(SeverityLevel.normal)]
-[Allure.Net.Commons.Attributes.AllureTag("https://ut-team-36.atlassian.net/browse/KIEM-12")]
+[Allure.Net.Commons.Attributes.AllureTag("KIEM-12")]
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("repository")]
 [Allure.Net.Commons.Attributes.AllureTag("waste-categories")]
-[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-12")]
+[Allure.Net.Commons.Attributes.AllureIssue("KIEM-12")]
 public class WasteCategoryRepositoryTests
 {
     [Fact]

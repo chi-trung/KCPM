@@ -18,7 +18,7 @@ namespace WastePlatform.Tests.Infrastructure;
 [AllureSeverity(SeverityLevel.normal)]
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("repository")]
-[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-6")]
+[Allure.Net.Commons.Attributes.AllureIssue("KIEM-6")]
 public class NotificationRepositoryTests
 {
     [Fact]

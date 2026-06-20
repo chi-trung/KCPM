@@ -190,7 +190,7 @@ NEW_TASKS = [
         "labels": ["sprint-3", "audit", "unit-test"],
     },
 
-    # ═══ 11A6_03_Đăng — add 3 tasks ═══
+    # ═══ Đăng — add 3 tasks ═══
     {
         "summary": "[Sprint-3] Viết báo cáo test Admin + Analytics + Citizen Module",
         "description": (

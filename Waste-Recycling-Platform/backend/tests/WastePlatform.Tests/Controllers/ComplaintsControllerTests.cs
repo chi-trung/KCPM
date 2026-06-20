@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using MediatR;

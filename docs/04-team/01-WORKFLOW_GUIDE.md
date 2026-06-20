@@ -8,7 +8,7 @@
 | **Minh Phụng** | Developer/Tester | Postman Collection | Reports tests (BVA), CollectorTask tests | Fix KIEM-28 (taskId) |
 | **Nguyễn Hoàng Phụng** | Developer/Tester | — | Notifications tests, Category+Security tests | Fix E2E Allure, Traceability Matrix |
 | **Thanh Duy** | Developer/Tester | — | Complaints tests (DT), CollectionTask tests | Fix KIEM-29 (max images) |
-| **11A6_03_Đăng** | Developer/Tester | — | Admin+Analytics tests, Citizen+Search tests | Manual Test Cases (Excel) |
+| **Đăng** | Developer/Tester | — | Admin+Analytics tests, Citizen+Search tests | Manual Test Cases (Excel) |
 
 ---
 
@@ -253,7 +253,7 @@ git push origin feature/KIEM-XX-audit-complaint-tests
 
 ---
 
-### 🔴 11A6_03_Đăng — 3 Tasks
+### 🔴 Đăng — 3 Tasks
 
 #### Task 1: Viết báo cáo test Admin + Analytics + Citizen Module
 ```bash
@@ -310,7 +310,7 @@ git push origin feature/KIEM-XX-analytics-integration-tests
 | **Minh Phụng** | 1 (KIEM-57) | 2 | **3** | Bug fix + Doc + Test |
 | **Nguyễn Hoàng Phụng** | 1 (KIEM-58) | 2 | **3** | Bug fix + Doc + Test |
 | **Thanh Duy** | 0 | 3 | **3** | Doc + BVA + Audit |
-| **11A6_03_Đăng** | 0 | 3 | **3** | Doc + Manual + Integration |
+| **Đăng** | 0 | 3 | **3** | Doc + Manual + Integration |
 | **Nguyễn Chí Trung** | ✅ Done (9 tasks, 6 PRs) | 0 | **Review all PRs** | Team Lead |
 
 

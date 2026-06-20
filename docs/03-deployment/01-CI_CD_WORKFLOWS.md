@@ -398,7 +398,7 @@ PR events:
 | **Database** | Aiven MySQL | (private connection string) |
 | **Allure Report** | GitHub Pages | https://chi-trung.github.io/KCPM/report-main/ |
 | **SonarCloud** | SonarCloud | https://sonarcloud.io/summary/overall?id=chi-trung_KCPM |
-| **Jira Board** | Atlassian | https://ut-team-36.atlassian.net/jira/software/projects/KIEM |
+| **Jira Board** | Atlassian | JIRA_BASE_URL/jira/software/projects/KIEM |
 
 ---
 

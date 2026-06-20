@@ -191,7 +191,7 @@ public class CollectionTaskImageBvaTests
     [InlineData("report.pdf", 2048, "application/pdf", "Kiểm tra định dạng: Chặn tệp tài liệu sai cấu trúc .pdf", true)]
 
     [AllureLabel("owner", "Thanh Duy")]
-    [AllureLabel("issue", "https://ut-team-36.atlassian.net/browse/KIEM-68")]
+    [AllureLabel("issue", "KIEM-68")]
     public async Task CompleteTask_FileConstraints_BoundaryTesting(
         string fileName,
         long fileSize,
@@ -238,7 +238,7 @@ public class CollectionTaskImageBvaTests
     [InlineData(11, "Biên số lượng vượt quá cấu hình cho phép (Gửi 11 ảnh)", true)]
 
     [AllureLabel("owner", "Thanh Duy")]
-    [AllureLabel("issue", "https://ut-team-36.atlassian.net/browse/KIEM-68")]
+    [AllureLabel("issue", "KIEM-68")]
     public async Task CompleteTask_ImageCountConstraints_BoundaryTesting(
         int count,
         string scenarioDesc,
@@ -284,7 +284,7 @@ public class CollectionTaskImageBvaTests
     [InlineData("KIEM-68-LOG-03", "Boundary analysis telemetry tracking for blocked file extension", 200)]
 
     [AllureLabel("owner", "Thanh Duy")]
-    [AllureLabel("issue", "https://ut-team-36.atlassian.net/browse/KIEM-68")]
+    [AllureLabel("issue", "KIEM-68")]
     public async Task UploadImage_ExecutionLogMapping_ReportTesting(
         string testCaseId,
         string description,

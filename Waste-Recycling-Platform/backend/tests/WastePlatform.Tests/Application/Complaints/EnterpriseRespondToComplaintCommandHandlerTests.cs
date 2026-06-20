@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using WastePlatform.Application.Complaints.Commands;
 using WastePlatform.Application.Common.Interfaces;
 using WastePlatform.Domain.Entities;

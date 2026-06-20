@@ -2,7 +2,7 @@
 
 **Cập nhật lần cuối**: 2026-06-13 16h30 (Session 10: Sprint Plan + Jira Issues KIEM-40→62)  
 **Allure Report**: https://chi-trung.github.io/KCPM/report-main/  
-**Jira Board**: https://ut-team-36.atlassian.net/jira/software/projects/KIEM/boards/3  
+**Jira Board**: Jira Board  
 **CI/CD**: https://github.com/chi-trung/KCPM/actions
 
 ---
@@ -53,11 +53,11 @@ Mỗi CI run tự động log kết quả lên Jira bằng token của nhóm tr�
 | **KIEM-5** | 002 - Reports Module Testing | Minh Phụng | `Application/Reports/AcceptReportCommandHandlerTests.cs`, `CreateReportCommandHandlerTests.cs` **(+BVA-02..07 images count)**, `GetAllReportsQueryHandlerTests.cs`, `GetEnterpriseReportsQueryHandlerTests.cs`, `GetMyReportsQueryHandlerTests.cs`, `GetReportByIdQueryHandlerTests.cs`, `RejectReportCommandHandlerTests.cs`, `Domain/WasteReportTests.cs` **(+ST-05/07/08 invalid transitions)** | `05 - Reports`, `06 - Citizen Reports` | ✅ Auto-logged |
 | **KIEM-6** | 003 - Notifications Module Testing | Nguyễn Hoàng Phụng | `Application/Notifications/NotificationServiceTests.cs`, `Controllers/NotificationControllerTests.cs`, `Infrastructure/NotificationRepositoryTests.cs` | `09 - Notifications` | ✅ Auto-logged |
 | **KIEM-7** | 004 - Complaints Module Testing | Thanh Duy | `Application/Complaints/CreateComplaintCommandHandlerTests.cs` **(+DT-01..06 Decision Table)**, `RejectComplaintCommandHandlerTests.cs`, `ResolveComplaintCommandHandlerTests.cs` | `10 - Complaints` | ✅ Auto-logged |
-| **KIEM-8** | 005 - Admin Module Testing | 11A6_03_Đăng | `Controllers/AnalyticsControllerTests.cs` + `AdminModuleTests.cs` (root tests folder), `AdminApiIntegrationTests.cs` | `02 - Admin`, `Admin Users` | ✅ Auto-logged |
-| **KIEM-9** | 006 - Analytics Module Testing | 11A6_03_Đăng | `Controllers/AnalyticsControllerTests.cs`, `AnalyticsModuleTests.cs`, `AnalyticsApiIntegrationTests.cs` | `04 - Analytics` | ✅ Auto-logged |
+| **KIEM-8** | 005 - Admin Module Testing | Đăng | `Controllers/AnalyticsControllerTests.cs` + `AdminModuleTests.cs` (root tests folder), `AdminApiIntegrationTests.cs` | `02 - Admin`, `Admin Users` | ✅ Auto-logged |
+| **KIEM-9** | 006 - Analytics Module Testing | Đăng | `Controllers/AnalyticsControllerTests.cs`, `AnalyticsModuleTests.cs`, `AnalyticsApiIntegrationTests.cs` | `04 - Analytics` | ✅ Auto-logged |
 | **KIEM-10** | 007 - Public Analytics Testing | Thanh Duy | `Controllers/AnalyticsControllerTests.cs` (public endpoints) | `04 - Analytics (public)` | ✅ Auto-logged |
 | **KIEM-12** | 009 - WasteCategory Module Testing | Nguyễn Hoàng Phụng | `Controllers/WasteCategoryControllerTests.cs`, `Application/WasteCategories/GetAllCategoriesQueryHandlerTests.cs`, `GetCategoryByIdQueryHandlerTests.cs`, `Infrastructure/WasteCategoryRepositoryTests.cs` | `03 - WasteCategory` | ✅ Auto-logged |
-| **KIEM-13** | 010 - Citizen Module Testing | 11A6_03_Đăng | `Application/Citizens/CitizenModuleTests.cs` | `06 - Citizen Profile` | ✅ Auto-logged |
+| **KIEM-13** | 010 - Citizen Module Testing | Đăng | `Application/Citizens/CitizenModuleTests.cs` | `06 - Citizen Profile` | ✅ Auto-logged |
 | **KIEM-14** | 011 - Collector Module Testing | Nguyễn Chí Trung | `Controllers/CollectorControllerTests.cs` + E2E | Postman `07 - Collector` + `frontend/e2e/collector_task_test.js` | ✅ Auto-logged |
 | **KIEM-15** | 012 - CollectorTask Module Testing | Minh Phụng | `Controllers/CollectorTaskControllerTests.cs`, `CollectorTaskControllerExtendedTests.cs`, `Application/Tasks/AssignCollectorCommandHandlerTests.cs` | `08 - CollectorTask` | ✅ Auto-logged |
 | **KIEM-16** | 013 - Enterprise Task Module Testing | Nguyễn Chí Trung | `Controllers/EnterpriseTaskControllerTests.cs` + E2E | Postman `Enterprise Tasks` + `frontend/e2e/enterprise_assign_test.js` | ✅ Auto-logged |
@@ -67,7 +67,7 @@ Mỗi CI run tự động log kết quả lên Jira bằng token của nhóm tr�
 | **KIEM-20** | 017 - File Uploads & Storage Tests | Minh Phụng | `Infrastructure/CollectorEvidenceUploadTests.cs`, `LocalFileStorageServiceTests.cs` | File upload requests | ✅ Auto-logged |
 | **KIEM-21** | 018 - Security & Role-based Access Tests | Nguyễn Hoàng Phụng | `Integration/AdminEnterpriseAuthorizationTests.cs`, `Integration/JwtBearerIntegrationTests.cs` | Postman `Security/Auth` | ✅ Auto-logged |
 | **KIEM-22** | 019 - AuditLog & Error Path Tests | Thanh Duy | `Controllers/AuditLogAndErrorPathTests.cs` | — | ✅ Auto-logged |
-| **KIEM-23** | 020 - Search, Pagination & Filters Tests | 11A6_03_Đăng | `Search/SearchPaginationFiltersTests.cs` | — | ✅ Auto-logged |
+| **KIEM-23** | 020 - Search, Pagination & Filters Tests | Đăng | `Search/SearchPaginationFiltersTests.cs` | — | ✅ Auto-logged |
 
 ---
 
@@ -141,4 +141,4 @@ Mỗi CI run tự động log kết quả lên Jira bằng token của nhóm tr�
 - CI tự động log kết quả lên Jira sau mỗi run (sử dụng `scripts/jira_log_test_execution.py`).
 - ISSUE_MAP trong script xác định Jira issue nào nhận comment từ loại test nào.
 - Bug issues (KIEM-26, 27, 28, 29) không tự động log — cần manual testing.
-- Thành viên nhóm: Nguyễn Chí Trung (trưởng nhóm), Minh Phụng, Nguyễn Hoàng Phụng, Thanh Duy, 11A6_03_Đăng.
+- Thành viên nhóm: Nguyễn Chí Trung (trưởng nhóm), Minh Phụng, Nguyễn Hoàng Phụng, Thanh Duy, Đăng.

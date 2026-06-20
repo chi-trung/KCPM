@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using Microsoft.AspNetCore.Http;
@@ -28,7 +28,7 @@ namespace WastePlatform.Tests.Controllers;
 [AllureSeverity(SeverityLevel.critical)]
 [Allure.Net.Commons.Attributes.AllureTag("api")]
 [Allure.Net.Commons.Attributes.AllureTag("auth")]
-[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-4")]
+[Allure.Net.Commons.Attributes.AllureIssue("KIEM-4")]
 public class AuthControllerTests
 {
     [Fact]

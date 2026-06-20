@@ -1,6 +1,5 @@
 # 🎤 Kịch Bản Demo CI/CD — Kiểm Chứng Phần Mềm
 
-> **Nhóm 11A6** | **Giảng viên**: Thầy Bảo | **Nhóm trưởng**: Nguyễn Chí Trung  
 > **Cập nhật**: 13/06/2026
 
 ---
@@ -572,7 +571,7 @@ t = 12 min  ✅ TẤT CẢ HOÀN TẤT
 | Secret | Dùng cho workflow | Lấy từ đâu |
 |--------|------------------|-------------|
 | `SONAR_TOKEN` | #3 SonarCloud | sonarcloud.io → My Account → Security |
-| `JIRA_BASE_URL` | #1,2,4,5 | `https://ut-team-36.atlassian.net` |
+| `JIRA_BASE_URL` | #1,2,4,5 | `JIRA_BASE_URL` |
 | `JIRA_API_EMAIL` | #1,2,4,5,11 | Email tài khoản Atlassian |
 | `JIRA_API_TOKEN` | #1,2,4,5,11 | Atlassian → Account → API tokens |
 | `DEPLOY_HOST` | #6 Deploy Server | IP server SSH |
@@ -617,7 +616,7 @@ t = 12 min  ✅ TẤT CẢ HOÀN TẤT
 | GitHub Actions | https://github.com/chi-trung/KCPM/actions |
 | Allure Report | https://chi-trung.github.io/KCPM/report-main/ |
 | SonarCloud | https://sonarcloud.io/summary/overall?id=chi-trung_KCPM |
-| Jira Board | https://ut-team-36.atlassian.net/jira/software/projects/KIEM |
+| Jira Board | JIRA_BASE_URL/jira/software/projects/KIEM |
 
 ### Tài khoản demo
 

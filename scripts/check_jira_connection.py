@@ -6,7 +6,7 @@ Quick connectivity check for Jira API.
 Run locally to verify credentials before first CI run.
 
 Usage:
-  JIRA_BASE_URL=https://ut-team-36.atlassian.net \
+  JIRA_BASE_URL=JIRA_BASE_URL \
   JIRA_API_EMAIL=your.email@gmail.com \
   JIRA_API_TOKEN=your_token \
   python3 scripts/check_jira_connection.py

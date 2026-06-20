@@ -30,7 +30,7 @@ namespace WastePlatform.Tests.Controllers;
 [Allure.Net.Commons.Attributes.AllureTag("api")]
 [Allure.Net.Commons.Attributes.AllureTag("audit")]
 [Allure.Net.Commons.Attributes.AllureTag("error-handling")]
-[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-22")]
+[Allure.Net.Commons.Attributes.AllureIssue("KIEM-22")]
 public class AuditLogAndErrorPathTests
 {
     private sealed record EnterpriseProfileScenario(Guid UserId, Enterprise Enterprise);

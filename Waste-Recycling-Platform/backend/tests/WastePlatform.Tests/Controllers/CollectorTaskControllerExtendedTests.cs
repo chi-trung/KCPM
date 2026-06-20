@@ -1,4 +1,4 @@
-﻿using System.Security.Claims;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
@@ -36,7 +36,7 @@ namespace WastePlatform.Tests.Controllers;
 [Allure.Net.Commons.Attributes.AllureTag("api")]
 [Allure.Net.Commons.Attributes.AllureTag("collector")]
 [Allure.Net.Commons.Attributes.AllureTag("task")]
-[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-15")]
+[Allure.Net.Commons.Attributes.AllureIssue("KIEM-15")]
 public class CollectorTaskControllerExtendedTests
 {
     // ── TC-TASK-001 ───────────────────────────────────────────────────────────

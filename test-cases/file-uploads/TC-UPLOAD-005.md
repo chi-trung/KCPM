@@ -1,7 +1,7 @@
 # TC-UPLOAD-005 — Storage Behavior: Folder Auto-Create & Unique Filenames
 
 **Module:** File Uploads & Storage  
-**Jira:** [KIEM-20](https://ut-team-36.atlassian.net/browse/KIEM-20)  
+**Jira:** [KIEM-20](KIEM-20)  
 **Type:** Positive + Edge Case  
 **Severity:** Normal  
 **Owner:** Nguyễn Minh Phụng

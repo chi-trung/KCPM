@@ -4,7 +4,6 @@
 
 **Phiên bản:** 3.0  
 **Ngày lập:** 12/06/2026  
-**Nhóm:** 11A6 — KiemChungPhanMem (KCPM)  
 **Giảng viên hướng dẫn:** Thầy Chiến  
 
 ---
@@ -113,10 +112,10 @@ Theo giáo trình Chương 4 — **Phân loại kỹ thuật**:
 |----------------|----------|-----------|------|---------|
 | F01: Auth (Đăng ký/Đăng nhập) | EP + Error Guessing | 5 | KIEM-4 | Nguyễn Chí Trung |
 | F02: Create Report | BVA + EP | 6 | KIEM-5 | Minh Phụng |
-| F03: Accept/Reject Report | State Transition | 5 | KIEM-8 | 11A6_03_Đăng |
+| F03: Accept/Reject Report | State Transition | 5 | KIEM-8 | Đăng |
 | F04: CollectionTask State | State Transition | 6 | KIEM-18 | Thanh Duy |
 | F05: Assign Collector | EP + Error Guessing | 4 | KIEM-16 | Nguyễn Chí Trung |
-| F06: Complaints | Decision Table | 5 | KIEM-7 | 11A6_03_Đăng |
+| F06: Complaints | Decision Table | 5 | KIEM-7 | Đăng |
 | F07: Notifications + SignalR | EP | 4 | KIEM-6 | Nguyễn Chí Trung |
 | F08: File Upload & JWT | BVA + EP | 5 | KIEM-20 | Minh Phụng |
 | F09: Waste Category | EP | 3 | KIEM-12 | Nguyễn Hoàng Phụng |
@@ -138,7 +137,7 @@ Theo giáo trình Chương 6 — **Tổ chức kiểm thử**:
 | **Developer/Tester** | Minh Phụng | F02, F08, F13 — Reports & File Upload |
 | **Developer/Tester** | Nguyễn Hoàng Phụng | F09, F11 — WasteCategory & BVA Images |
 | **Developer/Tester** | Thanh Duy | F04, F07, F12 — CollectionTask & Decision Table |
-| **Developer/Tester** | 11A6_03_Đăng | F03, F06 — Admin & Complaints |
+| **Developer/Tester** | Đăng | F03, F06 — Admin & Complaints |
 
 > ⚠️ Theo nguyên tắc **độc lập kiểm thử** (Ch.6): Developer không tự test code của mình. Team Leader (Nguyễn Chí Trung) log Jira CI cho toàn nhóm.
 
@@ -234,4 +233,4 @@ Theo giáo trình Chương 5 — **Lỗi phần mềm**:
 ---
 
 *Document này được tạo theo chuẩn giáo trình Kiểm thử Phần mềm Chương 6: Quản lý Kiểm thử.*  
-*Cập nhật: 13/06/2026 — Nhóm 11A6 KCPM (Session 10: Sprint Plan + Jira Issues)*
+*Cập nhật: 13/06/2026 — KCPM (Session 10: Sprint Plan + Jira Issues)*

@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using Moq;
@@ -39,7 +39,7 @@ namespace WastePlatform.Tests.Application.Reports;
 [Allure.Net.Commons.Attributes.AllureTag("backend")]
 [Allure.Net.Commons.Attributes.AllureTag("reports")]
 [Allure.Net.Commons.Attributes.AllureTag("state-transition")]
-[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-5")]
+[Allure.Net.Commons.Attributes.AllureIssue("KIEM-5")]
 public class AcceptReportCommandHandlerV2Tests
 {
     // ─── Dependencies (được mock toàn bộ, không chạm DB/Network thật) ──────────

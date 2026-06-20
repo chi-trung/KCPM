@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using Allure.Xunit.Attributes;
 using Allure.Net.Commons;
 using Moq;
@@ -23,9 +23,9 @@ namespace WastePlatform.Tests.Application.Citizens;
 [Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
 [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "UpdateProfileCommandHandlerTests")]
 [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Citizens")]
-[AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-13")]
+[AllureIssue("KIEM-13")]
 [Allure.Net.Commons.Attributes.AllureLabel("WRP", "WRP-BE-TESTS-010")]
-[AllureOwner("11A6_03_Đăng")]
+[AllureOwner("Đăng")]
 [AllureSeverity(SeverityLevel.critical)]
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("citizen")]
@@ -202,9 +202,9 @@ public class UpdateProfileCommandHandlerTests
 [Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
 [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "GetProfileQueryHandlerTests")]
 [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Citizens")]
-[AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-13")]
+[AllureIssue("KIEM-13")]
 [Allure.Net.Commons.Attributes.AllureLabel("WRP", "WRP-BE-TESTS-010")]
-[AllureOwner("11A6_03_Đăng")]
+[AllureOwner("Đăng")]
 [AllureSeverity(SeverityLevel.critical)]
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("citizen")]
@@ -326,9 +326,9 @@ public class GetProfileQueryHandlerTests
 [Allure.Net.Commons.Attributes.AllureLabel("suite", "Application")]
 [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "GetLeaderboardQueryHandlerTests")]
 [Allure.Net.Commons.Attributes.AllureLabel("package", "WastePlatform.Tests.Application.Citizens")]
-[AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-13")]
+[AllureIssue("KIEM-13")]
 [Allure.Net.Commons.Attributes.AllureLabel("WRP", "WRP-BE-TESTS-010")]
-[AllureOwner("11A6_03_Đăng")]
+[AllureOwner("Đăng")]
 [AllureSeverity(SeverityLevel.normal)]
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("citizen")]

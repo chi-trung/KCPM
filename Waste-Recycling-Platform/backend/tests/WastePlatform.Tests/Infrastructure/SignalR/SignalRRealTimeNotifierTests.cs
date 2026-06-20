@@ -9,7 +9,7 @@ namespace WastePlatform.Tests.Infrastructure.SignalR;
 
 [AllureEpic("KIEM-19 SignalR Real-time Notifications")]
 [AllureFeature("WRP-BE-TESTS-016 SignalR Real-time Tests")]
-[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-19")]
+[Allure.Net.Commons.Attributes.AllureIssue("KIEM-19")]
 [Allure.Net.Commons.Attributes.AllureLabel("parentSuite", "xUnit Backend Tests")]
 [Allure.Net.Commons.Attributes.AllureLabel("suite", "Infrastructure")]
 [Allure.Net.Commons.Attributes.AllureLabel("subSuite", "SignalRRealTimeNotifierTests")]

@@ -28,7 +28,7 @@ namespace WastePlatform.Tests.Application.Reports;
 [Allure.Net.Commons.Attributes.AllureTag("unit")]
 [Allure.Net.Commons.Attributes.AllureTag("backend")]
 [Allure.Net.Commons.Attributes.AllureTag("reports")]
-[Allure.Net.Commons.Attributes.AllureIssue("https://ut-team-36.atlassian.net/browse/KIEM-5")]
+[Allure.Net.Commons.Attributes.AllureIssue("KIEM-5")]
 public class GetReportByIdQueryHandlerTests
 {
     private readonly Mock<IReportRepository> _mockReportRepository;
