@@ -25,6 +25,10 @@ using System.Linq;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.SignalR;
+using WastePlatform.API.Controllers;
+using WastePlatform.Application.Common.Interfaces;
+using WastePlatform.Infrastructure.SignalR;
 
 namespace WastePlatform.Tests.Integration;
 
@@ -578,6 +582,470 @@ public class AdminEnterpriseAuthorizationTests : IClassFixture<WebApplicationFac
         var content = await response.Content.ReadAsStringAsync();
         content.Should().Contain("Enterprises retrieved successfully");
     }
+
+    private HttpClient CreateTestClient(string? role, string dbName, Action<IServiceCollection>? configureServices = null)
+    {
+        var factory = _factory.WithWebHostBuilder(builder =>
+        {
+            builder.ConfigureAppConfiguration((context, conf) =>
+            {
+                var settings = new System.Collections.Generic.Dictionary<string, string?>
+                {
+                    { "JwtSettings:SecretKey", "test-secret-key-which-is-long-enough" },
+                    { "JwtSettings:Issuer", "test-issuer" },
+                    { "JwtSettings:Audience", "test-audience" },
+                    { "JwtSettings:ExpirationMinutes", "60" }
+                };
+                conf.AddInMemoryCollection(settings);
+            });
+
+            builder.ConfigureTestServices(services =>
+            {
+                services.RemoveAll(typeof(DbContextOptions<WastePlatform.Infrastructure.Persistence.WastePlatformDbContext>));
+                services.AddDbContext<WastePlatform.Infrastructure.Persistence.WastePlatformDbContext>(options =>
+                    options.UseInMemoryDatabase(dbName));
+
+                // Mock IMediator by default
+                var mediatorMock = new Mock<IMediator>();
+                services.AddSingleton<IMediator>(mediatorMock.Object);
+
+                // Mock INotificationService
+                var notificationMock = new Mock<INotificationService>();
+                services.AddSingleton<INotificationService>(notificationMock.Object);
+
+                // Mock IHubContext<TaskHub>
+                var hubContextMock = new Mock<IHubContext<TaskHub>>();
+                var clientsMock = new Mock<IHubClients>();
+                var clientProxyMock = new Mock<IClientProxy>();
+                clientsMock.Setup(c => c.All).Returns(clientProxyMock.Object);
+                hubContextMock.Setup(h => h.Clients).Returns(clientsMock.Object);
+                services.AddSingleton<IHubContext<TaskHub>>(hubContextMock.Object);
+
+                configureServices?.Invoke(services);
+
+                services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = "Test";
+                    options.DefaultChallengeScheme = "Test";
+                }).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
+            });
+        });
+
+        // Let's seed the User and Enterprise if role is provided
+        Guid userId = Guid.NewGuid();
+        User? user = null;
+
+        if (role != null)
+        {
+            UserRole userRole = role switch
+            {
+                "Admin" => UserRole.Admin,
+                "Enterprise" => UserRole.Enterprise,
+                "Citizen" => UserRole.Citizen,
+                "Collector" => UserRole.Collector,
+                _ => throw new System.ArgumentException("Invalid role")
+            };
+
+            user = User.Create($"{role.ToLower()}@example.com", "pwd", $"{role} User", userRole);
+            var idField = typeof(User).GetField("<Id>k__BackingField", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            if (idField != null)
+                idField.SetValue(user, userId);
+        }
+
+        var client = factory.CreateClient();
+
+        if (role != null && user != null)
+        {
+            using (var scope = factory.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<WastePlatform.Infrastructure.Persistence.WastePlatformDbContext>();
+                db.Database.EnsureCreated();
+                db.Users.Add(user);
+
+                if (role == "Enterprise")
+                {
+                    var enterprise = new Enterprise
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = userId,
+                        CompanyName = "Test Enterprise",
+                        ServiceArea = "[\"District 1\"]",
+                        CapacityKgPerDay = 1000,
+                        Status = "Verified",
+                        CreatedAt = System.DateTime.UtcNow
+                    };
+                    db.Enterprises.Add(enterprise);
+                }
+                db.SaveChanges();
+            }
+
+            var jwtService = new JwtService(new ConfigurationBuilder().AddInMemoryCollection(new System.Collections.Generic.Dictionary<string, string?>
+            {
+                { "JwtSettings:SecretKey", "test-secret-key-which-is-long-enough" },
+                { "JwtSettings:Issuer", "test-issuer" },
+                { "JwtSettings:Audience", "test-audience" },
+                { "JwtSettings:ExpirationMinutes", "60" }
+            }).Build());
+
+            var token = jwtService.GenerateToken(user);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+
+        return client;
+    }
+
+    // ==========================================
+    // KIEM-21: ROLE-BASED ACCESS CONTROL TESTS
+    // ==========================================
+
+    #region Admin-only endpoints
+    [Fact]
+    [AllureFeature("Admin User Creation")]
+    [AllureStory("Admin can create user, others forbidden")]
+    public async System.Threading.Tasks.Task CreateUser_AdminRole_ReturnsOk()
+    {
+        // Arrange
+        var mockMediator = new Mock<IMediator>();
+        mockMediator.Setup(m => m.Send(It.IsAny<WastePlatform.Application.Admin.Users.Commands.CreateUserCommand>(), It.IsAny<System.Threading.CancellationToken>()))
+            .ReturnsAsync("new-user-id");
+
+        var client = CreateTestClient("Admin", "Db_CreateUser_Admin", services =>
+        {
+            services.AddSingleton<IMediator>(mockMediator.Object);
+        });
+
+        var command = new WastePlatform.Application.Admin.Users.Commands.CreateUserCommand
+        {
+            Email = "newcitizen@example.com",
+            FullName = "New Citizen",
+            Phone = "0987654321",
+            Role = "citizen",
+            District = "District 1",
+            Ward = "Ward 1"
+        };
+        var content = new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
+
+        // Act
+        var response = await client.PostAsync("/api/admin/users", content);
+
+        // Assert
+        AllureAttachmentHelper.AttachText("http-response", $"HTTP response: {response.StatusCode}");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    [AllureFeature("Admin User Creation")]
+    [AllureStory("Citizen/Enterprise cannot create user")]
+    public async System.Threading.Tasks.Task CreateUser_NonAdminRole_ReturnsForbidden()
+    {
+        // Arrange
+        var client = CreateTestClient("Citizen", "Db_CreateUser_NonAdmin");
+        var command = new WastePlatform.Application.Admin.Users.Commands.CreateUserCommand();
+        var content = new StringContent(JsonSerializer.Serialize(command), Encoding.UTF8, "application/json");
+
+        // Act
+        var response = await client.PostAsync("/api/admin/users", content);
+
+        // Assert
+        AllureAttachmentHelper.AttachText("http-response", $"HTTP response: {response.StatusCode}");
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    [AllureFeature("Admin User Management")]
+    [AllureStory("Admin can toggle status, others forbidden")]
+    public async System.Threading.Tasks.Task ToggleUserStatus_AdminRole_ReturnsOk()
+    {
+        // Arrange
+        var mockMediator = new Mock<IMediator>();
+        mockMediator.Setup(m => m.Send(It.IsAny<WastePlatform.Application.Admin.Users.Commands.ToggleUserStatusCommand>(), It.IsAny<System.Threading.CancellationToken>()))
+            .ReturnsAsync(true);
+
+        var client = CreateTestClient("Admin", "Db_ToggleStatus_Admin", services =>
+        {
+            services.AddSingleton<IMediator>(mockMediator.Object);
+        });
+
+        // Act
+        var response = await client.PatchAsync($"/api/admin/users/{Guid.NewGuid()}/toggle-status", null);
+
+        // Assert
+        AllureAttachmentHelper.AttachText("http-response", $"HTTP response: {response.StatusCode}");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    [AllureFeature("Admin User Management")]
+    [AllureStory("Citizen/Enterprise cannot toggle user status")]
+    public async System.Threading.Tasks.Task ToggleUserStatus_NonAdminRole_ReturnsForbidden()
+    {
+        // Arrange
+        var client = CreateTestClient("Citizen", "Db_ToggleStatus_NonAdmin");
+
+        // Act
+        var response = await client.PatchAsync($"/api/admin/users/{Guid.NewGuid()}/toggle-status", null);
+
+        // Assert
+        AllureAttachmentHelper.AttachText("http-response", $"HTTP response: {response.StatusCode}");
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    [AllureFeature("Admin Analytics")]
+    [AllureStory("Admin can view overview, others forbidden")]
+    public async System.Threading.Tasks.Task GetAnalyticsOverview_AdminRole_ReturnsOk()
+    {
+        // Arrange
+        var mockMediator = new Mock<IMediator>();
+        mockMediator.Setup(m => m.Send(It.IsAny<WastePlatform.Application.Admin.Analytics.Queries.GetAnalyticsOverviewQuery>(), It.IsAny<System.Threading.CancellationToken>()))
+            .ReturnsAsync(new WastePlatform.Application.Admin.Analytics.DTOs.AnalyticsOverviewDto());
+
+        var client = CreateTestClient("Admin", "Db_AnalyticsOverview_Admin", services =>
+        {
+            services.AddSingleton<IMediator>(mockMediator.Object);
+        });
+
+        // Act
+        var response = await client.GetAsync("/api/admin/analytics/overview");
+
+        // Assert
+        AllureAttachmentHelper.AttachText("http-response", $"HTTP response: {response.StatusCode}");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    [AllureFeature("Admin Analytics")]
+    [AllureStory("Citizen/Enterprise cannot view analytics overview")]
+    public async System.Threading.Tasks.Task GetAnalyticsOverview_NonAdminRole_ReturnsForbidden()
+    {
+        // Arrange
+        var client = CreateTestClient("Citizen", "Db_AnalyticsOverview_NonAdmin");
+
+        // Act
+        var response = await client.GetAsync("/api/admin/analytics/overview");
+
+        // Assert
+        AllureAttachmentHelper.AttachText("http-response", $"HTTP response: {response.StatusCode}");
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+    #endregion
+
+    #region Enterprise-only endpoints
+    [Fact]
+    [AllureFeature("Enterprise Collectors")]
+    [AllureStory("Enterprise can create collector, others forbidden")]
+    public async System.Threading.Tasks.Task CreateCollector_EnterpriseRole_ReturnsOk()
+    {
+        // Arrange
+        var client = CreateTestClient("Enterprise", "Db_CreateCollector_Enterprise");
+
+        var request = new CreateEnterpriseCollectorRequest
+        {
+            FullName = "New Collector",
+            Email = "newcollector@example.com",
+            Phone = "0981112222",
+            TemporaryPassword = "password123",
+            IsAvailable = true
+        };
+        var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
+
+        // Act
+        var response = await client.PostAsync("/api/enterprise/collectors", content);
+
+        // Assert
+        AllureAttachmentHelper.AttachText("http-response", $"HTTP response: {response.StatusCode}");
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    [AllureFeature("Enterprise Collectors")]
+    [AllureStory("Citizen/Admin cannot create collector")]
+    public async System.Threading.Tasks.Task CreateCollector_NonEnterpriseRole_ReturnsForbidden()
+    {
+        // Arrange
+        var client = CreateTestClient("Citizen", "Db_CreateCollector_NonEnterprise");
+        var request = new CreateEnterpriseCollectorRequest { IsAvailable = true };
+        var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
+
+        // Act
+        var response = await client.PostAsync("/api/enterprise/collectors", content);
+
+        // Assert
+        AllureAttachmentHelper.AttachText("http-response", $"HTTP response: {response.StatusCode}");
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    [AllureFeature("Enterprise Tasks")]
+    [AllureStory("Enterprise can assign task to collector")]
+    public async System.Threading.Tasks.Task AssignCollector_EnterpriseRole_ReturnsOkOrNotFound()
+    {
+        // Arrange
+        var client = CreateTestClient("Enterprise", "Db_AssignCollector_Enterprise");
+        var request = new AssignCollectorRequest
+        {
+            CollectorId = Guid.NewGuid()
+        };
+        var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
+
+        // Act
+        var response = await client.PutAsync($"/api/enterprise/tasks/{Guid.NewGuid()}/assign-collector", content);
+
+        // Assert
+        AllureAttachmentHelper.AttachText("http-response", $"HTTP response: {response.StatusCode}");
+        response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
+        response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    [AllureFeature("Enterprise Tasks")]
+    [AllureStory("Admin can assign task to collector")]
+    public async System.Threading.Tasks.Task AssignCollector_AdminRole_ReturnsOkOrNotFound()
+    {
+        // Arrange
+        var client = CreateTestClient("Admin", "Db_AssignCollector_Admin");
+        var request = new AssignCollectorRequest
+        {
+            CollectorId = Guid.NewGuid()
+        };
+        var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
+
+        // Act
+        var response = await client.PutAsync($"/api/enterprise/tasks/{Guid.NewGuid()}/assign-collector", content);
+
+        // Assert
+        AllureAttachmentHelper.AttachText("http-response", $"HTTP response: {response.StatusCode}");
+        response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
+        response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    [AllureFeature("Enterprise Tasks")]
+    [AllureStory("Citizen cannot assign task to collector")]
+    public async System.Threading.Tasks.Task AssignCollector_CitizenRole_ReturnsForbidden()
+    {
+        // Arrange
+        var client = CreateTestClient("Citizen", "Db_AssignCollector_Citizen");
+        var request = new AssignCollectorRequest
+        {
+            CollectorId = Guid.NewGuid()
+        };
+        var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
+
+        // Act
+        var response = await client.PutAsync($"/api/enterprise/tasks/{Guid.NewGuid()}/assign-collector", content);
+
+        // Assert
+        AllureAttachmentHelper.AttachText("http-response", $"HTTP response: {response.StatusCode}");
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+    #endregion
+
+    #region Citizen-only endpoints
+    [Fact]
+    [AllureFeature("Citizen Reports")]
+    [AllureStory("Citizen can create report")]
+    public async System.Threading.Tasks.Task CreateReport_CitizenRole_ReturnsCreated()
+    {
+        // Arrange
+        var mockMediator = new Mock<IMediator>();
+        mockMediator.Setup(m => m.Send(It.IsAny<WastePlatform.Application.Reports.Commands.CreateReportCommand>(), It.IsAny<System.Threading.CancellationToken>()))
+            .ReturnsAsync(Guid.NewGuid());
+        mockMediator.Setup(m => m.Send(It.IsAny<WastePlatform.Application.Reports.Queries.GetReportByIdQuery>(), It.IsAny<System.Threading.CancellationToken>()))
+            .ReturnsAsync(new WastePlatform.Application.Common.DTOs.ReportDto());
+
+        var client = CreateTestClient("Citizen", "Db_CreateReport_Citizen", services =>
+        {
+            services.AddSingleton<IMediator>(mockMediator.Object);
+        });
+
+        using var content = new MultipartFormDataContent();
+        content.Add(new StringContent("1"), "WasteCategoryId");
+        content.Add(new StringContent("10.5"), "Latitude");
+        content.Add(new StringContent("106.3"), "Longitude");
+        content.Add(new StringContent("Report description"), "Description");
+        content.Add(new StringContent("Report address"), "Address");
+
+        // Act
+        var response = await client.PostAsync("/api/reports/create", content);
+
+        // Assert
+        AllureAttachmentHelper.AttachText("http-response", $"HTTP response: {response.StatusCode}");
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
+
+    [Fact]
+    [AllureFeature("Citizen Reports")]
+    [AllureStory("Admin/Enterprise cannot create report")]
+    public async System.Threading.Tasks.Task CreateReport_NonCitizenRole_ReturnsForbidden()
+    {
+        // Arrange
+        var client = CreateTestClient("Admin", "Db_CreateReport_NonCitizen");
+        using var content = new MultipartFormDataContent();
+        content.Add(new StringContent("1"), "WasteCategoryId");
+
+        // Act
+        var response = await client.PostAsync("/api/reports/create", content);
+
+        // Assert
+        AllureAttachmentHelper.AttachText("http-response", $"HTTP response: {response.StatusCode}");
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    [AllureFeature("Citizen Complaints")]
+    [AllureStory("Citizen can create complaint")]
+    public async System.Threading.Tasks.Task CreateComplaint_CitizenRole_ReturnsCreated()
+    {
+        // Arrange
+        var mockMediator = new Mock<IMediator>();
+        mockMediator.Setup(m => m.Send(It.IsAny<WastePlatform.Application.Complaints.Commands.CreateComplaintCommand>(), It.IsAny<System.Threading.CancellationToken>()))
+            .ReturnsAsync(Guid.NewGuid());
+        mockMediator.Setup(m => m.Send(It.IsAny<WastePlatform.Application.Complaints.Queries.GetComplaintByIdQuery>(), It.IsAny<System.Threading.CancellationToken>()))
+            .ReturnsAsync(new WastePlatform.Application.Common.DTOs.ComplaintDto { Content = "Test" });
+
+        var client = CreateTestClient("Citizen", "Db_CreateComplaint_Citizen", services =>
+        {
+            services.AddSingleton<IMediator>(mockMediator.Object);
+        });
+
+        var dto = new WastePlatform.Application.Common.DTOs.CreateComplaintDto
+        {
+            Content = "Valid complaint content that is not empty.",
+            ReportId = Guid.NewGuid()
+        };
+        var content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
+
+        // Act
+        var response = await client.PostAsync("/api/complaints", content);
+
+        // Assert
+        AllureAttachmentHelper.AttachText("http-response", $"HTTP response: {response.StatusCode}");
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
+
+    [Fact]
+    [AllureFeature("Citizen Complaints")]
+    [AllureStory("Admin/Enterprise cannot create complaint")]
+    public async System.Threading.Tasks.Task CreateComplaint_NonCitizenRole_ReturnsForbidden()
+    {
+        // Arrange
+        var client = CreateTestClient("Admin", "Db_CreateComplaint_NonCitizen");
+        var dto = new WastePlatform.Application.Common.DTOs.CreateComplaintDto
+        {
+            Content = "Valid content",
+            ReportId = Guid.NewGuid()
+        };
+        var content = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
+
+        // Act
+        var response = await client.PostAsync("/api/complaints", content);
+
+        // Assert
+        AllureAttachmentHelper.AttachText("http-response", $"HTTP response: {response.StatusCode}");
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+    }
+    #endregion
 }
 
 [Allure.Net.Commons.Attributes.AllureIssue("KIEM-21")]
@@ -590,12 +1058,12 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        // Náº¿u khÃ´ng cÃ³ header Authorization thÃ¬ coi nhÆ° request chÆ°a Ä‘Äƒng nháº­p.
+        // Nếu không có header Authorization thì coi như request chưa đăng nhập.
         if (!Request.Headers.TryGetValue("Authorization", out var authHeaders))
             return Task.FromResult(AuthenticateResult.NoResult());
 
         var authHeader = authHeaders.FirstOrDefault();
-        // Chá»‰ cháº¥p nháº­n kiá»ƒu Bearer token vÃ¬ Ä‘Ã¢y lÃ  flow cá»§a JWT auth.
+        // Chỉ chấp nhận kiểu Bearer token vì đây là flow của JWT auth.
         if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
             return Task.FromResult(AuthenticateResult.NoResult());
 
@@ -603,7 +1071,7 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
 
         try
         {
-            // Chá»‰ Ä‘á»c claim tá»« JWT Ä‘á»ƒ phá»¥c vá»¥ test authorization, khÃ´ng verify chá»¯ kÃ½.
+            // Chỉ đọc claim từ JWT để phục vụ test authorization, không verify chữ ký.
             var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token);
             var claims = jwt.Claims.Select(c => new Claim(c.Type, c.Value)).ToList();
             
@@ -614,7 +1082,7 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
                 claims.Add(new Claim(ClaimTypes.NameIdentifier, subClaim.Value));
             }
 
-            // Táº¡o principal test tá»« claim cá»§a JWT Ä‘á»ƒ ASP.NET Core Ã¡p dá»¥ng [Authorize(Roles=...)]
+            // Tạo principal test từ claim của JWT để ASP.NET Core áp dụng [Authorize(Roles=...)]
             var identity = new ClaimsIdentity(claims, "Test");
             var principal = new ClaimsPrincipal(identity);
             var ticket = new AuthenticationTicket(principal, "Test");
