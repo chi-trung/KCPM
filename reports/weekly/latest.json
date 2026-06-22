@@ -1,27 +1,27 @@
 {
-  "week": 25,
+  "week": 26,
   "year": 2026,
-  "timestamp": "2026-06-17T01:22:34.012730+00:00",
+  "timestamp": "2026-06-22T06:18:06.645287+00:00",
   "backend": {
-    "passed": 492,
+    "passed": 807,
     "failed": 0,
-    "total": 492,
-    "duration": "22s"
+    "total": 807,
+    "duration": "27s"
   },
   "postman": {
-    "passed": 81,
-    "failed": 0,
-    "total": 81,
-    "duration": "3s"
+    "passed": 85,
+    "failed": 4,
+    "total": 89,
+    "duration": "8s"
   },
   "owners": [
-    "11A6_03_Đăng",
+    "Đăng",
     "Minh Phụng",
     "Nguyễn Chí Trung",
     "Nguyễn Hoàng Phụng-CNTT",
     "Thanh Duy"
   ],
-  "total_tests": 573,
-  "total_passed": 573,
-  "total_failed": 0
+  "total_tests": 896,
+  "total_passed": 892,
+  "total_failed": 4
 }
