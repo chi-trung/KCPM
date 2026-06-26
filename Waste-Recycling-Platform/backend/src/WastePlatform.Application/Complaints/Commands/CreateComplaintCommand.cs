@@ -39,10 +39,11 @@ public class CreateComplaintCommandHandler : IRequestHandler<CreateComplaintComm
         System.IO.File.WriteAllText(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "CreateComplaintCommandHandlerDebug.txt"), "Handler invoked");
 
         // BR-05: Check if citizen already has a complaint for this report
+        // Fix bug: CreateComplaintCommandHandler does not validate BR-05 (Single complaint per report restriction)
         if (request.ReportId.HasValue)
         {
-            var reportId = request.ReportId.Value;
-            if (await _complaintRepository.ExistsByCitizenAndReportAsync(request.CitizenId, reportId, cancellationToken))
+            var (existingComplaints, total) = await _complaintRepository.GetByCitizenIdAsync(request.CitizenId, 1, 10, null, cancellationToken);
+            if (existingComplaints.Any(c => c.ReportId == request.ReportId))
             {
                 throw new InvalidOperationException("Citizen chỉ gửi được 1 khiếu nại cho 1 report.");
             }
