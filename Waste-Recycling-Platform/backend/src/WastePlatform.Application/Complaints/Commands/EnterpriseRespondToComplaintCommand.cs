@@ -113,12 +113,7 @@ public class EnterpriseRespondToComplaintCommandHandler : IRequestHandler<Enterp
         }
 
         // Just add response without resolving
-        if (string.IsNullOrWhiteSpace(response))
-        {
-            throw new ArgumentException("Phản hồi không được để trống.");
-        }
-
-        complaint.AddEnterpriseResponse(response);
+        complaint.AddEnterpriseResponse(response!);
         await _complaintRepository.SaveChangesAsync(cancellationToken);
         
         // Notify citizen

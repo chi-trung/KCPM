@@ -26,7 +26,6 @@ public class CreateComplaintCommandHandler : IRequestHandler<CreateComplaintComm
 
     public async Task<Guid> Handle(CreateComplaintCommand request, CancellationToken cancellationToken)
     {
-        Console.WriteLine($"[DEBUG] CreateComplaintCommandHandler.Handle invoked, ReportId.HasValue={request.ReportId.HasValue}");
         if (string.IsNullOrWhiteSpace(request.Content))
             throw new ArgumentException("Complaint content cannot be empty", nameof(request));
 
@@ -34,9 +33,6 @@ public class CreateComplaintCommandHandler : IRequestHandler<CreateComplaintComm
         // Fixed by: Nguyễn Minh Phụng (KIEM-7)
         if (request.Content.Length > 2000)
             throw new ArgumentException("Complaint content cannot exceed 2000 characters", nameof(request));
-
-        // Debug: write a file so we know this handler is executed
-        System.IO.File.WriteAllText(System.IO.Path.Combine(System.IO.Path.GetTempPath(), "CreateComplaintCommandHandlerDebug.txt"), "Handler invoked");
 
         // BR-05: Check if citizen already has a complaint for this report
         // Fix bug: CreateComplaintCommandHandler does not validate BR-05 (Single complaint per report restriction)
