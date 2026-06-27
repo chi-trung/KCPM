@@ -103,11 +103,6 @@ public class GetAllReportsQueryHandlerTests
     [InlineData("Assigned", ReportStatus.Assigned)]
     [InlineData("Collected", ReportStatus.Collected)]
     [AllureDescription("H a n d l e - W i t h S t a t u s F i l t e r S h o u l d F i l t e r B y S t a t u s")]
-    [InlineData("Pending", ReportStatus.Pending)]
-    [InlineData("Accepted", ReportStatus.Accepted)]
-    [InlineData("Rejected", ReportStatus.Rejected)]
-    [InlineData("Assigned", ReportStatus.Assigned)]
-    [InlineData("Collected", ReportStatus.Collected)]
     public async Task Handle_WithStatusFilter_ShouldFilterByStatus(string statusString, ReportStatus expectedStatus)
     {
         // Arrange

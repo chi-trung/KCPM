@@ -6,7 +6,15 @@ import { UserProfileMenu } from '../UserProfileMenu'
 // Mock next/link
 vi.mock('next/link', () => ({
   default: ({ children, href, onClick }: any) => (
-    <a href={href} onClick={onClick}>{children}</a>
+    <a
+      href={href}
+      onClick={(event) => {
+        event.preventDefault()
+        onClick?.(event)
+      }}
+    >
+      {children}
+    </a>
   )
 }))
 

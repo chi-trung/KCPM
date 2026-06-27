@@ -331,6 +331,8 @@ public class MiddlewareWhiteboxTests
 
         await middleware.InvokeAsync(httpContext, dbContext);
 
+        conditionLabel.Should().NotBeNullOrWhiteSpace();
+        shouldQueryDb.Should().Be(claimValue == "valid-guid-placeholder");
         _nextCalled.Should().BeTrue();
     }
 

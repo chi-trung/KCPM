@@ -25,7 +25,7 @@ export const Table = React.forwardRef<HTMLTableElement, TableProps<any>>(
             <tr>
               {columns.map((column) => (
                 <th
-                  key={String(column.key)}
+                  key={`${String(column.key)}-${column.label}`}
                   style={{ width: column.width }}
                   className="px-6 py-3 text-left font-semibold text-gray-700"
                 >
@@ -58,7 +58,7 @@ export const Table = React.forwardRef<HTMLTableElement, TableProps<any>>(
                 >
                   {columns.map((column) => (
                     <td
-                      key={String(column.key)}
+                      key={`${String(column.key)}-${column.label}`}
                       className="px-6 py-4 text-gray-800"
                     >
                       {column.render

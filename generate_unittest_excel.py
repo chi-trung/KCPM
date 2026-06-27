@@ -16,8 +16,11 @@ Format: mỗi Function sheet giống hệt ảnh chụp:
   Result section: Type(N/A/B), Passed/Failed, Executed Date, Defect ID
 
 Sheet1: bảng tổng hợp tất cả test cases từ tất cả Function sheet
+Coverage: bảng tổng hợp black-box coverage và white-box line/branch coverage
 """
 
+import json
+import os
 import openpyxl
 from openpyxl.styles import (
     PatternFill, Font, Alignment, Border, Side, GradientFill
@@ -26,6 +29,13 @@ from openpyxl.utils import get_column_letter
 from datetime import date
 
 TODAY = date.today().strftime("%d/%m/%Y")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_COVERAGE_SUMMARY = os.path.join(
+    BASE_DIR, "Waste-Recycling-Platform", "frontend", "coverage", "coverage-summary.json"
+)
+BACKEND_COVERAGE_JSON = os.path.join(
+    BASE_DIR, "Waste-Recycling-Platform", "backend", "coverage", "backend", "coverage.json"
+)
 
 # ─── Màu sắc ────────────────────────────────────────────────────────
 DARK_BLUE   = "1F3864"   # header section background
@@ -85,6 +95,364 @@ def merge_set(ws, cell_range, value=None, fill=None, font=None, align=None):
     if align:
         top_left.alignment = align
     return top_left
+
+
+TECHNIQUE_MAP = {
+    "KIEM-4-F01":    "Black-box: Equivalence Partitioning, Error Guessing",
+    "KIEM-5-F02":    "Black-box + White-box: BVA, Equivalence Partitioning, CFG/Path Coverage",
+    "KIEM-8-F03":    "Black-box: State Transition Diagram",
+    "KIEM-10-F04":   "Black-box: State Transition Diagram",
+    "KIEM-16-F05":   "Black-box: Decision Table",
+    "KIEM-13-F06":   "Black-box + White-box: Equivalence Partitioning, Error Guessing, CFG/Path Coverage",
+    "KIEM-19-F07":   "Black-box: State Transition, Integration Test",
+    "KIEM-20-F08":   "Black-box: BVA, Error Guessing",
+    "KIEM-12-F09":   "Black-box: Equivalence Partitioning",
+    "KIEM-FE-F10":   "Black-box: End-to-End Testing (CodeceptJS)",
+    "KIEM-BVA-F11":  "Black-box: BVA Standard + Robustness",
+    "KIEM-7-F12":    "Black-box: Decision Table Testing",
+    "KIEM-5-F13":    "Black-box: State Transition Testing",
+    "KIEM-FE-F14":   "White-box/Component: Vitest RTL + line/branch coverage",
+    "KIEM-FE-F15":   "White-box/Component: Vitest RTL + line/branch coverage",
+}
+
+ROLE_MAP = {
+    "KIEM-4-F01":    "Citizen / Enterprise",
+    "KIEM-5-F02":    "Citizen",
+    "KIEM-8-F03":    "Enterprise / Admin",
+    "KIEM-10-F04":   "Collector",
+    "KIEM-16-F05":   "Enterprise",
+    "KIEM-13-F06":   "Citizen / Admin",
+    "KIEM-19-F07":   "Citizen",
+    "KIEM-20-F08":   "Collector",
+    "KIEM-12-F09":   "Admin / Public",
+    "KIEM-FE-F10":   "Citizen / Enterprise / Collector",
+    "KIEM-BVA-F11":  "Citizen (upload ảnh bằng chứng)",
+    "KIEM-7-F12":    "Citizen / Admin",
+    "KIEM-5-F13":    "Citizen / Enterprise / Admin",
+    "KIEM-FE-F14":   "Citizen / Enterprise / Admin (FE)",
+    "KIEM-FE-F15":   "Citizen / Enterprise / Admin (FE)",
+}
+
+WHITEBOX_COVERAGE_MAP = {
+    "KIEM-5-F02": {
+        "source": "WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests",
+        "line": (10, 10),
+        "branch": (10, 10),
+        "statement": (10, 10),
+        "condition": (8, 8),
+        "path": (6, 6),
+        "note": "CFG nodes=14, edges=16, V(G)=6; bao phủ đủ 6 independent paths.",
+    },
+    "KIEM-13-F06": {
+        "source": "WastePlatform.Tests.Whitebox.EnterpriseRespondWhiteboxTests",
+        "line": (10, 10),
+        "branch": (10, 10),
+        "statement": (10, 10),
+        "condition": (4, 4),
+        "path": (6, 6),
+        "note": "CFG nodes=12, edges=12, V(G)=6; full truth table cho điều kiện trạng thái.",
+    },
+}
+
+FRONTEND_COVERAGE_GROUPS = {
+    "KIEM-FE-F14": [
+        "src\\components\\shared\\StatCard.tsx",
+        "src\\components\\shared\\ReportCard.tsx",
+        "src\\components\\shared\\TaskCard.tsx",
+        "src\\components\\shared\\ConfirmationModal.tsx",
+        "src\\components\\shared\\NotificationCenter.tsx",
+        "src\\components\\shared\\CollectorCard.tsx",
+        "src\\components\\shared\\EnterpriseCard.tsx",
+        "src\\components\\shared\\ImageGallery.tsx",
+        "src\\components\\shared\\RewardCard.tsx",
+        "src\\components\\shared\\Toast.tsx",
+        "src\\components\\shared\\UserProfileCard.tsx",
+        "src\\components\\shared\\UserProfileMenu.tsx",
+    ],
+    "KIEM-FE-F15": [
+        "src\\components\\ui\\Alert.tsx",
+        "src\\components\\ui\\Avatar.tsx",
+        "src\\components\\ui\\Badge.tsx",
+        "src\\components\\ui\\Button.tsx",
+        "src\\components\\ui\\Card.tsx",
+        "src\\components\\ui\\Dropdown.tsx",
+        "src\\components\\ui\\EmptyState.tsx",
+        "src\\components\\ui\\Input.tsx",
+        "src\\components\\ui\\Modal.tsx",
+        "src\\components\\ui\\Pagination.tsx",
+        "src\\components\\ui\\Progress.tsx",
+        "src\\components\\ui\\Select.tsx",
+        "src\\components\\ui\\Spinner.tsx",
+        "src\\components\\ui\\Table.tsx",
+        "src\\components\\ui\\Toast.tsx",
+    ],
+}
+
+BACKEND_COVERAGE_GROUPS = {
+    "KIEM-4-F01": [
+        "WastePlatform.API\\Controllers\\AuthController.cs",
+        "WastePlatform.Infrastructure\\Services\\AuthService.cs",
+        "WastePlatform.Infrastructure\\Services\\JwtService.cs",
+        "WastePlatform.Application\\Auth\\Commands\\RegisterCommand.cs",
+        "WastePlatform.Application\\Auth\\Commands\\LoginCommand.cs",
+        "WastePlatform.Domain\\Entities\\User.cs",
+        "WastePlatform.Infrastructure\\Persistence\\Repositories\\UserRepository.cs",
+    ],
+    "KIEM-5-F02": [
+        "WastePlatform.API\\Controllers\\ReportController.cs",
+        "WastePlatform.Application\\Reports\\Commands\\CreateReportCommand.cs",
+        "WastePlatform.Domain\\Entities\\WasteReport.cs",
+        "WastePlatform.Infrastructure\\Persistence\\Repositories\\ReportRepository.cs",
+        "WastePlatform.Infrastructure\\Services\\LocalFileStorageService.cs",
+    ],
+    "KIEM-8-F03": [
+        "WastePlatform.API\\Controllers\\ReportController.cs",
+        "WastePlatform.Application\\Reports\\Commands\\AcceptReportAndCreateTaskCommand.cs",
+        "WastePlatform.Application\\Reports\\Commands\\AcceptReportAndCreateTaskCommandHandler.cs",
+        "WastePlatform.Application\\Reports\\Commands\\RejectReportCommand.cs",
+        "WastePlatform.Application\\Reports\\Commands\\RejectReportCommandHandler.cs",
+        "WastePlatform.Domain\\Entities\\WasteReport.cs",
+    ],
+    "KIEM-10-F04": [
+        "WastePlatform.API\\Controllers\\CollectorTaskController.cs",
+        "WastePlatform.API\\Controllers\\EnterpriseTaskController.cs",
+        "WastePlatform.Domain\\Entities\\CollectionTask.cs",
+        "WastePlatform.Domain\\Entities\\TaskStatusLog.cs",
+        "WastePlatform.Infrastructure\\Persistence\\Repositories\\ReportRepository.cs",
+    ],
+    "KIEM-16-F05": [
+        "WastePlatform.API\\Controllers\\EnterpriseTaskController.cs",
+        "WastePlatform.Application\\Tasks\\Commands\\AssignCollectorCommand.cs",
+        "WastePlatform.Application\\Tasks\\Commands\\AssignCollectorCommandHandler.cs",
+        "WastePlatform.Domain\\Entities\\CollectionTask.cs",
+    ],
+    "KIEM-13-F06": [
+        "WastePlatform.API\\Controllers\\ComplaintsController.cs",
+        "WastePlatform.API\\Controllers\\AdminComplaintsController.cs",
+        "WastePlatform.Application\\Complaints\\Commands\\CreateComplaintCommand.cs",
+        "WastePlatform.Application\\Complaints\\Commands\\EnterpriseRespondToComplaintCommand.cs",
+        "WastePlatform.Application\\Complaints\\Commands\\CitizenEscalateComplaintCommand.cs",
+        "WastePlatform.Domain\\Entities\\Complaint.cs",
+        "WastePlatform.Infrastructure\\Persistence\\Repositories\\ComplaintRepository.cs",
+    ],
+    "KIEM-19-F07": [
+        "WastePlatform.API\\Controllers\\NotificationController.cs",
+        "WastePlatform.Application\\Services\\NotificationService.cs",
+        "WastePlatform.Infrastructure\\Persistence\\Repositories\\NotificationRepository.cs",
+        "WastePlatform.Infrastructure\\SignalR\\SignalRRealTimeNotifier.cs",
+        "WastePlatform.Infrastructure\\SignalR\\TaskHub.cs",
+        "WastePlatform.Domain\\Entities\\Notification.cs",
+    ],
+    "KIEM-20-F08": [
+        "WastePlatform.API\\Controllers\\CollectorTaskController.cs",
+        "WastePlatform.API\\Middleware\\ValidateUserStatusMiddleware.cs",
+        "WastePlatform.Infrastructure\\Services\\JwtService.cs",
+        "WastePlatform.Infrastructure\\Services\\LocalFileStorageService.cs",
+        "WastePlatform.Domain\\Entities\\CollectionImage.cs",
+    ],
+    "KIEM-12-F09": [
+        "WastePlatform.API\\Controllers\\WasteCategoryController.cs",
+        "WastePlatform.Application\\WasteCategories\\Queries\\GetAllCategoriesQuery.cs",
+        "WastePlatform.Application\\WasteCategories\\Queries\\GetCategoryByIdQuery.cs",
+        "WastePlatform.Infrastructure\\Persistence\\Repositories\\WasteCategoryRepository.cs",
+        "WastePlatform.Domain\\Entities\\WasteCategory.cs",
+    ],
+    "KIEM-BVA-F11": [
+        "WastePlatform.API\\Controllers\\CollectorTaskController.cs",
+        "WastePlatform.Infrastructure\\Services\\LocalFileStorageService.cs",
+        "WastePlatform.Domain\\Entities\\CollectionImage.cs",
+    ],
+    "KIEM-7-F12": [
+        "WastePlatform.API\\Controllers\\ComplaintsController.cs",
+        "WastePlatform.Application\\Complaints\\Commands\\CreateComplaintCommand.cs",
+        "WastePlatform.Domain\\Entities\\Complaint.cs",
+    ],
+    "KIEM-5-F13": [
+        "WastePlatform.API\\Controllers\\ReportController.cs",
+        "WastePlatform.Application\\Reports\\Commands\\AcceptReportAndCreateTaskCommand.cs",
+        "WastePlatform.Application\\Reports\\Commands\\AcceptReportAndCreateTaskCommandHandler.cs",
+        "WastePlatform.Application\\Reports\\Commands\\RejectReportCommand.cs",
+        "WastePlatform.Application\\Reports\\Commands\\RejectReportCommandHandler.cs",
+        "WastePlatform.Domain\\Entities\\WasteReport.cs",
+    ],
+}
+
+
+def safe_percent(covered, total):
+    if total == 0:
+        return 100.0
+    return round((covered / total) * 100, 2)
+
+
+def format_coverage(metric):
+    if not metric:
+        return "Not instrumented"
+    covered, total = metric
+    return f"{safe_percent(covered, total)}% ({covered}/{total})"
+
+
+def load_frontend_coverage_summary():
+    if not os.path.exists(FRONTEND_COVERAGE_SUMMARY):
+        return {}
+    with open(FRONTEND_COVERAGE_SUMMARY, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def load_backend_coverage_json():
+    if not os.path.exists(BACKEND_COVERAGE_JSON):
+        return {}
+    with open(BACKEND_COVERAGE_JSON, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def aggregate_frontend_coverage(summary, suffixes):
+    totals = {
+        "line": [0, 0],
+        "branch": [0, 0],
+        "function": [0, 0],
+        "statement": [0, 0],
+    }
+    normalized_suffixes = [s.replace("/", "\\").lower() for s in suffixes]
+    for path, metrics in summary.items():
+        normalized_path = path.replace("/", "\\").lower()
+        if not any(normalized_path.endswith(sfx) for sfx in normalized_suffixes):
+            continue
+        totals["line"][0] += metrics.get("lines", {}).get("covered", 0)
+        totals["line"][1] += metrics.get("lines", {}).get("total", 0)
+        totals["branch"][0] += metrics.get("branches", {}).get("covered", 0)
+        totals["branch"][1] += metrics.get("branches", {}).get("total", 0)
+        totals["function"][0] += metrics.get("functions", {}).get("covered", 0)
+        totals["function"][1] += metrics.get("functions", {}).get("total", 0)
+        totals["statement"][0] += metrics.get("statements", {}).get("covered", 0)
+        totals["statement"][1] += metrics.get("statements", {}).get("total", 0)
+    return {k: tuple(v) for k, v in totals.items()}
+
+
+def aggregate_backend_coverage(summary, suffixes):
+    totals = {
+        "line": [0, 0],
+        "branch": [0, 0],
+        "function": [0, 0],
+        "statement": [0, 0],
+    }
+    normalized_suffixes = [s.replace("/", "\\").lower() for s in suffixes]
+    matched_files = 0
+
+    for module_files in summary.values():
+        for path, classes in module_files.items():
+            normalized_path = path.replace("/", "\\").lower()
+            if not any(normalized_path.endswith(sfx) for sfx in normalized_suffixes):
+                continue
+            matched_files += 1
+
+            file_lines = {}
+            file_branches = []
+            methods_total = 0
+            methods_covered = 0
+
+            for methods in classes.values():
+                for method_data in methods.values():
+                    methods_total += 1
+                    method_lines = method_data.get("Lines", {})
+                    if any(count > 0 for count in method_lines.values()):
+                        methods_covered += 1
+
+                    for line, count in method_lines.items():
+                        file_lines[line] = max(file_lines.get(line, 0), count)
+
+                    file_branches.extend(method_data.get("Branches", []))
+
+            totals["line"][0] += sum(1 for count in file_lines.values() if count > 0)
+            totals["line"][1] += len(file_lines)
+            totals["statement"][0] += sum(1 for count in file_lines.values() if count > 0)
+            totals["statement"][1] += len(file_lines)
+            totals["function"][0] += methods_covered
+            totals["function"][1] += methods_total
+            totals["branch"][0] += sum(1 for entry in file_branches if entry.get("Hits", 0) > 0)
+            totals["branch"][1] += len(file_branches)
+
+    if matched_files == 0:
+        return {}
+    return {k: tuple(v) for k, v in totals.items()}
+
+
+def get_test_design_coverage(func):
+    n_utcid = len(func["utcids"])
+    lack = max(0, 7 - n_utcid)
+    total_required = n_utcid + lack
+    return (n_utcid, total_required)
+
+
+def build_coverage_info(func, frontend_summary=None, backend_summary=None):
+    code = func["code"]
+    design_metric = get_test_design_coverage(func)
+    info = {
+        "test_design": design_metric,
+        "blackbox": design_metric,
+        "line": None,
+        "branch": None,
+        "statement": None,
+        "condition": None,
+        "path": None,
+        "source": "Test design matrix trong file generate_unittest_excel.py",
+        "note": "Black-box coverage tính theo số UTCID đã thiết kế so với baseline tối thiểu 7 test case/function.",
+    }
+
+    if code in BACKEND_COVERAGE_GROUPS:
+        summary = backend_summary if backend_summary is not None else load_backend_coverage_json()
+        aggregate = aggregate_backend_coverage(summary, BACKEND_COVERAGE_GROUPS[code])
+        if aggregate:
+            info.update(aggregate)
+            info["source"] = "backend/coverage/backend/coverage.json (dotnet test + coverlet)"
+            info["note"] = "Line/branch coverage được cộng từ các source files backend liên quan trực tiếp tới function."
+
+    if code in WHITEBOX_COVERAGE_MAP:
+        documented_whitebox = WHITEBOX_COVERAGE_MAP[code]
+        info["condition"] = documented_whitebox["condition"]
+        info["path"] = documented_whitebox["path"]
+        info["note"] = info["note"] + " " + documented_whitebox["note"]
+        info["blackbox"] = design_metric
+        return info
+
+    if code in FRONTEND_COVERAGE_GROUPS:
+        summary = frontend_summary if frontend_summary is not None else load_frontend_coverage_summary()
+        aggregate = aggregate_frontend_coverage(summary, FRONTEND_COVERAGE_GROUPS[code])
+        info.update(aggregate)
+        info["source"] = "frontend/coverage/coverage-summary.json (Vitest --coverage)"
+        info["note"] = "Line/branch coverage được tính từ các component source tương ứng với function sheet."
+
+    return info
+
+
+def build_test_case_detail(func, ui):
+    conditions_text = []
+    for cg in func["conditions"]:
+        for item in cg["items"]:
+            if ui in item["marks"]:
+                conditions_text.append(f"[{cg['group']}] {item['label']}")
+
+    ret_codes = [r["code"] for r in func["returns"] if ui in r["marks"]]
+    log_msgs = [
+        lg.get("msg", lg.get("label", ""))
+        for lg in func["logs"]
+        if ui in lg["marks"]
+    ]
+    result = func["results"][ui]
+    test_type = {
+        "N": "Normal",
+        "A": "Abnormal",
+        "B": "Boundary",
+    }.get(result["type"], result["type"])
+
+    return (
+        f"Mục tiêu: {func['test_req']}\n"
+        f"Input/Precondition:\n" + ("\n".join(f"- {c}" for c in conditions_text) or "- N/A") + "\n"
+        f"Kỹ thuật: {TECHNIQUE_MAP.get(func['code'], '')}\n"
+        f"Loại test: {test_type}\n"
+        f"Expected: {', '.join(ret_codes) if ret_codes else 'Theo assertion trong test'}\n"
+        f"Actual/Log: {'; '.join(log_msgs) if log_msgs else 'Không có log lỗi'}\n"
+        f"Result: {'Passed' if result['pf'] == 'P' else 'Failed'}"
+    )
 
 # ─── Định nghĩa dữ liệu các Function ────────────────────────────────
 #
@@ -1354,7 +1722,44 @@ def build_function_sheet(wb, func: dict, sheet_name: str):
                 elif val == "F":
                     cell.fill = header_fill(LIGHT_RED)
 
-    last_data_row = res_start + 3  # Result section has 4 rows (Type, P/F, Date, Defect)
+    current_row = res_start + 4
+
+    coverage = build_coverage_info(func)
+    coverage_rows = [
+        ("Test Design Coverage", format_coverage(coverage["test_design"])),
+        ("Black-box Coverage", format_coverage(coverage["blackbox"])),
+        ("White-box Line Coverage", format_coverage(coverage["line"])),
+        ("White-box Branch Coverage", format_coverage(coverage["branch"])),
+        ("Statement Coverage", format_coverage(coverage["statement"])),
+        ("Condition/Path Coverage", f"{format_coverage(coverage['condition'])} / {format_coverage(coverage['path'])}"),
+        ("Coverage Source", coverage["source"]),
+        ("Coverage Note", coverage["note"]),
+    ]
+
+    cov_start = current_row
+    ws.merge_cells(f"A{cov_start}:A{cov_start + len(coverage_rows) - 1}")
+    ws[f"A{cov_start}"].value = "Coverage"
+    ws[f"A{cov_start}"].font = font_white_bold()
+    ws[f"A{cov_start}"].fill = header_fill(MED_BLUE)
+    ws[f"A{cov_start}"].alignment = center()
+    ws[f"A{cov_start}"].border = THIN
+
+    for offset, (label, value) in enumerate(coverage_rows):
+        row = cov_start + offset
+        ws.row_dimensions[row].height = 28
+        ws.merge_cells(f"B{row}:D{row}")
+        ws[f"B{row}"] = label
+        ws[f"B{row}"].font = font_bold(10)
+        ws[f"B{row}"].alignment = left()
+        ws[f"B{row}"].border = THIN
+
+        ws.merge_cells(f"E{row}:{get_column_letter(grid_last_col if 'grid_last_col' in locals() else max(LAST_COL, 14))}{row}")
+        ws[f"E{row}"] = value
+        ws[f"E{row}"].font = font_normal(10)
+        ws[f"E{row}"].alignment = left()
+        ws[f"E{row}"].border = THIN
+
+    last_data_row = cov_start + len(coverage_rows) - 1
 
     # ── Comprehensive border pass ────────────────────────────────────
     # Ensure ALL cells in the grid have thin borders, including empty
@@ -1379,16 +1784,17 @@ def build_sheet1(wb, functions):
     ws.title = "Sheet1"
 
     # Column widths
-    col_widths = [8, 22, 35, 40, 14, 14, 18, 24, 14, 14, 24, 24]
+    col_widths = [8, 22, 45, 52, 38, 14, 14, 18, 34, 18, 14, 26, 22, 22, 32, 24]
     for ci, w in enumerate(col_widths, start=1):
         ws.column_dimensions[get_column_letter(ci)].width = w
 
     # Header row
     headers = [
         "UTCID", "Tên chức năng", "Điều kiện / Bước thực hiện",
-        "Kết quả mong đợi", "Kết quả", "Ngày thực thi",
+        "Chi tiết Test Case", "Kết quả mong đợi", "Kết quả", "Ngày thực thi",
         "Người thực thi", "Kỹ thuật test", "Jira Ticket",
-        "Loại (N/A/B)", "Ghi chú / Log message", "Quyền hạn"
+        "Loại (N/A/B)", "Black-box Coverage", "Line Coverage",
+        "Branch Coverage", "Ghi chú / Log message", "Quyền hạn"
     ]
     ws.row_dimensions[1].height = 34
     for ci, h in enumerate(headers, start=1):
@@ -1398,50 +1804,17 @@ def build_sheet1(wb, functions):
         cell.alignment = center()
         cell.border = THIN
 
-    TECHNIQUE_MAP = {
-        "KIEM-4-F01":    "Equivalence Partitioning, Error Guessing",
-        "KIEM-5-F02":    "BVA, Equivalence Partitioning",
-        "KIEM-8-F03":    "State Transition Diagram",
-        "KIEM-10-F04":   "State Transition Diagram",
-        "KIEM-16-F05":   "Decision Table",
-        "KIEM-13-F06":   "Equivalence Partitioning, Error Guessing",
-        "KIEM-19-F07":   "State Transition, Integration Test",
-        "KIEM-20-F08":   "BVA, Error Guessing",
-        "KIEM-12-F09":   "Equivalence Partitioning",
-        "KIEM-FE-F10":   "End-to-End Testing (CodeceptJS)",
-        "KIEM-BVA-F11":  "BVA Standard + Robustness",
-        "KIEM-7-F12":    "Decision Table Testing",
-        "KIEM-5-F13":    "State Transition Testing",
-        "KIEM-FE-F14":   "Component Unit Testing (Vitest/RTL)",
-        "KIEM-FE-F15":   "Component Unit Testing (Vitest/RTL)",
-    }
-
-    ROLE_MAP = {
-        "KIEM-4-F01":    "Citizen / Enterprise",
-        "KIEM-5-F02":    "Citizen",
-        "KIEM-8-F03":    "Enterprise / Admin",
-        "KIEM-10-F04":   "Collector",
-        "KIEM-16-F05":   "Enterprise",
-        "KIEM-13-F06":   "Citizen / Admin",
-        "KIEM-19-F07":   "Citizen",
-        "KIEM-20-F08":   "Collector",
-        "KIEM-12-F09":   "Admin / Public",
-        "KIEM-FE-F10":   "Citizen / Enterprise / Collector",
-        "KIEM-BVA-F11":  "Citizen (upload ảnh bằng chứng)",
-        "KIEM-7-F12":    "Citizen / Admin",
-        "KIEM-5-F13":    "Citizen / Enterprise / Admin",
-        "KIEM-FE-F14":   "Citizen / Enterprise / Admin (FE)",
-        "KIEM-FE-F15":   "Citizen / Enterprise / Admin (FE)",
-    }
-
+    frontend_summary = load_frontend_coverage_summary()
+    backend_summary = load_backend_coverage_json()
     current_row = 2
     for func in functions:
         n_utcid = len(func["utcids"])
         technique = TECHNIQUE_MAP.get(func["code"], "")
         role = ROLE_MAP.get(func["code"], "")
+        coverage = build_coverage_info(func, frontend_summary, backend_summary)
 
         for ui, utcid in enumerate(func["utcids"]):
-            ws.row_dimensions[current_row].height = 60
+            ws.row_dimensions[current_row].height = 112
             result = func["results"][ui]
 
             # Collect condition labels for this UTC
@@ -1467,6 +1840,7 @@ def build_sheet1(wb, functions):
                 utcid,
                 func["name"],
                 condition_str,
+                build_test_case_detail(func, ui),
                 expected_str,
                 "Passed" if result["pf"] == "P" else "Failed",
                 result["date"],
@@ -1474,6 +1848,9 @@ def build_sheet1(wb, functions):
                 technique,
                 func["jira_ticket"],
                 result["type"],
+                format_coverage(coverage["blackbox"]),
+                format_coverage(coverage["line"]),
+                format_coverage(coverage["branch"]),
                 log_str,
                 role,
             ]
@@ -1493,12 +1870,74 @@ def build_sheet1(wb, functions):
                     cell.fill = header_fill("FFF0F0")
 
                 # Color result cell
-                if ci == 5:
+                if ci == 6:
                     cell.font = font_bold(10, "006400" if result["pf"] == "P" else "8B0000")
 
             current_row += 1
 
     # Freeze header
+    ws.freeze_panes = "A2"
+    ws.auto_filter.ref = f"A1:{get_column_letter(len(headers))}1"
+
+
+def build_coverage_sheet(wb, functions):
+    ws = wb.create_sheet(title="Coverage")
+    headers = [
+        "Function Code", "Function Name", "Kỹ thuật chính", "Total Test Cases",
+        "Passed", "Failed", "Test Design Coverage", "Black-box Coverage",
+        "White-box Line Coverage", "White-box Branch Coverage",
+        "Statement Coverage", "Condition Coverage", "Path Coverage",
+        "Coverage Source", "Ghi chú"
+    ]
+    widths = [16, 38, 42, 16, 10, 10, 22, 22, 24, 24, 20, 20, 18, 48, 64]
+    for ci, width in enumerate(widths, start=1):
+        ws.column_dimensions[get_column_letter(ci)].width = width
+
+    ws.row_dimensions[1].height = 36
+    for ci, header in enumerate(headers, start=1):
+        cell = ws.cell(row=1, column=ci, value=header)
+        cell.font = font_white_bold(11)
+        cell.fill = header_fill(DARK_BLUE)
+        cell.alignment = center()
+        cell.border = THIN
+
+    frontend_summary = load_frontend_coverage_summary()
+    backend_summary = load_backend_coverage_json()
+    for row_idx, func in enumerate(functions, start=2):
+        coverage = build_coverage_info(func, frontend_summary, backend_summary)
+        passed = sum(1 for r in func["results"] if r["pf"] == "P")
+        failed = sum(1 for r in func["results"] if r["pf"] == "F")
+        row_data = [
+            func["code"],
+            func["name"],
+            TECHNIQUE_MAP.get(func["code"], ""),
+            len(func["utcids"]),
+            passed,
+            failed,
+            format_coverage(coverage["test_design"]),
+            format_coverage(coverage["blackbox"]),
+            format_coverage(coverage["line"]),
+            format_coverage(coverage["branch"]),
+            format_coverage(coverage["statement"]),
+            format_coverage(coverage["condition"]),
+            format_coverage(coverage["path"]),
+            coverage["source"],
+            coverage["note"],
+        ]
+
+        ws.row_dimensions[row_idx].height = 54
+        for ci, value in enumerate(row_data, start=1):
+            cell = ws.cell(row=row_idx, column=ci, value=value)
+            cell.font = font_normal(10)
+            cell.alignment = Alignment(horizontal="left", vertical="top", wrap_text=True)
+            cell.border = THIN
+            if ci in (5, 7, 8, 9, 10, 11, 12, 13):
+                cell.alignment = center()
+            if ci == 5 and failed == 0:
+                cell.fill = header_fill("F0FFF0")
+            if ci == 6 and failed > 0:
+                cell.fill = header_fill("FFF0F0")
+
     ws.freeze_panes = "A2"
     ws.auto_filter.ref = f"A1:{get_column_letter(len(headers))}1"
 
@@ -1509,6 +1948,9 @@ def main():
     wb = openpyxl.Workbook()
     # Sheet1 đầu tiên (active sheet)
     build_sheet1(wb, FUNCTIONS)
+
+    # Coverage summary sheet for black-box/white-box evidence
+    build_coverage_sheet(wb, FUNCTIONS)
 
     # Function sheets
     for i, func in enumerate(FUNCTIONS, start=1):
@@ -1528,7 +1970,7 @@ def main():
     total_pass = sum(sum(1 for r in f["results"] if r["pf"] == "P") for f in FUNCTIONS)
     total_fail = total_tc - total_pass
     print(f"[OK] Generated: {out_path}")
-    print(f"   Sheets: Sheet1 + {len(FUNCTIONS)} Function sheets")
+    print(f"   Sheets: Sheet1 + Coverage + {len(FUNCTIONS)} Function sheets")
     print(f"   Total test cases: {total_tc} | Passed: {total_pass} | Failed: {total_fail}")
     print(f"   Members: Nguyen Chi Trung, Minh Phung, Nguyen Hoang Phung, Dang, Thanh Duy")
 

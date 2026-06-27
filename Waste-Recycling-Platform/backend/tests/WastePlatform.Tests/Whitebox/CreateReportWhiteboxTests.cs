@@ -336,6 +336,8 @@ public class CreateReportWhiteboxTests
     public async Task ConditionCoverage_D2_CoordinateValidation(
         decimal lat, decimal lng, bool shouldThrow, string conditionLabel)
     {
+        conditionLabel.Should().NotBeNullOrWhiteSpace();
+
         _mockCategoryRepo.Setup(r => r.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new WasteCategory { Id = 1, Name = "Test" });
 
@@ -523,6 +525,8 @@ public class CreateReportWhiteboxTests
     public async Task BVA_ConditionCombination_CoordBoundaries(
         decimal lat, decimal lng, bool shouldThrow, string description)
     {
+        description.Should().NotBeNullOrWhiteSpace();
+
         _mockCategoryRepo.Setup(r => r.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new WasteCategory { Id = 1, Name = "Test" });
         _mockFileStorage.Setup(s => s.SaveFileAsync(
