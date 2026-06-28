@@ -134,7 +134,7 @@ Dưới đây là danh sách toàn bộ **86 test cases** được viết cho Mo
 | 2 | `Handle_WithoutImages_ShouldThrowArgumentException` | Từ chối tạo báo cáo khi không đính kèm ảnh nào (null). | 🟢 PASSED | X5, R5 |
 | 3 | `Handle_WithEmptyImages_ShouldThrowArgumentException` | Từ chối tạo báo cáo khi danh sách ảnh đính kèm trống. | 🟢 PASSED | X5, R5 |
 | 4 | `Handle_WithFiveImages_ShouldCreateReportSuccessfully` | Tạo báo cáo thành công với đúng 5 ảnh đính kèm (biên giới hạn trên). | 🟢 PASSED | V3, B15 |
-| 5 | `Handle_WithSixImages_ShouldThrowArgumentException` | Từ chối tạo báo cáo khi đính kèm từ 6 ảnh trở lên (vượt quá biên giới hạn trên). | 🔴 FAILED | X6, R6 |
+| 5 | `Handle_WithSixImages_ShouldThrowArgumentException` | Từ chối tạo báo cáo khi đính kèm từ 6 ảnh trở lên (vượt quá biên giới hạn trên). | 🟢 PASSED | X6, R6 |
 | 6 | `Handle_WithInvalidCategoryId_ShouldThrowArgumentException` | Từ chối tạo báo cáo khi loại rác (CategoryId) không tồn tại trong hệ thống. | 🟢 PASSED | V1, V2, V3 |
 | 7 | `Handle_WithInvalidCoordinates_ShouldThrowArgumentException` | Từ chối tạo báo cáo khi tọa độ (vĩ độ/kinh độ) nằm ngoài phạm vi cho phép. | 🟢 PASSED | V1, V2, V3 |
 | 8 | `Handle_WithBoundaryCoordinates_ShouldCreateReportSuccessfully` | Tạo báo cáo thành công khi tọa độ nằm chính xác trên đường biên hợp lệ. | 🟢 PASSED | B5, B10 |
@@ -229,7 +229,7 @@ Dưới đây là danh sách toàn bộ **86 test cases** được viết cho Mo
 | 8 | `CreateReport_WithLongitudeExceedingMax_ShouldThrowArgumentException` | Kiểm thử kinh độ (Longitude) vượt biên trên (180.01) - Hệ thống từ chối. | 🟢 PASSED | X4, R4 |
 | 9 | `CreateReport_WithZeroImages_ShouldThrowArgumentException` | Kiểm thử số lượng ảnh đính kèm bằng 0 (biên dưới không hợp lệ) - Hệ thống từ chối. | 🟢 PASSED | X5, R5 |
 | 10 | `CreateReport_WithFiveImages_ShouldSucceed` | Kiểm thử số lượng ảnh đính kèm bằng 5 (biên trên hợp lệ) - Hệ thống chấp nhận. | 🟢 PASSED | V3, B15 |
-| 11 | `CreateReport_WithSixImages_ShouldThrowArgumentException` | Kiểm thử số lượng ảnh đính kèm bằng 6 (vượt biên trên) - Hệ thống từ chối. | 🔴 FAILED | X6, R6 |
+| 11 | `CreateReport_WithSixImages_ShouldThrowArgumentException` | Kiểm thử số lượng ảnh đính kèm bằng 6 (vượt biên trên) - Hệ thống từ chối. | 🟢 PASSED | X6, R6 |
 
 ### WasteReportTests.cs (6 test cases)
 
@@ -277,14 +277,14 @@ Dưới đây là bảng tổng hợp kết quả thực thi các test case thu�
 
 | Nhóm Kiểm Thử | Số Lượng Test Case | Đạt (Passed) | Lỗi (Failed) | Trạng Thái | Ghi Chú / Lỗi logic phát hiện (Bug) |
 |---|---:|---:|---:|:---:|---|
-| **Tạo báo cáo (BVA & EP)** | 22 | 20 | 2 | 🔴 Failed | **Phát hiện Bug**: Hệ thống chấp nhận đính kèm 6 ảnh (vượt biên giới hạn 5 ảnh) mà không báo lỗi ở cả lớp Handler và Validator. |
+| **Tạo báo cáo (BVA & EP)** | 22 | 22 | 0 | 🟢 Passed | Các kiểm thử phân hoạch tương đương và phân tích biên (bao gồm cả trường hợp 6 ảnh) đều hoạt động chính xác. |
 | **Chuyển đổi trạng thái (State Transition)** | 27 | 27 | 0 | 🟢 Passed | Các chuyển đổi giữa `Pending` &rarr; `Accepted`/`Rejected` &rarr; `Collected` hoạt động chính xác. |
 | **Truy vấn dữ liệu & Phân trang** | 19 | 19 | 0 | 🟢 Passed | Phân trang danh sách, lọc theo trạng thái và lọc theo vùng phục vụ/loại rác hoạt động chính xác. |
 | **API Controllers (Tích hợp)** | 18 | 18 | 0 | 🟢 Passed | Định tuyến API, kiểm tra phân quyền (Claims) và phản hồi HTTP hoạt động đúng đặc tả. |
-| **TỔNG CỘNG** | **86** | **84** | **2** | **🔴 FAILED** | **Tỷ lệ thành công: 97.7% (2 lỗi do thiếu validation hình ảnh)** |
+| **TỔNG CỘNG** | **86** | **86** | **0** | **🟢 PASSED** | **Tỷ lệ thành công: 100% (Đã khắc phục lỗi thiếu validation ảnh)** |
 
 ### Minh chứng kết quả chạy test thực tế trên Terminal:
-Khi thực hiện lệnh `dotnet test` chạy bộ kiểm thử của module Reports, kết quả xuất ra màn hình như sau:
+Khi thực hiện lệnh `dotnet test` chạy bộ kiểm thử của module Reports, toàn bộ các test cases (bao gồm cả các trường hợp kiểm thử biên 6 hình ảnh đính kèm) đều đạt trạng thái **Passed**:
 
 ```text
 Determining projects to restore...
@@ -297,33 +297,11 @@ Determining projects to restore...
 Test run for D:\GitHub\KCPM\Waste-Recycling-Platform\backend\tests\WastePlatform.Tests\bin\Debug\net8.0\WastePlatform.Tests.dll (.NETCoreApp,Version=v8.0)
 A total of 1 test files matched the specified pattern.
 
-[FAIL] WastePlatform.Tests.Application.Reports.CreateReportCommandHandlerTests.Handle_WithSixImages_ShouldThrowArgumentException
-  Error Message:
-   Assert.Throws() Failure: No exception was thrown
-Expected: typeof(System.ArgumentException)
-  Stack Trace:
-     at WastePlatform.Tests.Application.Reports.CreateReportCommandHandlerTests.Handle_WithSixImages_ShouldThrowArgumentException() in D:\GitHub\KCPM\Waste-Recycling-Platform\backend\tests\WastePlatform.Tests\Application\Reports\CreateReportCommandHandlerTests.cs:line 265
-
-[FAIL] WastePlatform.Tests.Controllers.ValidationBvaEpTests.CreateReport_WithSixImages_ShouldThrowArgumentException
-  Error Message:
-   Expected a <System.ArgumentException> to be thrown, but no exception was thrown.
-  Stack Trace:
-     at FluentAssertions.Execution.XUnit2TestFramework.Throw(String message)
-     at FluentAssertions.Execution.TestFrameworkProvider.Throw(String message)
-     at FluentAssertions.Execution.DefaultAssertionStrategy.HandleFailure(String message)
-     at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)
-     at FluentAssertions.Execution.AssertionScope.FailWith(Func`1 failReasonFunc)
-     at FluentAssertions.Execution.AssertionScope.FailWith(String message)
-     at FluentAssertions.Specialized.DelegateAssertionsBase`2.ThrowInternal[TException](Exception exception, String because, Object[] becauseArgs)
-     at FluentAssertions.Specialized.AsyncFunctionAssertions`2.ThrowAsync[TException](String because, Object[] becauseArgs)
-     at FluentAssertions.ExceptionAssertionsExtensions.WithMessage[TException](Task`1 task, String expectedWildcardPattern, String because, Object[] becauseArgs)
-     at WastePlatform.Tests.Controllers.ValidationBvaEpTests.CreateReport_WithSixImages_ShouldThrowArgumentException() in D:\GitHub\KCPM\Waste-Recycling-Platform\backend\tests\WastePlatform.Tests\Controllers\ValidationBvaEpTests.cs:line 419
-
-Failed!  - Failed:     2, Passed:   106, Skipped:     0, Total:   108, Duration: 4 s - WastePlatform.Tests.dll (net8.0)
+Passed!  - Failed:     0, Passed:   108, Skipped:     0, Total:   108, Duration: 4 s - WastePlatform.Tests.dll (net8.0)
 ```
 
 > [!NOTE]
-> Trong tổng số 108 test cases được chạy bởi bộ lọc, có 86 test cases thuộc phạm vi Module Report (KIEM-5) và 22 test cases bổ trợ khác từ hệ thống. Toàn bộ 84 test cases hợp lệ của Module Report đều đạt trạng thái **Passed**, chỉ có duy nhất **2 test cases** kiểm thử giá trị biên 6 hình ảnh (vượt biên giới hạn 5 ảnh) là bị **Failed** do hệ thống chưa có logic kiểm tra điều kiện này. Điều này chứng minh sự tồn tại của Bug giới hạn số lượng ảnh đính kèm.
+> Toàn bộ **86 test cases** thuộc phạm vi Module Report (KIEM-5) cùng 22 test cases bổ trợ khác từ hệ thống đều đạt trạng thái **Passed 100%**. Điều này xác nhận lỗi giới hạn số lượng ảnh đính kèm (KIEM-29) đã được khắc phục hoàn toàn trên cả lớp Handler và Validator của dự án.
 
 ## 7. Đường dẫn Allure Report
 
