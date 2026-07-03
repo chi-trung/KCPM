@@ -1,0 +1,42 @@
+{
+  "Results": [
+    {
+      "Id": "ac9cdc68-968b-484a-9989-b2b003f9a66e",
+      "CitizenName": null,
+      "Content": "Garbage disposal not working properly",
+      "Status": 0,
+      "CreatedAt": "2026-07-03T22:04:58.3325155Z",
+      "HasReport": false,
+      "EnterpriseResponse": null,
+      "EnterpriseRespondedAt": null,
+      "EscalationReason": null,
+      "AdminResponse": null
+    },
+    {
+      "Id": "32f62547-df3e-4917-9c79-033876cd486f",
+      "CitizenName": null,
+      "Content": "Garbage accumulation on street",
+      "Status": 0,
+      "CreatedAt": "2026-07-03T22:04:58.3325167Z",
+      "HasReport": false,
+      "EnterpriseResponse": null,
+      "EnterpriseRespondedAt": null,
+      "EscalationReason": null,
+      "AdminResponse": null
+    },
+    {
+      "Id": "bc1a917a-774f-47c8-ab54-60877f0389a0",
+      "CitizenName": null,
+      "Content": "Recycling bin garbage overflow",
+      "Status": 0,
+      "CreatedAt": "2026-07-03T22:04:58.332517Z",
+      "HasReport": false,
+      "EnterpriseResponse": null,
+      "EnterpriseRespondedAt": null,
+      "EscalationReason": null,
+      "AdminResponse": null
+    }
+  ],
+  "Total": 3,
+  "TotalPages": 1
+}
