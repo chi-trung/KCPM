@@ -277,6 +277,131 @@ BACKEND_COVERAGE_GROUPS = {
     ],
 }
 
+TECHNIQUE_MAP.update({
+    "KIEM-6-F16": "Black-box: Equivalence Partitioning, Error Guessing; Integration: Controller/Repository",
+    "KIEM-8-F17": "Black-box: Role-based EP, Authorization Guard, Integration API",
+    "KIEM-9-F18": "Black-box: Equivalence Partitioning, Empty Data/Error Guessing",
+    "KIEM-10-F19": "Black-box: Public API Smoke + EP for analytics filters",
+    "KIEM-13-F20": "Black-box: Citizen profile EP, Validation/Error Guessing",
+    "KIEM-14-F21": "Black-box + E2E: Collector role workflow, Authorization Guard",
+    "KIEM-15-F22": "Black-box: CollectorTask workflow, BVA for evidence upload",
+    "KIEM-17-F23": "Black-box: Enterprise collector CRUD, Reward Rules EP/BVA",
+    "KIEM-18-F24": "White-box/Domain: CollectionTask State Transition + Branch Coverage",
+    "KIEM-21-F25": "White-box + Integration: JWT, RBAC, Middleware Branch Coverage",
+    "KIEM-22-F26": "Black-box + White-box: AuditLog, Exception/Error Path Coverage",
+    "KIEM-23-F27": "Black-box: Search, Pagination, Filter Equivalence Classes",
+    "KIEM-E2E-F28": "E2E: Smoke/Auth Navigation (CodeceptJS + Playwright)",
+    "KIEM-E2E-F29": "E2E: Role Dashboard Guards (Admin/Citizen/Settings)",
+    "KIEM-E2E-F30": "E2E: Enterprise + Collector Operational Workflow",
+})
+
+ROLE_MAP.update({
+    "KIEM-6-F16": "Citizen / Enterprise / Admin",
+    "KIEM-8-F17": "Admin",
+    "KIEM-9-F18": "Admin / Enterprise",
+    "KIEM-10-F19": "Public / Guest",
+    "KIEM-13-F20": "Citizen",
+    "KIEM-14-F21": "Collector",
+    "KIEM-15-F22": "Collector / Enterprise",
+    "KIEM-17-F23": "Enterprise",
+    "KIEM-18-F24": "Enterprise / Collector",
+    "KIEM-21-F25": "Admin / Enterprise / Citizen / Collector",
+    "KIEM-22-F26": "Admin / API Client",
+    "KIEM-23-F27": "Admin / Enterprise / Citizen",
+    "KIEM-E2E-F28": "Guest / Citizen",
+    "KIEM-E2E-F29": "Admin / Citizen",
+    "KIEM-E2E-F30": "Enterprise / Collector",
+})
+
+BACKEND_COVERAGE_GROUPS.update({
+    "KIEM-6-F16": [
+        "WastePlatform.API\\Controllers\\NotificationController.cs",
+        "WastePlatform.Application\\Services\\NotificationService.cs",
+        "WastePlatform.Infrastructure\\Persistence\\Repositories\\NotificationRepository.cs",
+        "WastePlatform.Domain\\Entities\\Notification.cs",
+        "WastePlatform.Infrastructure\\SignalR\\SignalRRealTimeNotifier.cs",
+    ],
+    "KIEM-8-F17": [
+        "WastePlatform.API\\Controllers\\AdminUsersController.cs",
+        "WastePlatform.API\\Controllers\\AdminEnterpriseController.cs",
+        "WastePlatform.API\\Controllers\\AdminComplaintsController.cs",
+        "WastePlatform.Application\\Admin\\Users\\Commands\\CreateUserCommand.cs",
+        "WastePlatform.Application\\Admin\\Users\\Commands\\ToggleUserStatusCommand.cs",
+        "WastePlatform.Application\\Admin\\Users\\Commands\\UpdateUserRoleCommand.cs",
+    ],
+    "KIEM-9-F18": [
+        "WastePlatform.API\\Controllers\\AdminAnalyticsController.cs",
+        "WastePlatform.API\\Controllers\\EnterpriseAnalyticsController.cs",
+        "WastePlatform.Infrastructure\\Persistence\\Repositories\\AnalyticsRepository.cs",
+        "WastePlatform.Application\\Admin\\Analytics\\Queries\\GetAnalyticsOverviewQuery.cs",
+        "WastePlatform.Application\\Admin\\Analytics\\Queries\\GetAnalyticsSummaryQuery.cs",
+        "WastePlatform.Application\\Admin\\Analytics\\Queries\\GetReportAnalyticsQuery.cs",
+        "WastePlatform.Application\\Admin\\Analytics\\Queries\\GetUserAnalyticsQuery.cs",
+        "WastePlatform.Application\\Admin\\Analytics\\Queries\\GetWasteAnalyticsQuery.cs",
+    ],
+    "KIEM-10-F19": [
+        "WastePlatform.API\\Controllers\\PublicAnalyticsController.cs",
+        "WastePlatform.API\\Controllers\\HealthController.cs",
+        "WastePlatform.Infrastructure\\Persistence\\Repositories\\AnalyticsRepository.cs",
+    ],
+    "KIEM-13-F20": [
+        "WastePlatform.API\\Controllers\\CitizenController.cs",
+        "WastePlatform.Application\\Citizens\\Profile\\Queries\\GetProfileQueryHandler.cs",
+        "WastePlatform.Application\\Citizens\\Profile\\Commands\\UpdateProfileCommandHandler.cs",
+        "WastePlatform.Application\\Citizens\\Profile\\DTOs\\ProfileDto.cs",
+        "WastePlatform.Application\\Citizens\\Profile\\DTOs\\UpdateProfileDto.cs",
+    ],
+    "KIEM-14-F21": [
+        "WastePlatform.API\\Controllers\\CollectorController.cs",
+        "WastePlatform.API\\Controllers\\CollectorTaskController.cs",
+        "WastePlatform.Domain\\Entities\\Collector.cs",
+        "WastePlatform.Domain\\Entities\\CollectionTask.cs",
+    ],
+    "KIEM-15-F22": [
+        "WastePlatform.API\\Controllers\\CollectorTaskController.cs",
+        "WastePlatform.API\\Controllers\\EnterpriseTaskController.cs",
+        "WastePlatform.Application\\Tasks\\Commands\\AssignCollectorCommand.cs",
+        "WastePlatform.Application\\Tasks\\Commands\\AssignCollectorCommandHandler.cs",
+        "WastePlatform.Domain\\Entities\\CollectionTask.cs",
+        "WastePlatform.Domain\\Entities\\CollectionImage.cs",
+    ],
+    "KIEM-17-F23": [
+        "WastePlatform.API\\Controllers\\EnterpriseCollectorController.cs",
+        "WastePlatform.API\\Controllers\\EnterpriseRewardRuleController.cs",
+        "WastePlatform.Infrastructure\\Persistence\\Repositories\\RewardPointsRepository.cs",
+        "WastePlatform.Application\\Rewards\\Commands\\CreateRewardPointsCommand.cs",
+        "WastePlatform.Application\\Rewards\\Commands\\CreateRewardPointsCommandHandler.cs",
+        "WastePlatform.Domain\\Entities\\RewardRule.cs",
+        "WastePlatform.Domain\\Entities\\RewardPoints.cs",
+    ],
+    "KIEM-18-F24": [
+        "WastePlatform.Domain\\Entities\\CollectionTask.cs",
+        "WastePlatform.Domain\\Entities\\TaskStatusLog.cs",
+        "WastePlatform.Domain\\Events\\TaskStatusChangedEvent.cs",
+    ],
+    "KIEM-21-F25": [
+        "WastePlatform.API\\Middleware\\ValidateUserStatusMiddleware.cs",
+        "WastePlatform.Infrastructure\\Services\\JwtService.cs",
+        "WastePlatform.API\\Controllers\\AuthController.cs",
+        "WastePlatform.Domain\\Entities\\User.cs",
+    ],
+    "KIEM-22-F26": [
+        "WastePlatform.API\\Controllers\\AuditLogAndErrorPathTests.cs",
+        "WastePlatform.Domain\\Entities\\AuditLog.cs",
+        "WastePlatform.API\\Controllers\\HealthController.cs",
+        "WastePlatform.API\\Middleware\\ValidateUserStatusMiddleware.cs",
+    ],
+    "KIEM-23-F27": [
+        "WastePlatform.Application\\Reports\\Queries\\GetAllReportsQuery.cs",
+        "WastePlatform.Application\\Reports\\Queries\\GetEnterpriseReportsQuery.cs",
+        "WastePlatform.Application\\Complaints\\Queries\\GetCitizenComplaintsQuery.cs",
+        "WastePlatform.Application\\Complaints\\Queries\\GetEnterpriseComplaintsQuery.cs",
+        "WastePlatform.Application\\Admin\\Complaints\\Queries\\GetComplaintsQuery.cs",
+        "WastePlatform.Infrastructure\\Persistence\\Repositories\\ReportRepository.cs",
+        "WastePlatform.Infrastructure\\Persistence\\Repositories\\ComplaintRepository.cs",
+    ],
+})
+
 
 def safe_percent(covered, total):
     if total == 0:
@@ -1368,6 +1493,274 @@ FUNCTIONS = [
         ],
     },
 ]
+
+
+def _module_function(code, name, owner, jira_ticket, test_req, cases, result_types=None):
+    result_types = result_types or ["N"] * len(cases)
+    return {
+        "code": code,
+        "name": name,
+        "created_by": owner,
+        "executed_by": owner,
+        "lines_of_code": 0,
+        "jira_ticket": jira_ticket,
+        "test_req": test_req,
+        "utcids": [case["id"] for case in cases],
+        "conditions": [
+            {
+                "group": "Test scope / input class",
+                "items": [
+                    {"label": case["condition"], "marks": [idx]}
+                    for idx, case in enumerate(cases)
+                ],
+            },
+            {
+                "group": "Automation evidence",
+                "items": [
+                    {"label": case["evidence"], "marks": [idx]}
+                    for idx, case in enumerate(cases)
+                ],
+            },
+        ],
+        "returns": [
+            {"code": case["expected"], "marks": [idx]}
+            for idx, case in enumerate(cases)
+        ],
+        "exceptions": [],
+        "logs": [
+            {"msg": case["log"], "marks": [idx]}
+            for idx, case in enumerate(cases)
+        ],
+        "results": [
+            {"type": result_types[idx], "pf": "P", "date": TODAY, "defect": ""}
+            for idx in range(len(cases))
+        ],
+    }
+
+
+ADDITIONAL_FUNCTIONS = [
+    _module_function(
+        "KIEM-6-F16",
+        "Notifications Module — Service/Controller/Repository",
+        "Nguyễn Hoàng Phụng",
+        "KIEM-6",
+        "Kiểm thử notification lifecycle: tạo thông báo, đọc danh sách, mark-as-read, 404 và realtime delivery.",
+        [
+            {"id": "NOTI-01", "condition": "User có notifications hợp lệ", "expected": "200 OK + danh sách notification", "evidence": "NotificationControllerTests + NotificationRepositoryTests", "log": "List notifications returns owned records"},
+            {"id": "NOTI-02", "condition": "Notification unread tồn tại", "expected": "200 OK + IsRead=true", "evidence": "NotificationServiceTests", "log": "Mark as read updates read state"},
+            {"id": "NOTI-03", "condition": "NotificationId không tồn tại", "expected": "404 Not Found / false result", "evidence": "NotificationControllerTests", "log": "Not-found path covered"},
+            {"id": "NOTI-04", "condition": "User khác cố đọc notification", "expected": "401/403 Unauthorized", "evidence": "Controller authorization tests", "log": "Unauthorized ownership path covered"},
+            {"id": "NOTI-05", "condition": "SignalR notifier gửi event realtime", "expected": "Hub client receives payload", "evidence": "SignalRRealTimeNotifierTests", "log": "Realtime notifier invoked"},
+        ],
+        ["N", "N", "A", "A", "N"],
+    ),
+    _module_function(
+        "KIEM-8-F17",
+        "Admin Module — User/Enterprise/Complaint Management",
+        "Đăng",
+        "KIEM-8",
+        "Kiểm thử các nghiệp vụ admin: quản lý user, enterprise verification, complaint moderation và role guard.",
+        [
+            {"id": "ADM-01", "condition": "Admin lấy danh sách users", "expected": "200 OK + paged users", "evidence": "AdminUsersControllerTests", "log": "Admin user listing passed"},
+            {"id": "ADM-02", "condition": "Admin đổi role user hợp lệ", "expected": "200 OK + role updated", "evidence": "AdminUserHandlerTests", "log": "Update role command passed"},
+            {"id": "ADM-03", "condition": "Admin khóa/mở tài khoản", "expected": "200 OK + IsActive toggled", "evidence": "AdminUsersControllerTests", "log": "Toggle status path passed"},
+            {"id": "ADM-04", "condition": "Verify enterprise hợp lệ", "expected": "200 OK + status verified", "evidence": "AdminEnterpriseCommandHandlerTests", "log": "Verify enterprise command passed"},
+            {"id": "ADM-05", "condition": "Non-admin gọi admin endpoint", "expected": "403 Forbidden", "evidence": "AdminEnterpriseAuthorizationTests", "log": "Role guard blocks unauthorized user"},
+        ],
+        ["N", "N", "N", "N", "A"],
+    ),
+    _module_function(
+        "KIEM-9-F18",
+        "Analytics Module — Admin/Enterprise Metrics",
+        "Đăng",
+        "KIEM-9",
+        "Kiểm thử analytics summary, report analytics, waste analytics, user analytics và empty-data behavior.",
+        [
+            {"id": "ANL-01", "condition": "Admin overview có dữ liệu", "expected": "200 OK + overview metrics", "evidence": "AdminAnalyticsQueryHandlerTests", "log": "Overview metrics returned"},
+            {"id": "ANL-02", "condition": "Report analytics theo khoảng ngày", "expected": "200 OK + grouped report stats", "evidence": "AnalyticsModuleTests", "log": "Report analytics filter passed"},
+            {"id": "ANL-03", "condition": "Waste analytics theo category", "expected": "200 OK + waste totals", "evidence": "AnalyticsRepositoryTests", "log": "Waste analytics aggregation passed"},
+            {"id": "ANL-04", "condition": "Enterprise analytics với enterpriseId hợp lệ", "expected": "200 OK + enterprise dashboard", "evidence": "EnterpriseAnalyticsControllerTests", "log": "Enterprise analytics endpoint passed"},
+            {"id": "ANL-05", "condition": "Không có dữ liệu trong kỳ", "expected": "200 OK + zero/empty metrics", "evidence": "AnalyticsApiIntegrationTests", "log": "Empty dataset behavior covered"},
+        ],
+        ["N", "N", "N", "N", "A"],
+    ),
+    _module_function(
+        "KIEM-10-F19",
+        "Public Analytics — Public Dashboard/Health",
+        "Thanh Duy",
+        "KIEM-10",
+        "Kiểm thử public analytics và health endpoints không cần đăng nhập.",
+        [
+            {"id": "PUB-01", "condition": "Guest gọi public analytics overview", "expected": "200 OK", "evidence": "PublicAnalyticsControllerTests", "log": "Public overview accessible"},
+            {"id": "PUB-02", "condition": "Guest gọi public leaderboard/location stats", "expected": "200 OK + public stats", "evidence": "AnalyticsControllerTests", "log": "Public stats returned"},
+            {"id": "PUB-03", "condition": "Health endpoint được gọi sau deploy", "expected": "200 OK / healthy", "evidence": "HealthControllerTests + deploy health check", "log": "Health endpoint passed"},
+            {"id": "PUB-04", "condition": "Filter analytics không có dữ liệu", "expected": "200 OK + empty result", "evidence": "PublicAnalyticsControllerTests", "log": "Empty public analytics covered"},
+        ],
+        ["N", "N", "N", "A"],
+    ),
+    _module_function(
+        "KIEM-13-F20",
+        "Citizen Module — Profile/Dashboard",
+        "Đăng",
+        "KIEM-13",
+        "Kiểm thử citizen profile, update profile, dashboard và quyền truy cập citizen.",
+        [
+            {"id": "CIT-01", "condition": "Citizen lấy profile của chính mình", "expected": "200 OK + profile DTO", "evidence": "CitizenProfileHandlerTests", "log": "Get profile passed"},
+            {"id": "CIT-02", "condition": "Citizen update thông tin hợp lệ", "expected": "200 OK + updated profile", "evidence": "CitizenModuleTests", "log": "Update profile passed"},
+            {"id": "CIT-03", "condition": "Phone/name rỗng hoặc sai format", "expected": "400 Bad Request", "evidence": "CitizenControllerTests", "log": "Validation path covered"},
+            {"id": "CIT-04", "condition": "User chưa login gọi citizen endpoint", "expected": "401 Unauthorized", "evidence": "Authorization integration tests", "log": "Auth guard covered"},
+        ],
+        ["N", "N", "A", "A"],
+    ),
+    _module_function(
+        "KIEM-14-F21",
+        "Collector Module — Dashboard/Availability",
+        "Nguyễn Chí Trung",
+        "KIEM-14",
+        "Kiểm thử collector profile, availability, task access và E2E collector dashboard.",
+        [
+            {"id": "COL-01", "condition": "Collector lấy profile/tasks", "expected": "200 OK + assigned tasks", "evidence": "CollectorControllerTests", "log": "Collector task list passed"},
+            {"id": "COL-02", "condition": "Collector đổi trạng thái available", "expected": "200 OK + availability toggled", "evidence": "CollectorControllerTests", "log": "Availability toggle passed"},
+            {"id": "COL-03", "condition": "Collector truy cập route dashboard E2E", "expected": "Dashboard visible", "evidence": "frontend/e2e/collector_task_test.js", "log": "Collector E2E dashboard passed"},
+            {"id": "COL-04", "condition": "Collector cố vào enterprise route", "expected": "Redirect/403", "evidence": "authorization_guard_test.js", "log": "Route guard blocks wrong role"},
+        ],
+        ["N", "N", "N", "A"],
+    ),
+    _module_function(
+        "KIEM-15-F22",
+        "CollectorTask Module — Task Workflow/Evidence",
+        "Minh Phụng",
+        "KIEM-15",
+        "Kiểm thử collector task workflow: detail, upload evidence, complete task và authorization.",
+        [
+            {"id": "CTASK-01", "condition": "Collector lấy danh sách nhiệm vụ assigned", "expected": "200 OK", "evidence": "CollectorTaskControllerTests", "log": "Assigned task query passed"},
+            {"id": "CTASK-02", "condition": "Collector xem task detail hợp lệ", "expected": "200 OK + task detail", "evidence": "CollectorTaskControllerExtendedTests", "log": "Task detail passed"},
+            {"id": "CTASK-03", "condition": "Upload 1..5 evidence images", "expected": "200/201 OK", "evidence": "CollectionTaskImageBvaTests", "log": "BVA valid image count passed"},
+            {"id": "CTASK-04", "condition": "Upload 0 hoặc >5 images", "expected": "400 Bad Request", "evidence": "CollectionTaskImageBvaTests", "log": "BVA invalid image count covered"},
+            {"id": "CTASK-05", "condition": "Complete task đúng trạng thái", "expected": "200 OK + status completed", "evidence": "CollectorTaskControllerTests", "log": "Complete task passed"},
+            {"id": "CTASK-06", "condition": "Collector khác truy cập task", "expected": "403/404", "evidence": "CollectorTaskControllerExtendedTests", "log": "Ownership guard covered"},
+        ],
+        ["N", "N", "B", "B", "N", "A"],
+    ),
+    _module_function(
+        "KIEM-17-F23",
+        "Enterprise Collectors & Reward Rules",
+        "Nguyễn Chí Trung",
+        "KIEM-17",
+        "Kiểm thử enterprise quản lý collector và cấu hình reward rules.",
+        [
+            {"id": "ERW-01", "condition": "Enterprise tạo collector hợp lệ", "expected": "201 Created", "evidence": "EnterpriseCollectorControllerTests", "log": "Create collector passed"},
+            {"id": "ERW-02", "condition": "Enterprise update collector", "expected": "200 OK", "evidence": "EnterpriseCollectorControllerTests", "log": "Update collector passed"},
+            {"id": "ERW-03", "condition": "Reward rule points hợp lệ", "expected": "200 OK + saved rules", "evidence": "EnterpriseRewardRuleControllerTests", "log": "Reward rule valid path passed"},
+            {"id": "ERW-04", "condition": "Reward rule points âm/quá lớn", "expected": "400 Bad Request", "evidence": "RewardsHandlerTests", "log": "Reward validation covered"},
+            {"id": "ERW-05", "condition": "Repository cộng/trừ điểm", "expected": "Persisted reward points", "evidence": "RewardPointsRepositoryTests", "log": "Reward repository passed"},
+        ],
+        ["N", "N", "N", "A", "N"],
+    ),
+    _module_function(
+        "KIEM-18-F24",
+        "CollectionTask Domain — State Transition",
+        "Thanh Duy",
+        "KIEM-18",
+        "Kiểm thử domain CollectionTask và CollectionImage bằng state transition.",
+        [
+            {"id": "CDOM-01", "condition": "Create task trạng thái Pending/Assigned ban đầu", "expected": "Domain object valid", "evidence": "CollectionTaskDomainTests", "log": "Create task domain passed"},
+            {"id": "CDOM-02", "condition": "Assign collector hợp lệ", "expected": "Status/log updated", "evidence": "CollectionTaskTests", "log": "Assign transition passed"},
+            {"id": "CDOM-03", "condition": "Start collection từ assigned", "expected": "InProgress", "evidence": "CollectionTaskDomainTests", "log": "Start transition passed"},
+            {"id": "CDOM-04", "condition": "Complete collection từ in-progress", "expected": "Completed + event", "evidence": "CollectionTaskDomainTests", "log": "Complete transition passed"},
+            {"id": "CDOM-05", "condition": "Invalid transition", "expected": "InvalidOperation/400", "evidence": "CollectionTaskTests", "log": "Invalid transition covered"},
+        ],
+        ["N", "N", "N", "N", "A"],
+    ),
+    _module_function(
+        "KIEM-21-F25",
+        "Security & Role-based Access",
+        "Nguyễn Hoàng Phụng",
+        "KIEM-21",
+        "Kiểm thử JWT authentication, role authorization và inactive-user middleware.",
+        [
+            {"id": "SEC-01", "condition": "JWT hợp lệ", "expected": "Authenticated principal", "evidence": "JwtBearerIntegrationTests", "log": "Valid JWT accepted"},
+            {"id": "SEC-02", "condition": "Missing token", "expected": "401 Unauthorized", "evidence": "AdminEnterpriseAuthorizationTests", "log": "Missing token blocked"},
+            {"id": "SEC-03", "condition": "Malformed/expired JWT", "expected": "401 Unauthorized", "evidence": "JwtServiceTests", "log": "Invalid token rejected"},
+            {"id": "SEC-04", "condition": "Sai role gọi endpoint", "expected": "403 Forbidden", "evidence": "AdminEnterpriseAuthorizationTests", "log": "Role guard passed"},
+            {"id": "SEC-05", "condition": "Inactive user gọi API", "expected": "401 + account disabled", "evidence": "MiddlewareWhiteboxTests", "log": "Inactive user branch passed"},
+        ],
+        ["N", "A", "A", "A", "A"],
+    ),
+    _module_function(
+        "KIEM-22-F26",
+        "AuditLog & Error Path Tests",
+        "Thanh Duy",
+        "KIEM-22",
+        "Kiểm thử audit log, error path và exception handling.",
+        [
+            {"id": "AUD-01", "condition": "Action hợp lệ tạo audit log", "expected": "AuditLog persisted", "evidence": "AuditLogAndErrorPathTests", "log": "Audit creation passed"},
+            {"id": "AUD-02", "condition": "Invalid request model", "expected": "400 + error response", "evidence": "AuditLogAndErrorPathTests", "log": "Bad request path covered"},
+            {"id": "AUD-03", "condition": "Unauthorized request", "expected": "401/403", "evidence": "AuditLogAndErrorPathTests", "log": "Unauthorized path covered"},
+            {"id": "AUD-04", "condition": "Repository/service throws exception", "expected": "Handled error response", "evidence": "AuditLogAndErrorPathTests", "log": "Exception path covered"},
+        ],
+        ["N", "A", "A", "A"],
+    ),
+    _module_function(
+        "KIEM-23-F27",
+        "Search, Pagination & Filters",
+        "Đăng",
+        "KIEM-23",
+        "Kiểm thử search keyword, pagination boundary và filter combinations.",
+        [
+            {"id": "SRCH-01", "condition": "Keyword hợp lệ có kết quả", "expected": "200 OK + filtered records", "evidence": "SearchPaginationFiltersTests", "log": "Search keyword passed"},
+            {"id": "SRCH-02", "condition": "Keyword không có kết quả", "expected": "200 OK + empty list", "evidence": "SearchPaginationFiltersTests", "log": "No-result search covered"},
+            {"id": "SRCH-03", "condition": "Page=1, pageSize hợp lệ", "expected": "Correct TotalPages", "evidence": "GetAllReportsQueryHandlerTests", "log": "Pagination normal path passed"},
+            {"id": "SRCH-04", "condition": "PageSize biên/invalid", "expected": "Default/clamped or validation result", "evidence": "SearchPaginationFiltersTests", "log": "Pagination boundary covered"},
+            {"id": "SRCH-05", "condition": "Status/date/owner filters kết hợp", "expected": "Correct filtered result", "evidence": "ReportsFilteringTests", "log": "Combined filters passed"},
+        ],
+        ["N", "A", "B", "B", "N"],
+    ),
+    _module_function(
+        "KIEM-E2E-F28",
+        "E2E — Smoke, Auth Validation, Public Navigation",
+        "Nguyễn Chí Trung",
+        "KIEM-21",
+        "Kiểm thử trình duyệt cho public pages, login/register entry points và validation lỗi.",
+        [
+            {"id": "E2E-01", "condition": "Guest mở public homepage/guide/locations", "expected": "Pages render without crash", "evidence": "frontend/e2e/smoke_test.js", "log": "Smoke navigation passed"},
+            {"id": "E2E-02", "condition": "Guest mở login/register", "expected": "Auth forms visible", "evidence": "frontend/e2e/smoke_test.js", "log": "Auth entry points visible"},
+            {"id": "E2E-03", "condition": "Submit auth form invalid input", "expected": "Validation messages shown", "evidence": "frontend/e2e/auth_validation_test.js", "log": "Auth validation covered"},
+            {"id": "E2E-04", "condition": "Unauthenticated protected route", "expected": "Redirect to login", "evidence": "frontend/e2e/authorization_guard_test.js", "log": "Protected route guard passed"},
+        ],
+        ["N", "N", "A", "A"],
+    ),
+    _module_function(
+        "KIEM-E2E-F29",
+        "E2E — Admin/Citizen Dashboard & Settings",
+        "Nguyễn Chí Trung",
+        "KIEM-8",
+        "Kiểm thử dashboard theo role admin/citizen và settings flow bằng CodeceptJS.",
+        [
+            {"id": "E2E-05", "condition": "Admin login và mở admin dashboard", "expected": "Admin dashboard visible", "evidence": "frontend/e2e/admin_dashboard_test.js", "log": "Admin dashboard E2E passed"},
+            {"id": "E2E-06", "condition": "Citizen login và mở dashboard", "expected": "Citizen dashboard visible", "evidence": "frontend/e2e/citizen_dashboard_test.js", "log": "Citizen dashboard E2E passed"},
+            {"id": "E2E-07", "condition": "Citizen mở rewards/points history", "expected": "Reward UI visible", "evidence": "frontend/e2e/citizen_dashboard_test.js", "log": "Citizen reward flow covered"},
+            {"id": "E2E-08", "condition": "User mở settings/profile", "expected": "Settings UI visible", "evidence": "frontend/e2e/settings_test.js", "log": "Settings E2E passed"},
+        ],
+        ["N", "N", "N", "N"],
+    ),
+    _module_function(
+        "KIEM-E2E-F30",
+        "E2E — Enterprise & Collector Operations",
+        "Nguyễn Chí Trung",
+        "KIEM-16",
+        "Kiểm thử enterprise assign task và collector xử lý task ở mức trình duyệt.",
+        [
+            {"id": "E2E-09", "condition": "Enterprise login và mở task management", "expected": "Task management visible", "evidence": "frontend/e2e/enterprise_assign_test.js", "log": "Enterprise task page passed"},
+            {"id": "E2E-10", "condition": "Enterprise assign collector", "expected": "Task assigned/updated", "evidence": "frontend/e2e/enterprise_assign_test.js", "log": "Assign collector E2E covered"},
+            {"id": "E2E-11", "condition": "Collector login và xem assigned task", "expected": "Assigned task visible", "evidence": "frontend/e2e/collector_task_test.js", "log": "Collector assigned task visible"},
+            {"id": "E2E-12", "condition": "Citizen tạo complaint flow", "expected": "Complaint submitted/validation displayed", "evidence": "frontend/e2e/citizen_complaint_test.js", "log": "Complaint E2E decision/error flow covered"},
+        ],
+        ["N", "N", "N", "A"],
+    ),
+]
+
+FUNCTIONS.extend(ADDITIONAL_FUNCTIONS)
 
 
 # ─── Render một Function sheet ──────────────────────────────────────
