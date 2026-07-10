@@ -1,0 +1,21 @@
+{
+  "message": "Report created successfully",
+  "report": {
+    "Id": "b7917cf1-ac87-43f5-ae98-0aa48c944b4f",
+    "CitizenId": "f03aafa6-e662-4912-a4b0-dd586df8ebdf",
+    "CitizenName": "Citizen One",
+    "WasteCategoryId": 1,
+    "CategoryName": "Organic",
+    "Description": "Rác hữu cơ",
+    "Latitude": 10.7769,
+    "Longitude": 106.7009,
+    "Address": "123 Nguyen Trai",
+    "Status": 0,
+    "AiSuggestion": "Organic",
+    "CreatedAt": "2026-07-10T22:02:04.2975034Z",
+    "ImageUrls": [
+      "image1.jpg"
+    ],
+    "RewardPoints": []
+  }
+}
