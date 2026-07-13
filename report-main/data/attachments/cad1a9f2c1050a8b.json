@@ -1,0 +1,19 @@
+{
+  "message": "Enterprises retrieved successfully",
+  "data": [
+    {
+      "Id": "9aad7600-7489-44f2-bb62-41dc4a86c7ef",
+      "CompanyName": "Green Corp",
+      "UserEmail": null,
+      "ServiceArea": null,
+      "IsVerified": false,
+      "CreatedAt": "0001-01-01T00:00:00"
+    }
+  ],
+  "pagination": {
+    "total": 1,
+    "totalPages": 1,
+    "page": 1,
+    "pageSize": 10
+  }
+}

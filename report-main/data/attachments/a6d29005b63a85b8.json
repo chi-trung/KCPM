@@ -1,0 +1,26 @@
+{
+  "Leaderboard": [
+    {
+      "CitizenId": "77a8f787-ecd3-4bf1-8a46-4005ed8376b7",
+      "CitizenName": "User A",
+      "TotalPoints": 500,
+      "ReportCount": 10
+    },
+    {
+      "CitizenId": "9e087191-498d-43ce-b1ea-5b6ad3602a64",
+      "CitizenName": "User B",
+      "TotalPoints": 300,
+      "ReportCount": 6
+    },
+    {
+      "CitizenId": "799a0396-85d9-4ec2-b7d2-64b2f2e82095",
+      "CitizenName": "User C",
+      "TotalPoints": 100,
+      "ReportCount": 2
+    }
+  ],
+  "Total": 3,
+  "Page": 1,
+  "PageSize": 10,
+  "TotalPages": 1
+}

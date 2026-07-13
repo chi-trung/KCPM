@@ -1,0 +1,1 @@
+TC-REP-004: Non-existent reportId → repository returns null → handler returns null
