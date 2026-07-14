@@ -1,0 +1,6 @@
+{
+  "testCaseId": "KIEM-68-LOG-01",
+  "description": "Boundary analysis telemetry tracking for zero byte upload",
+  "targetTaskId": "8ae6450f-b23e-47d7-91d7-a78d0d66acc4",
+  "collectorId": "14435b26-1ff3-48c1-ba28-9d4044ce3da9"
+}

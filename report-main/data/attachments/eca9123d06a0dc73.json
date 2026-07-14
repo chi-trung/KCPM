@@ -1,0 +1,15 @@
+{
+  "Id": "c7000737-4cc7-48d6-99dd-0404f9bec5b9",
+  "CitizenId": "898366b6-0137-4efc-8cda-087b72d0819d",
+  "Type": 5,
+  "Channel": 0,
+  "Status": 0,
+  "Title": "Báo cáo bị từ chối",
+  "Message": "Báo cáo #dafabd0f không được chấp nhận.",
+  "ActionUrl": "/citizen/reports/dafabd0f-155e-401b-a3e7-9ca847dffb45",
+  "RelatedEntityId": "dafabd0f-155e-401b-a3e7-9ca847dffb45",
+  "RelatedEntityType": "Report",
+  "CreatedAt": "2026-07-14T21:57:17.6252957Z",
+  "ReadAt": null,
+  "Citizen": null
+}

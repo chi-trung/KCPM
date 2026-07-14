@@ -1,0 +1,6 @@
+{
+  "testCaseId": "KIEM-68-LOG-02",
+  "description": "Boundary analysis telemetry tracking for oversized image upload",
+  "targetTaskId": "c46bfe53-3741-40df-a1fb-2562495f5c15",
+  "collectorId": "c280de3b-c930-4152-9df6-c1e57ec76980"
+}
