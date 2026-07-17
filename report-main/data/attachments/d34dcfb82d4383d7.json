@@ -1,0 +1,14 @@
+{
+  "targetUserId": "bf062e87-a761-4df5-ba39-6b2999d07ee0",
+  "methodName": "NewNotification",
+  "payload": {
+    "Id": "b1983e8d-d45d-4287-ac68-ee4be6ac2622",
+    "Type": "ReportCreated",
+    "Title": "Báo cáo đã gửi thành công",
+    "Message": "Báo cáo của bạn đã được gửi.",
+    "ActionUrl": "/citizen/reports/1",
+    "RelatedEntityId": "9f1b3ffe-cbcd-4a9c-a20e-6413c68e69d8",
+    "RelatedEntityType": "Report",
+    "CreatedAt": "2026-07-17T21:51:07.5173152Z"
+  }
+}
