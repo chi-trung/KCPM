@@ -1,0 +1,18 @@
+{
+  "userIds": [
+    "1b1b5c62-0b81-4428-9a60-d5f8a1f8d14e",
+    "aa20dcf0-d577-46ee-8504-a1c475ac1b40",
+    "9a2c8b64-2fd3-4b7a-8cd8-6cf198d2114e"
+  ],
+  "methodName": "TaskStatusUpdated",
+  "payload": {
+    "Id": "faa4db83-8be1-407f-bf1e-e083692bec04",
+    "Type": "TaskAssigned",
+    "Title": "Đã phân công người thu gom",
+    "Message": "Collector sẽ đến thu gom báo cáo của bạn.",
+    "ActionUrl": "/citizen/reports/2",
+    "RelatedEntityId": "95d817d0-8f50-475f-95a6-382d3e3af094",
+    "RelatedEntityType": "Report",
+    "CreatedAt": "2026-07-19T21:50:14.526829Z"
+  }
+}
