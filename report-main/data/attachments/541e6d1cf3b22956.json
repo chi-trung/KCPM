@@ -1,0 +1,21 @@
+{
+  "message": "User list retrieved successfully",
+  "data": [
+    {
+      "Id": "34099c34-0869-403f-8491-c1b8433ffe31",
+      "FullName": "User 1",
+      "Email": "u1@test.com",
+      "Role": "citizen",
+      "IsActive": false,
+      "LastActiveDate": ""
+    },
+    {
+      "Id": "e45b3e5c-8147-4203-98d7-e750322cbe90",
+      "FullName": "User 2",
+      "Email": "u2@test.com",
+      "Role": "admin",
+      "IsActive": false,
+      "LastActiveDate": ""
+    }
+  ]
+}
