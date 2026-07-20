@@ -1,0 +1,6 @@
+{
+  "testCaseId": "KIEM-68-LOG-03",
+  "description": "Boundary analysis telemetry tracking for blocked file extension",
+  "targetTaskId": "de6ad93a-7202-4756-95d2-e9658962faf1",
+  "collectorId": "2287a90c-6766-4439-ac4c-e35b0aa11c7f"
+}
