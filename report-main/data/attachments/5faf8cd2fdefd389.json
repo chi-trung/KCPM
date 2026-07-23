@@ -1,0 +1,15 @@
+{
+  "Id": "419a79d3-9d1b-4306-b353-a273d93b5b02",
+  "CitizenId": "dc93bf78-c09b-45de-b222-81fb647385a6",
+  "Type": 0,
+  "Channel": 0,
+  "Status": 0,
+  "Title": "Báo cáo đã gửi thành công",
+  "Message": "Báo cáo #7ad8edcd của bạn đã được gửi và đang chờ xác nhận.",
+  "ActionUrl": "/citizen/reports/7ad8edcd-fdf7-463e-bdbf-3a196b731cc5",
+  "RelatedEntityId": "7ad8edcd-fdf7-463e-bdbf-3a196b731cc5",
+  "RelatedEntityType": "Report",
+  "CreatedAt": "2026-07-23T22:03:41.6131182Z",
+  "ReadAt": null,
+  "Citizen": null
+}

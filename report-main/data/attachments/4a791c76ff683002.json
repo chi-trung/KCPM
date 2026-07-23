@@ -1,0 +1,15 @@
+{
+  "Id": "9caf91f4-49af-4b69-90d0-a7bd4ecc6f68",
+  "CitizenId": "f80a9d29-4ce2-41b9-b2cd-d1273b165ec6",
+  "Type": 5,
+  "Channel": 0,
+  "Status": 0,
+  "Title": "Báo cáo bị từ chối",
+  "Message": "Báo cáo #bb574cf2 không được chấp nhận.",
+  "ActionUrl": "/citizen/reports/bb574cf2-665c-449d-b496-1434376fa2d3",
+  "RelatedEntityId": "bb574cf2-665c-449d-b496-1434376fa2d3",
+  "RelatedEntityType": "Report",
+  "CreatedAt": "2026-07-23T22:03:41.6538755Z",
+  "ReadAt": null,
+  "Citizen": null
+}
