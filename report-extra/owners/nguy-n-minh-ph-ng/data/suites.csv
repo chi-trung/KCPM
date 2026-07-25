@@ -1,103 +1,103 @@
 "DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"Path P3: Status=Resolved → return fail 'Cannot respond'
-CFG: Node 1 → 2(F) → 4(F) → 6(T) → 7
-V(G) path 3/6
-Condition Coverage D3: C1=True(!=Open), C2=True(!=InProgress)","2","Path3_ResolvedStatus_ReturnsCannotRespond","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","EnterpriseRespondWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.EnterpriseRespondWhiteboxTests","Path3_ResolvedStatus_ReturnsCannotRespond"
-"Condition Combination #2: C1=T(not Open), C2=F(InProgress) → D3=False
-Status=InProgress: C1(!=Open)=True, C2(!=InProgress)=False → D3=False","2","CondCombination_D3_StatusInProgress_C2False","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","EnterpriseRespondWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.EnterpriseRespondWhiteboxTests","CondCombination_D3_StatusInProgress_C2False"
-"BVA + Condition Combination: boundary values for coordinate validation","3","BVA_ConditionCombination_CoordBoundaries","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","BVA_ConditionCombination_CoordBoundaries"
-"BVA + Condition Combination: boundary values for coordinate validation","2","BVA_ConditionCombination_CoordBoundaries","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","BVA_ConditionCombination_CoordBoundaries"
-"Condition Coverage D2: Test each atomic condition C1-C4 with T/F values","3","ConditionCoverage_D2_CoordinateValidation","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","ConditionCoverage_D2_CoordinateValidation"
-"Condition Coverage D2: Test each atomic condition C1-C4 with T/F values","2","ConditionCoverage_D2_CoordinateValidation","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","ConditionCoverage_D2_CoordinateValidation"
-"Path P6: No escalate, no resolve → add response + notify + return success
-CFG: Node 1 → 2(F) → 4(F) → 6(F) → 8(F) → 10(F) → 12
-V(G) path 6/6 — ALL PATHS COVERED","5","Path6_JustRespond_ReturnsResponseAdded","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","EnterpriseRespondWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.EnterpriseRespondWhiteboxTests","Path6_JustRespond_ReturnsResponseAdded"
-"Path P4: User found + IsActive=false → 401 BLOCKED
-CFG: Node 1 → 2(T) → 3 → 4(T) → 5 → 6(T) → 7(T) → 8
-V(G) path 4/6
-CRITICAL PATH: Only path that blocks request","8","Path4_InactiveUser_Returns401Blocked","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","MiddlewareWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.MiddlewareWhiteboxTests","Path4_InactiveUser_Returns401Blocked"
-"Path P3: Valid JWT but user not found in DB → proceed → _next()
-CFG: Node 1 → 2(T) → 3 → 4(T) → 5 → 6(F) → 10 → 14
-V(G) path 3/6","2","Path3_UserNotFoundInDb_ProceedsToNext","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","MiddlewareWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.MiddlewareWhiteboxTests","Path3_UserNotFoundInDb_ProceedsToNext"
-"Path P1: Unauthenticated request → skip validation → call _next()
-CFG: Node 1 → 2(F) → 12 → 14
-V(G) path 1/6","263","Path1_UnauthenticatedRequest_SkipsValidation","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","MiddlewareWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.MiddlewareWhiteboxTests","Path1_UnauthenticatedRequest_SkipsValidation"
-"Path P1: category == null → throw ArgumentException
-CFG Path: Node 1 → Node 2(T) → Node 3
-V(G) path 1/6","4","Path1_CategoryNull_ThrowsInvalidCategory","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","Path1_CategoryNull_ThrowsInvalidCategory"
-"Path P2: EnterpriseId mismatch → return {Success=false, 'Not authorized'}
-CFG: Node 1 → 2(F) → 4(T) → 5
-V(G) path 2/6","2","Path2_WrongEnterprise_ReturnsNotAuthorized","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","EnterpriseRespondWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.EnterpriseRespondWhiteboxTests","Path2_WrongEnterprise_ReturnsNotAuthorized"
-"Condition Combination #3: C1=T, C2=T → D3=True (reject)
-Status=Escalated: C1(!=Open)=True, C2(!=InProgress)=True → D3=True","4","CondCombination_D3_StatusEscalated_BothTrue","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","EnterpriseRespondWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.EnterpriseRespondWhiteboxTests","CondCombination_D3_StatusEscalated_BothTrue"
-"Path P2: Authenticated + empty userId claim → skip → _next()
-CFG: Node 1 → 2(T) → 3 → 4(F) → 11 → 14
-V(G) path 2/6
-Condition D4: C1=False (empty claim)","6","Path2_EmptyUserIdClaim_SkipsValidation","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","MiddlewareWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.MiddlewareWhiteboxTests","Path2_EmptyUserIdClaim_SkipsValidation"
-"Condition Combination for D4: !IsNullOrEmpty(claim) && TryParse(claim)","42","CondCombination_D4_ClaimValidation","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","MiddlewareWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.MiddlewareWhiteboxTests","CondCombination_D4_ClaimValidation"
-"Branch-Condition Coverage verification:
-Verifies that the combination of all test cases above achieves
-100% Branch-Condition Coverage — every branch taken both ways
-AND every atomic condition evaluated to both True and False","5","BranchConditionCoverage_AllDecisions_BothBranchesAndConditions","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","BranchConditionCoverage_AllDecisions_BothBranchesAndConditions"
 "Path P5: Happy path — valid category, coords, 2 images
 CFG Path: Node 1 → 2(F) → 4(F) → 6(F) → 8(F) → 10 → 11(T) → 12 → 13 → 14
 V(G) path 5/6
 Statement Coverage: Covers remaining statements S6-S10
-Branch: D5-True (images processing loop)","5","Path5_ValidWithImages_CreatesReportSuccessfully","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","Path5_ValidWithImages_CreatesReportSuccessfully"
-"BVA + Condition Combination: boundary values for coordinate validation","2","BVA_ConditionCombination_CoordBoundaries","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","BVA_ConditionCombination_CoordBoundaries"
-"BVA + Condition Combination: boundary values for coordinate validation","2","BVA_ConditionCombination_CoordBoundaries","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","BVA_ConditionCombination_CoordBoundaries"
-"Condition Combination: C5=F, C6=F (has images) → D3=False","4","ConditionCombination_D3_ImagesPresent","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","ConditionCombination_D3_ImagesPresent"
-"Path P2: invalid coordinates → throw ArgumentException
-CFG Path: Node 1 → Node 2(F) → Node 4(T) → Node 5
-V(G) path 2/6
-Condition Coverage: Tests each atomic condition C1-C4 individually","2","Path2_InvalidCoordinates_ThrowsInvalidCoords","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","Path2_InvalidCoordinates_ThrowsInvalidCoords"
-"Path P3 (Images=empty): D3 atomic condition C6=True (Count==0)
-Condition Combination: C5=False, C6=True","5","Path3_ImagesEmpty_ThrowsAtLeastOneImage","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","Path3_ImagesEmpty_ThrowsAtLeastOneImage"
-"Condition Combination: C5=F, C6=T (empty collection) → D3=True","2","ConditionCombination_D3_ImagesEmptyCollection","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","ConditionCombination_D3_ImagesEmptyCollection"
-"Condition Combination for D4: !IsNullOrEmpty(claim) && TryParse(claim)","2","CondCombination_D4_ClaimValidation","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","MiddlewareWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.MiddlewareWhiteboxTests","CondCombination_D4_ClaimValidation"
-"Condition Coverage D2: Test each atomic condition C1-C4 with T/F values","2","ConditionCoverage_D2_CoordinateValidation","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","ConditionCoverage_D2_CoordinateValidation"
-"BVA + Condition Combination: boundary values for coordinate validation","4","BVA_ConditionCombination_CoordBoundaries","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","BVA_ConditionCombination_CoordBoundaries"
-"Path P3 (Images=null): D3 atomic condition C5=True
-CFG Path: Node 1 → 2(F) → 4(F) → 6(T) → 7
-V(G) path 3/6","3","Path3_ImagesNull_ThrowsAtLeastOneImage","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","Path3_ImagesNull_ThrowsAtLeastOneImage"
-"Path P4: EscalateToAdmin=true → escalate + notify + return success
-CFG: Node 1 → 2(F) → 4(F) → 6(F) → 8(T) → 9
-V(G) path 4/6","4","Path4_EscalateToAdmin_ReturnsEscalated","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","EnterpriseRespondWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.EnterpriseRespondWhiteboxTests","Path4_EscalateToAdmin_ReturnsEscalated"
-"Path P2 variant: Authenticated + non-GUID userId → skip
-Condition D4: C1=True, C2=False (TryParse fails)","3","Path2_NonGuidUserId_SkipsValidation","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","MiddlewareWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.MiddlewareWhiteboxTests","Path2_NonGuidUserId_SkipsValidation"
-"Path P2: invalid coordinates → throw ArgumentException
-CFG Path: Node 1 → Node 2(F) → Node 4(T) → Node 5
-V(G) path 2/6
-Condition Coverage: Tests each atomic condition C1-C4 individually","3","Path2_InvalidCoordinates_ThrowsInvalidCoords","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","Path2_InvalidCoordinates_ThrowsInvalidCoords"
-"Path P2: invalid coordinates → throw ArgumentException
-CFG Path: Node 1 → Node 2(F) → Node 4(T) → Node 5
-V(G) path 2/6
-Condition Coverage: Tests each atomic condition C1-C4 individually","17","Path2_InvalidCoordinates_ThrowsInvalidCoords","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","Path2_InvalidCoordinates_ThrowsInvalidCoords"
-"Condition Combination for D4: !IsNullOrEmpty(claim) && TryParse(claim)","18","CondCombination_D4_ClaimValidation","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","MiddlewareWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.MiddlewareWhiteboxTests","CondCombination_D4_ClaimValidation"
-"Condition Combination #1: C1=F(Open), C2=T → D3=False (proceed)
-Status=Open: C1(!=Open)=False → short-circuit → D3=False","2","CondCombination_D3_StatusOpen_C1False","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","EnterpriseRespondWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.EnterpriseRespondWhiteboxTests","CondCombination_D3_StatusOpen_C1False"
-"Path P6: Exception during validation → caught → _next() still called
-CFG: Node 1 → 13 → 14
-V(G) path 6/6 — ALL PATHS COVERED
-Tests exception handling resilience","2","Path6_ExceptionDuringValidation_CatchesAndProceeds","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","MiddlewareWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.MiddlewareWhiteboxTests","Path6_ExceptionDuringValidation_CatchesAndProceeds"
+Branch: D5-True (images processing loop)","4","Path5_ValidWithImages_CreatesReportSuccessfully","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","Path5_ValidWithImages_CreatesReportSuccessfully"
 "Path P4: Images.Count > 5 → throw ArgumentException
 CFG Path: Node 1 → 2(F) → 4(F) → 6(F) → 8(T) → 9
-V(G) path 4/6","4","Path4_TooManyImages_ThrowsMax5","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","Path4_TooManyImages_ThrowsMax5"
-"Condition Coverage D2: Test each atomic condition C1-C4 with T/F values","1","ConditionCoverage_D2_CoordinateValidation","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","ConditionCoverage_D2_CoordinateValidation"
+V(G) path 4/6","2","Path4_TooManyImages_ThrowsMax5","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","Path4_TooManyImages_ThrowsMax5"
+"Path P4: EscalateToAdmin=true → escalate + notify + return success
+CFG: Node 1 → 2(F) → 4(F) → 6(F) → 8(T) → 9
+V(G) path 4/6","5","Path4_EscalateToAdmin_ReturnsEscalated","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","EnterpriseRespondWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.EnterpriseRespondWhiteboxTests","Path4_EscalateToAdmin_ReturnsEscalated"
+"Condition Coverage D2: Test each atomic condition C1-C4 with T/F values","1","ConditionCoverage_D2_CoordinateValidation","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","ConditionCoverage_D2_CoordinateValidation"
+"BVA + Condition Combination: boundary values for coordinate validation","3","BVA_ConditionCombination_CoordBoundaries","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","BVA_ConditionCombination_CoordBoundaries"
+"Condition Coverage D2: Test each atomic condition C1-C4 with T/F values","2","ConditionCoverage_D2_CoordinateValidation","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","ConditionCoverage_D2_CoordinateValidation"
+"Path P3: Valid JWT but user not found in DB → proceed → _next()
+CFG: Node 1 → 2(T) → 3 → 4(T) → 5 → 6(F) → 10 → 14
+V(G) path 3/6","7","Path3_UserNotFoundInDb_ProceedsToNext","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","MiddlewareWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.MiddlewareWhiteboxTests","Path3_UserNotFoundInDb_ProceedsToNext"
+"Path P5: ResolveImmediately=true → resolve + notify + return success
+CFG: Node 1 → 2(F) → 4(F) → 6(F) → 8(F) → 10(T) → 11
+V(G) path 5/6","7","Path5_ResolveImmediately_ReturnsResolved","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","EnterpriseRespondWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.EnterpriseRespondWhiteboxTests","Path5_ResolveImmediately_ReturnsResolved"
+"Condition Coverage D2: Test each atomic condition C1-C4 with T/F values","1","ConditionCoverage_D2_CoordinateValidation","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","ConditionCoverage_D2_CoordinateValidation"
+"Path P1: complaint == null → return {Success=false, 'Not found'}
+CFG: Node 1 → Node 2(T) → Node 3
+V(G) path 1/6","3","Path1_ComplaintNull_ReturnsNotFound","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","EnterpriseRespondWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.EnterpriseRespondWhiteboxTests","Path1_ComplaintNull_ReturnsNotFound"
+"Condition Combination for D4: !IsNullOrEmpty(claim) && TryParse(claim)","9","CondCombination_D4_ClaimValidation","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","MiddlewareWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.MiddlewareWhiteboxTests","CondCombination_D4_ClaimValidation"
+"Condition Coverage D2: Test each atomic condition C1-C4 with T/F values","3","ConditionCoverage_D2_CoordinateValidation","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","ConditionCoverage_D2_CoordinateValidation"
+"Branch-Condition Coverage verification:
+Verifies that the combination of all test cases above achieves
+100% Branch-Condition Coverage — every branch taken both ways
+AND every atomic condition evaluated to both True and False","4","BranchConditionCoverage_AllDecisions_BothBranchesAndConditions","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","BranchConditionCoverage_AllDecisions_BothBranchesAndConditions"
+"Path P2: invalid coordinates → throw ArgumentException
+CFG Path: Node 1 → Node 2(F) → Node 4(T) → Node 5
+V(G) path 2/6
+Condition Coverage: Tests each atomic condition C1-C4 individually","9","Path2_InvalidCoordinates_ThrowsInvalidCoords","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","Path2_InvalidCoordinates_ThrowsInvalidCoords"
+"Path P4: User found + IsActive=false → 401 BLOCKED
+CFG: Node 1 → 2(T) → 3 → 4(T) → 5 → 6(T) → 7(T) → 8
+V(G) path 4/6
+CRITICAL PATH: Only path that blocks request","7","Path4_InactiveUser_Returns401Blocked","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","MiddlewareWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.MiddlewareWhiteboxTests","Path4_InactiveUser_Returns401Blocked"
+"BVA + Condition Combination: boundary values for coordinate validation","2","BVA_ConditionCombination_CoordBoundaries","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","BVA_ConditionCombination_CoordBoundaries"
+"Condition Combination #3: C1=T, C2=T → D3=True (reject)
+Status=Escalated: C1(!=Open)=True, C2(!=InProgress)=True → D3=True","3","CondCombination_D3_StatusEscalated_BothTrue","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","EnterpriseRespondWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.EnterpriseRespondWhiteboxTests","CondCombination_D3_StatusEscalated_BothTrue"
+"Path P6: No escalate, no resolve → add response + notify + return success
+CFG: Node 1 → 2(F) → 4(F) → 6(F) → 8(F) → 10(F) → 12
+V(G) path 6/6 — ALL PATHS COVERED","4","Path6_JustRespond_ReturnsResponseAdded","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","EnterpriseRespondWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.EnterpriseRespondWhiteboxTests","Path6_JustRespond_ReturnsResponseAdded"
+"Condition Combination #2: C1=T(not Open), C2=F(InProgress) → D3=False
+Status=InProgress: C1(!=Open)=True, C2(!=InProgress)=False → D3=False","3","CondCombination_D3_StatusInProgress_C2False","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","EnterpriseRespondWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.EnterpriseRespondWhiteboxTests","CondCombination_D3_StatusInProgress_C2False"
+"Condition Combination #1: C1=F(Open), C2=T → D3=False (proceed)
+Status=Open: C1(!=Open)=False → short-circuit → D3=False","3","CondCombination_D3_StatusOpen_C1False","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","EnterpriseRespondWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.EnterpriseRespondWhiteboxTests","CondCombination_D3_StatusOpen_C1False"
+"Path P2: invalid coordinates → throw ArgumentException
+CFG Path: Node 1 → Node 2(F) → Node 4(T) → Node 5
+V(G) path 2/6
+Condition Coverage: Tests each atomic condition C1-C4 individually","2","Path2_InvalidCoordinates_ThrowsInvalidCoords","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","Path2_InvalidCoordinates_ThrowsInvalidCoords"
+"Path P2 variant: Authenticated + non-GUID userId → skip
+Condition D4: C1=True, C2=False (TryParse fails)","1","Path2_NonGuidUserId_SkipsValidation","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","MiddlewareWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.MiddlewareWhiteboxTests","Path2_NonGuidUserId_SkipsValidation"
+"Path P2: EnterpriseId mismatch → return {Success=false, 'Not authorized'}
+CFG: Node 1 → 2(F) → 4(T) → 5
+V(G) path 2/6","4","Path2_WrongEnterprise_ReturnsNotAuthorized","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","EnterpriseRespondWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.EnterpriseRespondWhiteboxTests","Path2_WrongEnterprise_ReturnsNotAuthorized"
+"Condition Coverage D2: Test each atomic condition C1-C4 with T/F values","1","ConditionCoverage_D2_CoordinateValidation","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","ConditionCoverage_D2_CoordinateValidation"
+"Path P2: invalid coordinates → throw ArgumentException
+CFG Path: Node 1 → Node 2(F) → Node 4(T) → Node 5
+V(G) path 2/6
+Condition Coverage: Tests each atomic condition C1-C4 individually","2","Path2_InvalidCoordinates_ThrowsInvalidCoords","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","Path2_InvalidCoordinates_ThrowsInvalidCoords"
+"Condition Combination for D4: !IsNullOrEmpty(claim) && TryParse(claim)","1","CondCombination_D4_ClaimValidation","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","MiddlewareWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.MiddlewareWhiteboxTests","CondCombination_D4_ClaimValidation"
+"Path P3 (Images=null): D3 atomic condition C5=True
+CFG Path: Node 1 → 2(F) → 4(F) → 6(T) → 7
+V(G) path 3/6","2","Path3_ImagesNull_ThrowsAtLeastOneImage","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","Path3_ImagesNull_ThrowsAtLeastOneImage"
+"BVA + Condition Combination: boundary values for coordinate validation","2","BVA_ConditionCombination_CoordBoundaries","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","BVA_ConditionCombination_CoordBoundaries"
 "Path P5: User found + IsActive=true → proceed → _next()
 CFG: Node 1 → 2(T) → 3 → 4(T) → 5 → 6(T) → 7(F) → 9 → 14
 V(G) path 5/6
-HAPPY PATH","2","Path5_ActiveUser_ProceedsNormally","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","MiddlewareWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.MiddlewareWhiteboxTests","Path5_ActiveUser_ProceedsNormally"
-"Path P1: complaint == null → return {Success=false, 'Not found'}
-CFG: Node 1 → Node 2(T) → Node 3
-V(G) path 1/6","2","Path1_ComplaintNull_ReturnsNotFound","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","EnterpriseRespondWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.EnterpriseRespondWhiteboxTests","Path1_ComplaintNull_ReturnsNotFound"
-"Condition Coverage D2: Test each atomic condition C1-C4 with T/F values","2","ConditionCoverage_D2_CoordinateValidation","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","ConditionCoverage_D2_CoordinateValidation"
-"BVA + Condition Combination: boundary values for coordinate validation","3","BVA_ConditionCombination_CoordBoundaries","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","BVA_ConditionCombination_CoordBoundaries"
+HAPPY PATH","2","Path5_ActiveUser_ProceedsNormally","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","MiddlewareWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.MiddlewareWhiteboxTests","Path5_ActiveUser_ProceedsNormally"
+"Path P2: Authenticated + empty userId claim → skip → _next()
+CFG: Node 1 → 2(T) → 3 → 4(F) → 11 → 14
+V(G) path 2/6
+Condition D4: C1=False (empty claim)","2","Path2_EmptyUserIdClaim_SkipsValidation","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","MiddlewareWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.MiddlewareWhiteboxTests","Path2_EmptyUserIdClaim_SkipsValidation"
+"BVA + Condition Combination: boundary values for coordinate validation","5","BVA_ConditionCombination_CoordBoundaries","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","BVA_ConditionCombination_CoordBoundaries"
+"Path P3 (Images=empty): D3 atomic condition C6=True (Count==0)
+Condition Combination: C5=False, C6=True","2","Path3_ImagesEmpty_ThrowsAtLeastOneImage","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","Path3_ImagesEmpty_ThrowsAtLeastOneImage"
+"Path P1: Unauthenticated request → skip validation → call _next()
+CFG: Node 1 → 2(F) → 12 → 14
+V(G) path 1/6","12","Path1_UnauthenticatedRequest_SkipsValidation","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","MiddlewareWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.MiddlewareWhiteboxTests","Path1_UnauthenticatedRequest_SkipsValidation"
+"Condition Combination: C5=F, C6=F (has images) → D3=False","5","ConditionCombination_D3_ImagesPresent","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","ConditionCombination_D3_ImagesPresent"
+"Condition Combination for D4: !IsNullOrEmpty(claim) && TryParse(claim)","1","CondCombination_D4_ClaimValidation","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","MiddlewareWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.MiddlewareWhiteboxTests","CondCombination_D4_ClaimValidation"
+"BVA + Condition Combination: boundary values for coordinate validation","2","BVA_ConditionCombination_CoordBoundaries","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","BVA_ConditionCombination_CoordBoundaries"
+"Condition Combination: C5=T (null) → D3=True","2","ConditionCombination_D3_ImagesNull","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","ConditionCombination_D3_ImagesNull"
+"Path P6: Exception during validation → caught → _next() still called
+CFG: Node 1 → 13 → 14
+V(G) path 6/6 — ALL PATHS COVERED
+Tests exception handling resilience","3","Path6_ExceptionDuringValidation_CatchesAndProceeds","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","MiddlewareWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.MiddlewareWhiteboxTests","Path6_ExceptionDuringValidation_CatchesAndProceeds"
+"Path P1: category == null → throw ArgumentException
+CFG Path: Node 1 → Node 2(T) → Node 3
+V(G) path 1/6","3","Path1_CategoryNull_ThrowsInvalidCategory","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","Path1_CategoryNull_ThrowsInvalidCategory"
+"BVA + Condition Combination: boundary values for coordinate validation","1","BVA_ConditionCombination_CoordBoundaries","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","BVA_ConditionCombination_CoordBoundaries"
 "Path P2: invalid coordinates → throw ArgumentException
 CFG Path: Node 1 → Node 2(F) → Node 4(T) → Node 5
 V(G) path 2/6
-Condition Coverage: Tests each atomic condition C1-C4 individually","11","Path2_InvalidCoordinates_ThrowsInvalidCoords","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","Path2_InvalidCoordinates_ThrowsInvalidCoords"
-"Condition Combination: C5=T (null) → D3=True","3","ConditionCombination_D3_ImagesNull","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","ConditionCombination_D3_ImagesNull"
-"Path P5: ResolveImmediately=true → resolve + notify + return success
-CFG: Node 1 → 2(F) → 4(F) → 6(F) → 8(F) → 10(T) → 11
-V(G) path 5/6","3","Path5_ResolveImmediately_ReturnsResolved","Backend Tests (xUnit)","2026-07-24","passed","2026-07-24","EnterpriseRespondWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.EnterpriseRespondWhiteboxTests","Path5_ResolveImmediately_ReturnsResolved"
+Condition Coverage: Tests each atomic condition C1-C4 individually","1","Path2_InvalidCoordinates_ThrowsInvalidCoords","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","Path2_InvalidCoordinates_ThrowsInvalidCoords"
+"Condition Combination: C5=F, C6=T (empty collection) → D3=True","2","ConditionCombination_D3_ImagesEmptyCollection","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","CreateReportWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.CreateReportWhiteboxTests","ConditionCombination_D3_ImagesEmptyCollection"
+"Path P3: Status=Resolved → return fail 'Cannot respond'
+CFG: Node 1 → 2(F) → 4(F) → 6(T) → 7
+V(G) path 3/6
+Condition Coverage D3: C1=True(!=Open), C2=True(!=InProgress)","4","Path3_ResolvedStatus_ReturnsCannotRespond","Backend Tests (xUnit)","2026-07-25","passed","2026-07-25","EnterpriseRespondWhiteboxTests","xUnit","WastePlatform.Tests.Whitebox.EnterpriseRespondWhiteboxTests","Path3_ResolvedStatus_ReturnsCannotRespond"
