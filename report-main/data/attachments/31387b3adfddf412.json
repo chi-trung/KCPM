@@ -1,9 +1,0 @@
-{
-  "Token": "citizen-token",
-  "User": {
-    "Id": "62db4d07-6c83-4af3-ae92-48c7ca02ff3c",
-    "FullName": "Citizen User",
-    "Email": "citizen@example.com",
-    "Role": "citizen"
-  }
-}

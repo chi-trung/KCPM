@@ -1,6 +1,0 @@
-{
-  "fileName": "malware.exe",
-  "fileSize": 1024,
-  "contentType": "application/octet-stream",
-  "scenarioDesc": "Kiểm tra bảo mật: Chặn tệp nguy hại .exe"
-}

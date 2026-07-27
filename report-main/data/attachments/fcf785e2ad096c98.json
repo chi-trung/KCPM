@@ -1,9 +1,0 @@
-{
-  "Token": "fake-jwt-token",
-  "User": {
-    "Id": "b32ae6c9-083a-4ee4-be78-dc615a211fe0",
-    "FullName": "New Citizen",
-    "Email": "newcitizen@example.com",
-    "Role": "citizen"
-  }
-}

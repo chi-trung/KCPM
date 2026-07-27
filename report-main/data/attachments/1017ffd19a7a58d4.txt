@@ -1,3 +1,0 @@
-pm.test('status code is 200 or 400 for admin-only limitation', function () {
-  pm.expect([200, 400, 401, 403]).to.include(pm.response.code);
-});

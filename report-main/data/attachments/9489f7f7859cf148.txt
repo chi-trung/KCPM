@@ -1,3 +1,0 @@
-pm.test('status code is 200 or 201 or conflict on duplicate', function () {
-  pm.expect([200, 201, 409, 400, 422]).to.include(pm.response.code);
-});

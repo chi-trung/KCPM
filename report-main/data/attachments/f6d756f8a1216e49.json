@@ -1,7 +1,0 @@
-{
-  "SRSRequirement": "§3.5: Bắt buộc ít nhất 1 Ảnh xác thực khi Hoàn thành",
-  "CurrentBehaviour": "CompleteTask controller accepts completion WITHOUT images (Images field optional)",
-  "CodeReference": "CollectorTaskController.cs line 256: if (images != null && images.Count > 0)",
-  "GapType": "Missing validation — SRS requirement not enforced in controller",
-  "Recommendation": "Add: if (images == null || images.Count == 0) return BadRequest(\"At least one evidence image is required\")"
-}

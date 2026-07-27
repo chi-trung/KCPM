@@ -1,9 +1,0 @@
-{
-  "complaintId": "be596152-ca57-4c2c-94e8-56c1115d2214",
-  "action": "Resolve",
-  "payload": {
-    "ResolveImmediately": true,
-    "EscalateToAdmin": true,
-    "Response": "ok"
-  }
-}

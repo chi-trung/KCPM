@@ -1,1 +1,0 @@
-{"message":"Available user roles","roles":[{"name":"Citizen","value":0},{"name":"Enterprise","value":1},{"name":"Collector","value":2},{"name":"Admin","value":3}],"details":{"citizen":"Người dùng bình thường - báo cáo rác thải","enterprise":"Công ty tái chế - nhận và xử lý rác","collector":"Nhân viên thu gom - nhân viên của công ty tái chế","admin":"Quản trị viên hệ thống"}}
