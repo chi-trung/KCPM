@@ -3,11 +3,11 @@ launch_status_broken 0
 launch_status_passed 10
 launch_status_skipped 0
 launch_status_unknown 0
-launch_time_duration 1107
+launch_time_duration 5601
 launch_time_min_duration 3
-launch_time_max_duration 49
-launch_time_sum_duration 118
-launch_time_start 1788823039766
-launch_time_stop 1788823040873
+launch_time_max_duration 20
+launch_time_sum_duration 78
+launch_time_start 1788909083388
+launch_time_stop 1788909088989
 launch_retries_retries 0
 launch_retries_run 10
