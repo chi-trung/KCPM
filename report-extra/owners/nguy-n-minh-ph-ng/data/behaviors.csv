@@ -1,4 +1,4 @@
 "BROKEN","EPIC","FAILED","FEATURE","PASSED","SKIPPED","STORY","UNKNOWN"
-"0","Chương 4: Whitebox Testing","0","EnterpriseRespondToComplaint — CFG + Path Coverage","9","0","Whitebox: Path + Condition Combination Coverage","0"
-"0","Chương 4: Whitebox Testing","0","ValidateUserStatusMiddleware — CFG + Path Coverage","10","0","Whitebox: Nested Control Flow + Exception Path","0"
 "0","Chương 4: Whitebox Testing","0","CreateReport — CFG + Path Coverage","24","0","Whitebox: Statement + Branch + Condition Coverage","0"
+"0","Chương 4: Whitebox Testing","0","ValidateUserStatusMiddleware — CFG + Path Coverage","10","0","Whitebox: Nested Control Flow + Exception Path","0"
+"0","Chương 4: Whitebox Testing","0","EnterpriseRespondToComplaint — CFG + Path Coverage","9","0","Whitebox: Path + Condition Combination Coverage","0"
