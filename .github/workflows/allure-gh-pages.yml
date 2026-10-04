@@ -298,10 +298,11 @@ jobs:
         if: always()
         run: |
           mkdir -p Waste-Recycling-Platform/allure-results/history
+          mkdir -p gh-pages/last-history
           if [ -d gh-pages/last-history ]; then
-            cp -R gh-pages/last-history/. Waste-Recycling-Platform/allure-results/history/
+            cp -R gh-pages/last-history/. Waste-Recycling-Platform/allure-results/history/ 2>/dev/null || true
           elif [ -d gh-pages/history ]; then
-            cp -R gh-pages/history/. Waste-Recycling-Platform/allure-results/history/
+            cp -R gh-pages/history/. Waste-Recycling-Platform/allure-results/history/ 2>/dev/null || true
           fi
 
       - name: Write Allure Environment
@@ -394,7 +395,7 @@ jobs:
             cp "$CATS" "Waste-Recycling-Platform/allure-results/categories.json"
             echo "✅ categories.json copied to allure-results"
             # Also copy into gh-pages dir (simple-elf reads categories from gh_pages path)
-            mkdir -p gh-pages
+            mkdir -p gh-pages/last-history
             cp "$CATS" "gh-pages/categories.json"
             echo "✅ categories.json copied to gh-pages dir"
           else
